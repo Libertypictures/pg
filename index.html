@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Price Guide | Liberty Pictures</title>
+    <title>Price Guide | Liberty Picture</title>
     <style>
-        /* Base Setup & Luxury Editorial Styling */
+        /* Modern Editorial Reset */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -14,249 +14,238 @@
 
         body {
             font-family: "Century Gothic", "Futura", -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #fbfbfa;
-            color: #2b2b2b;
-            line-height: 1.6;
+            background-color: #f6f5f2; /* Warm Alabaster */
+            color: #111111;
+            line-height: 1.5;
             -webkit-font-smoothing: antialiased;
-            padding: 40px 20px;
+            padding: 60px 20px;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 850px;
             margin: 0 auto;
             background-color: #ffffff;
-            padding: 60px 50px;
-            border: 1px solid #eae7e2;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.01);
+            padding: 80px 70px;
+            border: 1px solid #e2e0da;
         }
 
-        /* Typography */
-        h1, h2, h3 {
-            font-family: "Century Gothic", "Futura", sans-serif;
-            font-weight: 300;
-            color: #111111;
-        }
-
+        /* Header Section Layout */
         .brand-header {
-            text-align: center;
-            margin-bottom: 60px;
-            border-bottom: 1px solid #eae7e2;
-            padding-bottom: 40px;
+            margin-bottom: 70px;
+            text-align: left;
         }
 
         .brand-name {
-            font-size: 25px;
+            font-size: 28px;
             letter-spacing: 12px;
             text-transform: uppercase;
             font-weight: 400;
-            color: #b89047;
-            margin-bottom: 12px;
+            color: #111111;
+            line-height: 1.2;
+            margin-bottom: 8px;
         }
 
         .brand-subtitle {
-            font-size: 13px;
-            letter-spacing: 5px;
+            font-size: 11px;
+            letter-spacing: 6px;
             text-transform: uppercase;
-            color: #777777;
-            font-weight: 400;
-            display: inline-block;
-            border-bottom: 2px solid #b89047;
-            padding-bottom: 8px;
-            margin-bottom: 30px;
+            color: #8a7355; /* Muted Bronze Accent */
+            font-weight: 600;
+            margin-bottom: 35px;
+            display: block;
         }
 
         .brand-intro {
             font-size: 14px;
-            color: #555555;
-            max-width: 500px;
-            margin: 0 auto;
+            color: #444444;
+            max-width: 580px;
             line-height: 1.7;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
-        /* Brand Color Text Highlight */
-        .text-highlight {
-            color: #b89047;
+        /* Section Architecture */
+        .section-block {
+            margin-bottom: 60px;
         }
 
-        /* Section Headings */
         .section-title {
-            font-size: 17px;
-            letter-spacing: 4px;
+            font-size: 14px;
+            letter-spacing: 5px;
             text-transform: uppercase;
             color: #111111;
-            margin: 40px 0 20px 0;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #b89047;
-            display: inline-block;
-            font-weight: 400;
+            font-weight: 600;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #111111;
+            margin-bottom: 30px;
         }
 
-        /* Pricing Cards / Layout */
-        .package-group {
-            margin-bottom: 35px;
+        .section-meta {
+            font-size: 13px;
+            color: #777777;
+            font-style: italic;
+            margin-top: -20px;
+            margin-bottom: 25px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
-        .package-card {
-            padding: 20px 0;
-            border-bottom: 1px dashed #eae7e2;
+        /* Pricing Card Grid Structure */
+        .tier-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
-        .package-card:last-child {
+        .tier-card {
+            display: grid;
+            grid-template-columns: 60px 1fr 180px;
+            padding: 25px 0;
+            border-bottom: 1px solid #e2e0da;
+            align-items: start;
+        }
+
+        .tier-card:last-child {
             border-bottom: none;
         }
 
-        .package-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            margin-bottom: 8px;
-        }
-
-        .package-name {
-            font-size: 16px;
+        .tier-number {
+            font-size: 13px;
             font-weight: 600;
-            color: #111111;
-            text-transform: uppercase;
+            color: #8a7355;
             letter-spacing: 1px;
         }
 
-        .package-price {
-            font-size: 17px;
+        .tier-meta h3 {
+            font-size: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             font-weight: 600;
-            color: #b89047;
-            white-space: nowrap;
-            letter-spacing: 0.5px;
+            color: #111111;
+            margin-bottom: 10px;
         }
 
-        .package-details {
-            font-size: 13.5px;
-            color: #555555;
-            list-style-type: none;
+        .tier-details {
+            list-style: none;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-        }
-
-        .package-details li {
-            margin-bottom: 5px;
-            position: relative;
-            padding-left: 15px;
-        }
-
-        .package-details li::before {
-            content: "—";
-            position: absolute;
-            left: 0;
-            color: #b89047;
-        }
-
-        /* Add-ons and Specific Notes */
-        .addons-box {
-            background-color: #fdfcfb;
-            border: 1px solid #eae7e2;
-            padding: 25px;
-            margin-top: 20px;
-            border-radius: 2px;
-        }
-
-        .addon-item {
-            display: flex;
-            justify-content: space-between;
             font-size: 13.5px;
-            margin-bottom: 8px;
             color: #444444;
         }
 
-        .addon-item:last-child {
-            margin-bottom: 0;
+        .tier-details li {
+            margin-bottom: 6px;
+            position: relative;
+            padding-left: 14px;
         }
 
-        .addon-name {
-            font-weight: 500;
+        .tier-details li::before {
+            content: "▪";
+            font-size: 8px;
+            position: absolute;
+            left: 0;
+            top: 1px;
+            color: #8a7355;
         }
 
-        .addon-price {
-            font-weight: bold;
+        .tier-price-box {
+            text-align: right;
+        }
+
+        .tier-price {
+            font-size: 18px;
+            font-weight: 600;
             color: #111111;
+            letter-spacing: 0.5px;
         }
 
-        /* Policy & Terms Section */
-        .policy-grid {
-            margin-top: 20px;
+        /* Logistics/Add-ons Box */
+        .addons-container {
+            border: 1px solid #111111;
+            padding: 30px;
+            background-color: #ffffff;
         }
 
-        .policy-block {
-            margin-bottom: 25px;
+        .addon-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 13.5px;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e0da;
+            color: #333333;
         }
 
-        .policy-block h3 {
-            font-size: 14px;
+        .addon-row:first-child { padding-top: 0; }
+        .addon-row:last-child { padding-bottom: 0; border-bottom: none; }
+
+        .addon-name { font-weight: 500; }
+        .addon-price { font-weight: 600; color: #111111; }
+
+        /* Structural Guidelines Grid */
+        .protocol-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px 30px;
+        }
+
+        .protocol-item h4 {
+            font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 2px;
             color: #111111;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             font-weight: 600;
         }
 
-        .policy-block p {
-            font-size: 13.5px;
+        .protocol-item p {
+            font-size: 13px;
             color: #555555;
             text-align: justify;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
         }
 
-        /* Footer */
+        .highlight-text {
+            color: #8a7355; /* Brand color applied here */
+            font-weight: 600;
+        }
+
+        /* Minimal Footer Layout */
         .brand-footer {
-            text-align: center;
-            margin-top: 60px;
+            margin-top: 80px;
             padding-top: 40px;
-            border-top: 1px solid #eae7e2;
-            font-size: 13px;
-            color: #777777;
+            border-top: 1px solid #111111;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 12px;
+            color: #555555;
         }
 
-        .footer-thanks {
-            font-size: 14px;
-            letter-spacing: 2px;
-            color: #111111;
-            margin-bottom: 15px;
+        .footer-note {
             text-transform: uppercase;
-        }
-
-        .footer-contact {
             letter-spacing: 1px;
+            font-weight: 600;
+            color: #111111;
         }
 
         .footer-contact a {
-            color: #b89047;
+            color: #8a7355;
             text-decoration: none;
+            font-weight: 600;
         }
 
         /* Mobile Optimization */
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
+        @media (max-width: 768px) {
+            body { padding: 15px 10px; }
+            .container { padding: 45px 25px; }
+            .brand-name { font-size: 21px; letter-spacing: 8px; }
+            .tier-card {
+                grid-template-columns: 1fr;
+                gap: 15px;
             }
-            .container {
-                padding: 35px 20px;
-            }
-            .brand-name {
-                font-size: 20px;
-                letter-spacing: 7px;
-            }
-            .package-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .package-price {
-                margin-top: 4px;
-            }
-            .addon-item {
-                flex-direction: column;
-            }
-            .addon-price {
-                margin-top: 2px;
-                color: #b89047;
-            }
+            .tier-number { display: none; }
+            .tier-price-box { text-align: left; margin-top: 5px; }
+            .protocol-grid { grid-template-columns: 1fr; gap: 25px; }
+            .brand-footer { flex-direction: column; gap: 15px; text-align: left; }
         }
     </style>
 </head>
@@ -264,184 +253,183 @@
 
     <div class="container">
         
-        <!-- Header Section -->
+        <!-- Header Architecture -->
         <header class="brand-header">
-            <h1 class="brand-name">Liberty Pictures</h1>
-            <div><span class="brand-subtitle">Price Guide</span></div>
+            <h1 class="brand-name">Liberty Picture</h1>
+            <span class="brand-subtitle">Price Guide</span>
             <p class="brand-intro">
-                Thank you for your interest in our services. Below is a brief outline of our session structures, deliverables, and terms. <span class="text-highlight">Please review this guide</span> as you prepare to book your session.
+                Thank you for your interest in our services. Below is a brief outline of our session structures, deliverables, and terms. <span class="highlight-text">Please review this guide</span> as you prepare to book your session.
             </p>
         </header>
 
-        <!-- Solo Sessions -->
-        <section>
-            <h2 class="section-title">Solo Sessions</h2>
-            <p style="font-size: 13.5px; color:#777; margin-bottom: 10px; font-style: italic; font-family:-apple-system, sans-serif;">
-                Perfect for Portraits, Pre-birthdays, Maternity, and Corporate Headshots.
-            </p>
-            <div class="package-group">
-                <div class="package-card">
-                    <div class="package-header">
-                        <span class="package-name">1 Concept Session</span>
-                        <span class="package-price">₦150,000</span>
-                    </div>
-                    <ul class="package-details">
-                        <li>7 signature retouched digital portraits</li>
-                        <li>Full download of unwatermarked JPEG proofs</li>
-                        <li>Free online gallery hosting valid for 3 months</li>
-                        <li>Pre-shoot concept & style guidance</li>
-                    </ul>
-                </div>
-
-                <div class="package-card">
-                    <div class="package-header">
-                        <span class="package-name">2 Concepts Session</span>
-                        <span class="package-price">₦200,000</span>
-                    </div>
-                    <ul class="package-details">
-                        <li>12 signature retouched digital portraits</li>
-                        <li>Full download of unwatermarked JPEG proofs</li>
-                        <li>Free online gallery hosting valid for 3 months</li>
-                        <li>Pre-shoot concept & style guidance</li>
-                    </ul>
-                </div>
-
-                <div class="package-card">
-                    <div class="package-header">
-                        <span class="package-name">3 Concepts Session</span>
-                        <span class="package-price">₦250,000</span>
-                    </div>
-                    <ul class="package-details">
-                        <li>15 signature retouched digital portraits</li>
-                        <li>Premium signature flash drive containing all delivered media</li>
-                        <li>Full download of unwatermarked JPEG proofs</li>
-                        <li>Free online gallery hosting valid for 3 months</li>
-                        <li>Visual concept design & pre-shoot planning</li>
-                        <li>Vendor sourcing and optional location scouting</li>
-                    </ul>
-                </div>
-            </div>
-        </section>
-
-        <!-- Duo & Family Sessions -->
-        <section>
-            <h2 class="section-title">Duo & Family Sessions</h2>
+        <!-- Individual Sessions Segment -->
+        <section class="section-block">
+            <h2 class="section-title">Individual Portfolios</h2>
+            <p class="section-meta">Perfect for Portraits, Pre-birthdays, Maternity, and Corporate Headshots.</p>
             
-            <div class="package-group">
-                <div class="package-card">
-                    <div class="package-header">
-                        <span class="package-name">Duo Session</span>
-                        <span class="package-price">₦180,000 <span style="font-size:13px; font-weight:normal; color:#777;">/ look</span></span>
+            <div class="tier-grid">
+                
+                <!-- Package 1 -->
+                <div class="tier-card">
+                    <div class="tier-number">01 //</div>
+                    <div class="tier-meta">
+                        <h3>1 Concept Session</h3>
+                        <ul class="tier-details">
+                            <li>7 signature retouched digital portraits</li>
+                            <li>Full download of unwatermarked JPEG proofs for client selection</li>
+                            <li>Free online gallery hosting valid for 1 month</li>
+                        </ul>
                     </div>
-                    <p style="font-size: 13px; color:#777; margin-bottom: 6px; font-style: italic; font-family:-apple-system, sans-serif;">
-                        Tailored for Pre-weddings, Couple Portraits, Mommy & Me, Twin Portraits, and Wedding Anniversaries.
-                    </p>
-                    <ul class="package-details">
-                        <li>10 signature retouched digital portraits per look</li>
-                        <li>Full download of unwatermarked JPEG proofs</li>
-                        <li>Free online gallery hosting valid for 3 months</li>
-                        <li>Optional pre-shoot concept & style guidance</li>
-                    </ul>
+                    <div class="tier-price-box">
+                        <span class="tier-price">₦150,000</span>
+                    </div>
                 </div>
 
-                <div class="package-card">
-                    <div class="package-header">
-                        <span class="package-name">Family Session</span>
-                        <span class="package-price">₦250,000</span>
+                <!-- Package 2 -->
+                <div class="tier-card">
+                    <div class="tier-number">02 //</div>
+                    <div class="tier-meta">
+                        <h3>2 Concepts Session</h3>
+                        <ul class="tier-details">
+                            <li>12 signature retouched digital portraits</li>
+                            <li>Full download of unwatermarked JPEG proofs for client selection</li>
+                            <li>Free online gallery hosting valid for 1 month</li>
+                        </ul>
                     </div>
-                    <p style="font-size: 13px; color:#777; margin-bottom: 6px; font-style: italic; font-family:-apple-system, sans-serif;">
-                        A comprehensive experience where every member of the family receives a custom mini portrait session.
-                    </p>
-                    <ul class="package-details">
-                        <li>Maximum of 2 concepts</li>
-                        <li>18 signature retouched digital portraits in total</li>
-                        <li>Includes one premium 12×15 custom photo frame for your home</li>
-                        <li>Premium signature flash drive containing all delivered media</li>
-                        <li>Full download of unwatermarked JPEG proofs</li>
-                        <li>Free online gallery hosting valid for 3 months</li>
-                        <li>Optional pre-shoot concept & style guidance</li>
-                    </ul>
+                    <div class="tier-price-box">
+                        <span class="tier-price">₦200,000</span>
+                    </div>
                 </div>
+
+                <!-- Package 3 -->
+                <div class="tier-card">
+                    <div class="tier-number">03 //</div>
+                    <div class="tier-meta">
+                        <h3>3 Concepts Session</h3>
+                        <ul class="tier-details">
+                            <li>15 signature retouched digital portraits</li>
+                            <li>Premium signature flash drive containing all final media</li>
+                            <li>Full download of unwatermarked JPEG proofs for client selection</li>
+                            <li>Free online gallery hosting valid for 1 month</li>
+                        </ul>
+                    </div>
+                    <div class="tier-price-box">
+                        <span class="tier-price">₦250,000</span>
+                    </div>
+                </div>
+
             </div>
         </section>
 
-        <!-- Premium Add-ons & Custom Logistics -->
-        <section>
-            <h2 class="section-title">Logistics & Customizations</h2>
-            <div class="addons-box">
-                <div class="addon-item">
-                    <span class="addon-name">Solo Session (Location outside studio)</span>
+        <!-- Family Session Segment -->
+        <section class="section-block">
+            <h2 class="section-title">Duo & Family Sessions</h2>
+            <p class="section-meta">Documenting your milestones alongside your loved ones.</p>
+            
+            <div class="tier-grid">
+                
+                <!-- Duo Package -->
+                <div class="tier-card">
+                    <div class="tier-number">04 //</div>
+                    <div class="tier-meta">
+                        <h3>Duo Session</h3>
+                        <p class="section-meta" style="margin: 0 0 10px 0; padding: 0;">Tailored for Pre-weddings, Couple Portraits, Mommy & Me, Twin Portraits, and Wedding Anniversaries.</p>
+                        <ul class="tier-details">
+                            <li>10 signature retouched digital portraits per look</li>
+                            <li>Full download of unwatermarked JPEG proofs for client selection</li>
+                            <li>Free online gallery hosting valid for 1 month</li>
+                        </ul>
+                    </div>
+                    <div class="tier-price-box">
+                        <span class="tier-price">₦180,000 / look</span>
+                    </div>
+                </div>
+
+                <!-- Family Package -->
+                <div class="tier-card">
+                    <div class="tier-number">05 //</div>
+                    <div class="tier-meta">
+                        <h3>Family Session</h3>
+                        <p class="section-meta" style="margin: 0 0 10px 0; padding: 0;">A comprehensive experience where every member of the family receives a custom mini portrait session.</p>
+                        <ul class="tier-details">
+                            <li>Maximum of 2 distinct concepts</li>
+                            <li>18 signature retouched digital portraits in total (includes individual configurations)</li>
+                            <li>Includes one premium 12×15 custom photo frame for your home</li>
+                            <li>Premium signature flash drive containing all final media</li>
+                            <li>Full download of unwatermarked JPEG proofs for client selection</li>
+                            <li>Free online gallery hosting valid for 1 month</li>
+                        </ul>
+                    </div>
+                    <div class="tier-price-box">
+                        <span class="tier-price">₦250,000</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Logistics & Customizations -->
+        <section class="section-block">
+            <h2 class="section-title">Logistics & Custom Additions</h2>
+            <div class="addons-container">
+                <div class="addon-row">
+                    <span class="addon-name">Solo Session (Off-site / Location outside studio)</span>
                     <span class="addon-price">₦200,000 / look</span>
                 </div>
-                <div class="addon-item">
-                    <span class="addon-name">Duo Session (Location outside studio with backdrop)</span>
+                <div class="addon-row">
+                    <span class="addon-name">Duo Session (Off-site location with backdrop setup)</span>
                     <span class="addon-price">₦210,000</span>
                 </div>
-                <div class="addon-item">
-                    <span class="addon-name">Family Session (Location outside studio with backdrop)</span>
+                <div class="addon-row">
+                    <span class="addon-name">Family Session (Off-site location with backdrop)</span>
                     <span class="addon-price">₦300,000</span>
                 </div>
-                <div class="addon-item">
-                    <span class="addon-name">Family Session (Location outside studio without backdrop)</span>
+                <div class="addon-row">
+                    <span class="addon-name">Family Session (Off-site location without backdrop)</span>
                     <span class="addon-price">₦250,000</span>
                 </div>
-                <div class="addon-item" style="margin-top: 12px; border-top: 1px solid #eae7e2; padding-top: 12px;">
-                    <span class="addon-name">Extra Pictures</span>
+                <div class="addon-row" style="margin-top: 10px; border-top: 1px solid #111111; padding-top: 15px;">
+                    <span class="addon-name">Additional Retouched Image Portfolio File</span>
                     <span class="addon-price">₦10,000 / picture</span>
                 </div>
-                <div class="addon-item">
-                    <span class="addon-name">Express 24-Hour Digital Delivery Turnaround</span>
+                <div class="addon-row">
+                    <span class="addon-name">Express 24-Hour Digital Turnaround Delivery</span>
                     <span class="addon-price">+₦30,000</span>
                 </div>
             </div>
         </section>
 
-        <!-- Terms & Conditions / Workflow -->
-        <section>
-            <h2 class="section-title">Guidelines</h2>
-            <div class="policy-grid">
+        <!-- Structural Protocol / Guidelines -->
+        <section class="section-block">
+            <h2 class="section-title">Studio Protocol</h2>
+            <div class="protocol-grid">
                 
-                <div class="policy-block">
-                    <h3>Booking & Payment Terms</h3>
-                    <p>
-                        A <span class="text-highlight">non-refundable retainer of 50%</span> is required to secure your selected date and session time. The remaining balance of 50% is due completely on the day of the shoot. <span class="text-highlight">Retainers remain valid for up to 12 months</span> under appropriate circumstances.
-                    </p>
+                <div class="protocol-item">
+                    <h4>Retainer & Settlement</h4>
+                    <p>A <span class="highlight-text">non-refundable retainer fee of 50%</span> is strictly required to lock down your specific date and hour. The remaining <span class="highlight-text">50% balance</span> must be settled completely on the immediate day of your session.</p>
                 </div>
 
-                <div class="policy-block">
-                    <h3>Rescheduling & Cancellations</h3>
-                    <p>
-                        We accommodate one-time session rescheduling free of charge, provided the request is submitted <span class="text-highlight">at least 24 to 48 hours prior</span> to your appointment. General cancellations do not qualify for a refund. In the event of emergency cancellations without notice or no-shows, the <span class="text-highlight">retainer will be completely forfeited</span> to ensure fairness to other clients and protect our studio resources.
-                    </p>
+                <div class="protocol-item">
+                    <h4>Punctuality & Scheduling</h4>
+                    <p>To preserve our scheduling matrix, time management is paramount. Arrivals extending <span class="highlight-text">beyond 20 minutes late</span> will automatically attract a static <span class="highlight-text">late fee of ₦15,000</span>.</p>
                 </div>
 
-                <div class="policy-block">
-                    <h3>Punctuality Policy</h3>
-                    <p>
-                        To ensure a smooth, unhurried, and premium experience, we advise all clients to be highly time-conscious. Arrivals extending <span class="text-highlight">past 20 minutes</span> from the scheduled appointment time may attract a <span class="text-highlight">late fee of ₦10,000</span>.
-                    </p>
+                <div class="protocol-item">
+                    <h4>Selection & Turnaround</h4>
+                    <p>Unedited proofs are uploaded directly to Pixieset for your secure selection, or chosen directly at the studio post-session. Final polished media is processed within <span class="highlight-text">2 to 4 working days</span>. Unedited RAW files are strictly withheld but can be purchased upon request.</p>
                 </div>
 
-                <div class="policy-block">
-                    <h3>Post-Shoot Selection & Delivery</h3>
-                    <p>
-                        Following your session, unedited JPEGs will be uploaded to your personalized gallery for selection. Alternatively, you may choose to make your final selections immediately after the session at the studio. Standard delivery turnaround ranges between <span class="text-highlight">3 to 7 working days</span> once your final selections are submitted. Proof previews are <span class="text-highlight">completely unwatermarked</span>. Note: Unedited RAW files are available for download upon request, subject to an additional fee.
-                    </p>
-                </div>
-
-                <div class="policy-block">
-                    <h3>Image Rights & Usage</h3>
-                    <p>
-                        Clients are granted a <span class="text-highlight">non-exclusive personal-use license</span> for sharing and printing their delivered media. Liberty Pictures <span class="text-highlight">retains full legal copyright ownership</span> and reserves the right to showcase selected images within our professional portfolio or promotional channels. Full commercial ownership and exclusive usage rights may be explicitly acquired via separate negotiation.
-                    </p>
+                <div class="protocol-item">
+                    <h4>Licensing & Ownership</h4>
+                    <p>Clients receive a personal-use license for self-printing and digital publication. Liberty Picture retains legal copyright ownership for archive display. Exclusive usage waivers are subject to contract negotiations.</p>
                 </div>
 
             </div>
         </section>
 
-        <!-- Footer Section -->
+        <!-- Minimal Footer -->
         <footer class="brand-footer">
-            <div class="footer-thanks">Your patronage is deeply appreciated.</div>
+            <span class="footer-note">Liberty Picture © 2026</span>
             <div class="footer-contact">
                 Email: <a href="mailto:visualsliberty@gmail.com">visualsliberty@gmail.com</a> &nbsp;|&nbsp; Instagram: @Libertypicture
             </div>
