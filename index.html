@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Price Guide | Liberty Pictures</title>
+    <title>Studio Price Guide | Libertypictures</title>
     <style>
         /* Modern Editorial Reset */
         * {
@@ -15,7 +15,7 @@
         body {
             font-family: "Century Gothic", "Futura", -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: #f6f5f2; /* Warm Alabaster */
-            color: #111111;
+            color: #000000; /* Solid Black for Maximum Readability */
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             padding: 60px 20px;
@@ -40,7 +40,7 @@
             letter-spacing: 12px;
             text-transform: uppercase;
             font-weight: 400;
-            color: #111111;
+            color: #000000;
             line-height: 1.2;
             margin-bottom: 8px;
         }
@@ -49,7 +49,7 @@
             font-size: 11px;
             letter-spacing: 6px;
             text-transform: uppercase;
-            color: #8a7355; /* Muted Bronze Accent */
+            color: #8a7355; /* Muted Bronze Brand Color */
             font-weight: 600;
             margin-bottom: 35px;
             display: block;
@@ -57,7 +57,7 @@
 
         .brand-intro {
             font-size: 14px;
-            color: #444444;
+            color: #000000;
             max-width: 580px;
             line-height: 1.7;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
@@ -72,20 +72,21 @@
             font-size: 14px;
             letter-spacing: 5px;
             text-transform: uppercase;
-            color: #111111;
+            color: #000000;
             font-weight: 600;
             padding-bottom: 12px;
-            border-bottom: 2px solid #111111;
+            border-bottom: 2px solid #000000;
             margin-bottom: 30px;
         }
 
         .section-meta {
             font-size: 13px;
-            color: #777777;
+            color: #000000;
             font-style: italic;
             margin-top: -20px;
             margin-bottom: 25px;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
         }
 
         /* Pricing Card Grid Structure */
@@ -110,7 +111,7 @@
         .tier-number {
             font-size: 13px;
             font-weight: 600;
-            color: #8a7355;
+            color: #000000;
             letter-spacing: 1px;
         }
 
@@ -119,7 +120,7 @@
             text-transform: uppercase;
             letter-spacing: 1.5px;
             font-weight: 600;
-            color: #8a7355; /* Muted Bronze */
+            color: #000000; /* Solid Black Package Titles */
             margin-bottom: 10px;
         }
 
@@ -127,7 +128,7 @@
             list-style: none;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             font-size: 13.5px;
-            color: #444444;
+            color: #000000;
         }
 
         .tier-details li {
@@ -152,13 +153,13 @@
         .tier-price {
             font-size: 20px;
             font-weight: 600;
-            color: #8a7355; /* Brand color pop for main prices matched to index (3).html */
+            color: #8a7355; /* Muted Bronze Brand Prices */
             letter-spacing: 0.5px;
         }
 
         /* Curated Logistics/Add-ons Box */
         .addons-container {
-            border: 1px solid #8a7355; /* Framed in brand bronze color */
+            border: 1px solid #8a7355; /* Framed in brand color */
             padding: 30px;
             background-color: #ffffff;
         }
@@ -170,14 +171,14 @@
             font-size: 13.5px;
             padding: 10px 0;
             border-bottom: 1px solid #e2e0da;
-            color: #333333;
+            color: #000000;
         }
 
         .addon-row:first-child { padding-top: 0; }
         .addon-row:last-child { padding-bottom: 0; border-bottom: none; }
 
         .addon-name { font-weight: 500; }
-        .addon-price { font-weight: 600; color: #8a7355; /* Brand bronze color pop */ }
+        .addon-price { font-weight: 600; color: #8a7355; /* Brand color pop for add-ons */ }
 
         /* Structural Guidelines Grid */
         .protocol-grid {
@@ -190,47 +191,121 @@
             font-size: 13px;
             text-transform: uppercase;
             letter-spacing: 2px;
-            color: #111111;
+            color: #000000;
             margin-bottom: 10px;
             font-weight: 600;
         }
 
         .protocol-item p {
             font-size: 13px;
-            color: #555555;
+            color: #000000;
             text-align: justify;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.6;
         }
 
         .highlight-text {
-            color: #8a7355; /* Brand color applied here */
+            color: #8a7355; /* Brand color pop for critical timeline and fee rules */
             font-weight: 600;
+        }
+
+        /* 
+         * ==========================================
+         * FEMININE & ELEGANT CTA SECTION UPDATE
+         * ==========================================
+         */
+        .cta-section {
+            margin: 70px 0 20px 0;
+            background-color: #f6f5f2; /* Soft warm alabaster background */
+            padding: 55px 40px;
+            text-align: center;
+            border-radius: 4px; /* Subtle softening of the overall box */
+        }
+
+        .cta-heading {
+            color: #000000;
+            font-size: 22px;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-weight: 400;
+        }
+
+        .cta-text {
+            font-size: 13.5px;
+            color: #000000;
+            margin-bottom: 35px;
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-grid {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Elegant rounded pill shapes for the buttons */
+        .cta-btn-primary {
+            display: inline-block;
+            background-color: #8a7355;
+            color: #ffffff;
+            padding: 14px 38px;
+            font-size: 11.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            border: 1px solid #8a7355;
+            border-radius: 40px; /* Pill Shape */
+            transition: all 0.3s ease;
+            min-width: 170px;
+        }
+
+        .cta-btn-primary:hover {
+            background-color: #756147;
+            border-color: #756147;
+        }
+
+        .cta-btn-secondary {
+            display: inline-block;
+            background-color: transparent;
+            color: #8a7355;
+            padding: 14px 38px;
+            font-size: 11.5px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-decoration: none;
+            border: 1px solid #8a7355;
+            border-radius: 40px; /* Pill Shape */
+            transition: all 0.3s ease;
+            min-width: 170px;
+        }
+
+        .cta-btn-secondary:hover {
+            background-color: #ffffff;
         }
 
         /* Minimal Footer Layout */
         .brand-footer {
-            margin-top: 80px;
+            margin-top: 40px;
             padding-top: 40px;
-            border-top: 1px solid #111111;
+            border-top: 1px solid #000000;
             display: flex;
-            justify-content: space-between;
-            align-items: baseline;
+            justify-content: center;
             font-size: 12px;
-            color: #555555;
+            color: #000000;
         }
 
         .footer-note {
             text-transform: uppercase;
             letter-spacing: 1px;
             font-weight: 600;
-            color: #111111;
-        }
-
-        .footer-contact a {
-            color: #8a7355;
-            text-decoration: none;
-            font-weight: 600;
+            color: #000000;
         }
 
         /* Mobile Optimization */
@@ -245,7 +320,9 @@
             .tier-number { display: none; }
             .tier-price-box { text-align: left; margin-top: 5px; }
             .protocol-grid { grid-template-columns: 1fr; gap: 25px; }
-            .brand-footer { flex-direction: column; gap: 15px; text-align: left; }
+            .cta-section { padding: 45px 20px; }
+            .cta-grid { flex-direction: column; gap: 12px; }
+            .cta-btn-primary, .cta-btn-secondary { width: 100%; border-radius: 40px; }
         }
     </style>
 </head>
@@ -255,8 +332,8 @@
         
         <!-- Header Architecture -->
         <header class="brand-header">
-            <h1 class="brand-name">Liberty Pictures</h1>
-            <span class="brand-subtitle">Price Guide</span>
+            <h1 class="brand-name">Libertypictures</h1>
+            <span class="brand-subtitle">Studio Price Guide</span>
             <p class="brand-intro">
                 Thank you for your interest in our services. Below is a brief outline of our session structures, deliverables, and terms. <span class="highlight-text">Please review this guide</span> as you prepare to book your session.
             </p>
@@ -275,9 +352,8 @@
                     <div class="tier-meta">
                         <h3>1 Concept Session</h3>
                         <ul class="tier-details">
-                            <li>7 signature retouched digital portraits</li>
-                            <li>Full download of unwatermarked JPEG proofs for client selection</li>
-                            <li>Free online gallery hosting valid for 1 month</li>
+                            <li>1 Distinct Look / Outfit</li>
+                            <li>7 signature retouched photographs</li>
                         </ul>
                     </div>
                     <div class="tier-price-box">
@@ -291,9 +367,8 @@
                     <div class="tier-meta">
                         <h3>2 Concepts Session</h3>
                         <ul class="tier-details">
-                            <li>12 signature retouched digital portraits</li>
-                            <li>Full download of unwatermarked JPEG proofs for client selection</li>
-                            <li>Free online gallery hosting valid for 1 month</li>
+                            <li>2 Distinct Looks / Outfits</li>
+                            <li>12 signature retouched photographs</li>
                         </ul>
                     </div>
                     <div class="tier-price-box">
@@ -307,10 +382,9 @@
                     <div class="tier-meta">
                         <h3>3 Concepts Session</h3>
                         <ul class="tier-details">
-                            <li>15 signature retouched digital portraits</li>
+                            <li>3 Distinct Looks / Outfits</li>
+                            <li>15 signature retouched photographs</li>
                             <li>Premium signature flash drive containing all final media</li>
-                            <li>Full download of unwatermarked JPEG proofs for client selection</li>
-                            <li>Free online gallery hosting valid for 1 month</li>
                         </ul>
                     </div>
                     <div class="tier-price-box">
@@ -335,13 +409,12 @@
                         <h3>Duo Session</h3>
                         <p class="section-meta" style="margin: 0 0 10px 0; padding: 0;">Tailored for Pre-weddings, Couple Portraits, Mommy & Me, Twin Portraits, and Wedding Anniversaries.</p>
                         <ul class="tier-details">
-                            <li>10 signature retouched digital portraits per look</li>
-                            <li>Full download of unwatermarked JPEG proofs for client selection</li>
-                            <li>Free online gallery hosting valid for 1 month</li>
+                            <li>1 Distinct Look / Outfit per person</li>
+                            <li>10 signature retouched photographs</li>
                         </ul>
                     </div>
                     <div class="tier-price-box">
-                        <span class="tier-price">₦180,000 / look</span>
+                        <span class="tier-price">₦180,000</span>
                     </div>
                 </div>
 
@@ -352,12 +425,10 @@
                         <h3>Family Session</h3>
                         <p class="section-meta" style="margin: 0 0 10px 0; padding: 0;">A comprehensive experience where every member of the family receives a custom mini portrait session.</p>
                         <ul class="tier-details">
-                            <li>Maximum of 2 distinct concepts</li>
-                            <li>18 signature retouched digital portraits in total (includes individual configurations)</li>
+                            <li>2 Distinct Looks / Outfits</li>
+                            <li>18 signature retouched photographs in total (includes individual configurations)</li>
                             <li>Includes one premium 12×15 custom photo frame for your home</li>
                             <li>Premium signature flash drive containing all final media</li>
-                            <li>Full download of unwatermarked JPEG proofs for client selection</li>
-                            <li>Free online gallery hosting valid for 1 month</li>
                         </ul>
                     </div>
                     <div class="tier-price-box">
@@ -411,28 +482,36 @@
 
                 <div class="protocol-item">
                     <h4>Punctuality & Scheduling</h4>
-                    <p>To preserve our scheduling matrix, time management is paramount. Arrivals extending <span class="highlight-text">beyond 20 minutes late</span> will automatically attract a static <span class="highlight-text">late fee of ₦15,000</span>.</p>
+                    <p>To preserve our seamless studio calendar, sessions are strictly bound to their time frames: <span class="highlight-text">60 minutes</span> for 1-concept and duo setups, <span class="highlight-text">75 minutes</span> for 2-concept portfolios, and <span class="highlight-text">90 minutes</span> for 3-concept and family configurations. Arrivals extending <span class="highlight-text">beyond 20 minutes late</span> automatically attract a fee of <span class="highlight-text">₦15,000</span>.</p>
                 </div>
 
                 <div class="protocol-item">
                     <h4>Selection & Turnaround</h4>
-                    <p>Unedited proofs are uploaded directly to Pixieset for your secure selection, or chosen directly at the studio post-session. Final polished media is processed within <span class="highlight-text">2 to 4 working days</span>. Unedited RAW files are strictly withheld but can be purchased upon request.</p>
+                    <p>Unedited proofs are uploaded directly to a private proofing portal or selected at the studio post-session. <span class="highlight-text">A full download of unwatermarked JPEG proofs is provided for client selection</span>. Final processed files are delivered within 2 to 4 working days, hosted via a secure online gallery <span class="highlight-text">valid for 1 month</span>. Unedited RAW files are withheld but can be purchased upon request.</p>
                 </div>
 
                 <div class="protocol-item">
                     <h4>Licensing & Ownership</h4>
-                    <p>Clients receive a personal-use license for self-printing and digital publication. Liberty Pictures retains legal copyright ownership for archive display. Exclusive usage waivers are subject to contract negotiations.</p>
+                    <p>Clients receive a personal-use license for self-printing and digital publication. <span class="highlight-text">Libertypictures</span> retains legal copyright ownership for archive display. Exclusive usage waivers are subject to contract negotiations.</p>
                 </div>
 
             </div>
         </section>
 
-        <!-- Minimal Footer -->
-        <footer class="brand-footer">
-            <span class="footer-note">Liberty Pictures © 2026</span>
-            <div class="footer-contact">
-                Email: <a href="mailto:visualsliberty@gmail.com">visualsliberty@gmail.com</a> &nbsp;|&nbsp; Instagram: @libertypicture
+        <!-- Modern & Elegant Contact/Booking Section -->
+        <div class="cta-section">
+            <h3 class="cta-heading">Let's create something beautiful.</h3>
+            <p class="cta-text">Reach out to secure your date and discuss your vision.</p>
+            <div class="cta-grid">
+                <a href="https://wa.me/2349075170240" class="cta-btn-primary">Book via WhatsApp</a>
+                <a href="https://ig.me/m/libertypicture" class="cta-btn-secondary">Instagram DM</a>
+                <a href="mailto:visualsliberty@gmail.com" class="cta-btn-secondary">Email Studio</a>
             </div>
+        </div>
+
+        <!-- Clean Centered Footer -->
+        <footer class="brand-footer">
+            <span class="footer-note">Libertypictures © 2026</span>
         </footer>
 
     </div>
