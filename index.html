@@ -22,11 +22,12 @@
         }
 
         .container {
-            max-width: 850px;
+            max-width: 900px; /* Slightly wider to accommodate side-by-side cards */
             margin: 0 auto;
             background-color: #ffffff;
             padding: 80px 70px;
             border: 1px solid #e2e0da;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02); /* Soft depth for modern feel */
         }
 
         /* Header Section Layout */
@@ -65,7 +66,7 @@
 
         /* Section Architecture */
         .section-block {
-            margin-bottom: 60px;
+            margin-bottom: 70px;
         }
 
         .section-title {
@@ -76,63 +77,69 @@
             font-weight: 600;
             padding-bottom: 12px;
             border-bottom: 2px solid #000000;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
         }
 
         .section-meta {
             font-size: 13px;
             color: #000000;
             font-style: italic;
-            margin-top: -20px;
-            margin-bottom: 25px;
+            margin-top: -10px;
+            margin-bottom: 30px;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.6;
         }
 
-        /* Pricing Card Grid Structure */
+        /* 
+         * ==========================================
+         * SIDE-BY-SIDE PRICING CARDS
+         * ==========================================
+         */
         .tier-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
         }
 
         .tier-card {
-            display: grid;
-            grid-template-columns: 60px 1fr 180px;
-            padding: 25px 0;
-            border-bottom: 1px solid #e2e0da;
-            align-items: start;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            background-color: #fdfdfc;
+            border: 1px solid #e2e0da;
+            padding: 35px 25px;
+            border-radius: 4px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .tier-card:last-child {
-            border-bottom: none;
+        .tier-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
         }
 
-        .tier-number {
-            font-size: 13px;
-            font-weight: 600;
-            color: #000000;
-            letter-spacing: 1px;
+        .tier-meta {
+            flex-grow: 1; /* Pushes the price box to the bottom */
         }
 
         .tier-meta h3 {
-            font-size: 15px;
+            font-size: 14px;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
             font-weight: 600;
-            color: #000000; /* Solid Black Package Titles */
-            margin-bottom: 10px;
+            color: #000000;
+            margin-bottom: 15px;
         }
 
         .tier-details {
             list-style: none;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            font-size: 13.5px;
-            color: #000000;
+            font-size: 13px;
+            color: #333333;
+            line-height: 1.5;
         }
 
         .tier-details li {
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             position: relative;
             padding-left: 14px;
         }
@@ -142,12 +149,15 @@
             font-size: 8px;
             position: absolute;
             left: 0;
-            top: 1px;
+            top: 2px;
             color: #8a7355;
         }
 
         .tier-price-box {
-            text-align: right;
+            text-align: left;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e0da;
         }
 
         .tier-price {
@@ -157,11 +167,12 @@
             letter-spacing: 0.5px;
         }
 
-        /* Curated Logistics/Add-ons Box */
+        /* Curated Logistics/Add-ons Box (Kept Vertical for Readability) */
         .addons-container {
-            border: 1px solid #8a7355; /* Framed in brand color */
+            border: 1px solid #8a7355;
             padding: 30px;
             background-color: #ffffff;
+            border-radius: 4px;
         }
 
         .addon-row {
@@ -169,16 +180,16 @@
             justify-content: space-between;
             align-items: baseline;
             font-size: 13.5px;
-            padding: 10px 0;
-            border-bottom: 1px solid #e2e0da;
+            padding: 12px 0;
+            border-bottom: 1px dashed #e2e0da;
             color: #000000;
         }
 
         .addon-row:first-child { padding-top: 0; }
         .addon-row:last-child { padding-bottom: 0; border-bottom: none; }
 
-        .addon-name { font-weight: 500; }
-        .addon-price { font-weight: 600; color: #8a7355; /* Brand color pop for add-ons */ }
+        .addon-name { font-weight: 500; padding-right: 15px; }
+        .addon-price { font-weight: 600; color: #8a7355; white-space: nowrap; }
 
         /* Structural Guidelines Grid */
         .protocol-grid {
@@ -198,28 +209,24 @@
 
         .protocol-item p {
             font-size: 13px;
-            color: #000000;
+            color: #333333;
             text-align: justify;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.6;
         }
 
         .highlight-text {
-            color: #8a7355; /* Brand color pop for critical timeline and fee rules */
+            color: #8a7355; 
             font-weight: 600;
         }
 
-        /* 
-         * ==========================================
-         * FEMININE & ELEGANT CTA SECTION UPDATE
-         * ==========================================
-         */
+        /* CTA Section */
         .cta-section {
             margin: 70px 0 20px 0;
-            background-color: #f6f5f2; /* Soft warm alabaster background */
+            background-color: #f6f5f2; 
             padding: 55px 40px;
             text-align: center;
-            border-radius: 4px; /* Subtle softening of the overall box */
+            border-radius: 4px; 
         }
 
         .cta-heading {
@@ -248,7 +255,6 @@
             flex-wrap: wrap;
         }
 
-        /* Elegant rounded pill shapes for the buttons */
         .cta-btn-primary {
             display: inline-block;
             background-color: #8a7355;
@@ -260,7 +266,7 @@
             letter-spacing: 2px;
             text-decoration: none;
             border: 1px solid #8a7355;
-            border-radius: 40px; /* Pill Shape */
+            border-radius: 40px; 
             transition: all 0.3s ease;
             min-width: 170px;
         }
@@ -281,7 +287,7 @@
             letter-spacing: 2px;
             text-decoration: none;
             border: 1px solid #8a7355;
-            border-radius: 40px; /* Pill Shape */
+            border-radius: 40px; 
             transition: all 0.3s ease;
             min-width: 170px;
         }
@@ -308,21 +314,49 @@
             color: #000000;
         }
 
-        /* Mobile Optimization */
+        /* 
+         * ==========================================
+         * MOBILE OPTIMIZATION
+         * ==========================================
+         */
         @media (max-width: 768px) {
-            body { padding: 15px 10px; }
-            .container { padding: 45px 25px; }
-            .brand-name { font-size: 21px; letter-spacing: 8px; }
-            .tier-card {
-                grid-template-columns: 1fr;
-                gap: 15px;
+            body { 
+                padding: 0; 
+                background-color: #ffffff; /* Seamless full-bleed on mobile */
             }
-            .tier-number { display: none; }
-            .tier-price-box { text-align: left; margin-top: 5px; }
-            .protocol-grid { grid-template-columns: 1fr; gap: 25px; }
-            .cta-section { padding: 45px 20px; }
-            .cta-grid { flex-direction: column; gap: 12px; }
-            .cta-btn-primary, .cta-btn-secondary { width: 100%; border-radius: 40px; }
+            .container { 
+                padding: 40px 20px; 
+                border: none; 
+                box-shadow: none;
+            }
+            .brand-name { 
+                font-size: 24px; 
+                letter-spacing: 8px; 
+            }
+            .tier-grid { 
+                grid-template-columns: 1fr; /* Stacks cards vertically on phone */
+                gap: 20px;
+            }
+            .addon-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .protocol-grid { 
+                grid-template-columns: 1fr; 
+                gap: 30px; 
+            }
+            .cta-section { 
+                padding: 45px 20px; 
+            }
+            .cta-grid { 
+                flex-direction: column; 
+                gap: 12px; 
+            }
+            .cta-btn-primary, .cta-btn-secondary { 
+                width: 100%; 
+                text-align: center;
+            }
         }
     </style>
 </head>
@@ -348,7 +382,6 @@
                 
                 <!-- Package 1 -->
                 <div class="tier-card">
-                    <div class="tier-number">01 //</div>
                     <div class="tier-meta">
                         <h3>1 Concept Session</h3>
                         <ul class="tier-details">
@@ -363,7 +396,6 @@
 
                 <!-- Package 2 -->
                 <div class="tier-card">
-                    <div class="tier-number">02 //</div>
                     <div class="tier-meta">
                         <h3>2 Concepts Session</h3>
                         <ul class="tier-details">
@@ -378,7 +410,6 @@
 
                 <!-- Package 3 -->
                 <div class="tier-card">
-                    <div class="tier-number">03 //</div>
                     <div class="tier-meta">
                         <h3>3 Concepts Session</h3>
                         <ul class="tier-details">
@@ -404,10 +435,9 @@
                 
                 <!-- Duo Package -->
                 <div class="tier-card">
-                    <div class="tier-number">04 //</div>
                     <div class="tier-meta">
                         <h3>Duo Session</h3>
-                        <p class="section-meta" style="margin: 0 0 10px 0; padding: 0;">Tailored for Pre-weddings, Couple Portraits, Mommy & Me, Twin Portraits, and Wedding Anniversaries.</p>
+                        <p class="section-meta" style="margin: 0 0 15px 0; padding: 0;">Tailored for Pre-weddings, Couple Portraits, Mommy & Me, Twin Portraits, and Wedding Anniversaries.</p>
                         <ul class="tier-details">
                             <li>1 Distinct Look / Outfit per person</li>
                             <li>10 signature retouched photographs</li>
@@ -420,10 +450,9 @@
 
                 <!-- Family Package -->
                 <div class="tier-card">
-                    <div class="tier-number">05 //</div>
                     <div class="tier-meta">
                         <h3>Family Session</h3>
-                        <p class="section-meta" style="margin: 0 0 10px 0; padding: 0;">A comprehensive experience where every member of the family receives a custom mini portrait session.</p>
+                        <p class="section-meta" style="margin: 0 0 15px 0; padding: 0;">A comprehensive experience where every member of the family receives a custom mini portrait session.</p>
                         <ul class="tier-details">
                             <li>2 Distinct Looks / Outfits</li>
                             <li>18 signature retouched photographs in total (includes individual configurations)</li>
@@ -459,7 +488,7 @@
                     <span class="addon-name">Family Session (Off-site location without backdrop)</span>
                     <span class="addon-price">₦250,000</span>
                 </div>
-                <div class="addon-row" style="margin-top: 10px; border-top: 1px solid #8a7355; padding-top: 15px;">
+                <div class="addon-row" style="margin-top: 10px; border-top: 1px dashed #8a7355; padding-top: 15px;">
                     <span class="addon-name">Additional Retouched Image Portfolio File</span>
                     <span class="addon-price">₦10,000 / picture</span>
                 </div>
@@ -486,6 +515,11 @@
                 </div>
 
                 <div class="protocol-item">
+                    <h4>Cancellation & Rescheduling</h4>
+                    <p>Cancellations do not qualify for refunds. In the case of emergency cancellations or no-show retainer will be forfeited. This ensures fairness to other clients and respects our time and resources. One time rescheduling is allowed free of charge if requested at least <span class="highlight-text">24-48 hours</span> before session. Retainers are valid for 12 months under the right circumstances.</p>
+                </div>
+
+                <div class="protocol-item">
                     <h4>Selection & Turnaround</h4>
                     <p>Unedited proofs are uploaded directly to a private proofing portal or selected at the studio post-session. <span class="highlight-text">A full download of unwatermarked JPEG proofs is provided for client selection</span>. Final processed files are delivered within 2 to 4 working days, hosted via a secure online gallery <span class="highlight-text">valid for 1 month</span>. Unedited RAW files are withheld but can be purchased upon request.</p>
                 </div>
@@ -499,15 +533,14 @@
         </section>
 
         <!-- ========================================== -->
-        <!-- NEW CALENDAR BOOKING SECTION ADDED HERE    -->
+        <!-- CALENDAR BOOKING SECTION                   -->
         <!-- ========================================== -->
         <section class="section-block" style="margin-top: 70px;">
-            <h2 class="section-title" style="text-align: center; border-bottom: none; margin-bottom: 10px;">Schedule Your Session</h2>
-            <p class="section-meta" style="text-align: center; margin-bottom: 30px;">Select an available date and time below to secure your booking.</p>
+            <h2 class="section-title" style="text-align: center; border-bottom: none; margin-bottom: 20px;">Schedule Your Session</h2>
             
             <div style="border: 1px solid #e2e0da; background-color: #f6f5f2; border-radius: 4px; padding-top: 20px;">
                 <!-- Calendly inline widget begin -->
-                <div class="calendly-inline-widget" data-url="https://calendly.com/visualsliberty/30min?hide_event_type_details=1&hide_gdpr_banner=1&primary_color=8a7355" style="min-width:320px;height:700px;"></div>
+                <div class="calendly-inline-widget" data-url="https://calendly.com/visualsliberty/studio-portraits?hide_event_type_details=1&hide_gdpr_banner=1&primary_color=8a7355" style="min-width:320px;height:700px;"></div>
                 <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
                 <!-- Calendly inline widget end -->
             </div>
