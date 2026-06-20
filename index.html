@@ -22,12 +22,12 @@
         }
 
         .container {
-            max-width: 900px; /* Slightly wider to accommodate side-by-side cards */
+            max-width: 900px; 
             margin: 0 auto;
             background-color: #ffffff;
             padding: 80px 70px;
             border: 1px solid #e2e0da;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.02); /* Soft depth for modern feel */
+            box-shadow: 0 4px 20px rgba(0,0,0,0.02); 
         }
 
         /* Header Section Layout */
@@ -50,7 +50,7 @@
             font-size: 11px;
             letter-spacing: 6px;
             text-transform: uppercase;
-            color: #8a7355; /* Muted Bronze Brand Color */
+            color: #8a7355; 
             font-weight: 600;
             margin-bottom: 35px;
             display: block;
@@ -90,11 +90,7 @@
             line-height: 1.6;
         }
 
-        /* 
-         * ==========================================
-         * SIDE-BY-SIDE PRICING CARDS
-         * ==========================================
-         */
+        /* SIDE-BY-SIDE PRICING CARDS */
         .tier-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -118,7 +114,7 @@
         }
 
         .tier-meta {
-            flex-grow: 1; /* Pushes the price box to the bottom */
+            flex-grow: 1; 
         }
 
         .tier-meta h3 {
@@ -163,11 +159,11 @@
         .tier-price {
             font-size: 20px;
             font-weight: 600;
-            color: #8a7355; /* Muted Bronze Brand Prices */
+            color: #8a7355; 
             letter-spacing: 0.5px;
         }
 
-        /* Curated Logistics/Add-ons Box (Kept Vertical for Readability) */
+        /* Logistics/Add-ons Box */
         .addons-container {
             border: 1px solid #8a7355;
             padding: 30px;
@@ -220,32 +216,52 @@
             font-weight: 600;
         }
 
-        /* CTA Section */
-        .cta-section {
-            margin: 70px 0 20px 0;
+        /* Combined Unified Booking Section */
+        .booking-section {
+            margin-top: 70px;
             background-color: #f6f5f2; 
-            padding: 55px 40px;
-            text-align: center;
-            border-radius: 4px; 
+            padding: 60px 40px;
+            border-radius: 4px;
+            border: 1px solid #e2e0da;
         }
 
-        .cta-heading {
+        .booking-heading {
             color: #000000;
             font-size: 22px;
             letter-spacing: 1px;
             margin-bottom: 12px;
             font-weight: 400;
+            text-align: center;
         }
 
-        .cta-text {
-            font-size: 13.5px;
+        .booking-text {
+            font-size: 14px;
             color: #000000;
             margin-bottom: 35px;
             font-family: -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.6;
-            max-width: 450px;
+            max-width: 500px;
             margin-left: auto;
             margin-right: auto;
+            text-align: center;
+        }
+
+        .calendar-wrapper {
+            background-color: #ffffff;
+            border: 1px solid #e2e0da;
+            border-radius: 4px 4px 0 0; 
+            padding-top: 20px;
+            margin-bottom: 0; 
+            border-bottom: none; 
+        }
+
+        .payment-wrapper {
+            text-align: center;
+            padding: 45px 20px;
+            background-color: #ffffff;
+            border: 1px solid #e2e0da;
+            border-radius: 0 0 4px 4px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
         }
 
         .cta-grid {
@@ -253,32 +269,60 @@
             justify-content: center;
             gap: 15px;
             flex-wrap: wrap;
+            margin-top: 20px;
         }
 
+        /* ==========================================
+           GLOBAL LUXURY PAYMENT BUTTON
+           ========================================== */
         .cta-btn-primary {
             display: inline-block;
-            background-color: #8a7355;
+            background-color: #000000; /* Absolute contrast */
             color: #ffffff;
-            padding: 14px 38px;
-            font-size: 11.5px;
+            padding: 20px 50px;
+            font-size: 13.5px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 2px;
             text-decoration: none;
-            border: 1px solid #8a7355;
-            border-radius: 40px; 
-            transition: all 0.3s ease;
-            min-width: 170px;
+            border-radius: 3px; 
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); 
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); /* Premium smooth lift */
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #000000;
         }
 
         .cta-btn-primary:hover {
-            background-color: #756147;
-            border-color: #756147;
+            background-color: #8a7355; /* Transforms to brand color */
+            border-color: #8a7355;
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(138, 115, 85, 0.3); 
+        }
+
+        /* Subtle animated shine effect to indicate clickability */
+        .cta-btn-primary::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            animation: luxuryShine 6s infinite;
+        }
+
+        @keyframes luxuryShine {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
         }
 
         .cta-btn-secondary {
             display: inline-block;
-            background-color: transparent;
+            background-color: #ffffff;
             color: #8a7355;
             padding: 14px 38px;
             font-size: 11.5px;
@@ -290,10 +334,12 @@
             border-radius: 40px; 
             transition: all 0.3s ease;
             min-width: 170px;
+            text-align: center;
         }
 
         .cta-btn-secondary:hover {
-            background-color: #ffffff;
+            background-color: #8a7355;
+            color: #ffffff;
         }
 
         /* Minimal Footer Layout */
@@ -314,15 +360,11 @@
             color: #000000;
         }
 
-        /* 
-         * ==========================================
-         * MOBILE OPTIMIZATION
-         * ==========================================
-         */
+        /* MOBILE OPTIMIZATION */
         @media (max-width: 768px) {
             body { 
                 padding: 0; 
-                background-color: #ffffff; /* Seamless full-bleed on mobile */
+                background-color: #ffffff; 
             }
             .container { 
                 padding: 40px 20px; 
@@ -334,7 +376,7 @@
                 letter-spacing: 8px; 
             }
             .tier-grid { 
-                grid-template-columns: 1fr; /* Stacks cards vertically on phone */
+                grid-template-columns: 1fr; 
                 gap: 20px;
             }
             .addon-row {
@@ -346,7 +388,7 @@
                 grid-template-columns: 1fr; 
                 gap: 30px; 
             }
-            .cta-section { 
+            .booking-section { 
                 padding: 45px 20px; 
             }
             .cta-grid { 
@@ -355,7 +397,6 @@
             }
             .cta-btn-primary, .cta-btn-secondary { 
                 width: 100%; 
-                text-align: center;
             }
         }
     </style>
@@ -533,26 +574,36 @@
         </section>
 
         <!-- ========================================== -->
-        <!-- CALENDAR BOOKING SECTION                   -->
+        <!-- COMBINED UNIFIED BOOKING & PAYMENT SECTION -->
         <!-- ========================================== -->
-        <section class="section-block" style="margin-top: 70px;">
-            <h2 class="section-title" style="text-align: center; border-bottom: none; margin-bottom: 20px;">Schedule Your Session</h2>
+        <div class="booking-section">
+            <h3 class="booking-heading">Reserve Your Studio Time</h3>
             
-            <div style="border: 1px solid #e2e0da; background-color: #f6f5f2; border-radius: 4px; padding-top: 20px;">
+            <p class="booking-text">
+                Select your preferred date on the calendar, then pay your 50% retainer via the secure link below to officially lock in your session.
+            </p>
+            
+            <!-- Calendly Block -->
+            <div class="calendar-wrapper">
                 <!-- Calendly inline widget begin -->
                 <div class="calendly-inline-widget" data-url="https://calendly.com/visualsliberty/studio-portraits?hide_event_type_details=1&hide_gdpr_banner=1&primary_color=8a7355" style="min-width:320px;height:700px;"></div>
                 <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
                 <!-- Calendly inline widget end -->
             </div>
-        </section>
 
-        <!-- Modern & Elegant Contact/Booking Section -->
-        <div class="cta-section" style="margin-top: 30px;">
-            <h3 class="cta-heading">Let's create something beautiful.</h3>
-            <p class="cta-text">Have questions before booking? Reach out to discuss your vision.</p>
+            <!-- Payment Block -->
+            <div class="payment-wrapper">
+                <a href="https://paystack.shop/pay/libertypictures" class="cta-btn-primary">
+                    &rarr; Pay Retainer Securely &larr;
+                </a>
+            </div>
+
+            <hr style="border: 0; border-top: 1px dashed #d1cfc7; margin: 40px auto; max-width: 250px;">
+            
+            <!-- Contact Support Block -->
+            <p class="booking-text" style="margin-bottom: 20px;">Have questions before booking? Reach out to discuss your vision.</p>
             <div class="cta-grid">
-                <a href="https://wa.me/2349075170240" class="cta-btn-primary">Message via WhatsApp</a>
-                <a href="https://ig.me/m/libertypicture" class="cta-btn-secondary">Instagram DM</a>
+                <a href="https://wa.me/2349075170240" class="cta-btn-secondary">Message via WhatsApp</a>
                 <a href="mailto:visualsliberty@gmail.com" class="cta-btn-secondary">Email Studio</a>
             </div>
         </div>
