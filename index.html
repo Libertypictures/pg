@@ -40,18 +40,9 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.02); 
         }
 
-        /* Header Section Layout - Now Centralized */
-        .brand-header {
-            margin-bottom: 50px;
-            text-align: center; /* Centralized */
-        }
-
-        .brand-logo {
-            max-width: 90px; 
-            height: auto;
-            margin: 0 auto 15px auto; /* Centered */
-            display: block;
-        }
+        /* Header Layout - Centralized */
+        .brand-header { margin-bottom: 50px; text-align: center; }
+        .brand-logo { max-width: 90px; height: auto; margin: 0 auto 15px auto; display: block; }
 
         .brand-name {
             font-family: 'Poppins', sans-serif;
@@ -77,9 +68,9 @@
         .brand-intro {
             font-size: 14px;
             color: #000000;
-            max-width: 500px; /* Kept slightly narrow for readability */
+            max-width: 500px;
             line-height: 1.7;
-            margin: 0 auto; /* Centered */
+            margin: 0 auto;
         }
 
         .header-jump-btn {
@@ -95,16 +86,21 @@
             font-weight: 600;
             transition: all 0.3s ease;
         }
-
-        .header-jump-btn:hover {
-            color: #000000;
-            border-bottom-color: #000000;
-        }
+        .header-jump-btn:hover { color: #000000; border-bottom-color: #000000; }
 
         /* Section Architecture */
         .section-block { margin-bottom: 70px; }
-        .section-title { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: #000000; font-weight: 600; padding-bottom: 12px; border-bottom: 2px solid #000000; margin-bottom: 20px; text-align: center; } /* Section titles also centered */
-        .section-meta { font-size: 13px; color: #000000; font-style: italic; margin-top: -10px; margin-bottom: 30px; line-height: 1.6; text-align: center; }
+        .section-title { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: #000000; font-weight: 600; padding-bottom: 12px; border-bottom: 2px solid #000000; margin-bottom: 20px; text-align: center; }
+        
+        .section-meta { 
+            font-size: 13px; 
+            color: #000000; 
+            font-style: italic; 
+            margin-top: -10px; 
+            margin-bottom: 30px; 
+            line-height: 1.6; 
+            text-align: left; 
+        }
 
         /* Pricing Cards */
         .tier-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
@@ -140,7 +136,7 @@
         .payment-wrapper { text-align: center; padding: 45px 20px; background-color: #ffffff; border: 1px solid #e2e0da; border-radius: 0 0 4px 4px; box-shadow: 0 8px 20px rgba(0,0,0,0.02); }
         .cta-grid { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
 
-        /* Luxury Payment Button */
+        /* Payment Button */
         .cta-btn-primary {
             display: inline-block;
             background-color: #000000; 
@@ -159,15 +155,13 @@
             overflow: hidden;
             border: 1px solid #000000;
         }
-
         .cta-btn-primary:hover {
             background-color: #8a7355;
             border-color: #8a7355;
             transform: translateY(-2px);
             box-shadow: 0 12px 25px rgba(138, 115, 85, 0.3);
         }
-
-        /* Shimmer Animation */
+        /* Shimmer */
         .cta-btn-primary::after {
             content: "";
             position: absolute;
@@ -179,7 +173,6 @@
             transform: skewX(-25deg);
             animation: luxuryShine 3.5s infinite; 
         }
-
         @keyframes luxuryShine {
             0% { left: -100%; }
             40% { left: 200%; } 
@@ -202,7 +195,6 @@
             min-width: 170px;
             text-align: center;
         }
-
         .cta-btn-secondary:hover { background-color: #8a7355; color: #ffffff; }
 
         /* Footer */
@@ -213,6 +205,9 @@
         @media (max-width: 768px) {
             body { padding: 0; background-color: #ffffff; }
             .container { padding: 40px 20px; border: none; box-shadow: none; }
+            
+            .calendly-inline-widget { height: 450px !important; } 
+            
             .brand-logo { max-width: 80px; }
             .brand-name { font-size: 18px; letter-spacing: 2px; }
             .section-block { margin-bottom: 55px; }
@@ -241,31 +236,31 @@
             <div class="tier-grid">
                 <div class="tier-card">
                     <div class="tier-meta">
-                        <h3>1 Concept Session</h3>
+                        <h3>One Concept Session</h3>
                         <ul class="tier-details">
                             <li>1 Distinct Look / Outfit</li>
                             <li>7 signature retouched photographs</li>
                         </ul>
                     </div>
                     <div class="tier-price-box">
-                        <span class="tier-price">₦150,000</span>
+                        <span class="tier-price">₦130,000</span>
                     </div>
                 </div>
                 <div class="tier-card">
                     <div class="tier-meta">
-                        <h3>2 Concepts Session</h3>
+                        <h3>Two Concepts Session</h3>
                         <ul class="tier-details">
                             <li>2 Distinct Looks / Outfits</li>
                             <li>12 signature retouched photographs</li>
                         </ul>
                     </div>
                     <div class="tier-price-box">
-                        <span class="tier-price">₦200,000</span>
+                        <span class="tier-price">₦190,000</span>
                     </div>
                 </div>
                 <div class="tier-card">
                     <div class="tier-meta">
-                        <h3>3 Concepts Session</h3>
+                        <h3>Three Concepts Session</h3>
                         <ul class="tier-details">
                             <li>3 Distinct Looks / Outfits</li>
                             <li>15 signature retouched photographs</li>
@@ -293,7 +288,7 @@
                         </ul>
                     </div>
                     <div class="tier-price-box">
-                        <span class="tier-price">₦180,000</span>
+                        <span class="tier-price">₦170,000</span>
                     </div>
                 </div>
                 <div class="tier-card">
@@ -308,7 +303,7 @@
                         </ul>
                     </div>
                     <div class="tier-price-box">
-                        <span class="tier-price">₦250,000</span>
+                        <span class="tier-price">₦280,000</span>
                     </div>
                 </div>
             </div>
@@ -334,10 +329,6 @@
                     <span class="addon-price">₦250,000</span>
                 </div>
                 <div class="addon-row" style="margin-top: 10px; border-top: 1px dashed #8a7355; padding-top: 15px;">
-                    <span class="addon-name">Additional Retouched Image Portfolio File</span>
-                    <span class="addon-price">₦10,000 / picture</span>
-                </div>
-                <div class="addon-row">
                     <span class="addon-name">Express 24-Hour Digital Turnaround Delivery</span>
                     <span class="addon-price">+₦30,000</span>
                 </div>
@@ -345,11 +336,11 @@
         </section>
 
         <section class="section-block">
-            <h2 class="section-title">Studio Protocol</h2>
+            <h2 class="section-title">Investment and Guidelines</h2>
             <div class="protocol-grid">
                 <div class="protocol-item">
                     <h4>Retainer & Settlement</h4>
-                    <p>A <span class="highlight-text">non-refundable retainer fee of 50%</span> is strictly required to lock down your specific date and hour. The remaining <span class="highlight-text">50% balance</span> must be settled completely on the immediate day of your session.</p>
+                    <p>A <span class="highlight-text">non-refundable retainer fee of 70%</span> is strictly required to lock down your specific date and hour. The remaining <span class="highlight-text">30% balance</span> must be settled completely on the immediate day of your session.</p>
                 </div>
                 <div class="protocol-item">
                     <h4>Punctuality & Scheduling</h4>
@@ -361,7 +352,7 @@
                 </div>
                 <div class="protocol-item">
                     <h4>Selection & Turnaround</h4>
-                    <p>Unedited proofs are uploaded directly to a private proofing portal or selected at the studio post-session. <span class="highlight-text">A full download of unwatermarked JPEG proofs is provided for client selection</span>. Final processed files are delivered within 2 to 4 working days, hosted via a secure online gallery <span class="highlight-text">valid for 1 month</span>. Unedited RAW files are withheld but can be purchased upon request.</p>
+                    <p>Unedited JPEGs are uploaded directly to Pixieset for client selection. Final processed files are delivered within 2 to 4 working days, hosted via a secure online gallery <span class="highlight-text">valid for 1 month</span>. Unedited RAW files are withheld but can be purchased upon request.</p>
                 </div>
                 <div class="protocol-item">
                     <h4>Licensing & Ownership</h4>
@@ -373,7 +364,7 @@
         <div id="booking" class="booking-section">
             <h3 class="booking-heading">Reserve Your Studio Time</h3>
             <p class="booking-text">
-                Select your preferred date on the calendar, then pay your 50% retainer via the secure link below to officially lock in your session.
+                Select your preferred date on the calendar, then pay your 70% retainer via the secure link below to officially lock in your session.
             </p>
             <div class="calendar-wrapper">
                 <div class="calendly-inline-widget" data-url="https://calendly.com/visualsliberty/studio-portraits?hide_event_type_details=1&hide_gdpr_banner=1&primary_color=8a7355" style="min-width:320px;height:700px;"></div>
@@ -385,7 +376,7 @@
                 </a>
             </div>
             <hr style="border: 0; border-top: 1px dashed #d1cfc7; margin: 40px auto; max-width: 250px;">
-            <p class="booking-text" style="margin-bottom: 20px;">Have questions before booking? Reach out to discuss your vision.</p>
+            <p class="booking-text" style="margin-bottom: 20px;">Have questions before booking? Talk to Liberty.</p>
             <div class="cta-grid">
                 <a href="https://wa.me/2349075170240" class="cta-btn-secondary">Message via WhatsApp</a>
                 <a href="mailto:visualsliberty@gmail.com" class="cta-btn-secondary">Email Studio</a>
