@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio Price Guide | Libertypictures</title>
+    <title>Studio Booking Portal | Libertypictures</title>
+    
+    <!-- Modern Geometric Font Import (Poppins) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
+
     <style>
         /* Modern Editorial Reset */
         * {
@@ -12,11 +18,15 @@
             padding: 0;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
-            font-family: "Century Gothic", "Futura", -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #f6f5f2; /* Warm Alabaster */
-            color: #000000; /* Solid Black for Maximum Readability */
-            line-height: 1.5;
+            font-family: 'Poppins', sans-serif;
+            background-color: #f6f5f2; 
+            color: #000000; 
+            line-height: 1.6;
             -webkit-font-smoothing: antialiased;
             padding: 60px 20px;
         }
@@ -36,23 +46,31 @@
             text-align: left;
         }
 
+        .brand-logo {
+            max-width: 180px; 
+            height: auto;
+            margin-bottom: 20px;
+            display: block;
+        }
+
         .brand-name {
-            font-size: 28px;
-            letter-spacing: 12px;
-            text-transform: uppercase;
-            font-weight: 400;
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px; 
+            letter-spacing: 4px; 
+            font-weight: 500;
             color: #000000;
             line-height: 1.2;
             margin-bottom: 8px;
+            text-transform: uppercase;
         }
 
         .brand-subtitle {
-            font-size: 11px;
-            letter-spacing: 6px;
+            font-size: 10px;
+            letter-spacing: 5px;
             text-transform: uppercase;
             color: #8a7355; 
             font-weight: 600;
-            margin-bottom: 35px;
+            margin-bottom: 30px;
             display: block;
         }
 
@@ -61,233 +79,80 @@
             color: #000000;
             max-width: 580px;
             line-height: 1.7;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .header-jump-btn {
+            display: inline-block;
+            margin-top: 25px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: #8a7355;
+            text-decoration: none;
+            border-bottom: 1px solid #8a7355;
+            padding-bottom: 4px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .header-jump-btn:hover {
+            color: #000000;
+            border-bottom-color: #000000;
         }
 
         /* Section Architecture */
-        .section-block {
-            margin-bottom: 70px;
-        }
+        .section-block { margin-bottom: 70px; }
+        .section-title { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: #000000; font-weight: 600; padding-bottom: 12px; border-bottom: 2px solid #000000; margin-bottom: 20px; }
+        .section-meta { font-size: 13px; color: #000000; font-style: italic; margin-top: -10px; margin-bottom: 30px; line-height: 1.6; }
 
-        .section-title {
-            font-size: 14px;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            color: #000000;
-            font-weight: 600;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #000000;
-            margin-bottom: 20px;
-        }
+        /* Pricing Cards */
+        .tier-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
+        .tier-card { display: flex; flex-direction: column; justify-content: space-between; background-color: #fdfdfc; border: 1px solid #e2e0da; padding: 35px 25px; border-radius: 4px; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .tier-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.04); }
+        .tier-meta { flex-grow: 1; }
+        .tier-meta h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; color: #000000; margin-bottom: 15px; }
+        .tier-details { list-style: none; font-size: 13px; color: #333333; line-height: 1.5; }
+        .tier-details li { margin-bottom: 8px; position: relative; padding-left: 14px; }
+        .tier-details li::before { content: "▪"; font-size: 8px; position: absolute; left: 0; top: 2px; color: #8a7355; }
+        .tier-price-box { text-align: left; margin-top: 25px; padding-top: 20px; border-top: 1px solid #e2e0da; }
+        .tier-price { font-size: 20px; font-weight: 600; color: #8a7355; letter-spacing: 0.5px; }
 
-        .section-meta {
-            font-size: 13px;
-            color: #000000;
-            font-style: italic;
-            margin-top: -10px;
-            margin-bottom: 30px;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            line-height: 1.6;
-        }
-
-        /* SIDE-BY-SIDE PRICING CARDS */
-        .tier-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 25px;
-        }
-
-        .tier-card {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            background-color: #fdfdfc;
-            border: 1px solid #e2e0da;
-            padding: 35px 25px;
-            border-radius: 4px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .tier-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.04);
-        }
-
-        .tier-meta {
-            flex-grow: 1; 
-        }
-
-        .tier-meta h3 {
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            font-weight: 600;
-            color: #000000;
-            margin-bottom: 15px;
-        }
-
-        .tier-details {
-            list-style: none;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            font-size: 13px;
-            color: #333333;
-            line-height: 1.5;
-        }
-
-        .tier-details li {
-            margin-bottom: 8px;
-            position: relative;
-            padding-left: 14px;
-        }
-
-        .tier-details li::before {
-            content: "▪";
-            font-size: 8px;
-            position: absolute;
-            left: 0;
-            top: 2px;
-            color: #8a7355;
-        }
-
-        .tier-price-box {
-            text-align: left;
-            margin-top: 25px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e0da;
-        }
-
-        .tier-price {
-            font-size: 20px;
-            font-weight: 600;
-            color: #8a7355; 
-            letter-spacing: 0.5px;
-        }
-
-        /* Logistics/Add-ons Box */
-        .addons-container {
-            border: 1px solid #8a7355;
-            padding: 30px;
-            background-color: #ffffff;
-            border-radius: 4px;
-        }
-
-        .addon-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            font-size: 13.5px;
-            padding: 12px 0;
-            border-bottom: 1px dashed #e2e0da;
-            color: #000000;
-        }
-
+        /* Add-ons Box */
+        .addons-container { border: 1px solid #8a7355; padding: 30px; background-color: #ffffff; border-radius: 4px; }
+        .addon-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13.5px; padding: 12px 0; border-bottom: 1px dashed #e2e0da; color: #000000; }
         .addon-row:first-child { padding-top: 0; }
         .addon-row:last-child { padding-bottom: 0; border-bottom: none; }
-
         .addon-name { font-weight: 500; padding-right: 15px; }
         .addon-price { font-weight: 600; color: #8a7355; white-space: nowrap; }
 
-        /* Structural Guidelines Grid */
-        .protocol-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px 30px;
-        }
+        /* Protocol Grid */
+        .protocol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 30px; }
+        .protocol-item h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color: #000000; margin-bottom: 10px; font-weight: 600; }
+        .protocol-item p { font-size: 13px; color: #333333; text-align: justify; line-height: 1.6; }
+        .highlight-text { color: #8a7355; font-weight: 600; }
 
-        .protocol-item h4 {
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: #000000;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
+        /* Booking Section */
+        .booking-section { margin-top: 70px; background-color: #f6f5f2; padding: 60px 40px; border-radius: 4px; border: 1px solid #e2e0da; }
+        .booking-heading { color: #000000; font-size: 22px; letter-spacing: 1px; margin-bottom: 12px; font-weight: 400; text-align: center; }
+        .booking-text { font-size: 14px; color: #000000; margin-bottom: 35px; line-height: 1.6; max-width: 500px; margin-left: auto; margin-right: auto; text-align: center; }
+        .calendar-wrapper { background-color: #ffffff; border: 1px solid #e2e0da; border-radius: 4px 4px 0 0; padding-top: 20px; margin-bottom: 0; border-bottom: none; }
+        .payment-wrapper { text-align: center; padding: 45px 20px; background-color: #ffffff; border: 1px solid #e2e0da; border-radius: 0 0 4px 4px; box-shadow: 0 8px 20px rgba(0,0,0,0.02); }
+        .cta-grid { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
 
-        .protocol-item p {
-            font-size: 13px;
-            color: #333333;
-            text-align: justify;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            line-height: 1.6;
-        }
-
-        .highlight-text {
-            color: #8a7355; 
-            font-weight: 600;
-        }
-
-        /* Combined Unified Booking Section */
-        .booking-section {
-            margin-top: 70px;
-            background-color: #f6f5f2; 
-            padding: 60px 40px;
-            border-radius: 4px;
-            border: 1px solid #e2e0da;
-        }
-
-        .booking-heading {
-            color: #000000;
-            font-size: 22px;
-            letter-spacing: 1px;
-            margin-bottom: 12px;
-            font-weight: 400;
-            text-align: center;
-        }
-
-        .booking-text {
-            font-size: 14px;
-            color: #000000;
-            margin-bottom: 35px;
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-            line-height: 1.6;
-            max-width: 500px;
-            margin-left: auto;
-            margin-right: auto;
-            text-align: center;
-        }
-
-        .calendar-wrapper {
-            background-color: #ffffff;
-            border: 1px solid #e2e0da;
-            border-radius: 4px 4px 0 0; 
-            padding-top: 20px;
-            margin-bottom: 0; 
-            border-bottom: none; 
-        }
-
-        .payment-wrapper {
-            text-align: center;
-            padding: 45px 20px;
-            background-color: #ffffff;
-            border: 1px solid #e2e0da;
-            border-radius: 0 0 4px 4px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.02);
-        }
-
-        .cta-grid {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        /* ==========================================
-           GLOBAL LUXURY PAYMENT BUTTON
-           ========================================== */
+        /* Luxury Payment Button */
         .cta-btn-primary {
             display: inline-block;
-            background-color: #000000; /* Absolute contrast */
+            background-color: #000000; 
             color: #ffffff;
-            padding: 20px 50px;
-            font-size: 13.5px;
+            padding: 18px 45px;
+            font-size: 13px;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 2px;
             text-decoration: none;
             border-radius: 3px; 
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15); 
-            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); /* Premium smooth lift */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); 
+            transition: all 0.4s ease;
             cursor: pointer;
             position: relative;
             overflow: hidden;
@@ -295,13 +160,12 @@
         }
 
         .cta-btn-primary:hover {
-            background-color: #8a7355; /* Transforms to brand color */
+            background-color: #8a7355;
             border-color: #8a7355;
-            transform: translateY(-4px);
-            box-shadow: 0 15px 35px rgba(138, 115, 85, 0.3); 
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(138, 115, 85, 0.3);
         }
 
-        /* Subtle animated shine effect to indicate clickability */
         .cta-btn-primary::after {
             content: "";
             position: absolute;
@@ -309,15 +173,15 @@
             left: -100%;
             width: 50%;
             height: 100%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0) 100%);
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
             transform: skewX(-25deg);
-            animation: luxuryShine 6s infinite;
+            animation: luxuryShine 3.5s infinite; 
         }
 
         @keyframes luxuryShine {
             0% { left: -100%; }
-            20% { left: 200%; }
-            100% { left: 200%; }
+            40% { left: 200%; } 
+            100% { left: 200%; } 
         }
 
         .cta-btn-secondary {
@@ -337,91 +201,47 @@
             text-align: center;
         }
 
-        .cta-btn-secondary:hover {
-            background-color: #8a7355;
-            color: #ffffff;
-        }
+        .cta-btn-secondary:hover { background-color: #8a7355; color: #ffffff; }
 
-        /* Minimal Footer Layout */
-        .brand-footer {
-            margin-top: 40px;
-            padding-top: 40px;
-            border-top: 1px solid #000000;
-            display: flex;
-            justify-content: center;
-            font-size: 12px;
-            color: #000000;
-        }
+        .brand-footer { margin-top: 40px; padding-top: 40px; border-top: 1px solid #000000; display: flex; justify-content: center; font-size: 12px; color: #000000; }
+        .footer-note { text-transform: uppercase; letter-spacing: 1px; font-weight: 600; color: #000000; }
 
-        .footer-note {
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-            color: #000000;
-        }
-
-        /* MOBILE OPTIMIZATION */
+        /* Mobile Optimization */
         @media (max-width: 768px) {
-            body { 
-                padding: 0; 
-                background-color: #ffffff; 
-            }
-            .container { 
-                padding: 40px 20px; 
-                border: none; 
-                box-shadow: none;
-            }
-            .brand-name { 
-                font-size: 24px; 
-                letter-spacing: 8px; 
-            }
-            .tier-grid { 
-                grid-template-columns: 1fr; 
-                gap: 20px;
-            }
-            .addon-row {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 5px;
-            }
-            .protocol-grid { 
-                grid-template-columns: 1fr; 
-                gap: 30px; 
-            }
-            .booking-section { 
-                padding: 45px 20px; 
-            }
-            .cta-grid { 
-                flex-direction: column; 
-                gap: 12px; 
-            }
-            .cta-btn-primary, .cta-btn-secondary { 
-                width: 100%; 
-            }
+            body { padding: 0; background-color: #ffffff; }
+            .container { padding: 40px 20px; border: none; box-shadow: none; }
+            .brand-logo { max-width: 140px; }
+            .brand-name { font-size: 20px; letter-spacing: 2px; }
+            .brand-intro { font-size: 15px; }
+            .tier-details { font-size: 14px; }
+            .protocol-item p { font-size: 14px; }
+            .section-block { margin-bottom: 55px; }
+            .tier-grid { grid-template-columns: 1fr; gap: 20px; }
+            .addon-row { flex-direction: column; align-items: flex-start; gap: 5px; }
+            .protocol-grid { grid-template-columns: 1fr; gap: 30px; }
+            .booking-section { padding: 45px 20px; margin-top: 40px; }
+            .cta-grid { flex-direction: column; gap: 12px; }
+            .cta-btn-primary, .cta-btn-secondary { width: 100%; }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        
-        <!-- Header Architecture -->
         <header class="brand-header">
+            <img src="logo.png" alt="Libertypictures" class="brand-logo">
             <h1 class="brand-name">Libertypictures</h1>
-            <span class="brand-subtitle">Studio Price Guide</span>
+            <span class="brand-subtitle">Studio Booking Portal</span>
             <p class="brand-intro">
-                Thanks for your interest in our work. Take a moment to review our session details and terms, then use the calendar below to secure your date
+                Thanks for your interest in our work. Take a moment to review our session details below, or jump straight to the calendar to secure your date.
             </p>
+            <a href="#booking" class="header-jump-btn">Jump to Booking &darr;</a>
         </header>
 
-        <!-- Individual Sessions Segment -->
         <section class="section-block">
             <h2 class="section-title">Individual Portfolios</h2>
             <p class="section-meta">Perfect for Portraits, Pre-birthdays, Maternity, and Corporate Headshots.</p>
-            
             <div class="tier-grid">
-                
-                <!-- Package 1 -->
                 <div class="tier-card">
                     <div class="tier-meta">
                         <h3>1 Concept Session</h3>
@@ -434,8 +254,6 @@
                         <span class="tier-price">₦150,000</span>
                     </div>
                 </div>
-
-                <!-- Package 2 -->
                 <div class="tier-card">
                     <div class="tier-meta">
                         <h3>2 Concepts Session</h3>
@@ -448,8 +266,6 @@
                         <span class="tier-price">₦200,000</span>
                     </div>
                 </div>
-
-                <!-- Package 3 -->
                 <div class="tier-card">
                     <div class="tier-meta">
                         <h3>3 Concepts Session</h3>
@@ -463,18 +279,13 @@
                         <span class="tier-price">₦250,000</span>
                     </div>
                 </div>
-
             </div>
         </section>
 
-        <!-- Family Session Segment -->
         <section class="section-block">
             <h2 class="section-title">Duo & Family Sessions</h2>
             <p class="section-meta">Documenting your milestones alongside your loved ones.</p>
-            
             <div class="tier-grid">
-                
-                <!-- Duo Package -->
                 <div class="tier-card">
                     <div class="tier-meta">
                         <h3>Duo Session</h3>
@@ -488,8 +299,6 @@
                         <span class="tier-price">₦180,000</span>
                     </div>
                 </div>
-
-                <!-- Family Package -->
                 <div class="tier-card">
                     <div class="tier-meta">
                         <h3>Family Session</h3>
@@ -505,11 +314,9 @@
                         <span class="tier-price">₦250,000</span>
                     </div>
                 </div>
-
             </div>
         </section>
 
-        <!-- Logistics & Customizations -->
         <section class="section-block">
             <h2 class="section-title">Logistics & Custom Additions</h2>
             <div class="addons-container">
@@ -540,67 +347,47 @@
             </div>
         </section>
 
-        <!-- Structural Protocol / Guidelines -->
         <section class="section-block">
             <h2 class="section-title">Studio Protocol</h2>
             <div class="protocol-grid">
-                
                 <div class="protocol-item">
                     <h4>Retainer & Settlement</h4>
                     <p>A <span class="highlight-text">non-refundable retainer fee of 50%</span> is strictly required to lock down your specific date and hour. The remaining <span class="highlight-text">50% balance</span> must be settled completely on the immediate day of your session.</p>
                 </div>
-
                 <div class="protocol-item">
                     <h4>Punctuality & Scheduling</h4>
                     <p>To preserve our seamless studio calendar, sessions are strictly bound to their time frames: <span class="highlight-text">60 minutes</span> for 1-concept and duo setups, <span class="highlight-text">75 minutes</span> for 2-concept portfolios, and <span class="highlight-text">90 minutes</span> for 3-concept and family configurations. Arrivals extending <span class="highlight-text">beyond 20 minutes late</span> automatically attract a fee of <span class="highlight-text">₦15,000</span>.</p>
                 </div>
-
                 <div class="protocol-item">
                     <h4>Cancellation & Rescheduling</h4>
                     <p>Cancellations do not qualify for refunds. In the case of emergency cancellations or no-show retainer will be forfeited. This ensures fairness to other clients and respects our time and resources. One time rescheduling is allowed free of charge if requested at least <span class="highlight-text">24-48 hours</span> before session. Retainers are valid for 12 months under the right circumstances.</p>
                 </div>
-
                 <div class="protocol-item">
                     <h4>Selection & Turnaround</h4>
                     <p>Unedited proofs are uploaded directly to a private proofing portal or selected at the studio post-session. <span class="highlight-text">A full download of unwatermarked JPEG proofs is provided for client selection</span>. Final processed files are delivered within 2 to 4 working days, hosted via a secure online gallery <span class="highlight-text">valid for 1 month</span>. Unedited RAW files are withheld but can be purchased upon request.</p>
                 </div>
-
                 <div class="protocol-item">
                     <h4>Licensing & Ownership</h4>
                     <p>Clients receive a personal-use license for self-printing and digital publication. <span class="highlight-text">Libertypictures</span> retains legal copyright ownership for archive display. Exclusive usage waivers are subject to contract negotiations.</p>
                 </div>
-
             </div>
         </section>
 
-        <!-- ========================================== -->
-        <!-- COMBINED UNIFIED BOOKING & PAYMENT SECTION -->
-        <!-- ========================================== -->
-        <div class="booking-section">
+        <div id="booking" class="booking-section">
             <h3 class="booking-heading">Reserve Your Studio Time</h3>
-            
             <p class="booking-text">
                 Select your preferred date on the calendar, then pay your 50% retainer via the secure link below to officially lock in your session.
             </p>
-            
-            <!-- Calendly Block -->
             <div class="calendar-wrapper">
-                <!-- Calendly inline widget begin -->
                 <div class="calendly-inline-widget" data-url="https://calendly.com/visualsliberty/studio-portraits?hide_event_type_details=1&hide_gdpr_banner=1&primary_color=8a7355" style="min-width:320px;height:700px;"></div>
                 <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
-                <!-- Calendly inline widget end -->
             </div>
-
-            <!-- Payment Block -->
             <div class="payment-wrapper">
                 <a href="https://paystack.shop/pay/libertypictures" class="cta-btn-primary">
                     &rarr; Pay Retainer Securely &larr;
                 </a>
             </div>
-
             <hr style="border: 0; border-top: 1px dashed #d1cfc7; margin: 40px auto; max-width: 250px;">
-            
-            <!-- Contact Support Block -->
             <p class="booking-text" style="margin-bottom: 20px;">Have questions before booking? Reach out to discuss your vision.</p>
             <div class="cta-grid">
                 <a href="https://wa.me/2349075170240" class="cta-btn-secondary">Message via WhatsApp</a>
@@ -608,12 +395,9 @@
             </div>
         </div>
 
-        <!-- Clean Centered Footer -->
         <footer class="brand-footer">
             <span class="footer-note">Libertypictures © 2026</span>
         </footer>
-
     </div>
-
 </body>
 </html>
