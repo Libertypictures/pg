@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studio Booking Portal | Libertypictures</title>
     
+    <!-- Modern Geometric Font Import (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
@@ -39,17 +40,16 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.02); 
         }
 
-        /* Header Section Layout */
+        /* Header Section Layout - Now Centralized */
         .brand-header {
             margin-bottom: 50px;
-            text-align: left;
+            text-align: center; /* Centralized */
         }
 
-        /* UPDATED: Smaller logo and tighter placement */
         .brand-logo {
             max-width: 90px; 
             height: auto;
-            margin-bottom: 10px;
+            margin: 0 auto 15px auto; /* Centered */
             display: block;
         }
 
@@ -77,8 +77,9 @@
         .brand-intro {
             font-size: 14px;
             color: #000000;
-            max-width: 580px;
+            max-width: 500px; /* Kept slightly narrow for readability */
             line-height: 1.7;
+            margin: 0 auto; /* Centered */
         }
 
         .header-jump-btn {
@@ -102,8 +103,8 @@
 
         /* Section Architecture */
         .section-block { margin-bottom: 70px; }
-        .section-title { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: #000000; font-weight: 600; padding-bottom: 12px; border-bottom: 2px solid #000000; margin-bottom: 20px; }
-        .section-meta { font-size: 13px; color: #000000; font-style: italic; margin-top: -10px; margin-bottom: 30px; line-height: 1.6; }
+        .section-title { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: #000000; font-weight: 600; padding-bottom: 12px; border-bottom: 2px solid #000000; margin-bottom: 20px; text-align: center; } /* Section titles also centered */
+        .section-meta { font-size: 13px; color: #000000; font-style: italic; margin-top: -10px; margin-bottom: 30px; line-height: 1.6; text-align: center; }
 
         /* Pricing Cards */
         .tier-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
@@ -212,7 +213,7 @@
         @media (max-width: 768px) {
             body { padding: 0; background-color: #ffffff; }
             .container { padding: 40px 20px; border: none; box-shadow: none; }
-            .brand-logo { max-width: 100px; }
+            .brand-logo { max-width: 80px; }
             .brand-name { font-size: 18px; letter-spacing: 2px; }
             .section-block { margin-bottom: 55px; }
             .tier-grid { grid-template-columns: 1fr; gap: 20px; }
