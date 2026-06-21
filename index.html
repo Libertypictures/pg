@@ -132,7 +132,18 @@
         .booking-section { margin-top: 70px; background-color: #f6f5f2; padding: 60px 40px; border-radius: 4px; border: 1px solid #e2e0da; }
         .booking-heading { color: #000000; font-size: 22px; letter-spacing: 1px; margin-bottom: 12px; font-weight: 400; text-align: center; }
         .booking-text { font-size: 14px; color: #000000; margin-bottom: 35px; line-height: 1.6; max-width: 500px; margin-left: auto; margin-right: auto; text-align: center; }
-        .calendar-wrapper { background-color: #ffffff; border: 1px solid #e2e0da; border-radius: 4px 4px 0 0; padding-top: 20px; margin-bottom: 0; border-bottom: none; }
+        
+        /* SCROLL FIX ADDED HERE */
+        .calendar-wrapper { 
+            background-color: #ffffff; 
+            border: 1px solid #e2e0da; 
+            border-radius: 4px 4px 0 0; 
+            padding-top: 20px; 
+            margin-bottom: 0; 
+            border-bottom: none; 
+            touch-action: pan-y; 
+        }
+        
         .payment-wrapper { text-align: center; padding: 45px 20px; background-color: #ffffff; border: 1px solid #e2e0da; border-radius: 0 0 4px 4px; box-shadow: 0 8px 20px rgba(0,0,0,0.02); }
         .cta-grid { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
 
@@ -206,7 +217,8 @@
             body { padding: 0; background-color: #ffffff; }
             .container { padding: 40px 20px; border: none; box-shadow: none; }
             
-            .calendly-inline-widget { height: 450px !important; } 
+            /* HEIGHT FIX APPLIED HERE */
+            .calendly-inline-widget { height: 400px !important; } 
             
             .brand-logo { max-width: 80px; }
             .brand-name { font-size: 18px; letter-spacing: 2px; }
