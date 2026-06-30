@@ -9,6 +9,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Paystack Inline API -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
 
     <style>
         /* Color Variables for Light & Dark Mode */
@@ -30,6 +33,7 @@
             --shadow-btn: rgba(0,0,0,0.2);
             --shimmer: rgba(255,255,255,0.2);
             --logo-filter: invert(0);
+            --highlight-bg: #fbf9f6;
         }
 
         /* Dark Mode Override */
@@ -41,7 +45,7 @@
                 --bg-booking: #1a1a1a;
                 --text-primary: #ffffff;
                 --text-secondary: #cccccc;
-                --accent: #c4a67e; /* Slightly lighter accent for better readability on dark */
+                --accent: #c4a67e;
                 --border-color: #3a3a3a;
                 --border-dashed: #4a4a4a;
                 --btn-primary-bg: #c4a67e;
@@ -52,6 +56,7 @@
                 --shadow-btn: rgba(0,0,0,0.4);
                 --shimmer: rgba(255,255,255,0.1);
                 --logo-filter: invert(1);
+                --highlight-bg: #2a251e;
             }
         }
 
@@ -79,219 +84,92 @@
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
-        /* Header Layout - Centralized */
+        /* Header Layout */
         .brand-header { margin-bottom: 50px; text-align: center; }
-        .brand-logo { 
-            max-width: 90px; 
-            height: auto; 
-            margin: 0 auto 15px auto; 
-            display: block; 
-            filter: var(--logo-filter);
-        }
-
-        .brand-name {
-            font-family: 'Poppins', sans-serif;
-            font-size: 24px; 
-            letter-spacing: 4px; 
-            font-weight: 500;
-            color: var(--text-primary);
-            line-height: 1.2;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-        }
-
-        .brand-subtitle {
-            font-size: 10px;
-            letter-spacing: 5px;
-            text-transform: uppercase;
-            color: var(--accent); 
-            font-weight: 600;
-            margin-bottom: 30px;
-            display: block;
-        }
-
-        .brand-intro {
-            font-size: 14px;
-            color: var(--text-primary);
-            max-width: 500px;
-            line-height: 1.7;
-            margin: 0 auto;
-        }
-
-        .header-jump-btn {
-            display: inline-block;
-            margin-top: 20px;
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            color: var(--accent);
-            text-decoration: none;
-            border-bottom: 1px solid var(--accent);
-            padding-bottom: 4px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-        .header-jump-btn:hover { color: var(--text-primary); border-bottom-color: var(--text-primary); }
-
+        .brand-logo { max-width: 90px; height: auto; margin: 0 auto 15px auto; display: block; filter: var(--logo-filter); }
+        .brand-name { font-size: 24px; letter-spacing: 4px; font-weight: 500; color: var(--text-primary); line-height: 1.2; margin-bottom: 8px; text-transform: uppercase; }
+        .brand-subtitle { font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 30px; display: block; }
+        .brand-intro { font-size: 14px; max-width: 500px; line-height: 1.7; margin: 0 auto; }
+        
         /* Section Architecture */
         .section-block { margin-bottom: 70px; }
-        .section-title { 
-            font-size: 14px; 
-            letter-spacing: 5px; 
-            text-transform: uppercase; 
-            color: var(--text-primary); 
-            font-weight: 600; 
-            padding-bottom: 12px; 
-            border-bottom: 2px solid var(--text-primary); 
-            margin-bottom: 20px; 
-            text-align: center; 
-        }
-        
-        .section-meta { 
-            font-size: 13px; 
-            color: var(--text-primary); 
-            font-style: italic; 
-            margin-top: -10px; 
-            margin-bottom: 30px; 
-            line-height: 1.6; 
-            text-align: left; 
-        }
+        .section-title { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: var(--text-primary); font-weight: 600; padding-bottom: 12px; border-bottom: 2px solid var(--text-primary); margin-bottom: 20px; text-align: center; }
+        .section-meta { font-size: 13px; color: var(--text-primary); font-style: italic; margin-top: -10px; margin-bottom: 30px; text-align: left; }
 
-        /* Pricing Cards */
+        /* Pricing Cards (Interactive) */
         .tier-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
-        .tier-card { 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
-            background-color: var(--bg-card); 
-            border: 1px solid var(--border-color); 
-            padding: 35px 25px; 
-            border-radius: 4px; 
-            transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease; 
-        }
-        .tier-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px var(--shadow-hover); }
-        .tier-meta { flex-grow: 1; }
-        .tier-meta h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; color: var(--text-primary); margin-bottom: 15px; }
-        .tier-details { list-style: none; font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+        .tier-card { display: flex; flex-direction: column; justify-content: space-between; background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 35px 25px; border-radius: 4px; transition: all 0.3s ease; position: relative; }
+        .tier-card.selected { border: 2px solid var(--accent); background-color: var(--highlight-bg); transform: translateY(-3px); box-shadow: 0 8px 20px var(--shadow-hover); }
+        
+        .tier-meta h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 15px; }
+        
+        .details-toggle { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); cursor: pointer; display: inline-block; margin-bottom: 15px; border-bottom: 1px dashed var(--accent); }
+        .tier-details-wrapper { display: none; }
+        .tier-details-wrapper.active { display: block; }
+        
+        .tier-details { list-style: none; font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
         .tier-details li { margin-bottom: 8px; position: relative; padding-left: 14px; }
         .tier-details li::before { content: "▪"; font-size: 8px; position: absolute; left: 0; top: 2px; color: var(--accent); }
-        .tier-price-box { text-align: left; margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border-color); }
-        .tier-price { font-size: 20px; font-weight: 600; color: var(--accent); letter-spacing: 0.5px; }
+        
+        .tier-price-box { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color); }
+        .tier-price { font-size: 18px; font-weight: 600; color: var(--accent); letter-spacing: 0.5px; }
+        .select-btn { background: none; border: 1px solid var(--accent); color: var(--accent); padding: 8px 15px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; }
+        .select-btn:hover, .tier-card.selected .select-btn { background-color: var(--accent); color: var(--bg-container); }
 
-        /* Add-ons Box */
-        .addons-container { border: 1px solid var(--accent); padding: 30px; background-color: var(--bg-container); border-radius: 4px; }
-        .addon-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13.5px; padding: 12px 0; border-bottom: 1px dashed var(--border-color); color: var(--text-primary); }
+        /* Add-ons Box (Interactive) */
+        .addons-container { border: 1px solid var(--accent); padding: 30px; background-color: var(--bg-container); border-radius: 4px; opacity: 0.5; pointer-events: none; transition: 0.3s; }
+        .addons-container.active { opacity: 1; pointer-events: auto; }
+        .addon-row { display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; padding: 12px 0; border-bottom: 1px dashed var(--border-color); cursor: pointer; }
         .addon-row:first-child { padding-top: 0; }
         .addon-row:last-child { padding-bottom: 0; border-bottom: none; }
-        .addon-name { font-weight: 500; padding-right: 15px; }
+        
+        /* Custom Checkbox */
+        .addon-label { display: flex; align-items: center; gap: 12px; cursor: pointer; width: 100%; font-weight: 500; }
+        .addon-label input { accent-color: var(--accent); width: 16px; height: 16px; cursor: pointer; }
         .addon-price { font-weight: 600; color: var(--accent); white-space: nowrap; }
 
-        /* Protocol Grid */
-        .protocol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 30px; }
-        .protocol-item h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-primary); margin-bottom: 10px; font-weight: 600; }
-        .protocol-item p { font-size: 13px; color: var(--text-secondary); text-align: justify; line-height: 1.6; }
-        .highlight-text { color: var(--accent); font-weight: 600; }
+        /* Invoice Summary Box */
+        .invoice-box { background-color: var(--highlight-bg); border: 1px solid var(--accent); padding: 30px; border-radius: 4px; margin-top: 40px; display: none; }
+        .invoice-box.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Brand color Instruction Highlight - No Bold */
-        .instruction-highlight { color: var(--accent); font-weight: 400; }
+        .invoice-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px; color: var(--text-secondary); }
+        .invoice-total { border-top: 1px solid var(--border-color); margin-top: 15px; padding-top: 15px; font-weight: 600; color: var(--text-primary); font-size: 16px; display: flex; justify-content: space-between; }
+        .invoice-retainer { background-color: var(--accent); color: var(--bg-container); padding: 15px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 16px; border-radius: 3px; }
 
-        /* Booking Section */
+        /* Multi-step Booking */
+        .step-heading { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;}
+        
+        /* Form Inputs */
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; color: var(--text-secondary); }
+        .email-input { width: 100%; padding: 14px; background: var(--bg-body); border: 1px solid var(--border-color); color: var(--text-primary); font-family: 'Poppins'; border-radius: 3px; font-size: 14px; outline: none; }
+        .email-input:focus { border-color: var(--accent); }
+
         .booking-section { margin-top: 70px; background-color: var(--bg-booking); padding: 60px 40px; border-radius: 4px; border: 1px solid var(--border-color); }
-        .booking-heading { color: var(--text-primary); font-size: 22px; letter-spacing: 1px; margin-bottom: 12px; font-weight: 400; text-align: center; }
-        .booking-text { font-size: 14px; color: var(--text-primary); margin-bottom: 35px; line-height: 1.6; max-width: 500px; margin-left: auto; margin-right: auto; text-align: center; }
+        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding-top: 20px; margin-bottom: 40px; touch-action: pan-y; }
+        .payment-wrapper { text-align: center; padding: 45px 30px; background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 8px 20px var(--shadow-subtle); }
         
-        .calendar-wrapper { 
-            background-color: var(--bg-container); 
-            border: 1px solid var(--border-color); 
-            border-radius: 4px 4px 0 0; 
-            padding-top: 20px; 
-            margin-bottom: 0; 
-            border-bottom: none; 
-            touch-action: pan-y; 
-        }
-        
-        .payment-wrapper { text-align: center; padding: 45px 20px; background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 0 0 4px 4px; box-shadow: 0 8px 20px var(--shadow-subtle); }
-        .cta-grid { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
-
-        /* Payment Button */
         .cta-btn-primary {
-            display: inline-block;
-            background-color: var(--btn-primary-bg); 
-            color: var(--btn-primary-text);
-            padding: 18px 45px;
-            font-size: 13px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-decoration: none;
-            border-radius: 3px; 
-            box-shadow: 0 8px 20px var(--shadow-btn); 
-            transition: all 0.4s ease;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid var(--btn-primary-bg);
+            display: block; width: 100%;
+            background-color: var(--btn-primary-bg); color: var(--btn-primary-text);
+            padding: 18px 45px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
+            border: none; border-radius: 3px; cursor: pointer; transition: all 0.4s ease; position: relative; overflow: hidden;
         }
-        .cta-btn-primary:hover {
-            background-color: var(--accent);
-            border-color: var(--accent);
-            color: var(--bg-container);
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px rgba(138, 115, 85, 0.3);
-        }
-        /* Shimmer */
-        .cta-btn-primary::after {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(to right, rgba(255,255,255,0) 0%, var(--shimmer) 50%, rgba(255,255,255,0) 100%);
-            transform: skewX(-25deg);
-            animation: luxuryShine 3.5s infinite; 
-        }
-        @keyframes luxuryShine {
-            0% { left: -100%; }
-            40% { left: 200%; } 
-            100% { left: 200%; } 
-        }
+        .cta-btn-primary:hover { background-color: var(--accent); color: var(--bg-container); transform: translateY(-2px); box-shadow: 0 12px 25px rgba(138, 115, 85, 0.3); }
+        .cta-btn-primary:disabled { background-color: #cccccc; cursor: not-allowed; transform: none; box-shadow: none; color: #666; }
+        
+        .protocol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 30px; }
+        .protocol-item h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; font-weight: 600; }
+        .protocol-item p { font-size: 13px; color: var(--text-secondary); text-align: justify; }
+        .highlight-text { color: var(--accent); font-weight: 600; }
 
-        .cta-btn-secondary {
-            display: inline-block;
-            background-color: var(--btn-secondary-bg);
-            color: var(--accent);
-            padding: 14px 38px;
-            font-size: 11.5px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            text-decoration: none;
-            border: 1px solid var(--accent);
-            border-radius: 40px; 
-            transition: all 0.3s ease;
-            min-width: 170px;
-            text-align: center;
-        }
-        .cta-btn-secondary:hover { background-color: var(--accent); color: var(--btn-secondary-bg); }
-
-        /* Footer */
-        .brand-footer { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--text-primary); display: flex; justify-content: center; font-size: 12px; color: var(--text-primary); }
-        .footer-note { text-transform: uppercase; letter-spacing: 1px; font-weight: 600; color: var(--text-primary); }
-
-        /* Mobile Optimization */
         @media (max-width: 768px) {
             body { padding: 0; background-color: var(--bg-container); }
             .container { padding: 40px 20px; border: none; box-shadow: none; }
-            
             .calendly-inline-widget { height: 400px !important; } 
-            
-            .brand-logo { max-width: 80px; }
-            .brand-name { font-size: 18px; letter-spacing: 2px; }
-            .section-block { margin-bottom: 55px; }
             .tier-grid { grid-template-columns: 1fr; gap: 20px; }
-            .booking-section { padding: 45px 20px; margin-top: 40px; }
-            .cta-btn-primary, .cta-btn-secondary { width: 100%; }
+            .booking-section { padding: 40px 15px; }
             .protocol-grid { grid-template-columns: 1fr; gap: 30px; }
         }
     </style>
@@ -304,117 +182,193 @@
             <h1 class="brand-name">Libertypictures</h1>
             <span class="brand-subtitle">Studio Booking Portal</span>
             <p class="brand-intro">
-                Thanks for your interest in our work. Take a moment to review our session details below, or jump straight to the calendar to secure your date.
+                Select your desired package configuration, book a date, and secure your retainer below.
             </p>
-            <a href="#booking" class="header-jump-btn">Jump to Booking &darr;</a>
         </header>
 
-        <section class="section-block">
+        <!-- PACKAGES SECTION -->
+        <section class="section-block" id="packages">
             <h2 class="section-title">Individual Portfolios</h2>
             <p class="section-meta">Perfect for Portraits, Pre-birthdays, Maternity, and Corporate Headshots.</p>
             <div class="tier-grid">
-                <div class="tier-card">
+                <!-- Tier 1 -->
+                <div class="tier-card" data-price="130000" data-name="One Look Session">
                     <div class="tier-meta">
-                        <h3>One Concept Session</h3>
-                        <ul class="tier-details">
-                            <li>1 Distinct Look / Outfit</li>
-                            <li>7 signature retouched photographs</li>
-                        </ul>
+                        <h3>One Look</h3>
+                        <span class="details-toggle" onclick="toggleDetails(this)">+ View Deliverables</span>
+                        <div class="tier-details-wrapper">
+                            <ul class="tier-details">
+                                <li>1 Distinct Look / Outfit</li>
+                                <li>7 signature retouched photographs</li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="tier-price-box">
-                        <span class="tier-price">₦130,000</span>
+                        <span class="tier-price">₦130k</span>
+                        <button class="select-btn" onclick="selectPackage(this)">Select</button>
                     </div>
                 </div>
-                <div class="tier-card">
+
+                <!-- Tier 2 -->
+                <div class="tier-card" data-price="190000" data-name="Two Looks Session">
                     <div class="tier-meta">
-                        <h3>Two Concepts Session</h3>
-                        <ul class="tier-details">
-                            <li>2 Distinct Looks / Outfits</li>
-                            <li>12 signature retouched photographs</li>
-                        </ul>
+                        <h3>Two Looks</h3>
+                        <span class="details-toggle" onclick="toggleDetails(this)">+ View Deliverables</span>
+                        <div class="tier-details-wrapper">
+                            <ul class="tier-details">
+                                <li>2 Distinct Looks / Outfits</li>
+                                <li>12 signature retouched photographs</li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="tier-price-box">
-                        <span class="tier-price">₦190,000</span>
+                        <span class="tier-price">₦190k</span>
+                        <button class="select-btn" onclick="selectPackage(this)">Select</button>
                     </div>
                 </div>
-                <div class="tier-card">
+
+                <!-- Tier 3 -->
+                <div class="tier-card" data-price="250000" data-name="Three Looks Session">
                     <div class="tier-meta">
-                        <h3>Three Concepts Session</h3>
-                        <ul class="tier-details">
-                            <li>3 Distinct Looks / Outfits</li>
-                            <li>15 signature retouched photographs</li>
-                            <li>Premium signature flash drive containing all final media</li>
-                        </ul>
+                        <h3>Three Looks</h3>
+                        <span class="details-toggle" onclick="toggleDetails(this)">+ View Deliverables</span>
+                        <div class="tier-details-wrapper">
+                            <ul class="tier-details">
+                                <li>3 Distinct Looks / Outfits</li>
+                                <li>15 signature retouched photographs</li>
+                                <li>Premium signature flash drive</li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="tier-price-box">
-                        <span class="tier-price">₦250,000</span>
+                        <span class="tier-price">₦250k</span>
+                        <button class="select-btn" onclick="selectPackage(this)">Select</button>
                     </div>
                 </div>
             </div>
-        </section>
 
-        <section class="section-block">
-            <h2 class="section-title">Duo & Family Sessions</h2>
-            <p class="section-meta">Documenting your milestones alongside your loved ones.</p>
+            <h2 class="section-title" style="margin-top: 50px;">Duo & Family Sessions</h2>
             <div class="tier-grid">
-                <div class="tier-card">
+                <!-- Tier 4 -->
+                <div class="tier-card" data-price="170000" data-name="Duo Session">
                     <div class="tier-meta">
                         <h3>Duo Session</h3>
-                        <p class="section-meta" style="margin: 0 0 15px 0; padding: 0;">Tailored for Pre-weddings, Couple Portraits, Mommy & Me, Twin Portraits, and Wedding Anniversaries.</p>
-                        <ul class="tier-details">
-                            <li>1 Distinct Look / Outfit per person</li>
-                            <li>10 signature retouched photographs</li>
-                        </ul>
+                        <span class="details-toggle" onclick="toggleDetails(this)">+ View Deliverables</span>
+                        <div class="tier-details-wrapper">
+                            <p style="font-size:12px; margin-bottom:10px; color:var(--text-secondary);">Pre-weddings, Couple Portraits, Mommy & Me, Twin Portraits.</p>
+                            <ul class="tier-details">
+                                <li>1 Distinct Look / Outfit per person</li>
+                                <li>10 signature retouched photographs</li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="tier-price-box">
-                        <span class="tier-price">₦170,000</span>
+                        <span class="tier-price">₦170k</span>
+                        <button class="select-btn" onclick="selectPackage(this)">Select</button>
                     </div>
                 </div>
-                <div class="tier-card">
+
+                <!-- Tier 5 -->
+                <div class="tier-card" data-price="280000" data-name="Family Session">
                     <div class="tier-meta">
                         <h3>Family Session</h3>
-                        <p class="section-meta" style="margin: 0 0 15px 0; padding: 0;">A comprehensive experience where every member of the family receives a custom mini portrait session.</p>
-                        <ul class="tier-details">
-                            <li>2 Distinct Looks / Outfits</li>
-                            <li>18 signature retouched photographs in total (includes individual configurations)</li>
-                            <li>Includes one premium 12×15 custom photo frame for your home</li>
-                            <li>Premium signature flash drive containing all final media</li>
-                        </ul>
+                        <span class="details-toggle" onclick="toggleDetails(this)">+ View Deliverables</span>
+                        <div class="tier-details-wrapper">
+                            <ul class="tier-details">
+                                <li>2 Distinct Looks / Outfits</li>
+                                <li>18 signature retouched photographs</li>
+                                <li>One premium 12×15 custom photo frame</li>
+                                <li>Premium signature flash drive</li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="tier-price-box">
-                        <span class="tier-price">₦280,000</span>
+                        <span class="tier-price">₦280k</span>
+                        <button class="select-btn" onclick="selectPackage(this)">Select</button>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="section-block">
+        <!-- ADD-ONS SECTION -->
+        <section class="section-block" id="addons">
             <h2 class="section-title">Logistics & Custom Additions</h2>
-            <div class="addons-container">
-                <div class="addon-row">
-                    <span class="addon-name">Solo Session (Off-site / Location outside studio)</span>
-                    <span class="addon-price">₦200,000 / look</span>
-                </div>
-                <div class="addon-row">
-                    <span class="addon-name">Duo Session (Off-site location with backdrop setup)</span>
-                    <span class="addon-price">₦210,000</span>
-                </div>
-                <div class="addon-row">
-                    <span class="addon-name">Family Session (Off-site location with backdrop)</span>
-                    <span class="addon-price">₦300,000</span>
-                </div>
-                <div class="addon-row">
-                    <span class="addon-name">Family Session (Off-site location without backdrop)</span>
-                    <span class="addon-price">₦250,000</span>
-                </div>
-                <div class="addon-row" style="margin-top: 10px; border-top: 1px dashed var(--accent); padding-top: 15px;">
-                    <span class="addon-name">Express 24-Hour Digital Turnaround Delivery</span>
+            <p class="section-meta">Select a package above to unlock add-on selections.</p>
+            <div class="addons-container" id="addons-box">
+                <label class="addon-row">
+                    <div class="addon-label">
+                        <input type="checkbox" class="addon-checkbox" value="50000" data-name="Off-site (Without Backdrop)">
+                        <span>Off-site location (Without Backdrop)</span>
+                    </div>
+                    <span class="addon-price">₦50,000</span>
+                </label>
+                <label class="addon-row">
+                    <div class="addon-label">
+                        <input type="checkbox" class="addon-checkbox" value="70000" data-name="Off-site (With Backdrop)">
+                        <span>Off-site location (With Backdrop)</span>
+                    </div>
+                    <span class="addon-price">₦70,000</span>
+                </label>
+                <label class="addon-row" style="margin-top: 10px; border-top: 1px dashed var(--accent); padding-top: 15px;">
+                    <div class="addon-label">
+                        <input type="checkbox" class="addon-checkbox" value="30000" data-name="Express 24Hr Delivery">
+                        <span>Express 24-Hour Digital Turnaround</span>
+                    </div>
                     <span class="addon-price">+₦30,000</span>
+                </label>
+            </div>
+
+            <!-- LIVE INVOICE SUMMARY -->
+            <div class="invoice-box" id="invoice-ui">
+                <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px;">Booking Summary</h3>
+                <div class="invoice-row">
+                    <span id="inv-package-name">Package Name</span>
+                    <span id="inv-package-price">₦0</span>
+                </div>
+                <div id="inv-addons-list">
+                    <!-- Addons injected here via JS -->
+                </div>
+                <div class="invoice-total">
+                    <span>Subtotal</span>
+                    <span id="inv-subtotal">₦0</span>
+                </div>
+                <div class="invoice-row" style="margin-top: 10px; font-size: 12px;">
+                    <span>30% Balance (Due on session day)</span>
+                    <span id="inv-balance">₦0</span>
+                </div>
+                <div class="invoice-retainer">
+                    <span>70% Retainer Due Today:</span>
+                    <span id="inv-retainer">₦0</span>
                 </div>
             </div>
         </section>
 
-        <section class="section-block">
+        <!-- BOOKING / PAYMENT SECTION -->
+        <div id="booking" class="booking-section">
+            
+            <!-- STEP 1: CALENDLY -->
+            <h3 class="step-heading">Step 1: Pick Your Date</h3>
+            <p style="text-align: center; font-size: 13px; margin-bottom: 20px;">If unsure of the exact hour, pick any slot to hold your day.</p>
+            <div class="calendar-wrapper">
+                <div class="calendly-inline-widget" data-url="https://calendly.com/visualsliberty/studio-portraits?hide_event_type_details=1&hide_gdpr_banner=1&primary_color=8a7355" style="min-width:320px;height:700px;"></div>
+                <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+            </div>
+
+            <!-- STEP 2: PAYSTACK -->
+            <h3 class="step-heading" style="margin-top: 50px;">Step 2: Secure Session</h3>
+            <div class="payment-wrapper">
+                <div class="input-group">
+                    <label class="input-label" for="client-email">Email Address for Receipt</label>
+                    <input type="email" id="client-email" class="email-input" placeholder="hello@example.com" required>
+                </div>
+                <button type="button" class="cta-btn-primary" id="pay-btn" onclick="payWithPaystack()" disabled>
+                    Select a package to pay
+                </button>
+                <p style="font-size: 11px; margin-top: 15px; color: var(--text-secondary);">Payments securely processed by Paystack.</p>
+            </div>
+        </div>
+
+        <section class="section-block" style="margin-top: 70px;">
             <h2 class="section-title">Studio Policies</h2>
             <div class="protocol-grid">
                 <div class="protocol-item">
@@ -423,48 +377,158 @@
                 </div>
                 <div class="protocol-item">
                     <h4>Punctuality & Scheduling</h4>
-                    <p>To preserve our seamless studio calendar, sessions are strictly bound to their time frames: <span class="highlight-text">60 minutes</span> for 1-concept and duo setups, <span class="highlight-text">75 minutes</span> for 2-concept portfolios, and <span class="highlight-text">90 minutes</span> for 3-concept and family configurations. Arrivals extending <span class="highlight-text">beyond 20 minutes late</span> automatically attract a fee of <span class="highlight-text">₦15,000</span>.</p>
+                    <p>To preserve our seamless calendar, sessions are time-bound: <span class="highlight-text">60 minutes</span> for 1-look and duo setups, <span class="highlight-text">75 minutes</span> for 2-look portfolios, and <span class="highlight-text">90 minutes</span> for 3-look and family configurations. Arrivals extending <span class="highlight-text">beyond 20 minutes late</span> automatically attract a fee of <span class="highlight-text">₦15,000</span>.</p>
                 </div>
                 <div class="protocol-item">
                     <h4>Cancellation & Rescheduling</h4>
-                    <p>Cancellations do not qualify for refunds. In the case of emergency cancellations or no-show retainer will be forfeited. This ensures fairness to other clients and respects our time and resources. One time rescheduling is allowed free of charge if requested at least <span class="highlight-text">24-48 hours</span> before session. Retainers are valid for 12 months under the right circumstances.</p>
+                    <p>Cancellations do not qualify for refunds. One time rescheduling is allowed free of charge if requested at least <span class="highlight-text">24-48 hours</span> before session. Retainers are valid for 12 months.</p>
                 </div>
                 <div class="protocol-item">
-                    <h4>Selection & Turnaround</h4>
-                    <p>Unedited JPEGs are uploaded directly to Pixieset for client selection. Final processed files are delivered within 2 to 4 working days, hosted via a secure online gallery <span class="highlight-text">valid for 1 month</span>. Unedited RAW files are withheld but can be purchased upon request.</p>
-                </div>
-                <div class="protocol-item">
-                    <h4>Licensing & Ownership</h4>
-                    <p>Clients receive a personal-use license for self-printing and digital publication. <span class="highlight-text">Libertypictures</span> retains legal copyright ownership for archive display. Exclusive usage waivers are subject to contract negotiations.</p>
+                    <h4>Turnaround</h4>
+                    <p>Final processed files are delivered within 2 to 4 working days, hosted via a secure online gallery <span class="highlight-text">valid for 1 month</span>. Unedited RAW files are withheld but can be purchased.</p>
                 </div>
             </div>
         </section>
 
-        <div id="booking" class="booking-section">
-            <h3 class="booking-heading">Secure Your Date</h3>
-            <p class="booking-text">
-                <span class="instruction-highlight">If you are unsure of the exact time, simply choose any available slot to hold your day</span>—<span class="instruction-highlight">we will finalize the specific hour later</span>. Once selected, <span class="instruction-highlight">pay your 70% retainer</span> via the secure link below to <span class="instruction-highlight">officially lock down your session</span>.
-            </p>
-            <div class="calendar-wrapper">
-                <div class="calendly-inline-widget" data-url="https://calendly.com/visualsliberty/studio-portraits?hide_event_type_details=1&hide_gdpr_banner=1&primary_color=8a7355" style="min-width:320px;height:700px;"></div>
-                <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
-            </div>
-            <div class="payment-wrapper">
-                <a href="https://paystack.shop/pay/libertypictures" class="cta-btn-primary">
-                    &rarr; Pay Retainer Securely &larr;
-                </a>
-            </div>
-            <hr style="border: 0; border-top: 1px dashed var(--border-dashed); margin: 40px auto; max-width: 250px;">
-            <p class="booking-text" style="margin-bottom: 20px;">Have questions before booking? Talk to Liberty.</p>
-            <div class="cta-grid">
-                <a href="https://wa.me/2349075170240" class="cta-btn-secondary">Message via WhatsApp</a>
-                <a href="mailto:visualsliberty@gmail.com" class="cta-btn-secondary">Email Studio</a>
-            </div>
-        </div>
-
-        <footer class="brand-footer">
-            <span class="footer-note">Libertypictures © 2026</span>
+        <footer class="brand-footer" style="margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--text-primary); text-align: center;">
+            <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Libertypictures © 2026</span>
         </footer>
     </div>
+
+    <!-- JAVASCRIPT FOR CART & PAYSTACK INTEGRATION -->
+    <script>
+        // State Management
+        let cart = {
+            basePrice: 0,
+            baseName: "",
+            addons: [],
+            subtotal: 0,
+            retainer: 0,
+            balance: 0
+        };
+
+        const formatNaira = (amount) => {
+            return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(amount);
+        };
+
+        // Accordion Toggle
+        function toggleDetails(btn) {
+            const detailsDiv = btn.nextElementSibling;
+            if (detailsDiv.classList.contains('active')) {
+                detailsDiv.classList.remove('active');
+                btn.innerText = "+ View Deliverables";
+            } else {
+                detailsDiv.classList.add('active');
+                btn.innerText = "− Hide Deliverables";
+            }
+        }
+
+        // Package Selection
+        function selectPackage(btn) {
+            // Remove selection from all cards
+            document.querySelectorAll('.tier-card').forEach(card => card.classList.remove('selected'));
+            document.querySelectorAll('.select-btn').forEach(b => b.innerText = "Select");
+
+            // Add selection to clicked card
+            const card = btn.closest('.tier-card');
+            card.classList.add('selected');
+            btn.innerText = "Selected";
+
+            // Update Cart State
+            cart.basePrice = parseFloat(card.getAttribute('data-price'));
+            cart.baseName = card.getAttribute('data-name');
+
+            // Enable Addons & update UI
+            document.getElementById('addons-box').classList.add('active');
+            document.getElementById('invoice-ui').classList.add('active');
+            
+            // Smooth scroll to addons
+            document.getElementById('addons').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            calculateTotals();
+        }
+
+        // Add-on Checkbox Listeners
+        document.querySelectorAll('.addon-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', () => {
+                cart.addons = [];
+                document.querySelectorAll('.addon-checkbox:checked').forEach(checkedBox => {
+                    cart.addons.push({
+                        name: checkedBox.getAttribute('data-name'),
+                        price: parseFloat(checkedBox.value)
+                    });
+                });
+                calculateTotals();
+            });
+        });
+
+        // Calculate and Update UI
+        function calculateTotals() {
+            let addonTotal = cart.addons.reduce((sum, item) => sum + item.price, 0);
+            
+            cart.subtotal = cart.basePrice + addonTotal;
+            cart.retainer = cart.subtotal * 0.70; // 70% Retainer Policy
+            cart.balance = cart.subtotal * 0.30;
+
+            // Update DOM Invoice
+            document.getElementById('inv-package-name').innerText = cart.baseName;
+            document.getElementById('inv-package-price').innerText = formatNaira(cart.basePrice);
+            
+            const addonsListUI = document.getElementById('inv-addons-list');
+            addonsListUI.innerHTML = ""; // Clear existing
+            cart.addons.forEach(addon => {
+                addonsListUI.innerHTML += `
+                    <div class="invoice-row">
+                        <span>+ ${addon.name}</span>
+                        <span>${formatNaira(addon.price)}</span>
+                    </div>`;
+            });
+
+            document.getElementById('inv-subtotal').innerText = formatNaira(cart.subtotal);
+            document.getElementById('inv-balance').innerText = formatNaira(cart.balance);
+            document.getElementById('inv-retainer').innerText = formatNaira(cart.retainer);
+
+            // Enable & Update Payment Button
+            const payBtn = document.getElementById('pay-btn');
+            payBtn.removeAttribute('disabled');
+            payBtn.innerText = `Pay Retainer (${formatNaira(cart.retainer)})`;
+        }
+
+        // Paystack Integration
+        function payWithPaystack() {
+            const emailInput = document.getElementById('client-email').value;
+            
+            if (!emailInput) {
+                alert("Please enter your email address before paying.");
+                document.getElementById('client-email').focus();
+                return;
+            }
+
+            if (cart.retainer === 0) {
+                alert("Please select a package first.");
+                return;
+            }
+
+            // Paystack requires amounts in kobo (multiply by 100)
+            const amountInKobo = cart.retainer * 100;
+
+            let handler = PaystackPop.setup({
+                key: 'pk_live_05373c45337d6a937f51d9c3045c7839369d503d',
+                email: emailInput,
+                amount: amountInKobo,
+                currency: 'NGN',
+                callback: function(response) {
+                    // This happens after payment is successful
+                    alert('Payment complete! Reference: ' + response.reference + '\nWe will contact you shortly to confirm your booking.');
+                    // Optional: redirect to a thank you page
+                    // window.location.href = "/thank-you.html";
+                },
+                onClose: function() {
+                    alert('Payment window closed.');
+                }
+            });
+            handler.openIframe();
+        }
+    </script>
 </body>
 </html>
