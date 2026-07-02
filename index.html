@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studio Booking Portal | Libertypictures</title>
     
-    <!-- Modern Geometric Font Import (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Paystack Inline API -->
     <script src="https://js.paystack.co/v1/inline.js"></script>
 
     <style>
@@ -155,7 +153,7 @@
 
         /* Seamless layout adjustment to lock Cal.com iframe presentation */
         #my-cal-inline-studio-session {
-            height: 750px !important;
+            height: 600px !important; /* Reduced to eliminate empty space on desktop */
             width: 100%;
         }
 
@@ -213,7 +211,7 @@
             }
             .addon-price { padding-left: 30px; font-size: 13px; }
 
-            /* Fix Cal.com Scroll Trap on Mobile */
+            /* Fix Cal.com Space and Scroll Trap on Mobile */
             .booking-section { 
                 padding: 40px 10px; 
                 border-left: none; 
@@ -225,6 +223,9 @@
             .calendar-wrapper { 
                 border: none; 
                 padding: 0; 
+            }
+            #my-cal-inline-studio-session {
+                height: 500px !important; /* Tighter fit for iPhone screens */
             }
 
             .payment-wrapper { padding: 35px 20px; border-radius: 0; border-left: none; border-right: none;}
@@ -244,12 +245,10 @@
             </p>
         </header>
 
-        <!-- PACKAGES SECTION -->
         <section class="section-block" id="packages">
             <h2 class="section-title">Individual Session</h2>
             <p class="section-meta">Perfect for Portraits, Pre-birthdays, Maternity, and Corporate Headshots.</p>
             <div class="tier-grid">
-                <!-- Look 1 -->
                 <div class="tier-card" data-price="130000" data-name="One Look Session">
                     <div class="tier-meta">
                         <h3>One Look</h3>
@@ -264,7 +263,6 @@
                     </div>
                 </div>
 
-                <!-- Look 2 -->
                 <div class="tier-card" data-price="190000" data-name="Two Looks Session">
                     <div class="tier-meta">
                         <h3>Two Looks</h3>
@@ -279,7 +277,6 @@
                     </div>
                 </div>
 
-                <!-- Look 3 -->
                 <div class="tier-card" data-price="250000" data-name="Three Looks Session">
                     <div class="tier-meta">
                         <h3>Three Looks</h3>
@@ -298,7 +295,6 @@
 
             <h2 class="section-title" style="margin-top: 50px;">Duo & Family Sessions</h2>
             <div class="tier-grid">
-                <!-- Duo -->
                 <div class="tier-card" data-price="170000" data-name="Duo Session">
                     <div class="tier-meta">
                         <h3>Duo Session</h3>
@@ -314,7 +310,6 @@
                     </div>
                 </div>
 
-                <!-- Family -->
                 <div class="tier-card" data-price="280000" data-name="Family Session">
                     <div class="tier-meta">
                         <h3>Family Session</h3>
@@ -333,7 +328,6 @@
             </div>
         </section>
 
-        <!-- ADD-ONS SECTION -->
         <section class="section-block" id="addons">
             <h2 class="section-title">Logistics & Custom Additions</h2>
             <p class="section-meta">Tailor your experience with off-site setups and priority delivery. Select a base session above to unlock these additions.</p>
@@ -361,7 +355,6 @@
                 </label>
             </div>
 
-            <!-- LIVE INVOICE SUMMARY -->
             <div class="invoice-box" id="invoice-ui">
                 <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px;">Booking Summary</h3>
                 <div class="invoice-row">
@@ -369,8 +362,7 @@
                     <span id="inv-package-price">₦0</span>
                 </div>
                 <div id="inv-addons-list">
-                    <!-- Addons injected here via JS -->
-                </div>
+                    </div>
                 <div class="invoice-total">
                     <span>Subtotal</span>
                     <span id="inv-subtotal">₦0</span>
@@ -386,16 +378,13 @@
             </div>
         </section>
 
-        <!-- BOOKING / PAYMENT SECTION -->
         <div id="booking" class="booking-section">
             
-            <!-- CAL.COM INTEGRATION -->
             <h3 class="step-heading">Pick Your Date</h3>
             <p style="text-align: center; font-size: 13px; margin-bottom: 20px;">If unsure of the exact hour, pick any slot to hold your day.</p>
             <div class="calendar-wrapper">
                 
-                <!-- Cal inline embed code begins -->
-                <div style="width:100%;height:100%;overflow:scroll" id="my-cal-inline-studio-session"></div>
+                <div style="width:100%;height:100%;" id="my-cal-inline-studio-session"></div>
                 <script type="text/javascript">
                   (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if(typeof namespace === "string"){cal.ns[namespace] = cal.ns[namespace] || api;p(cal.ns[namespace], ar);p(cal, ["initNamespace", namespace]);} else p(cal, ar); return;} p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
                 Cal("init", "studio-session", {origin:"https://app.cal.com"});
@@ -410,11 +399,8 @@
 
                   Cal.ns["studio-session"]("ui", {"hideEventTypeDetails":true,"layout":"month_view"});
                   </script>
-                  <!-- Cal inline embed code ends -->
+                  </div>
 
-            </div>
-
-            <!-- PAYSTACK INTERACTIVE SECURE RETINER -->
             <h3 class="step-heading" style="margin-top: 50px;">Secure Session</h3>
             <div class="payment-wrapper">
                 <div class="input-group">
@@ -455,7 +441,6 @@
         </footer>
     </div>
 
-    <!-- JAVASCRIPT FOR CART & PAYSTACK INTEGRATION -->
     <script>
         // State Management
         let cart = {
