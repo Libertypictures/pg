@@ -144,7 +144,21 @@
         .email-input:focus { border-color: var(--accent); }
 
         .booking-section { margin-top: 70px; background-color: var(--bg-booking); padding: 60px 40px; border-radius: 4px; border: 1px solid var(--border-color); }
-        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding-top: 20px; margin-bottom: 40px; }
+        
+        .calendar-wrapper { 
+            background-color: var(--bg-container); 
+            border: 1px solid var(--border-color); 
+            border-radius: 4px; 
+            padding: 20px 10px; 
+            margin-bottom: 40px; 
+        }
+
+        /* Seamless layout adjustment to lock Cal.com iframe presentation */
+        #my-cal-inline-studio-session {
+            height: 750px !important;
+            width: 100%;
+        }
+
         .payment-wrapper { text-align: center; padding: 45px 30px; background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 8px 20px var(--shadow-subtle); }
         
         .cta-btn-primary {
@@ -199,7 +213,7 @@
             }
             .addon-price { padding-left: 30px; font-size: 13px; }
 
-            /* Fix Calendly Scroll Trap */
+            /* Fix Cal.com Scroll Trap on Mobile */
             .booking-section { 
                 padding: 40px 10px; 
                 border-left: none; 
@@ -212,7 +226,6 @@
                 border: none; 
                 padding: 0; 
             }
-            .calendly-inline-widget { min-height: 750px !important; } 
 
             .payment-wrapper { padding: 35px 20px; border-radius: 0; border-left: none; border-right: none;}
             .protocol-grid { grid-template-columns: 1fr; gap: 30px; }
@@ -227,7 +240,7 @@
             <h1 class="brand-name">Libertypictures</h1>
             <span class="brand-subtitle">Studio Booking Portal</span>
             <p class="brand-intro">
-                Select your desired session configuration, book a date, and secure your retainer below.
+                Thank you for your interest in our service. Select your desired session configuration, book a date, and secure your retainer below.
             </p>
         </header>
 
@@ -236,7 +249,7 @@
             <h2 class="section-title">Individual Session</h2>
             <p class="section-meta">Perfect for Portraits, Pre-birthdays, Maternity, and Corporate Headshots.</p>
             <div class="tier-grid">
-                <!-- Tier 1 -->
+                <!-- Look 1 -->
                 <div class="tier-card" data-price="130000" data-name="One Look Session">
                     <div class="tier-meta">
                         <h3>One Look</h3>
@@ -251,7 +264,7 @@
                     </div>
                 </div>
 
-                <!-- Tier 2 -->
+                <!-- Look 2 -->
                 <div class="tier-card" data-price="190000" data-name="Two Looks Session">
                     <div class="tier-meta">
                         <h3>Two Looks</h3>
@@ -266,7 +279,7 @@
                     </div>
                 </div>
 
-                <!-- Tier 3 -->
+                <!-- Look 3 -->
                 <div class="tier-card" data-price="250000" data-name="Three Looks Session">
                     <div class="tier-meta">
                         <h3>Three Looks</h3>
@@ -285,7 +298,7 @@
 
             <h2 class="section-title" style="margin-top: 50px;">Duo & Family Sessions</h2>
             <div class="tier-grid">
-                <!-- Tier 4 -->
+                <!-- Duo -->
                 <div class="tier-card" data-price="170000" data-name="Duo Session">
                     <div class="tier-meta">
                         <h3>Duo Session</h3>
@@ -301,7 +314,7 @@
                     </div>
                 </div>
 
-                <!-- Tier 5 -->
+                <!-- Family -->
                 <div class="tier-card" data-price="280000" data-name="Family Session">
                     <div class="tier-meta">
                         <h3>Family Session</h3>
@@ -376,16 +389,33 @@
         <!-- BOOKING / PAYMENT SECTION -->
         <div id="booking" class="booking-section">
             
-            <!-- STEP 1: CALENDLY -->
-            <h3 class="step-heading">Step 1: Pick Your Date</h3>
+            <!-- CAL.COM INTEGRATION -->
+            <h3 class="step-heading">Pick Your Date</h3>
             <p style="text-align: center; font-size: 13px; margin-bottom: 20px;">If unsure of the exact hour, pick any slot to hold your day.</p>
             <div class="calendar-wrapper">
-                <div class="calendly-inline-widget" data-url="https://calendly.com/visualsliberty/studio-portraits?hide_event_type_details=1&hide_gdpr_banner=1&primary_color=8a7355" style="min-width:320px;height:750px;"></div>
-                <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+                
+                <!-- Cal inline embed code begins -->
+                <div style="width:100%;height:100%;overflow:scroll" id="my-cal-inline-studio-session"></div>
+                <script type="text/javascript">
+                  (function (C, A, L) { let p = function (a, ar) { a.q.push(ar); }; let d = C.document; C.Cal = C.Cal || function () { let cal = C.Cal; let ar = arguments; if (!cal.loaded) { cal.ns = {}; cal.q = cal.q || []; d.head.appendChild(d.createElement("script")).src = A; cal.loaded = true; } if (ar[0] === L) { const api = function () { p(api, arguments); }; const namespace = ar[1]; api.q = api.q || []; if(typeof namespace === "string"){cal.ns[namespace] = cal.ns[namespace] || api;p(cal.ns[namespace], ar);p(cal, ["initNamespace", namespace]);} else p(cal, ar); return;} p(cal, ar); }; })(window, "https://app.cal.com/embed/embed.js", "init");
+                Cal("init", "studio-session", {origin:"https://app.cal.com"});
+                Cal.config = Cal.config || {};
+                Cal.config.forwardQueryParams = true;
+
+                  Cal.ns["studio-session"]("inline", {
+                    elementOrSelector:"#my-cal-inline-studio-session",
+                    config: {"layout":"month_view","useSlotsViewOnSmallScreen":"true"},
+                    calLink: "liberty-visuals-if3smt/studio-session",
+                  });
+
+                  Cal.ns["studio-session"]("ui", {"hideEventTypeDetails":true,"layout":"month_view"});
+                  </script>
+                  <!-- Cal inline embed code ends -->
+
             </div>
 
-            <!-- STEP 2: PAYSTACK -->
-            <h3 class="step-heading" style="margin-top: 50px;">Step 2: Secure Session</h3>
+            <!-- PAYSTACK INTERACTIVE SECURE RETINER -->
+            <h3 class="step-heading" style="margin-top: 50px;">Secure Session</h3>
             <div class="payment-wrapper">
                 <div class="input-group">
                     <label class="input-label" for="client-email">Email Address for Receipt</label>
@@ -414,8 +444,8 @@
                     <p>Cancellations do not qualify for refunds. One time rescheduling is allowed free of charge if requested at least <span class="highlight-text">24-48 hours</span> before session. Retainers are valid for 12 months.</p>
                 </div>
                 <div class="protocol-item">
-                    <h4>Turnaround</h4>
-                    <p>Final processed files are delivered within 2 to 4 working days, hosted via a secure online gallery <span class="highlight-text">valid for 1 month</span>. Unedited RAW files are withheld but can be purchased.</p>
+                    <h4>Selection & Turnaround</h4>
+                    <p>Clients select their final images from an unedited JPEG gallery hosted on Pixieset. Final processed files are delivered within 2 to 4 working days via a secure online gallery <span class="highlight-text">valid for 1 month</span>. Unedited RAW files can be downloaded if requested and paid for.</p>
                 </div>
             </div>
         </section>
@@ -527,7 +557,6 @@
                 return;
             }
 
-            // Paystack requires amounts in kobo (multiply by 100)
             const amountInKobo = cart.retainer * 100;
 
             let handler = PaystackPop.setup({
@@ -536,10 +565,7 @@
                 amount: amountInKobo,
                 currency: 'NGN',
                 callback: function(response) {
-                    // This happens after payment is successful
                     alert('Payment complete! Reference: ' + response.reference + '\nWe will contact you shortly to confirm your booking.');
-                    // Optional: redirect to a thank you page
-                    // window.location.href = "/thank-you.html";
                 },
                 onClose: function() {
                     alert('Payment window closed.');
