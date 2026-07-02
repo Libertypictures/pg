@@ -101,11 +101,8 @@
         .tier-card { display: flex; flex-direction: column; justify-content: space-between; background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 35px 25px; border-radius: 4px; transition: all 0.3s ease; position: relative; }
         .tier-card.selected { border: 2px solid var(--accent); background-color: var(--highlight-bg); transform: translateY(-3px); box-shadow: 0 8px 20px var(--shadow-hover); }
         
+        .tier-meta { flex-grow: 1; }
         .tier-meta h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 15px; }
-        
-        .details-toggle { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--accent); cursor: pointer; display: inline-block; margin-bottom: 15px; border-bottom: 1px dashed var(--accent); }
-        .tier-details-wrapper { display: none; }
-        .tier-details-wrapper.active { display: block; }
         
         .tier-details { list-style: none; font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
         .tier-details li { margin-bottom: 8px; position: relative; padding-left: 14px; }
@@ -180,12 +177,12 @@
             .tier-grid { grid-template-columns: 1fr; gap: 20px; }
             .tier-card { padding: 25px 20px; border-radius: 6px; }
             .tier-price-box { 
-                flex-direction: column; /* Stacks the price and button */
+                flex-direction: column; 
                 align-items: flex-start; 
                 gap: 15px; 
             }
             .select-btn { 
-                width: 100%; /* Massive touch target */
+                width: 100%; 
                 padding: 14px; 
                 font-size: 12px; 
                 text-align: center;
@@ -195,7 +192,7 @@
             /* Mobile Add-ons - Wrap text gracefully */
             .addons-container { padding: 20px 15px; }
             .addon-row { 
-                flex-direction: column; /* Stacks text on top of price */
+                flex-direction: column; 
                 align-items: flex-start; 
                 gap: 8px; 
                 padding: 16px 0;
@@ -204,18 +201,17 @@
 
             /* Fix Calendly Scroll Trap */
             .booking-section { 
-                padding: 40px 10px; /* Reduces container padding to give Calendly more width */
+                padding: 40px 10px; 
                 border-left: none; 
                 border-right: none; 
                 border-radius: 0; 
-                margin-left: -15px; /* Pulls section edge-to-edge */
+                margin-left: -15px; 
                 margin-right: -15px;
             }
             .calendar-wrapper { 
-                border: none; /* Seamless integration */
+                border: none; 
                 padding: 0; 
             }
-            /* Increased height prevents internal scrolling frame */
             .calendly-inline-widget { min-height: 750px !important; } 
 
             .payment-wrapper { padding: 35px 20px; border-radius: 0; border-left: none; border-right: none;}
@@ -231,30 +227,27 @@
             <h1 class="brand-name">Libertypictures</h1>
             <span class="brand-subtitle">Studio Booking Portal</span>
             <p class="brand-intro">
-                Select your desired package configuration, book a date, and secure your retainer below.
+                Select your desired session configuration, book a date, and secure your retainer below.
             </p>
         </header>
 
         <!-- PACKAGES SECTION -->
         <section class="section-block" id="packages">
-            <h2 class="section-title">Individual Portfolios</h2>
+            <h2 class="section-title">Individual Session</h2>
             <p class="section-meta">Perfect for Portraits, Pre-birthdays, Maternity, and Corporate Headshots.</p>
             <div class="tier-grid">
                 <!-- Tier 1 -->
                 <div class="tier-card" data-price="130000" data-name="One Look Session">
                     <div class="tier-meta">
                         <h3>One Look</h3>
-                        <span class="details-toggle" onclick="toggleDetails(this)">+ View Deliverables</span>
-                        <div class="tier-details-wrapper">
-                            <ul class="tier-details">
-                                <li>1 Distinct Look / Outfit</li>
-                                <li>7 signature retouched photographs</li>
-                            </ul>
-                        </div>
+                        <ul class="tier-details">
+                            <li>1 Distinct Look / Outfit</li>
+                            <li>7 signature retouched photographs</li>
+                        </ul>
                     </div>
                     <div class="tier-price-box">
                         <span class="tier-price">₦130k</span>
-                        <button class="select-btn" onclick="selectPackage(this)">Select Package</button>
+                        <button class="select-btn" onclick="selectPackage(this)">Select Session</button>
                     </div>
                 </div>
 
@@ -262,17 +255,14 @@
                 <div class="tier-card" data-price="190000" data-name="Two Looks Session">
                     <div class="tier-meta">
                         <h3>Two Looks</h3>
-                        <span class="details-toggle" onclick="toggleDetails(this)">+ View Deliverables</span>
-                        <div class="tier-details-wrapper">
-                            <ul class="tier-details">
-                                <li>2 Distinct Looks / Outfits</li>
-                                <li>12 signature retouched photographs</li>
-                            </ul>
-                        </div>
+                        <ul class="tier-details">
+                            <li>2 Distinct Looks / Outfits</li>
+                            <li>12 signature retouched photographs</li>
+                        </ul>
                     </div>
                     <div class="tier-price-box">
                         <span class="tier-price">₦190k</span>
-                        <button class="select-btn" onclick="selectPackage(this)">Select Package</button>
+                        <button class="select-btn" onclick="selectPackage(this)">Select Session</button>
                     </div>
                 </div>
 
@@ -280,18 +270,15 @@
                 <div class="tier-card" data-price="250000" data-name="Three Looks Session">
                     <div class="tier-meta">
                         <h3>Three Looks</h3>
-                        <span class="details-toggle" onclick="toggleDetails(this)">+ View Deliverables</span>
-                        <div class="tier-details-wrapper">
-                            <ul class="tier-details">
-                                <li>3 Distinct Looks / Outfits</li>
-                                <li>15 signature retouched photographs</li>
-                                <li>Premium signature flash drive</li>
-                            </ul>
-                        </div>
+                        <ul class="tier-details">
+                            <li>3 Distinct Looks / Outfits</li>
+                            <li>15 signature retouched photographs</li>
+                            <li>Premium signature flash drive</li>
+                        </ul>
                     </div>
                     <div class="tier-price-box">
                         <span class="tier-price">₦250k</span>
-                        <button class="select-btn" onclick="selectPackage(this)">Select Package</button>
+                        <button class="select-btn" onclick="selectPackage(this)">Select Session</button>
                     </div>
                 </div>
             </div>
@@ -302,18 +289,15 @@
                 <div class="tier-card" data-price="170000" data-name="Duo Session">
                     <div class="tier-meta">
                         <h3>Duo Session</h3>
-                        <span class="details-toggle" onclick="toggleDetails(this)">+ View Deliverables</span>
-                        <div class="tier-details-wrapper">
-                            <p style="font-size:12px; margin-bottom:10px; color:var(--text-secondary);">Pre-weddings, Couple Portraits, Mommy & Me, Twin Portraits.</p>
-                            <ul class="tier-details">
-                                <li>1 Distinct Look / Outfit per person</li>
-                                <li>10 signature retouched photographs</li>
-                            </ul>
-                        </div>
+                        <p style="font-size:12px; margin-bottom:15px; color:var(--text-secondary);">Pre-weddings, Couple Portraits, Mommy & Me, Twin Portraits.</p>
+                        <ul class="tier-details">
+                            <li>1 Distinct Look / Outfit per person</li>
+                            <li>10 signature retouched photographs</li>
+                        </ul>
                     </div>
                     <div class="tier-price-box">
                         <span class="tier-price">₦170k</span>
-                        <button class="select-btn" onclick="selectPackage(this)">Select Package</button>
+                        <button class="select-btn" onclick="selectPackage(this)">Select Session</button>
                     </div>
                 </div>
 
@@ -321,19 +305,16 @@
                 <div class="tier-card" data-price="280000" data-name="Family Session">
                     <div class="tier-meta">
                         <h3>Family Session</h3>
-                        <span class="details-toggle" onclick="toggleDetails(this)">+ View Deliverables</span>
-                        <div class="tier-details-wrapper">
-                            <ul class="tier-details">
-                                <li>2 Distinct Looks / Outfits</li>
-                                <li>18 signature retouched photographs</li>
-                                <li>One premium 12×15 custom photo frame</li>
-                                <li>Premium signature flash drive</li>
-                            </ul>
-                        </div>
+                        <ul class="tier-details">
+                            <li>2 Distinct Looks / Outfits</li>
+                            <li>18 signature retouched photographs</li>
+                            <li>One premium 12×15 custom photo frame</li>
+                            <li>Premium signature flash drive</li>
+                        </ul>
                     </div>
                     <div class="tier-price-box">
                         <span class="tier-price">₦280k</span>
-                        <button class="select-btn" onclick="selectPackage(this)">Select Package</button>
+                        <button class="select-btn" onclick="selectPackage(this)">Select Session</button>
                     </div>
                 </div>
             </div>
@@ -342,7 +323,7 @@
         <!-- ADD-ONS SECTION -->
         <section class="section-block" id="addons">
             <h2 class="section-title">Logistics & Custom Additions</h2>
-            <p class="section-meta">Select a package above to unlock add-on selections.</p>
+            <p class="section-meta">Tailor your experience with off-site setups and priority delivery. Select a base session above to unlock these additions.</p>
             <div class="addons-container" id="addons-box">
                 <label class="addon-row">
                     <div class="addon-label">
@@ -411,7 +392,7 @@
                     <input type="email" id="client-email" class="email-input" placeholder="hello@example.com" required>
                 </div>
                 <button type="button" class="cta-btn-primary" id="pay-btn" onclick="payWithPaystack()" disabled>
-                    Select a package to pay
+                    Select a session to pay
                 </button>
                 <p style="font-size: 11px; margin-top: 15px; color: var(--text-secondary);">Payments securely processed by Paystack.</p>
             </div>
@@ -460,23 +441,11 @@
             return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(amount);
         };
 
-        // Accordion Toggle
-        function toggleDetails(btn) {
-            const detailsDiv = btn.nextElementSibling;
-            if (detailsDiv.classList.contains('active')) {
-                detailsDiv.classList.remove('active');
-                btn.innerText = "+ View Deliverables";
-            } else {
-                detailsDiv.classList.add('active');
-                btn.innerText = "− Hide Deliverables";
-            }
-        }
-
         // Package Selection
         function selectPackage(btn) {
             // Remove selection from all cards
             document.querySelectorAll('.tier-card').forEach(card => card.classList.remove('selected'));
-            document.querySelectorAll('.select-btn').forEach(b => b.innerText = "Select Package");
+            document.querySelectorAll('.select-btn').forEach(b => b.innerText = "Select Session");
 
             // Add selection to clicked card
             const card = btn.closest('.tier-card');
@@ -554,7 +523,7 @@
             }
 
             if (cart.retainer === 0) {
-                alert("Please select a package first.");
+                alert("Please select a session first.");
                 return;
             }
 
