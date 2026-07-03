@@ -433,7 +433,12 @@
                     calLink: "liberty-visuals-if3smt/30min",
                   });
 
-                  Cal.ns["30min"]("ui", {"hideEventTypeDetails":true,"layout":"month_view"});
+                  // STRICT OVERRIDE FOR 12-HOUR FORMAT ADDED HERE
+                  Cal.ns["30min"]("ui", {
+                      "hideEventTypeDetails":true,
+                      "layout":"month_view",
+                      "timeFormat":"12h"
+                  });
                 </script>
                 <!-- Cal inline embed code ends -->
 
