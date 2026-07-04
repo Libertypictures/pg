@@ -27,13 +27,10 @@
             --border-dashed: #d1cfc7;
             --btn-primary-bg: #000000;
             --btn-primary-text: #ffffff;
-            --btn-secondary-bg: #ffffff;
-            --shadow-subtle: rgba(0,0,0,0.02);
-            --shadow-hover: rgba(0,0,0,0.04);
-            --shadow-btn: rgba(0,0,0,0.2);
-            --shimmer: rgba(255,255,255,0.2);
-            --logo-filter: invert(0);
             --highlight-bg: #fbf9f6;
+            --shadow-subtle: rgba(0,0,0,0.02);
+            --shadow-hover: rgba(0,0,0,0.06);
+            --logo-filter: invert(0);
         }
 
         /* Dark Mode Override */
@@ -50,13 +47,10 @@
                 --border-dashed: #4a4a4a;
                 --btn-primary-bg: #c4a67e;
                 --btn-primary-text: #121212;
-                --btn-secondary-bg: #1e1e1e;
+                --highlight-bg: #2a251e;
                 --shadow-subtle: rgba(0,0,0,0.2);
                 --shadow-hover: rgba(0,0,0,0.4);
-                --shadow-btn: rgba(0,0,0,0.4);
-                --shimmer: rgba(255,255,255,0.1);
                 --logo-filter: invert(1);
-                --highlight-bg: #2a251e;
             }
         }
 
@@ -86,48 +80,53 @@
 
         /* Header Layout */
         .brand-header { margin-bottom: 50px; text-align: center; }
-        .brand-logo { max-width: 90px; height: auto; margin: 0 auto 15px auto; display: block; filter: var(--logo-filter); }
+        .brand-logo { max-width: 90px; height: auto; margin: 0 auto 15px auto; display: block; filter: var(--logo-filter); transition: filter 0.3s ease; }
         .brand-name { font-size: 24px; letter-spacing: 4px; font-weight: 500; color: var(--text-primary); line-height: 1.2; margin-bottom: 8px; text-transform: uppercase; }
         .brand-subtitle { font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 30px; display: block; }
         .brand-intro { font-size: 14px; max-width: 500px; line-height: 1.7; margin: 0 auto; }
         
         /* Section Architecture */
-        /* Added scroll-margin-top to prevent the auto-scroll from hitting the absolute top edge */
-        .section-block { margin-bottom: 70px; scroll-margin-top: 80px; }
+        .section-block { margin-bottom: 70px; }
+        
+        /* TARGETED SCROLL FIX JUST FOR LOGISTICS */
+        #addons { scroll-margin-top: 40px; }
+        
         .section-title { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: var(--text-primary); font-weight: 600; padding-bottom: 12px; border-bottom: 2px solid var(--text-primary); margin-bottom: 20px; text-align: center; }
-        .section-meta { font-size: 13px; color: var(--text-primary); font-style: italic; margin-top: -10px; margin-bottom: 30px; text-align: left; }
+        .section-meta { font-size: 13px; color: var(--text-primary); font-style: italic; margin-top: -10px; margin-bottom: 30px; text-align: center; }
 
-        /* Pricing Cards (Interactive) */
-        .tier-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 25px; }
+        /* Pricing Cards - Custom Constrained Grids */
+        .tier-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
+        .tier-grid-2 { display: grid; grid-template-columns: repeat(2, 320px); justify-content: center; gap: 25px; }
+
         .tier-card { display: flex; flex-direction: column; justify-content: space-between; background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 35px 25px; border-radius: 4px; transition: all 0.3s ease; position: relative; }
-        .tier-card.selected { border: 2px solid var(--accent); background-color: var(--highlight-bg); transform: translateY(-3px); box-shadow: 0 8px 20px var(--shadow-hover); }
+        .tier-card.selected { border: 1px solid var(--accent); background-color: var(--highlight-bg); transform: translateY(-3px); box-shadow: 0 10px 25px var(--shadow-hover); }
         
         .tier-meta { flex-grow: 1; }
         .tier-meta h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 15px; }
         
+        /* Editorial Dashes */
         .tier-details { list-style: none; font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
-        .tier-details li { margin-bottom: 8px; position: relative; padding-left: 14px; }
-        .tier-details li::before { content: "▪"; font-size: 8px; position: absolute; left: 0; top: 2px; color: var(--accent); }
+        .tier-details li { margin-bottom: 8px; position: relative; padding-left: 15px; }
+        .tier-details li::before { content: "-"; font-size: 16px; position: absolute; left: 0; top: -3px; color: var(--accent); font-weight: 300; }
         
         .tier-price-box { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color); }
         .tier-price { font-size: 18px; font-weight: 600; color: var(--accent); letter-spacing: 0.5px; }
         .select-btn { background: none; border: 1px solid var(--accent); color: var(--accent); padding: 8px 15px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; border-radius: 2px; }
         .select-btn:hover, .tier-card.selected .select-btn { background-color: var(--accent); color: var(--bg-container); }
 
-        /* Add-ons Box (Interactive) */
-        .addons-container { border: 1px solid var(--accent); padding: 30px; background-color: var(--bg-container); border-radius: 4px; opacity: 0.5; pointer-events: none; transition: 0.3s; }
+        /* Add-ons Box */
+        .addons-container { max-width: 600px; margin: 0 auto; border: 1px solid var(--accent); padding: 30px; background-color: var(--bg-container); border-radius: 4px; opacity: 0.5; pointer-events: none; transition: 0.3s; }
         .addons-container.active { opacity: 1; pointer-events: auto; }
-        .addon-row { display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; padding: 12px 0; border-bottom: 1px dashed var(--border-color); cursor: pointer; transition: background-color 0.2s ease;}
+        .addon-row { display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; padding: 12px 0; border-bottom: 1px dashed var(--border-dashed); cursor: pointer; transition: 0.2s;}
         .addon-row:first-child { padding-top: 0; }
         .addon-row:last-child { padding-bottom: 0; border-bottom: none; }
         
-        /* Custom Checkbox */
         .addon-label { display: flex; align-items: center; gap: 12px; cursor: pointer; width: 100%; font-weight: 500; }
         .addon-label input { accent-color: var(--accent); width: 18px; height: 18px; cursor: pointer; }
         .addon-price { font-weight: 600; color: var(--accent); white-space: nowrap; }
 
-        /* Invoice Summary Box - Tightened margin-top to bring it closer to add-ons */
-        .invoice-box { background-color: var(--highlight-bg); border: 1px solid var(--accent); padding: 30px; border-radius: 4px; margin-top: 25px; display: none; }
+        /* Invoice Summary Box */
+        .invoice-box { max-width: 600px; margin: 25px auto 0 auto; background-color: var(--highlight-bg); border: 1px solid var(--accent); padding: 30px; border-radius: 4px; display: none; }
         .invoice-box.active { display: block; animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
@@ -135,121 +134,61 @@
         .invoice-total { border-top: 1px solid var(--border-color); margin-top: 15px; padding-top: 15px; font-weight: 600; color: var(--text-primary); font-size: 16px; display: flex; justify-content: space-between; }
         .invoice-retainer { background-color: var(--accent); color: var(--bg-container); padding: 15px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 16px; border-radius: 3px; }
 
-        /* Multi-step Booking */
+        /* Booking Section */
+        .booking-section { margin-top: 70px; background-color: var(--bg-booking); padding: 60px 40px; border-radius: 4px; border: 1px solid var(--border-color); }
         .step-heading { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;}
         
-        /* UX Scroll Hint Animation */
-        .scroll-hint {
-            text-align: center; 
-            font-size: 12px; 
-            font-weight: 500; 
-            color: var(--accent); 
-            margin-bottom: 20px;
-            animation: pulse-hint 2.5s infinite ease-in-out;
-        }
-        @keyframes pulse-hint {
-            0% { opacity: 0.6; transform: translateY(0); }
-            50% { opacity: 1; transform: translateY(3px); }
-            100% { opacity: 0.6; transform: translateY(0); }
-        }
+        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 20px 10px; margin-bottom: 40px; }
+        #my-cal-inline-30min { height: 600px !important; width: 100%; }
 
-        /* Form Inputs */
+        /* Payment Wrapper */
+        .payment-wrapper { max-width: 600px; margin: 0 auto; text-align: center; padding: 45px 30px; background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 8px 20px var(--shadow-subtle); }
+        
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; color: var(--text-secondary); }
         .email-input { width: 100%; padding: 14px; background: var(--bg-body); border: 1px solid var(--border-color); color: var(--text-primary); font-family: 'Poppins'; border-radius: 3px; font-size: 14px; outline: none; transition: border-color 0.3s; }
         .email-input:focus { border-color: var(--accent); }
 
-        .booking-section { margin-top: 70px; background-color: var(--bg-booking); padding: 60px 40px; border-radius: 4px; border: 1px solid var(--border-color); }
-        
-        /* Calendar Wrapper Optimization */
-        .calendar-wrapper { 
-            background-color: transparent; 
-            border: none; 
-            padding: 0; 
-            margin-bottom: 40px; 
-            overflow: hidden;
-            border-radius: 4px;
-        }
-
-        /* BRUTE FORCE HEIGHT FIX */
-        #my-cal-inline-30min {
-            width: 100%;
-            height: 700px !important; /* Forces the box open so times fully expand */
-            overflow: hidden !important; 
-        }
-
-        .payment-wrapper { text-align: center; padding: 45px 30px; background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 8px 20px var(--shadow-subtle); }
-        
-        .cta-btn-primary {
-            display: block; width: 100%;
-            background-color: var(--btn-primary-bg); color: var(--btn-primary-text);
-            padding: 18px 45px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
-            border: none; border-radius: 3px; cursor: pointer; transition: all 0.4s ease; position: relative; overflow: hidden;
-        }
+        .cta-btn-primary { display: block; width: 100%; background-color: var(--btn-primary-bg); color: var(--btn-primary-text); padding: 18px 45px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; border: none; border-radius: 3px; cursor: pointer; transition: all 0.4s ease; }
         .cta-btn-primary:hover { background-color: var(--accent); color: var(--bg-container); transform: translateY(-2px); box-shadow: 0 12px 25px rgba(138, 115, 85, 0.3); }
         .cta-btn-primary:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; transform: none; box-shadow: none; }
         
+        /* Policies */
         .protocol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 30px; }
         .protocol-item h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; font-weight: 600; }
         .protocol-item p { font-size: 13px; color: var(--text-secondary); text-align: justify; }
         .highlight-text { color: var(--accent); font-weight: 600; }
 
+        .brand-footer { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--text-primary); text-align: center; }
+
         /* 📱 MOBILE OPTIMIZATION ENGINE */
         @media (max-width: 768px) {
             body { padding: 0; background-color: var(--bg-container); }
-            
-            /* Edge-to-edge container */
             .container { padding: 35px 15px; border: none; box-shadow: none; }
-            
-            /* Typography Scale Down */
             .brand-name { font-size: 20px; }
-            .brand-intro { font-size: 13px; }
-            .section-title { font-size: 13px; margin-bottom: 15px; }
+            .brand-intro, .section-title, .section-meta { text-align: center; }
             
-            /* Mobile Package Cards - Stacked & Thicker Touch Targets */
-            .tier-grid { grid-template-columns: 1fr; gap: 20px; }
-            .tier-card { padding: 25px 20px; border-radius: 6px; }
-            .tier-price-box { 
-                flex-direction: column; 
-                align-items: flex-start; 
-                gap: 15px; 
+            /* Constrained Widths for Mobile */
+            .tier-grid-3, .tier-grid-2 { 
+                grid-template-columns: 1fr; 
+                gap: 20px; 
+                max-width: 380px; 
+                margin: 0 auto; 
             }
-            .select-btn { 
-                width: 100%; 
-                padding: 14px; 
-                font-size: 12px; 
-                text-align: center;
-                border-radius: 4px;
-            }
+            .tier-card { padding: 30px 20px; border-radius: 6px; }
+            .tier-price-box { flex-direction: column; align-items: flex-start; gap: 15px; }
+            .select-btn { width: 100%; padding: 14px; font-size: 12px; text-align: center; border-radius: 4px; }
 
-            /* Mobile Add-ons & Invoice Box - Snug Layout */
+            .addons-container, .invoice-box, .payment-wrapper { max-width: 380px; margin-left: auto; margin-right: auto;}
             .addons-container { padding: 20px 15px; }
-            .invoice-box { padding: 25px 20px; margin-top: 20px; }
-            
-            .addon-row { 
-                flex-direction: column; 
-                align-items: flex-start; 
-                gap: 8px; 
-                padding: 16px 0;
-            }
+            .addon-row { flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px 0; }
             .addon-price { padding-left: 30px; font-size: 13px; }
 
-            /* Fix Cal.com Space and Scroll Trap on Mobile */
-            .booking-section { 
-                padding: 40px 10px; 
-                border-left: none; 
-                border-right: none; 
-                border-radius: 0; 
-                margin-left: -15px; 
-                margin-right: -15px;
-            }
+            .booking-section { padding: 40px 10px; border-left: none; border-right: none; border-radius: 0; margin-left: -15px; margin-right: -15px; }
+            .calendar-wrapper { border: none; padding: 0; margin-bottom: 30px; }
+            #my-cal-inline-30min { height: 500px !important; }
 
-            /* MOBILE BRUTE FORCE HEIGHT */
-            #my-cal-inline-30min {
-                height: 750px !important; /* Extra height needed on mobile to un-hide the times */
-            }
-
-            .payment-wrapper { padding: 35px 20px; border-radius: 0; border-left: none; border-right: none;}
+            .payment-wrapper { padding: 35px 20px; border-radius: 4px; }
             .protocol-grid { grid-template-columns: 1fr; gap: 30px; }
         }
     </style>
@@ -262,8 +201,8 @@
             <h1 class="brand-name">Libertypictures</h1>
             <span class="brand-subtitle">Studio Booking Portal</span>
             <p class="brand-intro">
-                Thank you for your interest in our service.<br>
-                Select your desired session configuration, book a date, and secure your retainer below.
+                Thank you for your interest in our <span style="color: var(--accent);">service</span><br>
+                Select your desired <span style="color: var(--accent);">session configuration</span>, book a <span style="color: var(--accent);">date</span>, and secure your <span style="color: var(--accent);">retainer</span> below
             </p>
         </header>
 
@@ -271,7 +210,7 @@
         <section class="section-block" id="packages">
             <h2 class="section-title">Individual Sessions</h2>
             <p class="section-meta">Perfect for Portraits, Pre-birthdays, Maternity, and Corporate Headshots.</p>
-            <div class="tier-grid">
+            <div class="tier-grid-3">
                 <!-- Look 1 -->
                 <div class="tier-card" data-price="130000" data-name="One Look Session">
                     <div class="tier-meta">
@@ -320,7 +259,7 @@
             </div>
 
             <h2 class="section-title" style="margin-top: 50px;">Duo & Family Sessions</h2>
-            <div class="tier-grid">
+            <div class="tier-grid-2">
                 <!-- Duo -->
                 <div class="tier-card" data-price="170000" data-name="Duo Session">
                     <div class="tier-meta">
@@ -391,9 +330,7 @@
                     <span id="inv-package-name">Package Name</span>
                     <span id="inv-package-price">₦0</span>
                 </div>
-                <div id="inv-addons-list">
-                    <!-- Addons injected here via JS -->
-                </div>
+                <div id="inv-addons-list"></div>
                 <div class="invoice-total">
                     <span>Subtotal</span>
                     <span id="inv-subtotal">₦0</span>
@@ -414,9 +351,7 @@
             
             <!-- CAL.COM INTEGRATION -->
             <h3 class="step-heading">Pick Your Date</h3>
-            <p style="text-align: center; font-size: 13px; margin-bottom: 8px;">If unsure of the exact hour, pick any slot to hold your day.</p>
-            <p class="scroll-hint">&darr; Scroll within the times to see all availability &darr;</p>
-            
+            <p style="text-align: center; font-size: 13px; margin-bottom: 20px;">If unsure of the exact hour, pick any slot to hold your day.</p>
             <div class="calendar-wrapper">
                 
                 <!-- Cal inline embed code begins -->
@@ -461,7 +396,8 @@
 
                   Cal.ns["30min"]("ui", {
                       "hideEventTypeDetails":true,
-                      "layout":"month_view"
+                      "layout":"month_view",
+                      "theme":"auto"
                   });
                 </script>
                 <!-- Cal inline embed code ends -->
@@ -504,7 +440,7 @@
             </div>
         </section>
 
-        <footer class="brand-footer" style="margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--text-primary); text-align: center;">
+        <footer class="brand-footer">
             <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Libertypictures © 2026</span>
         </footer>
     </div>
@@ -569,7 +505,7 @@
             let addonTotal = cart.addons.reduce((sum, item) => sum + item.price, 0);
             
             cart.subtotal = cart.basePrice + addonTotal;
-            cart.retainer = cart.subtotal * 0.70; // 70% Retainer Policy
+            cart.retainer = cart.subtotal * 0.70; 
             cart.balance = cart.subtotal * 0.30;
 
             // Update DOM Invoice
@@ -577,7 +513,7 @@
             document.getElementById('inv-package-price').innerText = formatNaira(cart.basePrice);
             
             const addonsListUI = document.getElementById('inv-addons-list');
-            addonsListUI.innerHTML = ""; // Clear existing
+            addonsListUI.innerHTML = ""; 
             cart.addons.forEach(addon => {
                 addonsListUI.innerHTML += `
                     <div class="invoice-row">
