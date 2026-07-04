@@ -92,7 +92,8 @@
         .brand-intro { font-size: 14px; max-width: 500px; line-height: 1.7; margin: 0 auto; }
         
         /* Section Architecture */
-        .section-block { margin-bottom: 70px; }
+        /* Added scroll-margin-top to prevent the auto-scroll from hitting the absolute top edge */
+        .section-block { margin-bottom: 70px; scroll-margin-top: 80px; }
         .section-title { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: var(--text-primary); font-weight: 600; padding-bottom: 12px; border-bottom: 2px solid var(--text-primary); margin-bottom: 20px; text-align: center; }
         .section-meta { font-size: 13px; color: var(--text-primary); font-style: italic; margin-top: -10px; margin-bottom: 30px; text-align: left; }
 
@@ -125,8 +126,8 @@
         .addon-label input { accent-color: var(--accent); width: 18px; height: 18px; cursor: pointer; }
         .addon-price { font-weight: 600; color: var(--accent); white-space: nowrap; }
 
-        /* Invoice Summary Box */
-        .invoice-box { background-color: var(--highlight-bg); border: 1px solid var(--accent); padding: 30px; border-radius: 4px; margin-top: 40px; display: none; }
+        /* Invoice Summary Box - Tightened margin-top to bring it closer to add-ons */
+        .invoice-box { background-color: var(--highlight-bg); border: 1px solid var(--accent); padding: 30px; border-radius: 4px; margin-top: 25px; display: none; }
         .invoice-box.active { display: block; animation: fadeIn 0.5s ease; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         
@@ -137,6 +138,21 @@
         /* Multi-step Booking */
         .step-heading { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;}
         
+        /* UX Scroll Hint Animation */
+        .scroll-hint {
+            text-align: center; 
+            font-size: 12px; 
+            font-weight: 500; 
+            color: var(--accent); 
+            margin-bottom: 20px;
+            animation: pulse-hint 2.5s infinite ease-in-out;
+        }
+        @keyframes pulse-hint {
+            0% { opacity: 0.6; transform: translateY(0); }
+            50% { opacity: 1; transform: translateY(3px); }
+            100% { opacity: 0.6; transform: translateY(0); }
+        }
+
         /* Form Inputs */
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; color: var(--text-secondary); }
@@ -145,7 +161,7 @@
 
         .booking-section { margin-top: 70px; background-color: var(--bg-booking); padding: 60px 40px; border-radius: 4px; border: 1px solid var(--border-color); }
         
-        /* Calendar Wrapper Optimization - Removing clutter and tight spacing */
+        /* Calendar Wrapper Optimization */
         .calendar-wrapper { 
             background-color: transparent; 
             border: none; 
@@ -155,10 +171,11 @@
             border-radius: 4px;
         }
 
+        /* BRUTE FORCE HEIGHT FIX */
         #my-cal-inline-30min {
             width: 100%;
-            min-height: 460px; /* Provides enough room to load gracefully */
-            overflow: hidden !important; /* Prevents double scrolling */
+            height: 700px !important; /* Forces the box open so times fully expand */
+            overflow: hidden !important; 
         }
 
         .payment-wrapper { text-align: center; padding: 45px 30px; background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 8px 20px var(--shadow-subtle); }
@@ -205,8 +222,10 @@
                 border-radius: 4px;
             }
 
-            /* Mobile Add-ons - Wrap text gracefully */
+            /* Mobile Add-ons & Invoice Box - Snug Layout */
             .addons-container { padding: 20px 15px; }
+            .invoice-box { padding: 25px 20px; margin-top: 20px; }
+            
             .addon-row { 
                 flex-direction: column; 
                 align-items: flex-start; 
@@ -223,6 +242,11 @@
                 border-radius: 0; 
                 margin-left: -15px; 
                 margin-right: -15px;
+            }
+
+            /* MOBILE BRUTE FORCE HEIGHT */
+            #my-cal-inline-30min {
+                height: 750px !important; /* Extra height needed on mobile to un-hide the times */
             }
 
             .payment-wrapper { padding: 35px 20px; border-radius: 0; border-left: none; border-right: none;}
@@ -390,7 +414,9 @@
             
             <!-- CAL.COM INTEGRATION -->
             <h3 class="step-heading">Pick Your Date</h3>
-            <p style="text-align: center; font-size: 13px; margin-bottom: 20px;">If unsure of the exact hour, pick any slot to hold your day.</p>
+            <p style="text-align: center; font-size: 13px; margin-bottom: 8px;">If unsure of the exact hour, pick any slot to hold your day.</p>
+            <p class="scroll-hint">&darr; Scroll within the times to see all availability &darr;</p>
+            
             <div class="calendar-wrapper">
                 
                 <!-- Cal inline embed code begins -->
@@ -427,21 +453,15 @@
                   Cal.config = Cal.config || {};
                   Cal.config.forwardQueryParams = true;
 
-                  // 12-HOUR FORMAT DIRECTLY FORCED INTO CONFIG & QUERY PARAMS
                   Cal.ns["30min"]("inline", {
                     elementOrSelector:"#my-cal-inline-30min",
-                    config: {
-                        "layout":"month_view",
-                        "useSlotsViewOnSmallScreen":"true",
-                        "timeFormat":"12"
-                    },
-                    calLink: "liberty-visuals-if3smt/30min",
+                    config: {"layout":"month_view","useSlotsViewOnSmallScreen":"true"},
+                    calLink: "liberty-visuals-if3smt/30min?timeFormat=12h",
                   });
 
                   Cal.ns["30min"]("ui", {
                       "hideEventTypeDetails":true,
-                      "layout":"month_view",
-                      "timeFormat":"12"
+                      "layout":"month_view"
                   });
                 </script>
                 <!-- Cal inline embed code ends -->
