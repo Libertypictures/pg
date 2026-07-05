@@ -21,11 +21,16 @@
     }
     </script>
     
+    <!-- Modern Geometric Font Import (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
+    <!-- Paystack Inline API -->
     <script src="https://js.paystack.co/v1/inline.js"></script>
+
+    <!-- DaySchedule Widget Script -->
+    <script src="https://cdn.dayschedule.com/widget/latest/dayschedule-widget.js" defer></script>
 
     <style>
         /* Color Variables for Light & Dark Mode */
@@ -159,7 +164,7 @@
         .booking-section { margin-top: 70px; background-color: var(--bg-booking); padding: 60px 40px; border-radius: 4px; border: 1px solid var(--border-color); }
         .step-heading { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;}
         
-        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 20px 10px; margin-bottom: 40px; }
+        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 20px 10px; margin-bottom: 40px; min-height: 550px;}
 
         /* Payment Wrapper */
         .payment-wrapper { max-width: 600px; margin: 0 auto; text-align: center; padding: 45px 30px; background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 8px 20px var(--shadow-subtle); }
@@ -240,6 +245,7 @@
             </p>
         </header>
 
+        <!-- PROGRESS STEPPER -->
         <div class="progress-stepper" id="progress-stepper">
             <div class="stepper-item active" id="step-1">
                 <span class="stepper-circle">1</span>
@@ -257,10 +263,12 @@
             </div>
         </div>
 
+        <!-- PACKAGES SECTION -->
         <section class="section-block" id="packages">
             <h2 class="section-title">Individual Sessions</h2>
             <p class="section-meta">Perfect for Portraits, Pre-birthdays, Maternity, and Corporate Headshots.</p>
             <div class="tier-grid-3">
+                <!-- Look 1 -->
                 <div class="tier-card" data-price="130000" data-name="One Look Session">
                     <div class="tier-meta">
                         <h3>One Look</h3>
@@ -275,6 +283,7 @@
                     </div>
                 </div>
 
+                <!-- Look 2 -->
                 <div class="tier-card featured" data-price="190000" data-name="Two Looks Session">
                     <div class="tier-meta">
                         <h3>Two Looks</h3>
@@ -289,6 +298,7 @@
                     </div>
                 </div>
 
+                <!-- Look 3 -->
                 <div class="tier-card" data-price="250000" data-name="Three Looks Session">
                     <div class="tier-meta">
                         <h3>Three Looks</h3>
@@ -307,6 +317,7 @@
 
             <h2 class="section-title" style="margin-top: 50px;">Duo & Family Sessions</h2>
             <div class="tier-grid-2">
+                <!-- Duo -->
                 <div class="tier-card" data-price="170000" data-name="Duo Session">
                     <div class="tier-meta">
                         <h3>Duo Session</h3>
@@ -322,6 +333,7 @@
                     </div>
                 </div>
 
+                <!-- Family -->
                 <div class="tier-card" data-price="280000" data-name="Family Session">
                     <div class="tier-meta">
                         <h3>Family Session</h3>
@@ -340,6 +352,7 @@
             </div>
         </section>
 
+        <!-- ADD-ONS SECTION -->
         <section class="section-block" id="addons">
             <h2 class="section-title">Logistics & Custom Additions</h2>
             <p class="section-meta">Tailor your experience with off-site setups and priority delivery. Select a base session above to unlock these additions.</p>
@@ -367,6 +380,7 @@
                 </label>
             </div>
 
+            <!-- LIVE INVOICE SUMMARY -->
             <div class="invoice-box" id="invoice-ui">
                 <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px;">Booking Summary</h3>
                 <div class="invoice-row">
@@ -389,16 +403,25 @@
             </div>
         </section>
 
+        <!-- BOOKING / PAYMENT SECTION -->
         <div id="booking" class="booking-section">
             
             <h3 class="step-heading">Pick Your Date</h3>
             <p style="text-align: center; font-size: 13px; margin-bottom: 20px;">If unsure of the exact hour, pick any slot to hold your day.</p>
             <div class="calendar-wrapper">
                 
-                <div class="tidycal-embed" data-path="libertypictures/90"></div>
-                <script src="https://asset-tidycal.b-cdn.net/js/embed.js" async></script>
-                </div>
+                <!-- DaySchedule embed code begins -->
+                <dayschedule-widget url='https://liberty-visuals.dayschedule.com/photography-appointment' options='{ 
+                    "color": {
+                        "primary": "#c4a67e",
+                        "secondary": "#c4a67e"
+                    }}'> 
+                </dayschedule-widget>
+                <!-- DaySchedule embed code ends -->
 
+            </div>
+
+            <!-- PAYSTACK INTERACTIVE SECURE RETINER -->
             <h3 class="step-heading" style="margin-top: 50px;" id="secure-session">Secure Session</h3>
             <div class="payment-wrapper">
                 <div class="input-group">
@@ -439,6 +462,7 @@
         </footer>
     </div>
 
+    <!-- JAVASCRIPT FOR CART & PAYSTACK INTEGRATION -->
     <script>
         // State Management
         let cart = {
