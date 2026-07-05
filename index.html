@@ -10,30 +10,18 @@
     <meta property="og:description" content="Choose a session package, pick a date, and secure your slot online with Libertypictures.">
     <meta property="og:type" content="website">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000000'/%3E%3Ctext x='50' y='68' font-size='52' font-family='Georgia, serif' fill='%23c4a67e' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "ProfessionalService",
-      "name": "Libertypictures",
-      "description": "Photography studio offering portrait, maternity, corporate headshot, couple, and family photo sessions with online booking.",
-      "priceRange": "₦₦",
-      "areaServed": "NG"
-    }
-    </script>
     
     <!-- Modern Geometric Font Import (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Paystack Inline API -->
+    <!-- Third-Party APIs -->
     <script src="https://js.paystack.co/v1/inline.js"></script>
-
-    <!-- DaySchedule Widget Script -->
     <script src="https://cdn.dayschedule.com/widget/latest/dayschedule-widget.js" defer></script>
 
     <style>
-        /* Color Variables for Light & Dark Mode */
+        /* Core Brand Variables */
         :root {
             --bg-body: #f6f5f2;
             --bg-container: #ffffff;
@@ -105,15 +93,12 @@
         .brand-intro { font-size: 14px; max-width: 500px; line-height: 1.7; margin: 0 auto; }
         
         /* Section Architecture */
-        .section-block { margin-bottom: 70px; }
-        
-        /* TARGETED SCROLL FIX JUST FOR LOGISTICS */
-        #addons { scroll-margin-top: 40px; }
+        .section-block { margin-bottom: 70px; scroll-margin-top: 40px; }
         
         .section-title { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: var(--text-primary); font-weight: 600; padding-bottom: 12px; border-bottom: 2px solid var(--text-primary); margin-bottom: 20px; text-align: center; }
         .section-meta { font-size: 13px; color: var(--text-primary); font-style: italic; margin-top: -10px; margin-bottom: 30px; text-align: center; }
 
-        /* Pricing Cards - Custom Constrained Grids */
+        /* Pricing Cards */
         .tier-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 260px)); justify-content: center; gap: 28px; }
         .tier-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 290px)); justify-content: center; gap: 28px; }
 
@@ -129,7 +114,6 @@
         .tier-meta { flex-grow: 1; }
         .tier-meta h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 3px; font-weight: 600; margin-bottom: 15px; }
         
-        /* Editorial Dashes */
         .tier-details { list-style: none; font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
         .tier-details li { margin-bottom: 10px; position: relative; padding-left: 16px; }
         .tier-details li::before { content: "-"; font-size: 16px; position: absolute; left: 0; top: -3px; color: var(--accent); font-weight: 300; }
@@ -141,7 +125,7 @@
         .tier-card.selected .select-btn { background-color: var(--btn-primary-bg); border-color: var(--btn-primary-bg); color: var(--btn-primary-text); }
 
         /* Add-ons Box */
-        .addons-container { max-width: 600px; margin: 0 auto; border: 1px solid var(--accent); padding: 30px; background-color: var(--bg-container); border-radius: 4px; opacity: 0.5; pointer-events: none; transition: 0.3s; }
+        .addons-container { max-width: 600px; margin: 0 auto; border: 1px solid var(--accent); padding: 30px; background-color: var(--bg-container); border-radius: 4px; opacity: 0.5; pointer-events: none; transition: opacity 0.3s ease; }
         .addons-container.active { opacity: 1; pointer-events: auto; }
         .addon-row { display: flex; justify-content: space-between; align-items: center; font-size: 13.5px; padding: 12px 0; border-bottom: 1px dashed var(--border-dashed); cursor: pointer; transition: 0.2s;}
         .addon-row:first-child { padding-top: 0; }
@@ -160,23 +144,22 @@
         .invoice-total { border-top: 1px solid var(--border-color); margin-top: 15px; padding-top: 15px; font-weight: 600; color: var(--text-primary); font-size: 16px; display: flex; justify-content: space-between; }
         .invoice-retainer { background-color: var(--accent); color: var(--bg-container); padding: 15px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 16px; border-radius: 3px; }
 
-        /* Booking Section */
-        .booking-section { margin-top: 70px; background-color: var(--bg-booking); padding: 60px 40px; border-radius: 4px; border: 1px solid var(--border-color); }
+        /* Booking & Payment Section */
+        .booking-section { margin-top: 70px; background-color: var(--bg-booking); padding: 60px 40px; border-radius: 4px; border: 1px solid var(--border-color); transition: opacity 0.3s ease; }
+        .booking-section.inactive { opacity: 0.4; pointer-events: none; }
         .step-heading { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;}
         
-        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 20px 10px; margin-bottom: 40px; min-height: 550px;}
+        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 10px; margin-bottom: 40px; overflow: hidden; }
 
-        /* Payment Wrapper */
         .payment-wrapper { max-width: 600px; margin: 0 auto; text-align: center; padding: 45px 30px; background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 8px 20px var(--shadow-subtle); }
-        
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; color: var(--text-secondary); }
         .email-input { width: 100%; padding: 14px; background: var(--bg-body); border: 1px solid var(--border-color); color: var(--text-primary); font-family: 'Poppins'; border-radius: 3px; font-size: 14px; outline: none; transition: border-color 0.3s; }
         .email-input:focus { border-color: var(--accent); }
 
         .cta-btn-primary { display: block; width: 100%; background-color: var(--btn-primary-bg); color: var(--btn-primary-text); padding: 18px 45px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; border: none; border-radius: 3px; cursor: pointer; transition: all 0.4s ease; }
-        .cta-btn-primary:hover { background-color: var(--accent); color: var(--bg-container); transform: translateY(-2px); box-shadow: 0 12px 25px rgba(138, 115, 85, 0.3); }
-        .cta-btn-primary:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; transform: none; box-shadow: none; }
+        .cta-btn-primary:hover:not(:disabled) { background-color: var(--accent); color: var(--bg-container); transform: translateY(-2px); box-shadow: 0 12px 25px rgba(138, 115, 85, 0.3); }
+        .cta-btn-primary:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; }
         
         /* Policies */
         .protocol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 30px; }
@@ -184,7 +167,7 @@
         .protocol-item p { font-size: 13px; color: var(--text-secondary); text-align: justify; }
         .highlight-text { color: var(--accent); font-weight: 600; }
 
-        .brand-footer { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--text-primary); text-align: center; }
+        .brand-footer { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--border-color); text-align: center; }
 
         /* Progress Stepper */
         .progress-stepper { display: flex; align-items: center; justify-content: center; max-width: 460px; margin: 0 auto 60px auto; }
@@ -198,33 +181,27 @@
         .stepper-line { flex: 1 1 auto; height: 1px; background-color: var(--border-color); margin: 0 8px; margin-bottom: 19px; transition: background-color 0.3s ease; }
         .stepper-line.done { background-color: var(--accent); }
 
-        /* 📱 MOBILE OPTIMIZATION ENGINE */
+        /* Mobile Optimization Engine */
         @media (max-width: 768px) {
             body { padding: 0; background-color: var(--bg-container); }
             .container { padding: 35px 15px; border: none; box-shadow: none; }
             .brand-name { font-size: 20px; }
             .brand-intro, .section-title, .section-meta { text-align: center; }
             
-            /* Constrained Widths for Mobile */
-            .tier-grid-3, .tier-grid-2 { 
-                grid-template-columns: 1fr; 
-                gap: 22px; 
-                max-width: 340px; 
-                margin: 0 auto; 
-            }
+            .tier-grid-3, .tier-grid-2 { grid-template-columns: 1fr; gap: 22px; max-width: 340px; margin: 0 auto; }
             .tier-card { padding: 32px 24px; border-radius: 14px; box-shadow: 0 6px 18px var(--shadow-subtle); }
             .tier-price-box { flex-direction: column; align-items: stretch; gap: 16px; }
             .select-btn { width: 100%; padding: 14px; font-size: 12px; text-align: center; border-radius: 30px; }
 
-            .addons-container, .invoice-box, .payment-wrapper { max-width: 380px; margin-left: auto; margin-right: auto;}
+            .addons-container, .invoice-box, .payment-wrapper { max-width: 380px; margin: left: auto; margin-right: auto;}
             .addons-container { padding: 20px 15px; }
             .addon-row { flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px 0; }
             .addon-price { padding-left: 30px; font-size: 13px; }
 
             .booking-section { padding: 40px 10px; border-left: none; border-right: none; border-radius: 0; margin-left: -15px; margin-right: -15px; }
             .calendar-wrapper { border: none; padding: 0; margin-bottom: 30px; }
-
             .payment-wrapper { padding: 35px 20px; border-radius: 4px; }
+            
             .protocol-grid { grid-template-columns: 1fr; gap: 30px; }
             .progress-stepper { max-width: 300px; margin-bottom: 40px; }
             .stepper-label { font-size: 7.5px; }
@@ -245,7 +222,7 @@
             </p>
         </header>
 
-        <!-- PROGRESS STEPPER -->
+        <!-- Progress Stepper -->
         <div class="progress-stepper" id="progress-stepper">
             <div class="stepper-item active" id="step-1">
                 <span class="stepper-circle">1</span>
@@ -263,12 +240,11 @@
             </div>
         </div>
 
-        <!-- PACKAGES SECTION -->
+        <!-- Packages Section -->
         <section class="section-block" id="packages">
             <h2 class="section-title">Individual Sessions</h2>
             <p class="section-meta">Perfect for Portraits, Pre-birthdays, Maternity, and Corporate Headshots.</p>
             <div class="tier-grid-3">
-                <!-- Look 1 -->
                 <div class="tier-card" data-price="130000" data-name="One Look Session">
                     <div class="tier-meta">
                         <h3>One Look</h3>
@@ -283,7 +259,6 @@
                     </div>
                 </div>
 
-                <!-- Look 2 -->
                 <div class="tier-card featured" data-price="190000" data-name="Two Looks Session">
                     <div class="tier-meta">
                         <h3>Two Looks</h3>
@@ -298,7 +273,6 @@
                     </div>
                 </div>
 
-                <!-- Look 3 -->
                 <div class="tier-card" data-price="250000" data-name="Three Looks Session">
                     <div class="tier-meta">
                         <h3>Three Looks</h3>
@@ -317,7 +291,6 @@
 
             <h2 class="section-title" style="margin-top: 50px;">Duo & Family Sessions</h2>
             <div class="tier-grid-2">
-                <!-- Duo -->
                 <div class="tier-card" data-price="170000" data-name="Duo Session">
                     <div class="tier-meta">
                         <h3>Duo Session</h3>
@@ -333,7 +306,6 @@
                     </div>
                 </div>
 
-                <!-- Family -->
                 <div class="tier-card" data-price="280000" data-name="Family Session">
                     <div class="tier-meta">
                         <h3>Family Session</h3>
@@ -352,7 +324,7 @@
             </div>
         </section>
 
-        <!-- ADD-ONS SECTION -->
+        <!-- Add-ons Section -->
         <section class="section-block" id="addons">
             <h2 class="section-title">Logistics & Custom Additions</h2>
             <p class="section-meta">Tailor your experience with off-site setups and priority delivery. Select a base session above to unlock these additions.</p>
@@ -380,7 +352,7 @@
                 </label>
             </div>
 
-            <!-- LIVE INVOICE SUMMARY -->
+            <!-- Live Invoice Summary -->
             <div class="invoice-box" id="invoice-ui">
                 <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px;">Booking Summary</h3>
                 <div class="invoice-row">
@@ -403,25 +375,24 @@
             </div>
         </section>
 
-        <!-- BOOKING / PAYMENT SECTION -->
-        <div id="booking" class="booking-section">
+        <!-- Booking & Payment Section (Inactive by default) -->
+        <div id="booking" class="booking-section inactive">
             
             <h3 class="step-heading">Pick Your Date</h3>
             <p style="text-align: center; font-size: 13px; margin-bottom: 20px;">If unsure of the exact hour, pick any slot to hold your day.</p>
             <div class="calendar-wrapper">
                 
-                <!-- DaySchedule embed code begins -->
-                <dayschedule-widget url='https://liberty-visuals.dayschedule.com/photography-appointment' options='{ 
+                <!-- DaySchedule Embed Code (Corrected Event URL) -->
+                <dayschedule-widget url='https://liberty-visuals.dayschedule.com/photo-session' options='{ 
                     "color": {
                         "primary": "#c4a67e",
                         "secondary": "#c4a67e"
                     }}'> 
                 </dayschedule-widget>
-                <!-- DaySchedule embed code ends -->
-
+                
             </div>
 
-            <!-- PAYSTACK INTERACTIVE SECURE RETINER -->
+            <!-- Secure Retainer Payment -->
             <h3 class="step-heading" style="margin-top: 50px;" id="secure-session">Secure Session</h3>
             <div class="payment-wrapper">
                 <div class="input-group">
@@ -435,6 +406,7 @@
             </div>
         </div>
 
+        <!-- Studio Policies -->
         <section class="section-block" style="margin-top: 70px;">
             <h2 class="section-title">Studio Policies</h2>
             <div class="protocol-grid">
@@ -462,7 +434,7 @@
         </footer>
     </div>
 
-    <!-- JAVASCRIPT FOR CART & PAYSTACK INTEGRATION -->
+    <!-- Interface Logic & Paystack Integration -->
     <script>
         // State Management
         let cart = {
@@ -493,33 +465,34 @@
             });
         }
 
-        // Package Selection
+        // Package Selection Flow
         function selectPackage(btn) {
-            // Remove selection from all cards
+            // Reset states
             document.querySelectorAll('.tier-card').forEach(card => card.classList.remove('selected'));
             document.querySelectorAll('.select-btn').forEach(b => b.innerText = "Select Session");
 
-            // Add selection to clicked card
+            // Activate chosen tier
             const card = btn.closest('.tier-card');
             card.classList.add('selected');
             btn.innerText = "Selected";
 
-            // Update Cart State
+            // Update State
             cart.basePrice = parseFloat(card.getAttribute('data-price'));
             cart.baseName = card.getAttribute('data-name');
 
-            // Enable Addons & update UI
+            // Unlock UI Elements
             document.getElementById('addons-box').classList.add('active');
             document.getElementById('invoice-ui').classList.add('active');
+            document.getElementById('booking').classList.remove('inactive');
             updateStep(2);
             
-            // Smooth scroll to addons
+            // Smooth Scroll Guide
             document.getElementById('addons').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
             calculateTotals();
         }
 
-        // Add-on Checkbox Listeners
+        // Add-on Event Listeners
         document.querySelectorAll('.addon-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', () => {
                 cart.addons = [];
@@ -533,7 +506,7 @@
             });
         });
 
-        // Calculate and Update UI
+        // Cart Math & Render
         function calculateTotals() {
             let addonTotal = cart.addons.reduce((sum, item) => sum + item.price, 0);
             
@@ -541,7 +514,7 @@
             cart.retainer = cart.subtotal * 0.70; 
             cart.balance = cart.subtotal * 0.30;
 
-            // Update DOM Invoice
+            // DOM Updates
             document.getElementById('inv-package-name').innerText = cart.baseName;
             document.getElementById('inv-package-price').innerText = formatNaira(cart.basePrice);
             
@@ -559,27 +532,30 @@
             document.getElementById('inv-balance').innerText = formatNaira(cart.balance);
             document.getElementById('inv-retainer').innerText = formatNaira(cart.retainer);
 
-            // Enable & Update Payment Button
+            // Arm the Payment Button
             const payBtn = document.getElementById('pay-btn');
             payBtn.removeAttribute('disabled');
             payBtn.innerText = `Pay Retainer (${formatNaira(cart.retainer)})`;
         }
 
-        // Paystack Integration
+        // Secure Paystack Checkout
         function payWithPaystack() {
             if (typeof PaystackPop === 'undefined') {
-                alert("The payment module failed to load. Please check your connection or disable any ad blockers, then refresh the page. You can also reach out to us directly to complete your booking.");
+                alert("The payment module failed to load. Please check your connection or disable any ad blockers, then refresh the page.");
                 return;
             }
 
-            const emailInput = document.getElementById('client-email').value.trim();
+            const emailInput = document.getElementById('client-email');
+            const emailValue = emailInput.value.trim();
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-            if (!emailInput || !emailRegex.test(emailInput)) {
+            if (!emailValue || !emailRegex.test(emailValue)) {
+                emailInput.style.borderColor = "red";
                 alert("Please enter a valid email address before paying.");
-                document.getElementById('client-email').focus();
+                emailInput.focus();
                 return;
             }
+            emailInput.style.borderColor = "var(--border-color)";
 
             if (cart.retainer === 0) {
                 alert("Please select a session first.");
@@ -590,7 +566,7 @@
 
             let handler = PaystackPop.setup({
                 key: 'pk_live_05373c45337d6a937f51d9c3045c7839369d503d',
-                email: emailInput,
+                email: emailValue,
                 amount: amountInKobo,
                 currency: 'NGN',
                 callback: function(response) {
@@ -598,7 +574,7 @@
                     alert('Payment complete! Reference: ' + response.reference + '\nWe will contact you shortly to confirm your booking.');
                 },
                 onClose: function() {
-                    alert('Payment window closed.');
+                    console.log('Payment window closed by user.');
                 }
             });
             handler.openIframe();
