@@ -447,43 +447,6 @@
                         "secondary": "#c4b07e"
                     }}'>
                 </dayschedule-widget>
-                <script>
-                    // Auto-open the calendar: the DaySchedule widget shows a "Book Now"
-                    // button before the calendar appears. This watches for that exact
-                    // button as soon as the widget finishes rendering and clicks it
-                    // automatically, so visitors land straight on the calendar.
-                    (function () {
-                        function findBookButton() {
-                            const widget = document.querySelector('dayschedule-widget');
-                            if (!widget) return null;
-                            const root = widget.shadowRoot || widget;
-                            const candidates = root.querySelectorAll('button, [role="button"], a');
-                            for (const el of candidates) {
-                                const text = (el.textContent || '').trim().toLowerCase();
-                                if (text === 'book now') return el;
-                            }
-                            // Fallback: anything that just contains "book now" as part of its text
-                            for (const el of candidates) {
-                                const text = (el.textContent || '').trim().toLowerCase();
-                                if (text.includes('book now')) return el;
-                            }
-                            return null;
-                        }
-
-                        let attempts = 0;
-                        const maxAttempts = 40; // ~10 seconds
-                        const timer = setInterval(function () {
-                            attempts++;
-                            const btn = findBookButton();
-                            if (btn) {
-                                btn.click();
-                                clearInterval(timer);
-                            } else if (attempts >= maxAttempts) {
-                                clearInterval(timer);
-                            }
-                        }, 250);
-                    })();
-                </script>
                 <!-- DaySchedule inline embed code ends -->
 
             </div>
