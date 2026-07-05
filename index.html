@@ -9,10 +9,10 @@
     <meta property="og:title" content="Studio Booking Portal | Libertypictures">
     <meta property="og:description" content="Choose a session package, pick a date, and secure your slot online with Libertypictures.">
     <meta property="og:type" content="website">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000000'/%3E%3Ctext x='50' y='68' font-size='52' font-family='Georgia, serif' fill='%23c4a67e' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='[w3.org](http://www.w3.org/2000/svg)' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000000'/%3E%3Ctext x='50' y='68' font-size='52' font-family='Georgia, serif' fill='%23c4a67e' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
     <script type="application/ld+json">
     {
-      "@context": "https://schema.org",
+      "@context": "[schema.org](https://schema.org)",
       "@type": "ProfessionalService",
       "name": "Libertypictures",
       "description": "Photography studio offering portrait, maternity, corporate headshot, couple, and family photo sessions with online booking.",
@@ -21,13 +21,13 @@
     }
     </script>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Modern Geometric Font Import (Poppins) -->
+    <link rel="preconnect" href="[fonts.googleapis.com](https://fonts.googleapis.com)">
+    <link rel="preconnect" href="[fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+    <link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap)" rel="stylesheet">
     
-    <script src="https://js.paystack.co/v1/inline.js"></script>
-
-    <script src="https://cdn.jsdelivr.net/npm/dayschedule-widget@1.2.4/dist/dayschedule-widget.min.js" defer></script>
+    <!-- Paystack Inline API -->
+    <script src="[js.paystack.co](https://js.paystack.co/v1/inline.js)"></script>
 
     <style>
         /* Color Variables for Light & Dark Mode */
@@ -230,6 +230,7 @@
             .stepper-circle { width: 26px; height: 26px; font-size: 11px; }
         }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/dayschedule-widget@1.2.4/dist/dayschedule-widget.min.js" defer></script>
 </head>
 <body>
 
@@ -244,6 +245,7 @@
             </p>
         </header>
 
+        <!-- PROGRESS STEPPER -->
         <div class="progress-stepper" id="progress-stepper">
             <div class="stepper-item active" id="step-1">
                 <span class="stepper-circle">1</span>
@@ -261,10 +263,12 @@
             </div>
         </div>
 
+        <!-- PACKAGES SECTION -->
         <section class="section-block" id="packages">
             <h2 class="section-title">Individual Sessions</h2>
             <p class="section-meta">Perfect for Portraits, Pre-birthdays, Maternity, and Corporate Headshots.</p>
             <div class="tier-grid-3">
+                <!-- Look 1 -->
                 <div class="tier-card" data-price="130000" data-name="One Look Session">
                     <div class="tier-meta">
                         <h3>One Look</h3>
@@ -279,6 +283,7 @@
                     </div>
                 </div>
 
+                <!-- Look 2 -->
                 <div class="tier-card featured" data-price="190000" data-name="Two Looks Session">
                     <div class="tier-meta">
                         <h3>Two Looks</h3>
@@ -293,6 +298,7 @@
                     </div>
                 </div>
 
+                <!-- Look 3 -->
                 <div class="tier-card" data-price="250000" data-name="Three Looks Session">
                     <div class="tier-meta">
                         <h3>Three Looks</h3>
@@ -311,6 +317,7 @@
 
             <h2 class="section-title" style="margin-top: 50px;">Duo & Family Sessions</h2>
             <div class="tier-grid-2">
+                <!-- Duo -->
                 <div class="tier-card" data-price="170000" data-name="Duo Session">
                     <div class="tier-meta">
                         <h3>Duo Session</h3>
@@ -326,6 +333,7 @@
                     </div>
                 </div>
 
+                <!-- Family -->
                 <div class="tier-card" data-price="280000" data-name="Family Session">
                     <div class="tier-meta">
                         <h3>Family Session</h3>
@@ -344,6 +352,7 @@
             </div>
         </section>
 
+        <!-- ADD-ONS SECTION -->
         <section class="section-block" id="addons">
             <h2 class="section-title">Logistics & Custom Additions</h2>
             <p class="section-meta">Tailor your experience with off-site setups and priority delivery. Select a base session above to unlock these additions.</p>
@@ -371,6 +380,7 @@
                 </label>
             </div>
 
+            <!-- LIVE INVOICE SUMMARY -->
             <div class="invoice-box" id="invoice-ui">
                 <h3 style="font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px;">Booking Summary</h3>
                 <div class="invoice-row">
@@ -393,71 +403,42 @@
             </div>
         </section>
 
+        <!-- BOOKING / PAYMENT SECTION -->
         <div id="booking" class="booking-section">
             
+            <!-- CAL.COM INTEGRATION -->
             <h3 class="step-heading">Pick Your Date</h3>
             <p style="text-align: center; font-size: 13px; margin-bottom: 20px;">If unsure of the exact hour, pick any slot to hold your day.</p>
             <div class="calendar-wrapper">
                 
-                <div id="my-cal-inline-30min"></div>
-                <script type="text/javascript">
-                  (function (C, A, L) { 
-                      let p = function (a, ar) { a.q.push(ar); }; 
-                      let d = C.document; 
-                      C.Cal = C.Cal || function () { 
-                          let cal = C.Cal; 
-                          let ar = arguments; 
-                          if (!cal.loaded) { 
-                              cal.ns = {}; 
-                              cal.q = cal.q || []; 
-                              d.head.appendChild(d.createElement("script")).src = A; 
-                              cal.loaded = true; 
-                          } 
-                          if (ar[0] === L) { 
-                              const api = function () { p(api, arguments); }; 
-                              const namespace = ar[1]; 
-                              api.q = api.q || []; 
-                              if(typeof namespace === "string"){
-                                  cal.ns[namespace] = cal.ns[namespace] || api;
-                                  p(cal.ns[namespace], ar);
-                                  p(cal, ["initNamespace", namespace]);
-                              } else p(cal, ar); 
-                              return;
-                          } 
-                          p(cal, ar); 
-                      }; 
-                  })(window, "https://app.cal.com/embed/embed.js", "init");
-                  
-                  Cal("init", "30min", {origin:"https://app.cal.com"});
-                  Cal.config = Cal.config || {};
-                  Cal.config.forwardQueryParams = true;
+                <!-- DaySchedule inline embed code begins -->
+                <style>
+                    dayschedule-widget {
+                        display: block;
+                        width: 100%;
+                    }
+                    dayschedule-widget iframe {
+                        width: 100% !important;
+                        min-height: 700px;
+                        border: none;
+                    }
+                    @media (max-width: 480px) {
+                        dayschedule-widget iframe { min-height: 780px; }
+                    }
+                </style>
+                <dayschedule-widget url='https://liberty-visuals.dayschedule.com/photography-appointment' options='{
+                    "color": {
+                        "primary": "#c4b07e",
+                        "secondary": "#c4b07e"
+                    },
+                    "hideEvent": true
+                    }'>
+                </dayschedule-widget>
+                <!-- DaySchedule inline embed code ends -->
 
-                  Cal.ns["30min"]("inline", {
-                    elementOrSelector:"#my-cal-inline-30min",
-                    config: {"layout":"month_view","useSlotsViewOnSmallScreen":"true","timeFormat":"12h"},
-                    calLink: "liberty-visuals-if3smt/30min?timeFormat=12h",
-                  });
+            </div>
 
-                  Cal.ns["30min"]("ui", {
-                      "hideEventTypeDetails":true,
-                      "layout":"month_view",
-                      "theme":"auto"
-                  });
-
-                  // Once a date/time is confirmed, guide the client down to the payment step
-                  // instead of leaving the booking confirmation feeling like a dead end.
-                  Cal.ns["30min"]("on", {
-                      action: "bookingSuccessful",
-                      callback: function () {
-                          setTimeout(function () {
-                              const target = document.getElementById('secure-session');
-                              if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                          }, 700);
-                      }
-                  });
-                </script>
-                </div>
-
+            <!-- PAYSTACK INTERACTIVE SECURE RETINER -->
             <h3 class="step-heading" style="margin-top: 50px;" id="secure-session">Secure Session</h3>
             <div class="payment-wrapper">
                 <div class="input-group">
@@ -498,6 +479,7 @@
         </footer>
     </div>
 
+    <!-- JAVASCRIPT FOR CART & PAYSTACK INTEGRATION -->
     <script>
         // State Management
         let cart = {
