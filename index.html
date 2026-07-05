@@ -4,14 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Studio Booking Portal | Libertypictures</title>
+    <meta name="description" content="Book your Libertypictures photography session online — portraits, maternity, corporate headshots, couple and family sessions. Choose a package, pick a date, and secure your slot with a retainer payment.">
+    <meta name="theme-color" content="#8a7355">
+    <meta property="og:title" content="Studio Booking Portal | Libertypictures">
+    <meta property="og:description" content="Choose a session package, pick a date, and secure your slot online with Libertypictures.">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='[w3.org](http://www.w3.org/2000/svg)' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000000'/%3E%3Ctext x='50' y='68' font-size='52' font-family='Georgia, serif' fill='%23c4a67e' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+    <script type="application/ld+json">
+    {
+      "@context": "[schema.org](https://schema.org)",
+      "@type": "ProfessionalService",
+      "name": "Libertypictures",
+      "description": "Photography studio offering portrait, maternity, corporate headshot, couple, and family photo sessions with online booking.",
+      "priceRange": "₦₦",
+      "areaServed": "NG"
+    }
+    </script>
     
     <!-- Modern Geometric Font Import (Poppins) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="[fonts.googleapis.com](https://fonts.googleapis.com)">
+    <link rel="preconnect" href="[fonts.gstatic.com](https://fonts.gstatic.com)" crossorigin>
+    <link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap)" rel="stylesheet">
     
     <!-- Paystack Inline API -->
-    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="[js.paystack.co](https://js.paystack.co/v1/inline.js)"></script>
 
     <style>
         /* Color Variables for Light & Dark Mode */
@@ -95,24 +111,31 @@
         .section-meta { font-size: 13px; color: var(--text-primary); font-style: italic; margin-top: -10px; margin-bottom: 30px; text-align: center; }
 
         /* Pricing Cards - Custom Constrained Grids */
-        .tier-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; }
-        .tier-grid-2 { display: grid; grid-template-columns: repeat(2, 320px); justify-content: center; gap: 25px; }
+        .tier-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 260px)); justify-content: center; gap: 28px; }
+        .tier-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 290px)); justify-content: center; gap: 28px; }
 
-        .tier-card { display: flex; flex-direction: column; justify-content: space-between; background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 35px 25px; border-radius: 4px; transition: all 0.3s ease; position: relative; }
-        .tier-card.selected { border: 1px solid var(--accent); background-color: var(--highlight-bg); transform: translateY(-3px); box-shadow: 0 10px 25px var(--shadow-hover); }
+        .tier-card { display: flex; flex-direction: column; justify-content: space-between; background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 40px 26px 30px 26px; border-radius: 10px; transition: all 0.35s ease; position: relative; box-shadow: 0 2px 10px var(--shadow-subtle); }
+        .tier-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 10px 10px 0 0; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0; transition: opacity 0.35s ease; }
+        .tier-card:hover { transform: translateY(-5px); box-shadow: 0 14px 30px var(--shadow-hover); }
+        .tier-card:hover::before { opacity: 1; }
+        .tier-card.featured { border-color: var(--accent); }
+        .tier-card.featured::after { content: "Most Popular"; position: absolute; top: 16px; right: 16px; background-color: var(--accent); color: var(--bg-container); font-size: 9px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; padding: 5px 10px; border-radius: 20px; }
+        .tier-card.selected { border-color: var(--accent); background-color: var(--highlight-bg); transform: translateY(-5px); box-shadow: 0 14px 30px var(--shadow-hover); }
+        .tier-card.selected::before { opacity: 1; }
         
         .tier-meta { flex-grow: 1; }
-        .tier-meta h3 { font-size: 14px; text-transform: uppercase; letter-spacing: 2px; font-weight: 600; margin-bottom: 15px; }
+        .tier-meta h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 3px; font-weight: 600; margin-bottom: 15px; }
         
         /* Editorial Dashes */
-        .tier-details { list-style: none; font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; }
-        .tier-details li { margin-bottom: 8px; position: relative; padding-left: 15px; }
+        .tier-details { list-style: none; font-size: 13px; color: var(--text-secondary); margin-bottom: 24px; }
+        .tier-details li { margin-bottom: 10px; position: relative; padding-left: 16px; }
         .tier-details li::before { content: "-"; font-size: 16px; position: absolute; left: 0; top: -3px; color: var(--accent); font-weight: 300; }
         
-        .tier-price-box { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 20px; border-top: 1px solid var(--border-color); }
-        .tier-price { font-size: 18px; font-weight: 600; color: var(--accent); letter-spacing: 0.5px; }
-        .select-btn { background: none; border: 1px solid var(--accent); color: var(--accent); padding: 8px 15px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; border-radius: 2px; }
-        .select-btn:hover, .tier-card.selected .select-btn { background-color: var(--accent); color: var(--bg-container); }
+        .tier-price-box { display: flex; flex-direction: column; align-items: stretch; gap: 16px; margin-top: auto; padding-top: 22px; border-top: 1px solid var(--border-color); }
+        .tier-price { font-size: 24px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.5px; }
+        .select-btn { width: 100%; background-color: var(--accent); border: 1px solid var(--accent); color: var(--bg-container); padding: 13px 15px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; cursor: pointer; transition: 0.3s; border-radius: 30px; }
+        .select-btn:hover { background-color: var(--btn-primary-bg); border-color: var(--btn-primary-bg); color: var(--btn-primary-text); transform: translateY(-1px); }
+        .tier-card.selected .select-btn { background-color: var(--btn-primary-bg); border-color: var(--btn-primary-bg); color: var(--btn-primary-text); }
 
         /* Add-ons Box */
         .addons-container { max-width: 600px; margin: 0 auto; border: 1px solid var(--accent); padding: 30px; background-color: var(--bg-container); border-radius: 4px; opacity: 0.5; pointer-events: none; transition: 0.3s; }
@@ -139,7 +162,7 @@
         .step-heading { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;}
         
         .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 20px 10px; margin-bottom: 40px; }
-        #my-cal-inline-30min { height: 600px !important; width: 100%; }
+        #my-cal-inline-30min { min-height: 600px; width: 100%; }
 
         /* Payment Wrapper */
         .payment-wrapper { max-width: 600px; margin: 0 auto; text-align: center; padding: 45px 30px; background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 8px 20px var(--shadow-subtle); }
@@ -161,6 +184,18 @@
 
         .brand-footer { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--text-primary); text-align: center; }
 
+        /* Progress Stepper */
+        .progress-stepper { display: flex; align-items: center; justify-content: center; max-width: 460px; margin: 0 auto 60px auto; }
+        .stepper-item { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 0 0 auto; }
+        .stepper-circle { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--text-secondary); background-color: var(--bg-container); transition: all 0.3s ease; }
+        .stepper-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); white-space: nowrap; transition: color 0.3s ease; }
+        .stepper-item.active .stepper-circle { border-color: var(--accent); background-color: var(--accent); color: var(--bg-container); }
+        .stepper-item.active .stepper-label { color: var(--text-primary); font-weight: 600; }
+        .stepper-item.done .stepper-circle { border-color: var(--accent); background-color: var(--bg-container); color: var(--accent); }
+        .stepper-item.done .stepper-label { color: var(--accent); }
+        .stepper-line { flex: 1 1 auto; height: 1px; background-color: var(--border-color); margin: 0 8px; margin-bottom: 19px; transition: background-color 0.3s ease; }
+        .stepper-line.done { background-color: var(--accent); }
+
         /* 📱 MOBILE OPTIMIZATION ENGINE */
         @media (max-width: 768px) {
             body { padding: 0; background-color: var(--bg-container); }
@@ -171,13 +206,13 @@
             /* Constrained Widths for Mobile */
             .tier-grid-3, .tier-grid-2 { 
                 grid-template-columns: 1fr; 
-                gap: 20px; 
-                max-width: 380px; 
+                gap: 22px; 
+                max-width: 340px; 
                 margin: 0 auto; 
             }
-            .tier-card { padding: 30px 20px; border-radius: 6px; }
-            .tier-price-box { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .select-btn { width: 100%; padding: 14px; font-size: 12px; text-align: center; border-radius: 4px; }
+            .tier-card { padding: 32px 24px; border-radius: 14px; box-shadow: 0 6px 18px var(--shadow-subtle); }
+            .tier-price-box { flex-direction: column; align-items: stretch; gap: 16px; }
+            .select-btn { width: 100%; padding: 14px; font-size: 12px; text-align: center; border-radius: 30px; }
 
             .addons-container, .invoice-box, .payment-wrapper { max-width: 380px; margin-left: auto; margin-right: auto;}
             .addons-container { padding: 20px 15px; }
@@ -186,10 +221,13 @@
 
             .booking-section { padding: 40px 10px; border-left: none; border-right: none; border-radius: 0; margin-left: -15px; margin-right: -15px; }
             .calendar-wrapper { border: none; padding: 0; margin-bottom: 30px; }
-            #my-cal-inline-30min { height: 500px !important; }
+            #my-cal-inline-30min { min-height: 500px; }
 
             .payment-wrapper { padding: 35px 20px; border-radius: 4px; }
             .protocol-grid { grid-template-columns: 1fr; gap: 30px; }
+            .progress-stepper { max-width: 300px; margin-bottom: 40px; }
+            .stepper-label { font-size: 7.5px; }
+            .stepper-circle { width: 26px; height: 26px; font-size: 11px; }
         }
     </style>
 </head>
@@ -205,6 +243,24 @@
                 Select your desired <span style="color: var(--accent);">session configuration</span>, book a <span style="color: var(--accent);">date</span>, and secure your <span style="color: var(--accent);">retainer</span> below
             </p>
         </header>
+
+        <!-- PROGRESS STEPPER -->
+        <div class="progress-stepper" id="progress-stepper">
+            <div class="stepper-item active" id="step-1">
+                <span class="stepper-circle">1</span>
+                <span class="stepper-label">Choose Session</span>
+            </div>
+            <div class="stepper-line" id="line-1"></div>
+            <div class="stepper-item" id="step-2">
+                <span class="stepper-circle">2</span>
+                <span class="stepper-label">Date &amp; Payment</span>
+            </div>
+            <div class="stepper-line" id="line-2"></div>
+            <div class="stepper-item" id="step-3">
+                <span class="stepper-circle">3</span>
+                <span class="stepper-label">Confirmed</span>
+            </div>
+        </div>
 
         <!-- PACKAGES SECTION -->
         <section class="section-block" id="packages">
@@ -227,7 +283,7 @@
                 </div>
 
                 <!-- Look 2 -->
-                <div class="tier-card" data-price="190000" data-name="Two Looks Session">
+                <div class="tier-card featured" data-price="190000" data-name="Two Looks Session">
                     <div class="tier-meta">
                         <h3>Two Looks</h3>
                         <ul class="tier-details">
@@ -382,15 +438,15 @@
                           } 
                           p(cal, ar); 
                       }; 
-                  })(window, "https://app.cal.com/embed/embed.js", "init");
+                  })(window, "[app.cal.com](https://app.cal.com/embed/embed.js)", "init");
                   
-                  Cal("init", "30min", {origin:"https://app.cal.com"});
+                  Cal("init", "30min", {origin:"[app.cal.com](https://app.cal.com)"});
                   Cal.config = Cal.config || {};
                   Cal.config.forwardQueryParams = true;
 
                   Cal.ns["30min"]("inline", {
                     elementOrSelector:"#my-cal-inline-30min",
-                    config: {"layout":"month_view","useSlotsViewOnSmallScreen":"true"},
+                    config: {"layout":"month_view","useSlotsViewOnSmallScreen":"true","timeFormat":"12h"},
                     calLink: "liberty-visuals-if3smt/30min?timeFormat=12h",
                   });
 
@@ -399,13 +455,25 @@
                       "layout":"month_view",
                       "theme":"auto"
                   });
+
+                  // Once a date/time is confirmed, guide the client down to the payment step
+                  // instead of leaving the booking confirmation feeling like a dead end.
+                  Cal.ns["30min"]("on", {
+                      action: "bookingSuccessful",
+                      callback: function () {
+                          setTimeout(function () {
+                              const target = document.getElementById('secure-session');
+                              if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }, 700);
+                      }
+                  });
                 </script>
                 <!-- Cal inline embed code ends -->
 
             </div>
 
             <!-- PAYSTACK INTERACTIVE SECURE RETINER -->
-            <h3 class="step-heading" style="margin-top: 50px;">Secure Session</h3>
+            <h3 class="step-heading" style="margin-top: 50px;" id="secure-session">Secure Session</h3>
             <div class="payment-wrapper">
                 <div class="input-group">
                     <label class="input-label" for="client-email">Email Address for Receipt</label>
@@ -461,6 +529,21 @@
             return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(amount);
         };
 
+        // Progress Stepper Control
+        function updateStep(stepNumber) {
+            document.querySelectorAll('.stepper-item').forEach((el, idx) => {
+                const n = idx + 1;
+                el.classList.remove('active', 'done');
+                if (n < stepNumber) el.classList.add('done');
+                else if (n === stepNumber) el.classList.add('active');
+            });
+            document.querySelectorAll('.stepper-line').forEach((line, idx) => {
+                const n = idx + 1;
+                if (n < stepNumber) line.classList.add('done');
+                else line.classList.remove('done');
+            });
+        }
+
         // Package Selection
         function selectPackage(btn) {
             // Remove selection from all cards
@@ -479,6 +562,7 @@
             // Enable Addons & update UI
             document.getElementById('addons-box').classList.add('active');
             document.getElementById('invoice-ui').classList.add('active');
+            updateStep(2);
             
             // Smooth scroll to addons
             document.getElementById('addons').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -534,10 +618,16 @@
 
         // Paystack Integration
         function payWithPaystack() {
-            const emailInput = document.getElementById('client-email').value;
-            
-            if (!emailInput) {
-                alert("Please enter your email address before paying.");
+            if (typeof PaystackPop === 'undefined') {
+                alert("The payment module failed to load. Please check your connection or disable any ad blockers, then refresh the page. You can also reach out to us directly to complete your booking.");
+                return;
+            }
+
+            const emailInput = document.getElementById('client-email').value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+            if (!emailInput || !emailRegex.test(emailInput)) {
+                alert("Please enter a valid email address before paying.");
                 document.getElementById('client-email').focus();
                 return;
             }
@@ -555,6 +645,7 @@
                 amount: amountInKobo,
                 currency: 'NGN',
                 callback: function(response) {
+                    updateStep(3);
                     alert('Payment complete! Reference: ' + response.reference + '\nWe will contact you shortly to confirm your booking.');
                 },
                 onClose: function() {
