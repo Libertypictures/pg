@@ -185,15 +185,36 @@
         .brand-footer { margin-top: 40px; padding-top: 40px; border-top: 1px solid var(--text-primary); text-align: center; }
 
         /* Progress Stepper */
-        .progress-stepper { display: flex; align-items: center; justify-content: center; max-width: 460px; margin: 0 auto 60px auto; }
+        .stepper-sentinel { height: 1px; }
+        .sticky-progress-wrap {
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            background-color: var(--bg-container);
+            margin: 0 -70px 60px -70px;
+            padding: 24px 70px 18px 70px;
+            transition: padding 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+            border-bottom: 1px solid transparent;
+        }
+        .sticky-progress-wrap.is-stuck {
+            padding-top: 14px;
+            padding-bottom: 12px;
+            box-shadow: 0 10px 24px var(--shadow-hover);
+            border-bottom-color: var(--border-color);
+        }
+        .progress-stepper { display: flex; align-items: center; justify-content: center; max-width: 460px; margin: 0 auto; transition: max-width 0.35s ease; }
+        .sticky-progress-wrap.is-stuck .progress-stepper { max-width: 340px; }
         .stepper-item { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 0 0 auto; }
         .stepper-circle { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--text-secondary); background-color: var(--bg-container); transition: all 0.3s ease; }
-        .stepper-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); white-space: nowrap; transition: color 0.3s ease; }
+        .sticky-progress-wrap.is-stuck .stepper-circle { width: 24px; height: 24px; font-size: 10px; }
+        .stepper-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); white-space: nowrap; transition: all 0.3s ease; }
+        .sticky-progress-wrap.is-stuck .stepper-label { font-size: 7.5px; }
         .stepper-item.active .stepper-circle { border-color: var(--accent); background-color: var(--accent); color: var(--bg-container); }
         .stepper-item.active .stepper-label { color: var(--text-primary); font-weight: 600; }
         .stepper-item.done .stepper-circle { border-color: var(--accent); background-color: var(--bg-container); color: var(--accent); }
         .stepper-item.done .stepper-label { color: var(--accent); }
-        .stepper-line { flex: 1 1 auto; height: 1px; background-color: var(--border-color); margin: 0 8px; margin-bottom: 19px; transition: background-color 0.3s ease; }
+        .stepper-line { flex: 1 1 auto; height: 1px; background-color: var(--border-color); margin: 0 8px; margin-bottom: 19px; transition: background-color 0.3s ease, margin-bottom 0.3s ease; }
+        .sticky-progress-wrap.is-stuck .stepper-line { margin-bottom: 15px; }
         .stepper-line.done { background-color: var(--accent); }
 
         /* 📱 MOBILE OPTIMIZATION ENGINE */
@@ -223,11 +244,16 @@
             .calendar-wrapper { border: none; padding: 0; margin-bottom: 30px; }
             #my-cal-inline-30min { min-height: 500px; }
 
-            .payment-wrapper { padding: 35px 20px; border-radius: 4px; }
-            .protocol-grid { grid-template-columns: 1fr; gap: 30px; }
-            .progress-stepper { max-width: 300px; margin-bottom: 40px; }
+            .sticky-progress-wrap { margin: 0 -15px 40px -15px; padding: 16px 15px 12px 15px; }
+            .sticky-progress-wrap.is-stuck { padding: 10px 15px 8px 15px; }
+            .progress-stepper { max-width: 300px; }
+            .sticky-progress-wrap.is-stuck .progress-stepper { max-width: 240px; }
             .stepper-label { font-size: 7.5px; }
             .stepper-circle { width: 26px; height: 26px; font-size: 11px; }
+            .sticky-progress-wrap.is-stuck .stepper-circle { width: 20px; height: 20px; font-size: 9px; }
+
+            .payment-wrapper { padding: 35px 20px; border-radius: 4px; }
+            .protocol-grid { grid-template-columns: 1fr; gap: 30px; }
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/dayschedule-widget@1.2.4/dist/dayschedule-widget.min.js" defer></script>
@@ -245,21 +271,24 @@
             </p>
         </header>
 
-        <!-- PROGRESS STEPPER -->
-        <div class="progress-stepper" id="progress-stepper">
-            <div class="stepper-item active" id="step-1">
-                <span class="stepper-circle">1</span>
-                <span class="stepper-label">Choose Session</span>
-            </div>
-            <div class="stepper-line" id="line-1"></div>
-            <div class="stepper-item" id="step-2">
-                <span class="stepper-circle">2</span>
-                <span class="stepper-label">Date &amp; Payment</span>
-            </div>
-            <div class="stepper-line" id="line-2"></div>
-            <div class="stepper-item" id="step-3">
-                <span class="stepper-circle">3</span>
-                <span class="stepper-label">Confirmed</span>
+        <!-- PROGRESS STEPPER (floats to the top while scrolling) -->
+        <div class="stepper-sentinel" id="stepper-sentinel"></div>
+        <div class="sticky-progress-wrap" id="sticky-progress-wrap">
+            <div class="progress-stepper" id="progress-stepper">
+                <div class="stepper-item active" id="step-1">
+                    <span class="stepper-circle">1</span>
+                    <span class="stepper-label">Choose Session</span>
+                </div>
+                <div class="stepper-line" id="line-1"></div>
+                <div class="stepper-item" id="step-2">
+                    <span class="stepper-circle">2</span>
+                    <span class="stepper-label">Date &amp; Payment</span>
+                </div>
+                <div class="stepper-line" id="line-2"></div>
+                <div class="stepper-item" id="step-3">
+                    <span class="stepper-circle">3</span>
+                    <span class="stepper-label">Confirmed</span>
+                </div>
             </div>
         </div>
 
@@ -420,7 +449,7 @@
                 </dayschedule-widget>
                 <script>
                     // Auto-open the calendar: the DaySchedule widget shows a "Book Now"
-                    // style card before the calendar appears. This watches for that
+                    // button before the calendar appears. This watches for that exact
                     // button as soon as the widget finishes rendering and clicks it
                     // automatically, so visitors land straight on the calendar.
                     (function () {
@@ -428,16 +457,17 @@
                             const widget = document.querySelector('dayschedule-widget');
                             if (!widget) return null;
                             const root = widget.shadowRoot || widget;
-                            // Try to target something that looks like a "book/select" trigger first,
-                            // falling back to the first button/link inside the widget.
                             const candidates = root.querySelectorAll('button, [role="button"], a');
                             for (const el of candidates) {
                                 const text = (el.textContent || '').trim().toLowerCase();
-                                if (text.includes('book') || text.includes('select') || text.includes('continue')) {
-                                    return el;
-                                }
+                                if (text === 'book now') return el;
                             }
-                            return candidates.length ? candidates[0] : null;
+                            // Fallback: anything that just contains "book now" as part of its text
+                            for (const el of candidates) {
+                                const text = (el.textContent || '').trim().toLowerCase();
+                                if (text.includes('book now')) return el;
+                            }
+                            return null;
                         }
 
                         let attempts = 0;
@@ -501,6 +531,21 @@
 
     <!-- JAVASCRIPT FOR CART & PAYSTACK INTEGRATION -->
     <script>
+        // Floating Progress Stepper: watch a zero-height sentinel placed just
+        // above the stepper. Once it scrolls out of view, the stepper is
+        // stuck to the top, so we add a class to condense it into a slim bar.
+        (function () {
+            const sentinel = document.getElementById('stepper-sentinel');
+            const wrap = document.getElementById('sticky-progress-wrap');
+            if (sentinel && wrap && 'IntersectionObserver' in window) {
+                const observer = new IntersectionObserver(
+                    ([entry]) => wrap.classList.toggle('is-stuck', !entry.isIntersecting),
+                    { threshold: 0 }
+                );
+                observer.observe(sentinel);
+            }
+        })();
+
         // State Management
         let cart = {
             basePrice: 0,
