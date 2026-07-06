@@ -138,9 +138,24 @@
         
         .tier-price-box { display: flex; flex-direction: column; align-items: stretch; gap: 16px; margin-top: auto; padding-top: 22px; border-top: 1px solid var(--border-color); }
         .tier-price { font-size: 24px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.5px; }
-        .select-btn { width: 100%; background-color: var(--accent); border: 1px solid var(--accent); color: var(--bg-container); padding: 13px 15px; font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; cursor: pointer; transition: 0.3s; border-radius: 30px; }
-        .select-btn:hover { background-color: var(--btn-primary-bg); border-color: var(--btn-primary-bg); color: var(--btn-primary-text); transform: translateY(-1px); }
-        .tier-card.selected .select-btn { background-color: var(--btn-primary-bg); border-color: var(--btn-primary-bg); color: var(--btn-primary-text); }
+        .select-btn {
+            width: 100%;
+            background-color: rgba(196, 166, 126, 0.08);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 13px 15px;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 30px;
+        }
+        .select-btn:hover { background-color: rgba(196, 166, 126, 0.18); border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+        .tier-card.selected .select-btn { background-color: var(--accent); border-color: var(--accent); color: var(--bg-container); }
 
         /* Add-ons Box */
         .addons-container { max-width: 600px; margin: 0 auto; border: 1px solid var(--accent); padding: 30px; background-color: var(--bg-container); border-radius: 4px; opacity: 0.5; pointer-events: none; transition: 0.3s; }
@@ -166,8 +181,8 @@
         .booking-section { margin-top: 70px; background-color: var(--bg-booking); padding: 60px 40px; border-radius: 4px; border: 1px solid var(--border-color); }
         .step-heading { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;}
         
-        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 20px 10px; margin-bottom: 40px; overflow: hidden; position: relative; }
-        .calendar-wrapper iframe { width: 100% !important; min-height: 680px; border: none; display: block; }
+        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 20px 10px; margin-bottom: 40px; position: relative; }
+        .calendar-wrapper iframe { width: 100% !important; height: 780px !important; min-height: 780px; border: none; display: block; color-scheme: light; }
 
         /* Loading indicator shown behind the widget while it's fetching availability */
         .calendar-loading {
@@ -274,7 +289,7 @@
 
             .booking-section { padding: 40px 10px; border-left: none; border-right: none; border-radius: 0; margin-left: -15px; margin-right: -15px; }
             .calendar-wrapper { border: none; padding: 0; margin-bottom: 30px; }
-            .calendar-wrapper iframe { min-height: 760px; }
+            .calendar-wrapper iframe { height: 900px !important; min-height: 900px; }
 
             .sticky-progress-wrap { margin: 0 -15px 40px -15px; padding: 16px 15px 12px 15px; }
             .sticky-progress-wrap.is-stuck { padding: 10px 15px 8px 15px; }
@@ -466,7 +481,7 @@
         <!-- BOOKING / PAYMENT SECTION -->
         <div id="booking" class="booking-section">
             
-            <!-- CAL.COM INTEGRATION -->
+            <!-- GOOGLE CALENDAR APPOINTMENT SCHEDULING -->
             <h3 class="step-heading">Pick Your Date</h3>
             <p style="text-align: center; font-size: 13px; margin-bottom: 20px;">If unsure of the exact hour, pick any slot to hold your day.</p>
             <div class="calendar-wrapper">
