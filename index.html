@@ -25,19 +25,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <!-- Preconnect early so the DaySchedule widget's DNS/TLS handshake is
-         already warmed up by the time visitors reach the calendar section -->
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="preconnect" href="https://liberty-visuals.dayschedule.com" crossorigin>
-    <link rel="dns-prefetch" href="https://liberty-visuals.dayschedule.com">
-    <link href="[fonts.googleapis.com](https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap)" rel="stylesheet">
+    <!-- Preconnect early so Google's booking iframe has less handshake work
+         left to do by the time visitors reach the calendar section -->
+    <link rel="preconnect" href="https://calendar.google.com" crossorigin>
+    <link rel="dns-prefetch" href="https://calendar.google.com">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
     <!-- Paystack Inline API -->
     <script src="https://js.paystack.co/v1/inline.js"></script>
-
-    <!-- DaySchedule popup widget styles -->
-    <link href="https://cdn.jsdelivr.net/npm/dayschedule-widget@1.2.4/dist/dayschedule-popup.css" rel="stylesheet" />
 
     <style>
         /* Color Variables for Light & Dark Mode */
@@ -172,8 +167,7 @@
         .step-heading { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;}
         
         .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 20px 10px; margin-bottom: 40px; overflow: hidden; position: relative; }
-        dayschedule-widget { display: block; width: 100%; min-height: 680px; }
-        dayschedule-widget iframe { width: 100% !important; min-height: 680px; border: none; display: block; }
+        .calendar-wrapper iframe { width: 100% !important; min-height: 680px; border: none; display: block; }
 
         /* Loading indicator shown behind the widget while it's fetching availability */
         .calendar-loading {
@@ -280,8 +274,7 @@
 
             .booking-section { padding: 40px 10px; border-left: none; border-right: none; border-radius: 0; margin-left: -15px; margin-right: -15px; }
             .calendar-wrapper { border: none; padding: 0; margin-bottom: 30px; }
-            dayschedule-widget { min-height: 760px; }
-            dayschedule-widget iframe { min-height: 760px; }
+            .calendar-wrapper iframe { min-height: 760px; }
 
             .sticky-progress-wrap { margin: 0 -15px 40px -15px; padding: 16px 15px 12px 15px; }
             .sticky-progress-wrap.is-stuck { padding: 10px 15px 8px 15px; }
@@ -295,7 +288,6 @@
             .protocol-grid { grid-template-columns: 1fr; gap: 30px; }
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/dayschedule-widget@1.2.4/dist/dayschedule-widget.min.js" defer></script>
 </head>
 <body>
 
@@ -474,21 +466,15 @@
         <!-- BOOKING / PAYMENT SECTION -->
         <div id="booking" class="booking-section">
             
-            <!-- DAYSCHEDULE POPUP TRIGGER -->
+            <!-- CAL.COM INTEGRATION -->
             <h3 class="step-heading">Pick Your Date</h3>
             <p style="text-align: center; font-size: 13px; margin-bottom: 20px;">If unsure of the exact hour, pick any slot to hold your day.</p>
-            <div class="calendar-wrapper" style="padding: 40px 20px; text-align: center;">
-                <button
-                    type="button"
-                    class="cta-btn-primary"
-                    style="max-width: 320px; margin: 0 auto;"
-                    onclick="daySchedule.initPopupWidget({
-                        url: 'https://liberty-visuals.dayschedule.com/photography-appointment',
-                        color: { primary: '#c4a67e', secondary: '#ffffff' }
-                    });"
-                >
-                    Open Booking Calendar
-                </button>
+            <div class="calendar-wrapper">
+                
+                <!-- Google Calendar Appointment Scheduling begin -->
+                <iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3WWsmz_0gVkiFwlxQk60ogPbCEtnU9JFIO989xTh7q1Y5NhYwRYGQEGiae7ePw4YMPAyyLQHOA?gv=true" style="border: 0" width="100%" height="600" frameborder="0"></iframe>
+                <!-- end Google Calendar Appointment Scheduling -->
+
             </div>
 
             <!-- PAYSTACK INTERACTIVE SECURE RETINER -->
