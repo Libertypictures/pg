@@ -31,6 +31,9 @@
     <link rel="dns-prefetch" href="https://calendar.google.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
+    <!-- Google Calendar scheduling button styles -->
+    <link href="https://calendar.google.com/calendar/scheduling-button-script.css" rel="stylesheet">
+
     <!-- Paystack Inline API -->
     <script src="https://js.paystack.co/v1/inline.js"></script>
 
@@ -181,8 +184,7 @@
         .booking-section { margin-top: 70px; background-color: var(--bg-booking); padding: 60px 40px; border-radius: 4px; border: 1px solid var(--border-color); }
         .step-heading { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;}
         
-        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 20px 10px; margin-bottom: 40px; position: relative; }
-        .calendar-wrapper iframe { width: 100% !important; height: 560px !important; min-height: 560px; border: none; display: block; color-scheme: light; }
+        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 45px 20px; margin-bottom: 40px; position: relative; text-align: center; }
 
         /* Loading indicator shown behind the widget while it's fetching availability */
         .calendar-loading {
@@ -288,8 +290,7 @@
             .addon-price { padding-left: 30px; font-size: 13px; }
 
             .booking-section { padding: 40px 10px; border-left: none; border-right: none; border-radius: 0; margin-left: -15px; margin-right: -15px; }
-            .calendar-wrapper { border: none; padding: 0; margin-bottom: 30px; }
-            .calendar-wrapper iframe { height: 600px !important; min-height: 600px; }
+            .calendar-wrapper { border: none; padding: 35px 15px; margin-bottom: 30px; }
 
             .sticky-progress-wrap { margin: 0 -15px 40px -15px; padding: 16px 15px 12px 15px; }
             .sticky-progress-wrap.is-stuck { padding: 10px 15px 8px 15px; }
@@ -481,14 +482,26 @@
         <!-- BOOKING / PAYMENT SECTION -->
         <div id="booking" class="booking-section">
             
-            <!-- GOOGLE CALENDAR APPOINTMENT SCHEDULING -->
+            <!-- GOOGLE CALENDAR APPOINTMENT SCHEDULING (POPUP) -->
             <h3 class="step-heading">Pick Your Date</h3>
-            <p style="text-align: center; font-size: 13px; margin-bottom: 6px;">If unsure of the exact hour, pick any slot to hold your day.</p>
-            <p style="text-align: center; font-size: 11px; margin-bottom: 20px; color: var(--text-secondary);">Tip: the calendar box scrolls on its own — once you're done, scroll from just below it to continue to payment.</p>
+            <p style="text-align: center; font-size: 13px; margin-bottom: 20px;">If unsure of the exact hour, pick any slot to hold your day.</p>
             <div class="calendar-wrapper">
-                
+
                 <!-- Google Calendar Appointment Scheduling begin -->
-                <iframe src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ3WWsmz_0gVkiFwlxQk60ogPbCEtnU9JFIO989xTh7q1Y5NhYwRYGQEGiae7ePw4YMPAyyLQHOA?gv=true" style="border: 0" width="100%" height="600" frameborder="0"></iframe>
+                <script src="https://calendar.google.com/calendar/scheduling-button-script.js" async></script>
+                <script>
+                (function() {
+                  var target = document.currentScript;
+                  window.addEventListener('load', function() {
+                    calendar.schedulingButton.load({
+                      url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ3WWsmz_0gVkiFwlxQk60ogPbCEtnU9JFIO989xTh7q1Y5NhYwRYGQEGiae7ePw4YMPAyyLQHOA?gv=true',
+                      color: '#c4a67e',
+                      label: 'Book an Appointment',
+                      target,
+                    });
+                  });
+                })();
+                </script>
                 <!-- end Google Calendar Appointment Scheduling -->
 
             </div>
