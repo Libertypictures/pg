@@ -26,12 +26,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Preconnect early so the DaySchedule widget's DNS/TLS handshake is
-         already warmed up by the time visitors reach the calendar section -->
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="preconnect" href="https://liberty-visuals.dayschedule.com" crossorigin>
-    <link rel="dns-prefetch" href="https://liberty-visuals.dayschedule.com">
+    <!-- Google Calendar scheduling button styles -->
+    <link href="https://calendar.google.com/calendar/scheduling-button-script.css" rel="stylesheet">
 
     <!-- Paystack Inline API -->
     <script src="https://js.paystack.co/v1/inline.js"></script>
@@ -183,36 +179,7 @@
         .booking-section { margin-top: 70px; background-color: var(--bg-booking); padding: 60px 40px; border-radius: 4px; border: 1px solid var(--border-color); }
         .step-heading { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;}
         
-        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 20px 10px; margin-bottom: 40px; position: relative; }
-        dayschedule-widget { display: block; width: 100%; min-height: 620px; }
-        dayschedule-widget iframe { width: 100% !important; min-height: 620px; border: none; display: block; }
-
-        /* Loading indicator shown behind the widget while it's fetching availability */
-        .calendar-loading {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            color: var(--text-secondary);
-            font-size: 12px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            background-color: var(--bg-container);
-            transition: opacity 0.4s ease;
-            pointer-events: none;
-        }
-        .calendar-loading.hidden { opacity: 0; }
-        .calendar-spinner {
-            width: 28px; height: 28px;
-            border: 3px solid var(--border-color);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 45px 20px; margin-bottom: 40px; position: relative; text-align: center; }
 
         /* Payment Wrapper */
         .payment-wrapper { max-width: 600px; margin: 0 auto; text-align: center; padding: 45px 30px; background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 8px 20px var(--shadow-subtle); }
@@ -291,9 +258,7 @@
             .addon-price { padding-left: 30px; font-size: 13px; }
 
             .booking-section { padding: 40px 10px; border-left: none; border-right: none; border-radius: 0; margin-left: -15px; margin-right: -15px; }
-            .calendar-wrapper { border: none; padding: 0; margin-bottom: 30px; }
-            dayschedule-widget { min-height: 680px; }
-            dayschedule-widget iframe { min-height: 680px; }
+            .calendar-wrapper { border: none; padding: 35px 15px; margin-bottom: 30px; }
 
             .sticky-progress-wrap { margin: 0 -15px 40px -15px; padding: 16px 15px 12px 15px; }
             .sticky-progress-wrap.is-stuck { padding: 10px 15px 8px 15px; }
@@ -307,7 +272,6 @@
             .protocol-grid { grid-template-columns: 1fr; gap: 30px; }
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/dayschedule-widget@1.2.4/dist/dayschedule-widget.min.js" defer></script>
 </head>
 <body>
 
@@ -434,7 +398,7 @@
 
         <!-- ADD-ONS SECTION -->
         <section class="section-block" id="addons">
-            <h2 class="section-title">Logistics & Custom Additions</h2>
+            <h2 class="section-title">Custom Additions</h2>
             <p class="section-meta">Tailor your experience with off-site setups and priority delivery. Select a base session above to unlock these additions.</p>
             <div class="addons-container" id="addons-box">
                 <label class="addon-row">
@@ -486,55 +450,47 @@
         <!-- BOOKING / PAYMENT SECTION -->
         <div id="booking" class="booking-section">
             
-            <!-- DAYSCHEDULE INLINE BOOKING WIDGET -->
+            <!-- GOOGLE CALENDAR APPOINTMENT SCHEDULING (STYLED POPUP BUTTON) -->
             <h3 class="step-heading">Pick Your Date</h3>
             <p style="text-align: center; font-size: 13px; margin-bottom: 20px;">If unsure of the exact hour, pick any slot to hold your day.</p>
             <div class="calendar-wrapper">
 
-                <!-- DaySchedule inline embed code begins -->
-                <dayschedule-widget url='https://liberty-visuals.dayschedule.com/photography-appointment' options='{
-                    "color": {
-                        "primary": "#c4b07e",
-                        "secondary": "#c4b07e"
-                    }}'>
-                </dayschedule-widget>
-                <script>
-                    // Auto-open the calendar: the DaySchedule widget shows a "Book Now"
-                    // button before the calendar appears. This watches for that exact
-                    // button as soon as the widget finishes rendering and clicks it
-                    // automatically, so visitors land straight on the calendar.
-                    (function () {
-                        function findBookButton() {
-                            const widget = document.querySelector('dayschedule-widget');
-                            if (!widget) return null;
-                            const root = widget.shadowRoot || widget;
-                            const candidates = root.querySelectorAll('button, [role="button"], a');
-                            for (const el of candidates) {
-                                const text = (el.textContent || '').trim().toLowerCase();
-                                if (text === 'book now') return el;
-                            }
-                            for (const el of candidates) {
-                                const text = (el.textContent || '').trim().toLowerCase();
-                                if (text.includes('book now')) return el;
-                            }
-                            return null;
-                        }
+                <div id="cal"></div>
 
-                        let attempts = 0;
-                        const maxAttempts = 40; // ~10 seconds
-                        const timer = setInterval(function () {
-                            attempts++;
-                            const btn = findBookButton();
-                            if (btn) {
-                                btn.click();
-                                clearInterval(timer);
-                            } else if (attempts >= maxAttempts) {
-                                clearInterval(timer);
-                            }
-                        }, 250);
-                    })();
+                <!-- Google Calendar Appointment Scheduling begin -->
+                <script src="https://calendar.google.com/calendar/scheduling-button-script.js" async></script>
+                <script>
+                (function() {
+                  window.addEventListener('load', function() {
+                    calendar.schedulingButton.load({
+                      url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ3WWsmz_0gVkiFwlxQk60ogPbCEtnU9JFIO989xTh7q1Y5NhYwRYGQEGiae7ePw4YMPAyyLQHOA?gv=true',
+                      color: '#c4a67e',
+                      label: 'Schedule Appointment',
+                      target: document.getElementById('cal')
+                    });
+
+                    // Google only exposes a single "color" option officially. This
+                    // reaches into the button it renders right after our div and
+                    // applies the rest of our site's button styling directly.
+                    setTimeout(() => {
+                        const button = document.getElementById('cal').nextElementSibling;
+                        if (button) {
+                            button.style.backgroundColor = '#c4a67e';
+                            button.style.color = '#ffffff';
+                            button.style.padding = '13px 24px';
+                            button.style.border = 'none';
+                            button.style.borderRadius = '30px';
+                            button.style.fontFamily = 'inherit';
+                            button.style.fontWeight = '600';
+                            button.style.letterSpacing = '1px';
+                            button.style.textTransform = 'uppercase';
+                            button.style.fontSize = '12px';
+                        }
+                    }, 500);
+                  });
+                })();
                 </script>
-                <!-- DaySchedule inline embed code ends -->
+                <!-- end Google Calendar Appointment Scheduling -->
 
             </div>
 
