@@ -26,8 +26,12 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     
-    <!-- Google Calendar scheduling button styles -->
-    <link href="https://calendar.google.com/calendar/scheduling-button-script.css" rel="stylesheet">
+    <!-- Preconnect early so Calendly's widget has less handshake work left
+         to do by the time visitors reach the calendar section -->
+    <link rel="preconnect" href="https://assets.calendly.com" crossorigin>
+    <link rel="dns-prefetch" href="https://assets.calendly.com">
+    <link rel="preconnect" href="https://calendly.com" crossorigin>
+    <link rel="dns-prefetch" href="https://calendly.com">
 
     <!-- Paystack Inline API -->
     <script src="https://js.paystack.co/v1/inline.js"></script>
@@ -179,7 +183,8 @@
         .booking-section { margin-top: 70px; background-color: var(--bg-booking); padding: 60px 40px; border-radius: 4px; border: 1px solid var(--border-color); }
         .step-heading { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;}
         
-        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 45px 20px; margin-bottom: 40px; position: relative; text-align: center; }
+        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 20px 10px; margin-bottom: 40px; position: relative; overflow: hidden; }
+        .calendly-inline-widget { width: 100%; }
 
         /* Payment Wrapper */
         .payment-wrapper { max-width: 600px; margin: 0 auto; text-align: center; padding: 45px 30px; background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 8px 20px var(--shadow-subtle); }
@@ -258,7 +263,8 @@
             .addon-price { padding-left: 30px; font-size: 13px; }
 
             .booking-section { padding: 40px 10px; border-left: none; border-right: none; border-radius: 0; margin-left: -15px; margin-right: -15px; }
-            .calendar-wrapper { border: none; padding: 35px 15px; margin-bottom: 30px; }
+            .calendar-wrapper { border: none; padding: 0; margin-bottom: 30px; }
+            .calendly-inline-widget { min-height: 800px !important; }
 
             .sticky-progress-wrap { margin: 0 -15px 40px -15px; padding: 16px 15px 12px 15px; }
             .sticky-progress-wrap.is-stuck { padding: 10px 15px 8px 15px; }
@@ -450,47 +456,15 @@
         <!-- BOOKING / PAYMENT SECTION -->
         <div id="booking" class="booking-section">
             
-            <!-- GOOGLE CALENDAR APPOINTMENT SCHEDULING (STYLED POPUP BUTTON) -->
+            <!-- CALENDLY INLINE WIDGET -->
             <h3 class="step-heading">Pick Your Date</h3>
             <p style="text-align: center; font-size: 13px; margin-bottom: 20px;">If unsure of the exact hour, pick any slot to hold your day.</p>
             <div class="calendar-wrapper">
 
-                <div id="cal"></div>
-
-                <!-- Google Calendar Appointment Scheduling begin -->
-                <script src="https://calendar.google.com/calendar/scheduling-button-script.js" async></script>
-                <script>
-                (function() {
-                  window.addEventListener('load', function() {
-                    calendar.schedulingButton.load({
-                      url: 'https://calendar.google.com/calendar/appointments/schedules/AcZssZ3WWsmz_0gVkiFwlxQk60ogPbCEtnU9JFIO989xTh7q1Y5NhYwRYGQEGiae7ePw4YMPAyyLQHOA?gv=true',
-                      color: '#c4a67e',
-                      label: 'Schedule Appointment',
-                      target: document.getElementById('cal')
-                    });
-
-                    // Google only exposes a single "color" option officially. This
-                    // reaches into the button it renders right after our div and
-                    // applies the rest of our site's button styling directly.
-                    setTimeout(() => {
-                        const button = document.getElementById('cal').nextElementSibling;
-                        if (button) {
-                            button.style.backgroundColor = '#c4a67e';
-                            button.style.color = '#ffffff';
-                            button.style.padding = '13px 24px';
-                            button.style.border = 'none';
-                            button.style.borderRadius = '30px';
-                            button.style.fontFamily = 'inherit';
-                            button.style.fontWeight = '600';
-                            button.style.letterSpacing = '1px';
-                            button.style.textTransform = 'uppercase';
-                            button.style.fontSize = '12px';
-                        }
-                    }, 500);
-                  });
-                })();
-                </script>
-                <!-- end Google Calendar Appointment Scheduling -->
+                <!-- Calendly inline widget begin -->
+                <div class="calendly-inline-widget" data-url="https://calendly.com/visualsliberty/studio-portraits?hide_event_type_details=1&hide_gdpr_banner=1" style="min-width:320px;height:700px;"></div>
+                <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
+                <!-- Calendly inline widget end -->
 
             </div>
 
