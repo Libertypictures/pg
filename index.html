@@ -24,15 +24,8 @@
     <!-- Modern Geometric Font Import (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Preconnect early so Calendly's widget has less handshake work left
-         to do by the time visitors reach the calendar section -->
-    <link rel="preconnect" href="https://assets.calendly.com" crossorigin>
-    <link rel="dns-prefetch" href="https://assets.calendly.com">
-    <link rel="preconnect" href="https://calendly.com" crossorigin>
-    <link rel="dns-prefetch" href="https://calendly.com">
-
     <!-- Paystack Inline API -->
     <script src="https://js.paystack.co/v1/inline.js"></script>
 
@@ -141,13 +134,15 @@
         .tier-price-box { display: flex; flex-direction: column; align-items: stretch; gap: 16px; margin-top: auto; padding-top: 22px; border-top: 1px solid var(--border-color); }
         .tier-price { font-size: 24px; font-weight: 600; color: var(--text-primary); letter-spacing: 0.5px; }
         .select-btn {
-            width: 100%;
+            width: auto;
+            align-self: center;
+            min-width: 150px;
             background-color: rgba(196, 166, 126, 0.08);
             backdrop-filter: blur(6px);
             -webkit-backdrop-filter: blur(6px);
             border: 1px solid var(--accent);
             color: var(--accent);
-            padding: 13px 15px;
+            padding: 12px 26px;
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1.5px;
@@ -182,9 +177,6 @@
         /* Booking Section */
         .booking-section { margin-top: 70px; background-color: var(--bg-booking); padding: 60px 40px; border-radius: 4px; border: 1px solid var(--border-color); }
         .step-heading { font-size: 18px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px;}
-        
-        .calendar-wrapper { background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; padding: 20px 10px; margin-bottom: 40px; position: relative; overflow: hidden; }
-        .calendly-inline-widget { width: 100%; }
 
         /* Payment Wrapper */
         .payment-wrapper { max-width: 600px; margin: 0 auto; text-align: center; padding: 45px 30px; background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 8px 20px var(--shadow-subtle); }
@@ -239,6 +231,189 @@
         .sticky-progress-wrap.is-stuck .stepper-line { margin-bottom: 15px; }
         .stepper-line.done { background-color: var(--accent); }
 
+        /* ============================================================
+           LP BOOKING COMPONENT CSS
+           Fully namespaced under [data-lp-booking] / .lpb- — no overlap
+           with any existing site class names or selectors.
+           ============================================================ */
+        [data-lp-booking] {
+            --lpb-bg:          #ffffff;
+            --lpb-surface:     #f9f8f6;
+            --lpb-surface2:    #f2f0ec;
+            --lpb-border:      #e4e1da;
+            --lpb-text:        #0d0d0d;
+            --lpb-muted:       #6b6560;
+            --lpb-accent:      #8a7355;
+            --lpb-accent-soft: rgba(138,115,85,.12);
+            --lpb-accent-text: #ffffff;
+            --lpb-disabled:    #c9c6bf;
+            --lpb-input-bg:    #f9f8f6;
+            --lpb-shadow:      0 2px 16px rgba(0,0,0,.06);
+            --lpb-radius:      14px;
+            --lpb-radius-sm:   8px;
+            --lpb-transition:  0.22s ease;
+        }
+        @media (prefers-color-scheme: dark) {
+            [data-lp-booking] {
+                --lpb-bg:          #141414;
+                --lpb-surface:     #1c1c1c;
+                --lpb-surface2:    #242424;
+                --lpb-border:      #2e2e2e;
+                --lpb-text:        #f0ede8;
+                --lpb-muted:       #8a8480;
+                --lpb-accent:      #c4a67e;
+                --lpb-accent-soft: rgba(196,166,126,.14);
+                --lpb-accent-text: #141414;
+                --lpb-disabled:    #3a3835;
+                --lpb-input-bg:    #1c1c1c;
+                --lpb-shadow:      0 2px 16px rgba(0,0,0,.35);
+            }
+        }
+        [data-lp-booking] {
+            background: var(--lpb-bg);
+            color: var(--lpb-text);
+            font-family: 'Poppins', sans-serif;
+            padding: 72px 20px;
+            transition: background var(--lpb-transition), color var(--lpb-transition);
+        }
+        .lpb-inner { max-width: 620px; margin: 0 auto; }
+        .lpb-heading { text-align: center; margin-bottom: 48px; }
+        .lpb-heading h2 {
+            font-size: 13px; letter-spacing: 5px; text-transform: uppercase;
+            font-weight: 600; color: var(--lpb-accent); margin-bottom: 10px;
+        }
+        .lpb-heading p { font-size: 13px; color: var(--lpb-muted); margin-top: 6px; line-height: 1.6; }
+        .lpb-card {
+            background: var(--lpb-surface);
+            border: 1px solid var(--lpb-border);
+            border-radius: var(--lpb-radius);
+            padding: 36px 32px;
+            box-shadow: var(--lpb-shadow);
+            transition: background var(--lpb-transition), border-color var(--lpb-transition);
+        }
+        .lpb-step-label {
+            font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+            font-weight: 600; color: var(--lpb-muted); margin-bottom: 18px; display: block;
+        }
+        .lpb-cal-nav {
+            display: flex; align-items: center;
+            justify-content: space-between; margin-bottom: 20px;
+        }
+        .lpb-cal-nav-btn {
+            background: none; border: 1px solid var(--lpb-border); border-radius: 50%;
+            width: 34px; height: 34px; display: flex; align-items: center;
+            justify-content: center; cursor: pointer; color: var(--lpb-text);
+            transition: background var(--lpb-transition), border-color var(--lpb-transition);
+            flex-shrink: 0;
+        }
+        .lpb-cal-nav-btn:hover:not(:disabled) { background: var(--lpb-surface2); border-color: var(--lpb-accent); }
+        .lpb-cal-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+        .lpb-cal-nav-btn svg { pointer-events: none; }
+        .lpb-cal-month { font-size: 15px; font-weight: 600; letter-spacing: 0.5px; color: var(--lpb-text); }
+        .lpb-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .lpb-cal-dow {
+            font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+            color: var(--lpb-muted); text-align: center; padding: 6px 0 10px; font-weight: 500;
+        }
+        .lpb-cal-day {
+            aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; font-size: 13px; cursor: pointer;
+            transition: all var(--lpb-transition); border: none; background: none;
+            color: var(--lpb-text); font-family: 'Poppins', sans-serif;
+            -webkit-tap-highlight-color: transparent; position: relative;
+        }
+        .lpb-cal-day:not(.lpb-day-disabled):not(.lpb-day-empty):hover {
+            background: var(--lpb-accent-soft); color: var(--lpb-accent);
+        }
+        .lpb-cal-day.lpb-day-today { font-weight: 700; color: var(--lpb-accent); }
+        .lpb-cal-day.lpb-day-today::after {
+            content: ''; position: absolute; bottom: 4px; left: 50%;
+            transform: translateX(-50%); width: 4px; height: 4px;
+            border-radius: 50%; background: var(--lpb-accent);
+        }
+        .lpb-cal-day.lpb-day-selected {
+            background: var(--lpb-accent) !important;
+            color: var(--lpb-accent-text) !important;
+            font-weight: 600; box-shadow: 0 4px 12px rgba(138,115,85,.35);
+        }
+        .lpb-cal-day.lpb-day-selected::after { display: none; }
+        .lpb-cal-day.lpb-day-disabled { color: var(--lpb-disabled); cursor: not-allowed; pointer-events: none; }
+        .lpb-cal-day.lpb-day-empty { pointer-events: none; }
+        .lpb-divider { height: 1px; background: var(--lpb-border); margin: 28px 0; transition: background var(--lpb-transition); }
+        .lpb-times { display: grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 10px; }
+        .lpb-time-btn {
+            padding: 12px 10px; border: 1px solid var(--lpb-border);
+            border-radius: var(--lpb-radius-sm); background: var(--lpb-surface);
+            color: var(--lpb-text); font-family: 'Poppins', sans-serif;
+            font-size: 13px; font-weight: 500; cursor: pointer; text-align: center;
+            transition: all var(--lpb-transition); -webkit-tap-highlight-color: transparent;
+        }
+        .lpb-time-btn:hover { border-color: var(--lpb-accent); background: var(--lpb-accent-soft); color: var(--lpb-accent); }
+        .lpb-time-btn.lpb-time-selected {
+            background: var(--lpb-accent); border-color: var(--lpb-accent);
+            color: var(--lpb-accent-text); box-shadow: 0 4px 12px rgba(138,115,85,.30);
+        }
+        .lpb-times-placeholder {
+            font-size: 13px; color: var(--lpb-muted); font-style: italic;
+            text-align: center; padding: 12px 0; margin: 0;
+        }
+        .lpb-fields { display: flex; flex-direction: column; gap: 16px; }
+        .lpb-field { display: flex; flex-direction: column; gap: 7px; }
+        .lpb-field label {
+            font-size: 11px; text-transform: uppercase; letter-spacing: 1px;
+            font-weight: 600; color: var(--lpb-muted);
+        }
+        .lpb-field input, .lpb-field textarea {
+            width: 100%; padding: 14px 16px; background: var(--lpb-input-bg);
+            border: 1px solid var(--lpb-border); border-radius: var(--lpb-radius-sm);
+            color: var(--lpb-text); font-family: 'Poppins', sans-serif; font-size: 14px;
+            outline: none; transition: border-color var(--lpb-transition), box-shadow var(--lpb-transition);
+            -webkit-appearance: none; box-sizing: border-box;
+        }
+        .lpb-field input::placeholder, .lpb-field textarea::placeholder { color: var(--lpb-disabled); }
+        .lpb-field input:focus, .lpb-field textarea:focus {
+            border-color: var(--lpb-accent); box-shadow: 0 0 0 3px var(--lpb-accent-soft);
+        }
+        .lpb-field textarea { resize: vertical; min-height: 90px; line-height: 1.6; }
+        .lpb-submit-wrap { margin-top: 28px; }
+        .lpb-submit {
+            width: 100%; padding: 18px; background: var(--lpb-accent); border: none;
+            border-radius: 50px; color: var(--lpb-accent-text); font-family: 'Poppins', sans-serif;
+            font-size: 13px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+            cursor: pointer; transition: all 0.3s ease;
+        }
+        .lpb-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(138,115,85,.40); }
+        .lpb-submit:active:not(:disabled) { transform: translateY(0); }
+        .lpb-submit:disabled {
+            background: var(--lpb-surface2); color: var(--lpb-disabled);
+            cursor: not-allowed; box-shadow: none; transform: none;
+        }
+        .lpb-submit-hint { text-align: center; font-size: 11px; color: var(--lpb-muted); margin-top: 12px; min-height: 16px; }
+        .lpb-success { display: none; text-align: center; padding: 48px 20px; }
+        .lpb-success.lpb-visible { display: block; animation: lpb-fade-up 0.5s ease forwards; }
+        .lpb-success-icon {
+            width: 56px; height: 56px; border-radius: 50%; background: var(--lpb-accent-soft);
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
+        }
+        .lpb-success-icon svg { color: var(--lpb-accent); }
+        .lpb-success h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--lpb-text); }
+        .lpb-success p { font-size: 13px; color: var(--lpb-muted); line-height: 1.7; }
+        @keyframes lpb-fade-up {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .lpb-animate-in { animation: lpb-fade-up 0.35s ease forwards; }
+        @media (max-width: 600px) {
+            [data-lp-booking] { padding: 52px 16px; }
+            .lpb-card { padding: 28px 20px; }
+            .lpb-cal-day { font-size: 12px; }
+            .lpb-times { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .lpb-time-btn { padding: 11px 6px; font-size: 12px; }
+        }
+        /* ============================================================
+           END LP BOOKING COMPONENT CSS
+           ============================================================ */
+
         /* 📱 MOBILE OPTIMIZATION ENGINE */
         @media (max-width: 768px) {
             body { padding: 0; background-color: var(--bg-container); }
@@ -255,7 +430,7 @@
             }
             .tier-card { padding: 32px 24px; border-radius: 14px; box-shadow: 0 6px 18px var(--shadow-subtle); }
             .tier-price-box { flex-direction: column; align-items: stretch; gap: 16px; }
-            .select-btn { width: 100%; padding: 14px; font-size: 12px; text-align: center; border-radius: 30px; }
+            .select-btn { width: auto; min-width: 150px; padding: 12px 24px; font-size: 12px; text-align: center; border-radius: 30px; }
 
             .addons-container, .invoice-box, .payment-wrapper { max-width: 380px; margin-left: auto; margin-right: auto;}
             .addons-container { padding: 20px 15px; }
@@ -263,8 +438,6 @@
             .addon-price { padding-left: 30px; font-size: 13px; }
 
             .booking-section { padding: 40px 10px; border-left: none; border-right: none; border-radius: 0; margin-left: -15px; margin-right: -15px; }
-            .calendar-wrapper { border: none; padding: 0; margin-bottom: 30px; }
-            .calendly-inline-widget { min-height: 800px !important; }
 
             .sticky-progress-wrap { margin: 0 -15px 40px -15px; padding: 16px 15px 12px 15px; }
             .sticky-progress-wrap.is-stuck { padding: 10px 15px 8px 15px; }
@@ -453,23 +626,103 @@
             </div>
         </section>
 
-        <!-- BOOKING / PAYMENT SECTION -->
-        <div id="booking" class="booking-section">
-            
-            <!-- CALENDLY INLINE WIDGET -->
-            <h3 class="step-heading">Pick Your Date</h3>
-            <p style="text-align: center; font-size: 13px; margin-bottom: 20px;">If unsure of the exact hour, pick any slot to hold your day.</p>
-            <div class="calendar-wrapper">
+        <!-- ================================================================
+             LP BOOKING COMPONENT — native custom booking calendar
+             Replaces the previous Calendly inline embed entirely.
+             ================================================================ -->
+        <section data-lp-booking id="lp-booking">
+            <div class="lpb-inner">
 
-                <!-- Calendly inline widget begin -->
-                <div class="calendly-inline-widget" data-url="https://calendly.com/visualsliberty/studio-portraits?hide_event_type_details=1&hide_gdpr_banner=1" style="min-width:320px;height:700px;"></div>
-                <script type="text/javascript" src="https://assets.calendly.com/assets/external/widget.js" async></script>
-                <!-- Calendly inline widget end -->
+                <div class="lpb-heading">
+                    <h2>Appointment Calendar</h2>
+                    <p>Choose a date and time — we'll confirm your session within 24 hours.</p>
+                </div>
+
+                <!-- BOOKING FORM CARD -->
+                <div class="lpb-card" id="lpb-form-card">
+
+                    <!-- Step 1: Calendar -->
+                    <span class="lpb-step-label">Choose a Date</span>
+                    <div class="lpb-cal-nav">
+                        <button class="lpb-cal-nav-btn" id="lpb-prev-month" aria-label="Previous month">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 1 3 7 9 13"/>
+                            </svg>
+                        </button>
+                        <span class="lpb-cal-month" id="lpb-cal-month-label" aria-live="polite"></span>
+                        <button class="lpb-cal-nav-btn" id="lpb-next-month" aria-label="Next month">
+                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="5 1 11 7 5 13"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="lpb-cal-grid" id="lpb-cal-grid" role="grid" aria-label="Date picker"></div>
+
+                    <div class="lpb-divider"></div>
+
+                    <!-- Step 2: Time slots -->
+                    <span class="lpb-step-label">Available Times</span>
+                    <p class="lpb-times-placeholder" id="lpb-times-placeholder">Select a date to see available times</p>
+                    <div class="lpb-times" id="lpb-times-grid" style="display:none;" role="group" aria-label="Available time slots"></div>
+
+                    <div class="lpb-divider"></div>
+
+                    <!-- Step 3: Contact details -->
+                    <span class="lpb-step-label">Your Details</span>
+                    <div class="lpb-fields">
+                        <div class="lpb-field">
+                            <label for="lpb-name">Your Name <span style="color:var(--lpb-accent)">*</span></label>
+                            <input type="text" id="lpb-name" placeholder="First &amp; Last Name" autocomplete="name">
+                        </div>
+                        <div class="lpb-field">
+                            <label for="lpb-email">Email Address <span style="color:var(--lpb-accent)">*</span></label>
+                            <input type="email" id="lpb-email" placeholder="you@example.com" autocomplete="email">
+                        </div>
+                        <div class="lpb-field">
+                            <label for="lpb-phone">
+                                Phone Number
+                                <span style="color:var(--lpb-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span>
+                            </label>
+                            <input type="tel" id="lpb-phone" placeholder="+234 000 000 0000" autocomplete="tel">
+                        </div>
+                        <div class="lpb-field">
+                            <label for="lpb-notes">
+                                Additional Notes
+                                <span style="color:var(--lpb-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span>
+                            </label>
+                            <textarea id="lpb-notes" placeholder="Tell us about your vision, outfit ideas, or any questions…"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="lpb-submit-wrap">
+                        <button class="lpb-submit" id="lpb-submit-btn" disabled>Book Appointment</button>
+                        <p class="lpb-submit-hint" id="lpb-submit-hint">Select a date, time, name &amp; email to continue</p>
+                    </div>
+
+                </div>
+                <!-- END BOOKING FORM CARD -->
+
+                <!-- SUCCESS CARD (shown after submit) -->
+                <div class="lpb-card lpb-success" id="lpb-success-card">
+                    <div class="lpb-success-icon">
+                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                    </div>
+                    <h3>Request Received</h3>
+                    <p id="lpb-success-msg">We'll confirm your session within 24 hours.</p>
+                </div>
 
             </div>
+        </section>
+        <!-- END LP BOOKING COMPONENT -->
+
+        <!-- BOOKING / PAYMENT SECTION -->
+        <div id="booking" class="booking-section">
 
             <!-- PAYSTACK INTERACTIVE SECURE RETINER -->
-            <h3 class="step-heading" style="margin-top: 50px;" id="secure-session">Secure Session</h3>
+            <h3 class="step-heading" id="secure-session">Secure Session</h3>
             <div class="payment-wrapper">
                 <div class="input-group">
                     <label class="input-label" for="client-email">Email Address for Receipt</label>
@@ -666,5 +919,258 @@
             handler.openIframe();
         }
     </script>
+
+    <!-- ================================================================
+         LP BOOKING COMPONENT — JAVASCRIPT
+         Fully isolated in its own IIFE. Does not read from or write to
+         any variable, function, or DOM node used by the cart/Paystack
+         script above — the only shared resource is the page's CSS
+         custom properties system (--accent, --bg-container, etc. are
+         untouched; this component uses its own --lpb-* variables).
+         ================================================================ -->
+    <script>
+    (function () {
+        'use strict';
+
+        /* ------------------------------------------------------------------
+           BOOKING SUBMISSION — single entry point for all booking logic.
+           TODO: replace the body of this function with a call to your
+           Cloudflare Worker, which will in turn talk to the Cal.com API.
+           Everything above it (calendar, time slots, form, validation)
+           stays exactly the same — only this function needs to change.
+        ------------------------------------------------------------------ */
+        async function submitBooking(bookingData) {
+            // 🔧 TEMP: logs to console until the Cloudflare Worker / Cal.com
+            // API integration is wired in here.
+            console.log('[LibertyPictures Booking]', bookingData);
+        }
+
+        /* ------------------------------------------------------------------
+           CONFIG — edit these time slots to match your studio schedule
+        ------------------------------------------------------------------ */
+        var LPB_TIMES = ['10:00 AM', '11:00 AM', '12:00 PM', '2:00 PM', '4:00 PM'];
+
+        var MONTHS = ['January','February','March','April','May','June',
+                      'July','August','September','October','November','December'];
+        var DOWS   = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+
+        /* ------------------------------------------------------------------
+           STATE
+        ------------------------------------------------------------------ */
+        var today     = new Date();
+        var viewYear  = today.getFullYear();
+        var viewMonth = today.getMonth();
+        var selDate   = null;
+        var selTime   = null;
+
+        /* ------------------------------------------------------------------
+           DOM
+        ------------------------------------------------------------------ */
+        function $(id) { return document.getElementById(id); }
+        var calGrid          = $('lpb-cal-grid');
+        var monthLabel       = $('lpb-cal-month-label');
+        var prevBtn          = $('lpb-prev-month');
+        var nextBtn          = $('lpb-next-month');
+        var timesGrid        = $('lpb-times-grid');
+        var timesPlaceholder = $('lpb-times-placeholder');
+        var nameInput        = $('lpb-name');
+        var emailInput       = $('lpb-email');
+        var phoneInput       = $('lpb-phone');
+        var notesInput       = $('lpb-notes');
+        var submitBtn        = $('lpb-submit-btn');
+        var submitHint       = $('lpb-submit-hint');
+        var formCard         = $('lpb-form-card');
+        var successCard      = $('lpb-success-card');
+        var successMsg       = $('lpb-success-msg');
+
+        /* ------------------------------------------------------------------
+           CALENDAR
+        ------------------------------------------------------------------ */
+        function renderCalendar() {
+            monthLabel.textContent = MONTHS[viewMonth] + ' ' + viewYear;
+            prevBtn.disabled = (viewYear === today.getFullYear() && viewMonth === today.getMonth());
+            calGrid.innerHTML = '';
+
+            DOWS.forEach(function (d) {
+                var el = document.createElement('div');
+                el.className = 'lpb-cal-dow';
+                el.textContent = d;
+                calGrid.appendChild(el);
+            });
+
+            var firstDow      = new Date(viewYear, viewMonth, 1).getDay();
+            var offset        = firstDow === 0 ? 6 : firstDow - 1;
+            var daysInMonth   = new Date(viewYear, viewMonth + 1, 0).getDate();
+            var todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+            for (var i = 0; i < offset; i++) {
+                var empty = document.createElement('button');
+                empty.className = 'lpb-cal-day lpb-day-empty';
+                empty.disabled = true;
+                empty.setAttribute('aria-hidden', 'true');
+                calGrid.appendChild(empty);
+            }
+
+            for (var d = 1; d <= daysInMonth; d++) {
+                (function (day) {
+                    var btn       = document.createElement('button');
+                    btn.type      = 'button';
+                    btn.className = 'lpb-cal-day';
+                    btn.textContent = day;
+
+                    var thisDate   = new Date(viewYear, viewMonth, day);
+                    var isPast     = thisDate < todayMidnight;
+                    var isToday    = thisDate.getTime() === todayMidnight.getTime();
+                    var isSelected = selDate &&
+                        selDate.getFullYear() === viewYear &&
+                        selDate.getMonth()    === viewMonth &&
+                        selDate.getDate()     === day;
+
+                    if (isPast)    { btn.classList.add('lpb-day-disabled'); btn.disabled = true; }
+                    if (isToday)     btn.classList.add('lpb-day-today');
+                    if (isSelected)  btn.classList.add('lpb-day-selected');
+
+                    btn.setAttribute('aria-label',
+                        MONTHS[viewMonth] + ' ' + day + ', ' + viewYear +
+                        (isPast ? ' — unavailable' : ''));
+
+                    if (!isPast) {
+                        btn.addEventListener('click', function () {
+                            selDate = new Date(viewYear, viewMonth, day);
+                            selTime = null;
+                            renderCalendar();
+                            renderTimes();
+                            updateSubmit();
+                        });
+                    }
+                    calGrid.appendChild(btn);
+                })(d);
+            }
+        }
+
+        /* ------------------------------------------------------------------
+           TIME SLOTS
+        ------------------------------------------------------------------ */
+        function renderTimes() {
+            if (!selDate) return;
+            timesPlaceholder.style.display = 'none';
+            timesGrid.style.display = 'grid';
+
+            /* ── API HOOK — FETCH AVAILABLE SLOTS ───────────────────────────
+               When wiring this up to the Cloudflare Worker / Cal.com API,
+               replace renderSlots(LPB_TIMES) with a live fetch that returns
+               only genuinely open slots for selDate, then call
+               renderSlots(theRealSlotsArray) with the result.
+            ─────────────────────────────────────────────────────────────── */
+
+            renderSlots(LPB_TIMES);
+        }
+
+        function renderSlots(slots) {
+            timesGrid.innerHTML = '';
+            slots.forEach(function (time) {
+                var btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'lpb-time-btn';
+                btn.textContent = time;
+                if (selTime === time) btn.classList.add('lpb-time-selected');
+                btn.addEventListener('click', function () {
+                    selTime = time;
+                    timesGrid.querySelectorAll('.lpb-time-btn').forEach(function (b) {
+                        b.classList.remove('lpb-time-selected');
+                    });
+                    btn.classList.add('lpb-time-selected');
+                    updateSubmit();
+                });
+                timesGrid.appendChild(btn);
+            });
+            timesGrid.classList.add('lpb-animate-in');
+        }
+
+        /* ------------------------------------------------------------------
+           SUBMIT STATE
+        ------------------------------------------------------------------ */
+        function updateSubmit() {
+            var dateOk  = !!selDate;
+            var timeOk  = !!selTime;
+            var nameOk  = nameInput.value.trim().length > 1;
+            var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim());
+            submitBtn.disabled = !(dateOk && timeOk && nameOk && emailOk);
+            if      (!dateOk)  submitHint.textContent = 'Select a date to continue';
+            else if (!timeOk)  submitHint.textContent = 'Select an available time';
+            else if (!nameOk)  submitHint.textContent = 'Enter your name to continue';
+            else if (!emailOk) submitHint.textContent = 'Enter a valid email address';
+            else               submitHint.textContent = '';
+        }
+
+        /* ------------------------------------------------------------------
+           NAVIGATION
+        ------------------------------------------------------------------ */
+        prevBtn.addEventListener('click', function () {
+            if (viewMonth === 0) { viewMonth = 11; viewYear--; } else viewMonth--;
+            renderCalendar();
+        });
+        nextBtn.addEventListener('click', function () {
+            if (viewMonth === 11) { viewMonth = 0; viewYear++; } else viewMonth++;
+            renderCalendar();
+        });
+        [nameInput, emailInput].forEach(function (el) { el.addEventListener('input', updateSubmit); });
+
+        /* ------------------------------------------------------------------
+           SUBMISSION — routes through the single submitBooking(bookingData)
+           entry point required for the future Cloudflare Worker / Cal.com
+           integration. Everything else about the form stays the same.
+        ------------------------------------------------------------------ */
+        submitBtn.addEventListener('click', async function () {
+            var booking = {
+                date:  selDate.toDateString(),
+                time:  selTime,
+                name:  nameInput.value.trim(),
+                email: emailInput.value.trim(),
+                phone: phoneInput.value.trim(),
+                notes: notesInput.value.trim()
+            };
+
+            submitBtn.disabled = true;
+            var originalLabel = submitBtn.textContent;
+            submitBtn.textContent = 'Sending…';
+
+            try {
+                await submitBooking(booking);
+                showSuccess(booking);
+            } catch (err) {
+                // Future-proofing: once submitBooking() makes a real network
+                // call, a failure here re-enables the form instead of
+                // silently pretending the booking succeeded.
+                console.error('[LibertyPictures Booking] submission failed:', err);
+                submitHint.textContent = 'Something went wrong — please try again.';
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalLabel;
+            }
+        });
+
+        /* ------------------------------------------------------------------
+           SUCCESS
+        ------------------------------------------------------------------ */
+        function showSuccess(booking) {
+            var d = selDate;
+            successMsg.innerHTML =
+                'Your session request for <strong>' + MONTHS[d.getMonth()] + ' ' + d.getDate() +
+                '</strong> at <strong>' + booking.time + '</strong> has been received.<br>' +
+                "We'll confirm within 24 hours — check <strong>" + booking.email + '</strong>.';
+            formCard.style.display = 'none';
+            successCard.classList.add('lpb-visible');
+        }
+
+        /* ------------------------------------------------------------------
+           INIT
+        ------------------------------------------------------------------ */
+        renderCalendar();
+
+    })();
+    </script>
+    <!-- ================================================================
+         END LP BOOKING COMPONENT JAVASCRIPT
+         ================================================================ -->
 </body>
 </html>
