@@ -833,6 +833,16 @@
             window.requestAnimationFrame(step);
         }
 
+        // The progress stepper is sticky/fixed to the top of the viewport,
+        // so any programmatic scroll needs to stop short by its height —
+        // otherwise section headings land underneath it and get clipped.
+        // Computed live (not a fixed number) since the bar's height differs
+        // between its normal and condensed "is-stuck" states.
+        function lpStickyBarHeight() {
+            var bar = document.getElementById('sticky-progress-wrap');
+            return bar ? bar.getBoundingClientRect().height : 0;
+        }
+
         // Package Selection
         function selectPackage(btn) {
             // Remove selection from all cards
@@ -854,7 +864,10 @@
             updateStep(2);
 
             // Seamless scroll to addons
-            lpSmoothScrollTo(document.getElementById('addons'), { duration: 750 });
+            lpSmoothScrollTo(document.getElementById('addons'), {
+                duration: 750,
+                offset: -(lpStickyBarHeight() + 20)
+            });
 
             calculateTotals();
         }
@@ -927,7 +940,10 @@
                 alert('Please pick a date, time, and enter your details in the booking form above — and press "Book Appointment" — before paying the retainer.');
                 var secureSessionEl = document.getElementById('secure-session');
                 if (typeof lpSmoothScrollTo === 'function') {
-                    lpSmoothScrollTo(secureSessionEl, { duration: 700 });
+                    lpSmoothScrollTo(secureSessionEl, {
+                        duration: 700,
+                        offset: -(lpStickyBarHeight() + 20)
+                    });
                 } else {
                     secureSessionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
