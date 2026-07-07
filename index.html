@@ -181,10 +181,29 @@
 
         /* Payment Wrapper */
         .payment-wrapper { max-width: 600px; margin: 0 auto; text-align: center; padding: 45px 30px; background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: 4px; box-shadow: 0 8px 20px var(--shadow-subtle); }
+        /* Compact receipt-style recap at the payment step — deliberately
+           subdued so it reads as a summary, not a second call-to-action
+           competing with the actual Pay Retainer button below it. */
+        .payment-recap-box {
+            text-align: left;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 16px 20px;
+            margin-bottom: 26px;
+            background-color: var(--highlight-bg);
+        }
+        .payment-recap-row {
+            display: flex; justify-content: space-between; align-items: baseline;
+            font-size: 13px; color: var(--text-secondary); gap: 16px;
+        }
+        .payment-recap-row + .payment-recap-row {
+            margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-dashed);
+        }
+        .payment-recap-retainer-row { font-weight: 600; color: var(--accent); font-size: 14px; }
         
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-label { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; color: var(--text-secondary); }
-        .email-input { width: 100%; padding: 14px; background: var(--bg-body); border: 1px solid var(--border-color); color: var(--text-primary); font-family: 'Poppins'; border-radius: 3px; font-size: 14px; outline: none; transition: border-color 0.3s; }
+        .email-input { width: 100%; padding: 14px; background: var(--bg-body); border: 1px solid var(--border-color); color: var(--text-primary); font-family: 'Poppins'; border-radius: 3px; font-size: 16px; outline: none; transition: border-color 0.3s; }
         .email-input:focus { border-color: var(--accent); }
 
         .cta-btn-primary { display: block; width: 100%; background-color: var(--btn-primary-bg); color: var(--btn-primary-text); padding: 18px 45px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; border: none; border-radius: 3px; cursor: pointer; transition: all 0.4s ease; }
@@ -367,7 +386,7 @@
         .lpb-field input, .lpb-field textarea {
             width: 100%; padding: 14px 16px; background: var(--lpb-input-bg);
             border: 1px solid var(--lpb-border); border-radius: var(--lpb-radius-sm);
-            color: var(--lpb-text); font-family: 'Poppins', sans-serif; font-size: 14px;
+            color: var(--lpb-text); font-family: 'Poppins', sans-serif; font-size: 16px;
             outline: none; transition: border-color var(--lpb-transition), box-shadow var(--lpb-transition);
             -webkit-appearance: none; box-sizing: border-box;
         }
@@ -599,20 +618,20 @@
 
         <!-- ADD-ONS SECTION -->
         <section class="section-block" id="addons">
-            <h2 class="section-title">Custom Additions</h2>
-            <p class="section-meta">Tailor your experience with off-site setups and priority delivery. Select a base session above to unlock these additions.</p>
+            <h2 class="section-title">Custom Additions <span style="font-weight:400; letter-spacing:0.5px; font-size:11px; color:var(--text-secondary); text-transform:none;">— all optional</span></h2>
+            <p class="section-meta">Entirely optional. Studio sessions already include a backdrop at no extra cost — these additions are only if you'd like to shoot at an outside location instead, or want faster delivery. Select a base session above to unlock these additions.</p>
             <div class="addons-container" id="addons-box">
                 <label class="addon-row">
                     <div class="addon-label">
-                        <input type="checkbox" class="addon-checkbox" value="50000" data-name="Off-site (Without Backdrop)">
-                        <span>Off-site location (Without Backdrop)</span>
+                        <input type="checkbox" class="addon-checkbox" value="50000" data-name="Off-Site Shoot — No Backdrop Provided">
+                        <span>Shoot at an Off-Site Location — No Backdrop Provided</span>
                     </div>
                     <span class="addon-price">₦50,000</span>
                 </label>
                 <label class="addon-row">
                     <div class="addon-label">
-                        <input type="checkbox" class="addon-checkbox" value="70000" data-name="Off-site (With Backdrop)">
-                        <span>Off-site location (With Backdrop)</span>
+                        <input type="checkbox" class="addon-checkbox" value="70000" data-name="Off-Site Shoot — With Backdrop Provided">
+                        <span>Shoot at an Off-Site Location — With Backdrop Provided</span>
                     </div>
                     <span class="addon-price">₦70,000</span>
                 </label>
@@ -736,13 +755,15 @@
             <!-- PAYSTACK INTERACTIVE SECURE RETINER -->
             <h3 class="step-heading" id="secure-session">Secure Session</h3>
             <div class="payment-wrapper">
-                <div class="invoice-row" id="payment-recap-package" style="display:none;">
-                    <span id="payment-recap-name">Package Name</span>
-                    <span id="payment-recap-subtotal">₦0</span>
-                </div>
-                <div class="invoice-retainer" id="payment-recap-retainer" style="display:none; margin-bottom: 22px;">
-                    <span>Retainer Due Today</span>
-                    <span id="payment-recap-retainer-amount">₦0</span>
+                <div class="payment-recap-box" id="payment-recap-package" style="display:none;">
+                    <div class="payment-recap-row">
+                        <span id="payment-recap-name">Package Name</span>
+                        <span id="payment-recap-subtotal">₦0</span>
+                    </div>
+                    <div class="payment-recap-row payment-recap-retainer-row">
+                        <span>Retainer Due Today</span>
+                        <span id="payment-recap-retainer-amount">₦0</span>
+                    </div>
                 </div>
                 <div class="input-group">
                     <label class="input-label" for="client-email">Email Address for Receipt</label>
@@ -943,10 +964,9 @@
             // scrolls down to pay, they've usually scrolled past the invoice
             // above, so this keeps what they're paying for in view.
             document.getElementById('payment-recap-name').innerText = cart.baseName;
-            document.getElementById('payment-recap-subtotal').innerText = 'Subtotal: ' + formatNaira(cart.subtotal);
+            document.getElementById('payment-recap-subtotal').innerText = formatNaira(cart.subtotal);
             document.getElementById('payment-recap-retainer-amount').innerText = formatNaira(cart.retainer);
-            document.getElementById('payment-recap-package').style.display = 'flex';
-            document.getElementById('payment-recap-retainer').style.display = 'flex';
+            document.getElementById('payment-recap-package').style.display = 'block';
 
             // Enable & Update Payment Button
             const payBtn = document.getElementById('pay-btn');
