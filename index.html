@@ -456,7 +456,7 @@
 
     <div class="container">
         <header class="brand-header">
-            <img src="file:///Users/libertymusa/Downloads/logo.png" alt="Libertypictures" class="brand-logo">
+            <img src="logo.png" alt="Libertypictures" class="brand-logo">
             <h1 class="brand-name">Libertypictures</h1>
             <span class="brand-subtitle">Studio Booking Portal</span>
             <p class="brand-intro">
@@ -476,12 +476,12 @@
                 <div class="stepper-line" id="line-1"></div>
                 <div class="stepper-item" id="step-2">
                     <span class="stepper-circle">2</span>
-                    <span class="stepper-label">Date &amp; Payment</span>
+                    <span class="stepper-label">Date</span>
                 </div>
                 <div class="stepper-line" id="line-2"></div>
                 <div class="stepper-item" id="step-3">
                     <span class="stepper-circle">3</span>
-                    <span class="stepper-label">Confirmed</span>
+                    <span class="stepper-label">Payment</span>
                 </div>
             </div>
         </div>
@@ -678,20 +678,6 @@
                             <label for="lpb-email">Email Address <span style="color:var(--lpb-accent)">*</span></label>
                             <input type="email" id="lpb-email" placeholder="you@example.com" autocomplete="email">
                         </div>
-                        <div class="lpb-field">
-                            <label for="lpb-phone">
-                                Phone Number
-                                <span style="color:var(--lpb-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span>
-                            </label>
-                            <input type="tel" id="lpb-phone" placeholder="+234 000 000 0000" autocomplete="tel">
-                        </div>
-                        <div class="lpb-field">
-                            <label for="lpb-notes">
-                                Additional Notes
-                                <span style="color:var(--lpb-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional)</span>
-                            </label>
-                            <textarea id="lpb-notes" placeholder="Tell us about your vision, outfit ideas, or any questions…"></textarea>
-                        </div>
                     </div>
 
                     <!-- Submit -->
@@ -724,9 +710,18 @@
             <!-- PAYSTACK INTERACTIVE SECURE RETINER -->
             <h3 class="step-heading" id="secure-session">Secure Session</h3>
             <div class="payment-wrapper">
+                <div class="invoice-row" id="payment-recap-package" style="display:none;">
+                    <span id="payment-recap-name">Package Name</span>
+                    <span id="payment-recap-subtotal">₦0</span>
+                </div>
+                <div class="invoice-retainer" id="payment-recap-retainer" style="display:none; margin-bottom: 22px;">
+                    <span>Retainer Due Today</span>
+                    <span id="payment-recap-retainer-amount">₦0</span>
+                </div>
                 <div class="input-group">
                     <label class="input-label" for="client-email">Email Address for Receipt</label>
                     <input type="email" id="client-email" class="email-input" placeholder="hello@example.com" required="">
+                    <p style="font-size: 10px; margin-top: 6px; color: var(--text-secondary);">Pre-filled from your booking — edit if you'd like the receipt sent elsewhere.</p>
                 </div>
                 <button type="button" class="cta-btn-primary" id="pay-btn" onclick="payWithPaystack()" disabled="">
                     Select a session to pay
@@ -808,6 +803,36 @@
             });
         }
 
+        // Shared smooth-scroll helper — used instead of the browser's native
+        // `scrollIntoView({behavior:'smooth'})`, whose speed/easing can't be
+        // controlled and often feels rushed on short distances. This one uses
+        // a fixed duration with ease-in-out easing for a consistently gentle
+        // motion, and is reused across the page wherever we scroll the user.
+        function lpSmoothScrollTo(target, options) {
+            options = options || {};
+            var duration = options.duration || 700;
+            var offset = options.offset || 0;
+
+            var startY = window.pageYOffset;
+            var targetY = target.getBoundingClientRect().top + startY + offset;
+            var distance = targetY - startY;
+            var startTime = null;
+
+            function easeInOutCubic(t) {
+                return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+            }
+
+            function step(timestamp) {
+                if (startTime === null) startTime = timestamp;
+                var elapsed = timestamp - startTime;
+                var progress = Math.min(elapsed / duration, 1);
+                window.scrollTo(0, startY + distance * easeInOutCubic(progress));
+                if (progress < 1) window.requestAnimationFrame(step);
+            }
+
+            window.requestAnimationFrame(step);
+        }
+
         // Package Selection
         function selectPackage(btn) {
             // Remove selection from all cards
@@ -827,9 +852,9 @@
             document.getElementById('addons-box').classList.add('active');
             document.getElementById('invoice-ui').classList.add('active');
             updateStep(2);
-            
-            // Smooth scroll to addons
-            document.getElementById('addons').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+            // Seamless scroll to addons
+            lpSmoothScrollTo(document.getElementById('addons'), { duration: 750 });
 
             calculateTotals();
         }
@@ -874,6 +899,15 @@
             document.getElementById('inv-balance').innerText = formatNaira(cart.balance);
             document.getElementById('inv-retainer').innerText = formatNaira(cart.retainer);
 
+            // Recap right above the Paystack button — by the time a client
+            // scrolls down to pay, they've usually scrolled past the invoice
+            // above, so this keeps what they're paying for in view.
+            document.getElementById('payment-recap-name').innerText = cart.baseName;
+            document.getElementById('payment-recap-subtotal').innerText = 'Subtotal: ' + formatNaira(cart.subtotal);
+            document.getElementById('payment-recap-retainer-amount').innerText = formatNaira(cart.retainer);
+            document.getElementById('payment-recap-package').style.display = 'flex';
+            document.getElementById('payment-recap-retainer').style.display = 'flex';
+
             // Enable & Update Payment Button
             const payBtn = document.getElementById('pay-btn');
             payBtn.removeAttribute('disabled');
@@ -891,7 +925,12 @@
             // charge without a confirmed Cal.com booking behind it.
             if (!window.lpbBookingConfirmed) {
                 alert('Please pick a date, time, and enter your details in the booking form above — and press "Book Appointment" — before paying the retainer.');
-                document.getElementById('secure-session').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                var secureSessionEl = document.getElementById('secure-session');
+                if (typeof lpSmoothScrollTo === 'function') {
+                    lpSmoothScrollTo(secureSessionEl, { duration: 700 });
+                } else {
+                    secureSessionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
                 return;
             }
 
@@ -1041,8 +1080,6 @@
         var timesPlaceholder = $('lpb-times-placeholder');
         var nameInput        = $('lpb-name');
         var emailInput       = $('lpb-email');
-        var phoneInput       = $('lpb-phone');
-        var notesInput       = $('lpb-notes');
         var submitBtn        = $('lpb-submit-btn');
         var submitHint       = $('lpb-submit-hint');
         var formCard         = $('lpb-form-card');
@@ -1217,29 +1254,11 @@
                 return;
             }
 
-            // The package/pricing context comes from `cart`, which is state
-            // owned by the separate package-selection script earlier on the
-            // page. Reading it here (read-only) is the one deliberate bridge
-            // between the two scripts — needed so every Cal.com booking
-            // carries its package, subtotal, and retainer amount, per spec.
-            // Everything else about the two scripts stays independent.
-            var packageName, subtotalValue, retainerValue;
-            if (typeof cart !== 'undefined' && cart && cart.baseName) {
-                packageName   = cart.baseName;
-                subtotalValue = cart.subtotal;
-                retainerValue = cart.retainer;
-            }
-
             var booking = {
                 name:  nameInput.value.trim(),
                 email: emailInput.value.trim(),
-                phoneNumber: phoneInput.value.trim(),
-                notes: notesInput.value.trim(),
                 start: selStartISO,
-                timeZone: LPB_TIMEZONE,
-                package: packageName,
-                subtotal: subtotalValue,
-                retainerAmount: retainerValue
+                timeZone: LPB_TIMEZONE
             };
 
             submitBtn.disabled = true;
@@ -1254,6 +1273,8 @@
                 // has been confirmed, matching the Book → Pay order.
                 window.lpbBookingConfirmed = true;
                 window.lpbBookingData = booking;
+
+                if (typeof updateStep === 'function') updateStep(3); // moving into Payment
 
                 var clientEmailInput = document.getElementById('client-email');
                 if (clientEmailInput && !clientEmailInput.value) {
@@ -1277,9 +1298,30 @@
             successMsg.innerHTML =
                 'Your session request for <strong>' + MONTHS[d.getMonth()] + ' ' + d.getDate() +
                 '</strong> at <strong>' + selTime + '</strong> has been received.<br>' +
-                "We'll confirm within 24 hours — check <strong>" + booking.email + '</strong>.';
-            formCard.style.display = 'none';
-            successCard.classList.add('lpb-visible');
+                "We'll confirm within 24 hours — check <strong>" + booking.email + '</strong>.' +
+                '<br><br><span style="font-size:12px;opacity:0.75;">Scroll down whenever you\'re ready to secure your date with the retainer payment ↓</span>';
+
+            // The form card used to disappear instantly (display:none), which
+            // shrinks the whole page's height in a single frame. The browser
+            // then snaps the scroll position down to fit the shorter page —
+            // which is what was landing on the Studio Policies section below.
+            // Collapsing it gradually (instead of instantly) keeps the page's
+            // height change gentle, so the browser has no reason to snap the
+            // scroll position anywhere. No scroll call needed or wanted here:
+            // the confirmation simply appears where the form was, and the
+            // client scrolls down to Payment on their own, whenever ready.
+            var startHeight = formCard.scrollHeight;
+            formCard.style.maxHeight = startHeight + 'px';
+            formCard.style.overflow = 'hidden';
+            formCard.style.transition = 'max-height 0.4s ease, opacity 0.3s ease';
+            void formCard.offsetHeight; // force reflow so the transition has a starting point
+            formCard.style.opacity = '0';
+            formCard.style.maxHeight = '0px';
+
+            setTimeout(function () {
+                formCard.style.display = 'none';
+                successCard.classList.add('lpb-visible');
+            }, 400);
         }
 
         /* ------------------------------------------------------------------
