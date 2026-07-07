@@ -399,6 +399,27 @@
         .lpb-success-icon svg { color: var(--lpb-accent); }
         .lpb-success h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--lpb-text); }
         .lpb-success p { font-size: 13px; color: var(--lpb-muted); line-height: 1.7; }
+        /* Compact confirmation banner — appears inline below the form instead
+           of replacing it, so the client can just scroll past it whenever
+           they're ready to reach payment. No layout takeover, no auto-scroll. */
+        .lpb-toast {
+            display: none;
+            align-items: flex-start;
+            gap: 14px;
+            margin-top: 24px;
+            padding: 18px 20px;
+            background: var(--lpb-accent-soft);
+            border: 1px solid var(--lpb-accent);
+            border-radius: var(--lpb-radius-sm);
+        }
+        .lpb-toast.lpb-visible { display: flex; animation: lpb-fade-up 0.4s ease forwards; }
+        .lpb-toast-icon {
+            width: 30px; height: 30px; border-radius: 50%; background: var(--lpb-accent);
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+        }
+        .lpb-toast-icon svg { color: var(--lpb-accent-text); }
+        .lpb-toast-body h3 { font-size: 13px; font-weight: 600; margin-bottom: 4px; color: var(--lpb-text); }
+        .lpb-toast-body p { font-size: 12px; color: var(--lpb-muted); line-height: 1.6; margin: 0; }
         @keyframes lpb-fade-up {
             from { opacity: 0; transform: translateY(12px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -687,19 +708,23 @@
                         <p class="lpb-submit-hint" id="lpb-submit-hint">Select a date, time, name &amp; email to continue</p>
                     </div>
 
+                    <!-- CONFIRMATION TOAST (shown inline after submit — the
+                         calendar/form stays in place; this just appears
+                         below it and can be scrolled past to Payment) -->
+                    <div class="lpb-toast" id="lpb-success-card">
+                        <div class="lpb-toast-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="20 6 9 17 4 12"></polyline>
+                            </svg>
+                        </div>
+                        <div class="lpb-toast-body">
+                            <h3>Request Received</h3>
+                            <p id="lpb-success-msg">We'll confirm your session within 24 hours.</p>
+                        </div>
+                    </div>
+
                 </div>
                 <!-- END BOOKING FORM CARD -->
-
-                <!-- SUCCESS CARD (shown after submit) -->
-                <div class="lpb-card lpb-success" id="lpb-success-card">
-                    <div class="lpb-success-icon">
-                        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="20 6 9 17 4 12"></polyline>
-                        </svg>
-                    </div>
-                    <h3>Request Received</h3>
-                    <p id="lpb-success-msg">We'll confirm your session within 24 hours.</p>
-                </div>
 
             </div>
         </section>
@@ -1316,30 +1341,13 @@
             successMsg.innerHTML =
                 'Your session request for <strong>' + MONTHS[d.getMonth()] + ' ' + d.getDate() +
                 '</strong> at <strong>' + selTime + '</strong> has been received.<br>' +
-                "We'll confirm within 24 hours — check <strong>" + booking.email + '</strong>.' +
-                '<br><br><span style="font-size:12px;opacity:0.75;">Scroll down whenever you\'re ready to secure your date with the retainer payment ↓</span>';
+                "We'll confirm within 24 hours — check <strong>" + booking.email + '</strong>.';
 
-            // The form card used to disappear instantly (display:none), which
-            // shrinks the whole page's height in a single frame. The browser
-            // then snaps the scroll position down to fit the shorter page —
-            // which is what was landing on the Studio Policies section below.
-            // Collapsing it gradually (instead of instantly) keeps the page's
-            // height change gentle, so the browser has no reason to snap the
-            // scroll position anywhere. No scroll call needed or wanted here:
-            // the confirmation simply appears where the form was, and the
-            // client scrolls down to Payment on their own, whenever ready.
-            var startHeight = formCard.scrollHeight;
-            formCard.style.maxHeight = startHeight + 'px';
-            formCard.style.overflow = 'hidden';
-            formCard.style.transition = 'max-height 0.4s ease, opacity 0.3s ease';
-            void formCard.offsetHeight; // force reflow so the transition has a starting point
-            formCard.style.opacity = '0';
-            formCard.style.maxHeight = '0px';
-
-            setTimeout(function () {
-                formCard.style.display = 'none';
-                successCard.classList.add('lpb-visible');
-            }, 400);
+            // The calendar/form stays exactly as it is — nothing is hidden,
+            // collapsed, or scrolled. This toast simply appears in place
+            // right below the submit button; the client scrolls past it to
+            // reach Payment whenever they're ready, on their own.
+            successCard.classList.add('lpb-visible');
         }
 
         /* ------------------------------------------------------------------
