@@ -106,6 +106,7 @@
         
         /* TARGETED SCROLL FIX JUST FOR LOGISTICS */
         #addons { scroll-margin-top: 40px; }
+        #secure-session { scroll-margin-top: 100px; }
         
         .section-title { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: var(--text-primary); font-weight: 600; padding-bottom: 12px; border-bottom: 2px solid var(--text-primary); margin-bottom: 20px; text-align: center; }
         .section-meta { font-size: 13px; color: var(--text-primary); font-style: italic; margin-top: -10px; margin-bottom: 30px; text-align: center; }
@@ -840,7 +841,8 @@
         // between its normal and condensed "is-stuck" states.
         function lpStickyBarHeight() {
             var bar = document.getElementById('sticky-progress-wrap');
-            return bar ? bar.getBoundingClientRect().height : 0;
+            var h = bar ? bar.getBoundingClientRect().height : 0;
+            return h > 0 ? h : 90; // sensible fallback if it can't be measured
         }
 
         // Package Selection
@@ -942,7 +944,7 @@
                 if (typeof lpSmoothScrollTo === 'function') {
                     lpSmoothScrollTo(secureSessionEl, {
                         duration: 700,
-                        offset: -(lpStickyBarHeight() + 20)
+                        offset: -(lpStickyBarHeight() + 36)
                     });
                 } else {
                     secureSessionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
