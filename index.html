@@ -357,6 +357,42 @@
             font-size: 13px; color: var(--lpb-muted); font-style: italic;
             text-align: center; padding: 12px 0; margin: 0;
         }
+        /* ------------------------------------------------------------------
+           AVAILABILITY LOADING STATE — additive only, nothing above this
+           block was changed. Reuses the same accent/border/muted tokens
+           and the same lpb-fade-up timing already used elsewhere, so the
+           motion language matches exactly rather than introducing anything new.
+        ------------------------------------------------------------------ */
+        .lpb-times-loading {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 26px 0;
+            color: var(--lpb-muted);
+            font-size: 13px;
+            letter-spacing: 0.3px;
+        }
+        .lpb-times-loading.lpb-visible {
+            display: flex;
+            animation: lpb-fade-up 0.35s ease forwards;
+        }
+        .lpb-times-loading.lpb-fade-out-quick {
+            animation: lpb-times-fade-out 0.2s ease forwards;
+        }
+        @keyframes lpb-times-fade-out {
+            from { opacity: 1; }
+            to   { opacity: 0; }
+        }
+        .lpb-spinner {
+            width: 16px; height: 16px;
+            border: 2px solid var(--lpb-border);
+            border-top-color: var(--lpb-accent);
+            border-radius: 50%;
+            animation: lpb-spin 0.7s linear infinite;
+            flex-shrink: 0;
+        }
+        @keyframes lpb-spin { to { transform: rotate(360deg); } }
         .lpb-fields { display: flex; flex-direction: column; gap: 16px; }
         .lpb-field { display: flex; flex-direction: column; gap: 7px; }
         .lpb-field label {
@@ -661,8 +697,12 @@
                     <div class="lpb-divider"></div>
 
                     <!-- Step 2: Time slots -->
-                    <span class="lpb-step-label">Available Times</span>
+                    <span class="lpb-step-label" id="lpb-times-heading">Available Times</span>
                     <p class="lpb-times-placeholder" id="lpb-times-placeholder">Select a date to see available times</p>
+                    <div class="lpb-times-loading" id="lpb-times-loading" role="status" aria-live="polite">
+                        <span class="lpb-spinner" aria-hidden="true"></span>
+                        <span>Checking availability…</span>
+                    </div>
                     <div class="lpb-times" id="lpb-times-grid" style="display:none;" role="group" aria-label="Available time slots"></div>
 
                     <div class="lpb-divider"></div>
@@ -946,6 +986,25 @@
         }
 
         /* ------------------------------------------------------------------
+           AVAILABILITY LOOKUP — the second and only other function allowed
+           to talk to a backend. TODO: replace the body of this function
+           with a real fetch to your Cloudflare Worker (which will query
+           Cal.com for genuinely open slots on `selectedDate`). It must
+           keep resolving to an array of display-ready time strings, e.g.
+           ['10:00 AM', '11:00 AM', ...] — nothing else in the component
+           needs to change when you make that swap.
+        ------------------------------------------------------------------ */
+        async function loadAvailableTimes(selectedDate) {
+            // 🔧 TEMP: returns the same sample slots for every date until
+            // the real availability lookup is wired in here. The short
+            // delay below exists only so the loading state is visible
+            // during development — a real network call will have its own
+            // natural latency and this can be removed at that point.
+            await new Promise(function (resolve) { setTimeout(resolve, 650); });
+            return LPB_TIMES;
+        }
+
+        /* ------------------------------------------------------------------
            CONFIG — edit these time slots to match your studio schedule
         ------------------------------------------------------------------ */
         var LPB_TIMES = ['10:00 AM', '11:00 AM', '12:00 PM', '2:00 PM', '4:00 PM'];
@@ -973,6 +1032,8 @@
         var nextBtn          = $('lpb-next-month');
         var timesGrid        = $('lpb-times-grid');
         var timesPlaceholder = $('lpb-times-placeholder');
+        var timesLoading     = $('lpb-times-loading');
+        var timesHeading     = $('lpb-times-heading');
         var nameInput        = $('lpb-name');
         var emailInput       = $('lpb-email');
         var phoneInput       = $('lpb-phone');
@@ -1051,22 +1112,47 @@
         /* ------------------------------------------------------------------
            TIME SLOTS
         ------------------------------------------------------------------ */
-        function renderTimes() {
+        async function renderTimes() {
             if (!selDate) return;
+
+            showTimesLoading();
+            scrollToTimes();
+
+            var slots = await loadAvailableTimes(selDate);
+
+            hideTimesLoading(function () {
+                renderSlots(slots);
+            });
+        }
+
+        function showTimesLoading() {
             timesPlaceholder.style.display = 'none';
-            timesGrid.style.display = 'grid';
+            timesGrid.style.display = 'none';
+            timesGrid.classList.remove('lpb-animate-in');
+            timesLoading.classList.remove('lpb-fade-out-quick');
+            timesLoading.classList.add('lpb-visible');
+        }
 
-            /* ── API HOOK — FETCH AVAILABLE SLOTS ───────────────────────────
-               When wiring this up to the Cloudflare Worker / Cal.com API,
-               replace renderSlots(LPB_TIMES) with a live fetch that returns
-               only genuinely open slots for selDate, then call
-               renderSlots(theRealSlotsArray) with the result.
-            ─────────────────────────────────────────────────────────────── */
+        function hideTimesLoading(callback) {
+            timesLoading.classList.add('lpb-fade-out-quick');
+            setTimeout(function () {
+                timesLoading.classList.remove('lpb-visible', 'lpb-fade-out-quick');
+                if (callback) callback();
+            }, 200); // matches the lpb-times-fade-out animation duration
+        }
 
-            renderSlots(LPB_TIMES);
+        function scrollToTimes() {
+            if (!timesHeading) return;
+            // A brief delay lets the loading state's layout settle first,
+            // so the smooth scroll lands on the right position rather than
+            // being thrown off by a mid-reflow jump.
+            setTimeout(function () {
+                timesHeading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 60);
         }
 
         function renderSlots(slots) {
+            timesGrid.style.display = 'grid';
             timesGrid.innerHTML = '';
             slots.forEach(function (time) {
                 var btn = document.createElement('button');
