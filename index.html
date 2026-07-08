@@ -155,17 +155,29 @@
         .select-btn:hover { background-color: rgba(196, 166, 126, 0.18); border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
         .tier-card.selected .select-btn { background-color: var(--accent); border-color: var(--accent); color: var(--bg-container); }
 
-        /* Premium ease-in reveal for pricing cards — a separate CSS
-           animation (not the hover transition), so it can use its own
-           slower, smoother curve without affecting hover-lift speed.
-           Hidden state is applied by JS only, so cards stay visible if
-           JS fails or IntersectionObserver isn't supported. */
-        @keyframes tier-reveal {
+        /* Generic premium ease-in/out scroll reveal, reused across the page
+           (pricing cards, calendar card, payment recap). Separate keyframe
+           animations for in/out — not `transition` — so it never collides
+           with each element's own hover/state transitions on the same
+           properties (e.g. the pricing cards' hover lift also uses
+           `transform`). After the entrance finishes, JS swaps the element
+           to a plain `.reveal-settled` class with no active animation, so
+           hover transitions work normally while it's on screen; leaving
+           view swaps it to `.reveal-out` for a matching, mirrored exit.
+           `.lp-reveal` alone (before JS runs) is a no-op, so content stays
+           visible if JS fails. */
+        .lp-reveal.reveal-pending { opacity: 0; transform: translateY(28px); }
+        .lp-reveal.reveal-settled { opacity: 1; transform: translateY(0); }
+        @keyframes lp-reveal-in-kf {
             from { opacity: 0; transform: translateY(28px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .tier-card.reveal-pending { opacity: 0; transform: translateY(28px); }
-        .tier-card.reveal-in { animation: tier-reveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes lp-reveal-out-kf {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(28px); }
+        }
+        .lp-reveal.reveal-in { animation: lp-reveal-in-kf 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .lp-reveal.reveal-out { animation: lp-reveal-out-kf 0.5s cubic-bezier(0.7, 0, 0.84, 0) forwards; }
 
         /* Add-ons Box */
         .addons-container { max-width: 600px; margin: 0 auto; border: 1px solid var(--accent); padding: 30px; background-color: var(--bg-container); border-radius: 4px; opacity: 0.5; pointer-events: none; transition: 0.3s; }
@@ -631,7 +643,7 @@
         <!-- ADD-ONS SECTION -->
         <section class="section-block" id="addons">
             <h2 class="section-title">Custom Additions <span style="font-weight:400; letter-spacing:0.5px; font-size:11px; color:var(--text-secondary); text-transform:none;">— all optional</span></h2>
-            <p class="section-meta">Entirely optional — studio sessions already include a backdrop. Add these only for an off-studio shoot or faster delivery.</p>
+            <p class="section-meta">Entirely optional - studio sessions already include a backdrop. Add these only for off-studio shoot/faster delivery.</p>
             <div class="addons-container" id="addons-box">
                 <label class="addon-row">
                     <div class="addon-label">
@@ -782,6 +794,10 @@
                     <input type="email" id="client-email" class="email-input" placeholder="hello@example.com" required="">
                     <p style="font-size: 10px; margin-top: 6px; color: var(--text-secondary);">Pre-filled from your booking — edit if you'd like the receipt sent elsewhere.</p>
                 </div>
+                <label style="display:flex; align-items:flex-start; gap:8px; text-align:left; font-size:11px; color:var(--text-secondary); margin-bottom:18px; cursor:pointer;">
+                    <input type="checkbox" id="policy-ack" style="margin-top:2px; flex-shrink:0;">
+                    <span>I've read and agree to the <a href="#studio-policies" id="policy-link" style="color:var(--accent); text-decoration:underline;">Studio Policies</a>, including the non-refundable retainer.</span>
+                </label>
                 <button type="button" class="cta-btn-primary" id="pay-btn" onclick="payWithPaystack()" disabled="">
                     Select a session to pay
                 </button>
@@ -789,7 +805,7 @@
             </div>
         </div>
 
-        <section class="section-block" style="margin-top: 70px;">
+        <section class="section-block" id="studio-policies" style="margin-top: 70px;">
             <h2 class="section-title">Studio Policies</h2>
             <div class="protocol-grid">
                 <div class="protocol-item">
@@ -886,28 +902,64 @@
                 spySections.forEach(function (s) { spyObserver.observe(s.el); });
             }
 
-            // Premium ease-in reveal for the pricing cards — staggered,
-            // and reversible: scrolling a card out of view resets it, so
-            // scrolling back down plays the reveal again, same as the demo.
-            // Using a persistent CSS class (not inline styles) for the
-            // hidden state means cards stay visible if JS never runs.
-            if ('IntersectionObserver' in window) {
-                var tierCards = document.querySelectorAll('.tier-card');
-                tierCards.forEach(function (card) { card.classList.add('reveal-pending'); });
+            // Reusable premium ease-in/out scroll reveal. `stagger` (ms)
+            // offsets each subsequent element for a gentle cascade;
+            // omit/0 for a single element. Reversible: scrolling an
+            // element out of view resets it so scrolling back plays the
+            // reveal again. Releases the animation once settled, so
+            // hover/other transitions on the same element work normally.
+            function lpInitScrollReveal(elements, stagger) {
+                if (!('IntersectionObserver' in window)) return;
+                var els = Array.prototype.slice.call(elements);
+                if (!els.length) return;
+                els.forEach(function (el) { el.classList.add('lp-reveal', 'reveal-pending'); });
 
-                var tierObserver = new IntersectionObserver(function (entries) {
+                var observer = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
-                        var idx = Array.prototype.indexOf.call(tierCards, entry.target);
+                        var el = entry.target;
+                        var idx = els.indexOf(el);
                         if (entry.isIntersecting) {
-                            entry.target.style.animationDelay = (idx * 90) + 'ms';
-                            entry.target.classList.add('reveal-in');
-                        } else {
-                            entry.target.classList.remove('reveal-in');
+                            el.classList.remove('reveal-out', 'reveal-settled');
+                            el.style.animationDelay = (idx * (stagger || 0)) + 'ms';
+                            el.classList.add('reveal-in');
+                            el.addEventListener('animationend', function onIn() {
+                                el.classList.remove('reveal-in');
+                                el.classList.add('reveal-settled');
+                                el.removeEventListener('animationend', onIn);
+                            });
+                        } else if (el.classList.contains('reveal-settled') || el.classList.contains('reveal-in')) {
+                            el.classList.remove('reveal-in', 'reveal-settled');
+                            el.style.animationDelay = '0ms';
+                            el.classList.add('reveal-out');
+                            el.addEventListener('animationend', function onOut() {
+                                el.classList.remove('reveal-out');
+                                el.removeEventListener('animationend', onOut);
+                            });
                         }
                     });
                 }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
 
-                tierCards.forEach(function (card) { tierObserver.observe(card); });
+                els.forEach(function (el) { observer.observe(el); });
+            }
+
+            lpInitScrollReveal(document.querySelectorAll('.tier-card'), 90);
+            lpInitScrollReveal(document.querySelectorAll('#lpb-form-card'), 0);
+            lpInitScrollReveal(document.querySelectorAll('#payment-recap-package'), 0);
+
+            // "Studio Policies" link in the payment acknowledgment — smooth
+            // scroll matching the rest of the site, cleared of the sticky bar.
+            var policyLink = document.getElementById('policy-link');
+            if (policyLink) {
+                policyLink.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    var target = document.getElementById('studio-policies');
+                    if (!target) return;
+                    if (typeof lpSmoothScrollTo === 'function' && typeof lpStickyBarHeight === 'function') {
+                        lpSmoothScrollTo(target, { duration: 700, offset: -(lpStickyBarHeight() + 20) });
+                    } else {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                });
             }
         });
 
@@ -1055,6 +1107,13 @@
                 } else {
                     secureSessionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
+                return;
+            }
+
+            var policyCheckbox = document.getElementById('policy-ack');
+            if (policyCheckbox && !policyCheckbox.checked) {
+                alert('Please confirm you\'ve read and agree to the Studio Policies before paying.');
+                policyCheckbox.focus();
                 return;
             }
 
