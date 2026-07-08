@@ -155,6 +155,34 @@
         .select-btn:hover { background-color: rgba(196, 166, 126, 0.18); border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
         .tier-card.selected .select-btn { background-color: var(--accent); border-color: var(--accent); color: var(--bg-container); }
 
+        /* Fading photo strip — sits right after the intro. Each slot cycles
+           between its own set of images via a crossfade. If the first image
+           in a slot fails to load (no photos added to the repo yet), the
+           whole strip hides itself rather than showing broken-image icons. */
+        .photo-strip { display: flex; gap: 6px; max-width: 620px; margin: 0 auto 40px; height: 120px; }
+        .photo-strip-slot { position: relative; flex: 1; border-radius: 6px; overflow: hidden; background: var(--highlight-bg); }
+        .photo-strip-slot:first-child { flex: 2; }
+        .photo-strip-slot img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 1.4s ease; }
+        .photo-strip-slot img.ps-active { opacity: 1; }
+        @media (max-width: 768px) { .photo-strip { height: 90px; margin-bottom: 30px; } }
+
+        /* Package card photo reveal — a portrait thumbnail eases in beside
+           the description text after the card has sat in view for a beat,
+           pushing the text into a narrower column (wrapping onto more lines
+           if needed). The price/button footer below is a separate element
+           and never resizes. If a card's photo is missing, its slot hides
+           itself and the text stays full width, so nothing looks broken
+           before photos are added. */
+        .tier-meta { display: flex; align-items: flex-start; }
+        .tier-meta-text { flex: 1 1 100%; min-width: 0; }
+        .tier-photo {
+            width: 0; height: 92px; opacity: 0; margin-left: 0; overflow: hidden;
+            border-radius: 6px; flex-shrink: 0; background: var(--highlight-bg);
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), margin-left 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .tier-card.photo-revealed .tier-photo { width: 72px; opacity: 1; margin-left: 14px; }
+        .tier-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
         /* Generic premium ease-in/out scroll reveal, reused across the page
            (pricing cards, calendar card, payment recap). Separate keyframe
            animations for in/out — not `transition` — so it never collides
@@ -530,6 +558,24 @@
             </p>
         </header>
 
+        <!-- FADING PHOTO STRIP — drop your images into images/strip/ using
+             these exact filenames and it'll work immediately. Each slot
+             cycles through its own list; more filenames = more variety. -->
+        <div class="photo-strip" id="photo-strip">
+            <div class="photo-strip-slot" data-images="images/strip/1a.jpg,images/strip/1b.jpg,images/strip/1c.jpg">
+                <img class="ps-active" src="images/strip/1a.jpg" alt="" onerror="var s=document.getElementById('photo-strip'); if(s) s.style.display='none';">
+                <img src="" alt="">
+            </div>
+            <div class="photo-strip-slot" data-images="images/strip/2a.jpg,images/strip/2b.jpg">
+                <img class="ps-active" src="images/strip/2a.jpg" alt="" onerror="var s=document.getElementById('photo-strip'); if(s) s.style.display='none';">
+                <img src="" alt="">
+            </div>
+            <div class="photo-strip-slot" data-images="images/strip/3a.jpg,images/strip/3b.jpg">
+                <img class="ps-active" src="images/strip/3a.jpg" alt="" onerror="var s=document.getElementById('photo-strip'); if(s) s.style.display='none';">
+                <img src="" alt="">
+            </div>
+        </div>
+
         <!-- PROGRESS STEPPER (floats to the top while scrolling) -->
         <div class="stepper-sentinel" id="stepper-sentinel"></div>
         <div class="sticky-progress-wrap is-stuck" id="sticky-progress-wrap">
@@ -559,11 +605,14 @@
                 <!-- Look 1 -->
                 <div class="tier-card" data-price="130000" data-name="One Look Session">
                     <div class="tier-meta">
-                        <h3>One Look</h3>
-                        <ul class="tier-details">
-                            <li>1 Distinct Look / Outfit</li>
-                            <li>7 signature retouched photographs</li>
-                        </ul>
+                        <div class="tier-meta-text">
+                            <h3>One Look</h3>
+                            <ul class="tier-details">
+                                <li>1 Distinct Look / Outfit</li>
+                                <li>7 signature retouched photographs</li>
+                            </ul>
+                        </div>
+                        <div class="tier-photo"><img src="images/packages/one-look.jpg" alt="" onerror="this.closest('.tier-photo').style.display='none';"></div>
                     </div>
                     <div class="tier-price-box">
                         <span class="tier-price">₦130k</span>
@@ -574,11 +623,14 @@
                 <!-- Look 2 -->
                 <div class="tier-card featured" data-price="190000" data-name="Two Looks Session">
                     <div class="tier-meta">
-                        <h3>Two Looks</h3>
-                        <ul class="tier-details">
-                            <li>2 Distinct Looks / Outfits</li>
-                            <li>12 signature retouched photographs</li>
-                        </ul>
+                        <div class="tier-meta-text">
+                            <h3>Two Looks</h3>
+                            <ul class="tier-details">
+                                <li>2 Distinct Looks / Outfits</li>
+                                <li>12 signature retouched photographs</li>
+                            </ul>
+                        </div>
+                        <div class="tier-photo"><img src="images/packages/two-looks.jpg" alt="" onerror="this.closest('.tier-photo').style.display='none';"></div>
                     </div>
                     <div class="tier-price-box">
                         <span class="tier-price">₦190k</span>
@@ -589,12 +641,15 @@
                 <!-- Look 3 -->
                 <div class="tier-card" data-price="250000" data-name="Three Looks Session">
                     <div class="tier-meta">
-                        <h3>Three Looks</h3>
-                        <ul class="tier-details">
-                            <li>3 Distinct Looks / Outfits</li>
-                            <li>15 signature retouched photographs</li>
-                            <li>Premium signature flash drive</li>
-                        </ul>
+                        <div class="tier-meta-text">
+                            <h3>Three Looks</h3>
+                            <ul class="tier-details">
+                                <li>3 Distinct Looks / Outfits</li>
+                                <li>15 signature retouched photographs</li>
+                                <li>Premium signature flash drive</li>
+                            </ul>
+                        </div>
+                        <div class="tier-photo"><img src="images/packages/three-looks.jpg" alt="" onerror="this.closest('.tier-photo').style.display='none';"></div>
                     </div>
                     <div class="tier-price-box">
                         <span class="tier-price">₦250k</span>
@@ -608,12 +663,15 @@
                 <!-- Duo -->
                 <div class="tier-card" data-price="170000" data-name="Duo Session">
                     <div class="tier-meta">
-                        <h3>Duo Session</h3>
-                        <p style="font-size:12px; margin-bottom:15px; color:var(--text-secondary);">Pre-weddings, Couple Portraits, Mommy &amp; Me, Twin Portraits.</p>
-                        <ul class="tier-details">
-                            <li>1 Distinct Look / Outfit per person</li>
-                            <li>10 signature retouched photographs</li>
-                        </ul>
+                        <div class="tier-meta-text">
+                            <h3>Duo Session</h3>
+                            <p style="font-size:12px; margin-bottom:15px; color:var(--text-secondary);">Pre-weddings, Couple Portraits, Mommy &amp; Me, Twin Portraits.</p>
+                            <ul class="tier-details">
+                                <li>1 Distinct Look / Outfit per person</li>
+                                <li>10 signature retouched photographs</li>
+                            </ul>
+                        </div>
+                        <div class="tier-photo"><img src="images/packages/duo.jpg" alt="" onerror="this.closest('.tier-photo').style.display='none';"></div>
                     </div>
                     <div class="tier-price-box">
                         <span class="tier-price">₦170k</span>
@@ -624,13 +682,16 @@
                 <!-- Family -->
                 <div class="tier-card" data-price="280000" data-name="Family Session">
                     <div class="tier-meta">
-                        <h3>Family Session</h3>
-                        <ul class="tier-details">
-                            <li>2 Distinct Looks / Outfits</li>
-                            <li>18 signature retouched photographs</li>
-                            <li>One premium 12×15 custom photo frame</li>
-                            <li>Premium signature flash drive</li>
-                        </ul>
+                        <div class="tier-meta-text">
+                            <h3>Family Session</h3>
+                            <ul class="tier-details">
+                                <li>2 Distinct Looks / Outfits</li>
+                                <li>18 signature retouched photographs</li>
+                                <li>One premium 12×15 custom photo frame</li>
+                                <li>Premium signature flash drive</li>
+                            </ul>
+                        </div>
+                        <div class="tier-photo"><img src="images/packages/family.jpg" alt="" onerror="this.closest('.tier-photo').style.display='none';"></div>
                     </div>
                     <div class="tier-price-box">
                         <span class="tier-price">₦280k</span>
@@ -796,7 +857,7 @@
                 </div>
                 <label style="display:flex; align-items:flex-start; gap:8px; text-align:left; font-size:11px; color:var(--text-secondary); margin-bottom:18px; cursor:pointer;">
                     <input type="checkbox" id="policy-ack" style="margin-top:2px; flex-shrink:0;">
-                    <span>I've read and agree to the <a href="#studio-policies" id="policy-link" style="color:var(--accent); text-decoration:underline;">Studio Policies</a>, including the non-refundable retainer.</span>
+                    <span>I've read and agree to the <a href="#studio-policies" id="policy-link" style="color:var(--accent); text-decoration:underline;">Studio Policies</a>, including turnaround times.</span>
                 </label>
                 <button type="button" class="cta-btn-primary" id="pay-btn" onclick="payWithPaystack()" disabled="">
                     Select a session to pay
@@ -822,7 +883,7 @@
                 </div>
                 <div class="protocol-item">
                     <h4>Selection &amp; Turnaround</h4>
-                    <p>Clients select their final images from an unedited JPEG gallery hosted on Pixieset. Final processed files are delivered within 2 to 4 working days via a secure online gallery <span class="highlight-text">valid for 1 month</span>. Unedited RAW files can be downloaded if requested and paid for.</p>
+                    <p>Clients select their final images from an unedited JPEG gallery hosted online. Final processed files are delivered within 2 to 4 working days via a secure online gallery <span class="highlight-text">valid for 1 month</span>. The original, unedited camera RAW files (the large native files straight out of the camera, not JPEGs) can be downloaded if requested and paid for.</p>
                 </div>
             </div>
         </section>
@@ -960,6 +1021,54 @@
                         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
                 });
+            }
+
+            // Fading photo strip — each slot crossfades between its own
+            // list of images, using a two-layer swap so there's no flash.
+            // Slightly staggered per slot so they don't all change at once.
+            var stripSlots = document.querySelectorAll('.photo-strip-slot');
+            stripSlots.forEach(function (slot, i) {
+                var list = (slot.getAttribute('data-images') || '')
+                    .split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+                if (list.length < 2) return;
+                var imgs = slot.querySelectorAll('img');
+                var activeIdx = 0;
+                var nextImageIdx = 1;
+                setInterval(function () {
+                    var showing = imgs[activeIdx];
+                    var hidden = imgs[1 - activeIdx];
+                    hidden.src = list[nextImageIdx];
+                    hidden.classList.add('ps-active');
+                    showing.classList.remove('ps-active');
+                    activeIdx = 1 - activeIdx;
+                    nextImageIdx = (nextImageIdx + 1) % list.length;
+                }, 4500 + i * 600);
+            });
+
+            // Package card photo reveal — a portrait thumbnail eases in
+            // beside the description once the card has sat in view for a
+            // beat (not an instant scroll-trigger). Cancels the pending
+            // timer if the card leaves view before it fires, and resets so
+            // it can play again next time.
+            if ('IntersectionObserver' in window) {
+                var photoTimers = new WeakMap();
+                var packageCards = document.querySelectorAll('.tier-card');
+                var dwellObserver = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        var card = entry.target;
+                        if (entry.isIntersecting) {
+                            var t = setTimeout(function () {
+                                card.classList.add('photo-revealed');
+                            }, 1400);
+                            photoTimers.set(card, t);
+                        } else {
+                            var existing = photoTimers.get(card);
+                            if (existing) { clearTimeout(existing); photoTimers.delete(card); }
+                            card.classList.remove('photo-revealed');
+                        }
+                    });
+                }, { threshold: 0.4 });
+                packageCards.forEach(function (card) { dwellObserver.observe(card); });
             }
         });
 
