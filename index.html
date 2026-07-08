@@ -164,6 +164,7 @@
             from { opacity: 0; transform: translateY(28px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .tier-card.reveal-pending { opacity: 0; transform: translateY(28px); }
         .tier-card.reveal-in { animation: tier-reveal 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
         /* Add-ons Box */
@@ -880,27 +881,31 @@
                         var match = spySections.find(function (s) { return s.el === entry.target; });
                         if (match) updateStep(match.step);
                     });
-                }, { rootMargin: '-40% 0px -50% 0px', threshold: 0 });
+                }, { rootMargin: '-25% 0px -45% 0px', threshold: 0 });
 
                 spySections.forEach(function (s) { spyObserver.observe(s.el); });
             }
 
             // Premium ease-in reveal for the pricing cards — staggered,
-            // one-time (unobserves after firing), and only hides cards
-            // once we've confirmed the browser can animate them back in.
+            // and reversible: scrolling a card out of view resets it, so
+            // scrolling back down plays the reveal again, same as the demo.
+            // Using a persistent CSS class (not inline styles) for the
+            // hidden state means cards stay visible if JS never runs.
             if ('IntersectionObserver' in window) {
                 var tierCards = document.querySelectorAll('.tier-card');
-                tierCards.forEach(function (card) { card.style.opacity = '0'; });
+                tierCards.forEach(function (card) { card.classList.add('reveal-pending'); });
 
                 var tierObserver = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
-                        if (!entry.isIntersecting) return;
                         var idx = Array.prototype.indexOf.call(tierCards, entry.target);
-                        entry.target.style.animationDelay = (idx * 90) + 'ms';
-                        entry.target.classList.add('reveal-in');
-                        tierObserver.unobserve(entry.target);
+                        if (entry.isIntersecting) {
+                            entry.target.style.animationDelay = (idx * 90) + 'ms';
+                            entry.target.classList.add('reveal-in');
+                        } else {
+                            entry.target.classList.remove('reveal-in');
+                        }
                     });
-                }, { threshold: 0.15 });
+                }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
 
                 tierCards.forEach(function (card) { tierObserver.observe(card); });
             }
