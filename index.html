@@ -98,7 +98,7 @@
         .brand-header { margin-bottom: 50px; text-align: center; }
         .brand-logo { max-width: 90px; height: auto; margin: 0 auto 12px auto; display: block; filter: var(--logo-filter); transition: filter 0.3s ease; }
         .brand-name { font-size: 24px; letter-spacing: 4px; font-weight: 500; color: var(--text-primary); line-height: 1.2; margin-bottom: 8px; text-transform: uppercase; }
-        .brand-subtitle { font-size: 9px; letter-spacing: 5px; color: var(--text-primary); font-weight: 600; margin-bottom: 34px; display: block; }
+        .brand-subtitle { font-size: 9px; letter-spacing: 5px; text-transform: uppercase; color: var(--text-primary); font-weight: 600; margin-bottom: 34px; display: block; }
         .brand-intro { font-size: 14px; max-width: 500px; line-height: 1.7; margin: 0 auto; }
         
         /* Section Architecture */
@@ -926,11 +926,19 @@
                 if (!els.length) return;
                 els.forEach(function (el) { el.classList.add('lp-reveal', 'reveal-pending'); });
 
+                var pendingExits = new WeakMap();
+
                 var observer = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
                         var el = entry.target;
                         var idx = els.indexOf(el);
                         if (entry.isIntersecting) {
+                            // Cancel any pending exit — this entry might just be
+                            // a boundary flicker, not a genuine scroll-away.
+                            var pending = pendingExits.get(el);
+                            if (pending) { clearTimeout(pending); pendingExits.delete(el); }
+
+                            if (el.classList.contains('reveal-settled') || el.classList.contains('reveal-in')) return;
                             el.classList.remove('reveal-out', 'reveal-settled');
                             el.style.animationDelay = (idx * (stagger || 0)) + 'ms';
                             el.classList.add('reveal-in');
@@ -940,13 +948,20 @@
                                 el.removeEventListener('animationend', onIn);
                             });
                         } else if (el.classList.contains('reveal-settled') || el.classList.contains('reveal-in')) {
-                            el.classList.remove('reveal-in', 'reveal-settled');
-                            el.style.animationDelay = '0ms';
-                            el.classList.add('reveal-out');
-                            el.addEventListener('animationend', function onOut() {
-                                el.classList.remove('reveal-out');
-                                el.removeEventListener('animationend', onOut);
-                            });
+                            // Wait briefly to confirm this is a real exit, not a
+                            // sub-pixel flicker right at the trigger boundary.
+                            if (pendingExits.has(el)) return;
+                            var t = setTimeout(function () {
+                                pendingExits.delete(el);
+                                el.classList.remove('reveal-in', 'reveal-settled');
+                                el.style.animationDelay = '0ms';
+                                el.classList.add('reveal-out');
+                                el.addEventListener('animationend', function onOut() {
+                                    el.classList.remove('reveal-out');
+                                    el.removeEventListener('animationend', onOut);
+                                });
+                            }, 180);
+                            pendingExits.set(el, t);
                         }
                     });
                 }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
@@ -985,10 +1000,17 @@
             if ('IntersectionObserver' in window) {
                 var photoTimers = new WeakMap();
                 var packageCards = document.querySelectorAll('.tier-card');
+                var pendingHides = new WeakMap();
                 var dwellObserver = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
                         var card = entry.target;
                         if (entry.isIntersecting) {
+                            // Cancel any pending hide — likely just a boundary
+                            // flicker, not a genuine scroll-away.
+                            var pendingHide = pendingHides.get(card);
+                            if (pendingHide) { clearTimeout(pendingHide); pendingHides.delete(card); }
+
+                            if (card.classList.contains('photo-revealed') || photoTimers.has(card)) return;
                             var t = setTimeout(function () {
                                 card.classList.add('photo-revealed');
                             }, 1400);
@@ -996,7 +1018,13 @@
                         } else {
                             var existing = photoTimers.get(card);
                             if (existing) { clearTimeout(existing); photoTimers.delete(card); }
-                            card.classList.remove('photo-revealed');
+
+                            if (!card.classList.contains('photo-revealed') || pendingHides.has(card)) return;
+                            var hideTimer = setTimeout(function () {
+                                pendingHides.delete(card);
+                                card.classList.remove('photo-revealed');
+                            }, 180);
+                            pendingHides.set(card, hideTimer);
                         }
                     });
                 }, { rootMargin: '-35% 0px -35% 0px', threshold: 0 });
