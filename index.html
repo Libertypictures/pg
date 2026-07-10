@@ -24,7 +24,7 @@
     <!-- Modern Geometric Font Import (Poppins) -->
     <link rel="preconnect" href="https://fonts.googleapis.com/">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
-    <link href="./Studio Booking Portal _ Libertypictures_files/css2" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- Paystack Inline API -->
     <script src="https://js.paystack.co/v1/inline.js"></script>
@@ -523,7 +523,7 @@
             .protocol-grid { grid-template-columns: 1fr; gap: 30px; }
         }
     </style>
-<link id="load-css-button.min.css" rel="stylesheet" type="text/css" href="./Studio Booking Portal _ Libertypictures_files/button.min.css"></head>
+</head>
 <body>
 
     <div class="container">
@@ -836,6 +836,10 @@
                     <h4>Selection &amp; Turnaround</h4>
                     <p>Clients select their final images from an unedited JPEG gallery hosted online. Final processed files are delivered within 2 to 4 working days via a secure online gallery <span class="highlight-text">valid for 1 month</span>. The original, unedited camera RAW files (the large native files straight out of the camera, not JPEGs) can be downloaded if requested and paid for.</p>
                 </div>
+                <div class="protocol-item">
+                    <h4>Image Rights &amp; Usage</h4>
+                    <p>Clients are granted a <span class="highlight-text">non-exclusive personal-use license</span> for sharing and printing. Libertypictures retains <span class="highlight-text">full ownership</span> of all images, and may share selected images for <span class="highlight-text">portfolio or promotional purposes</span>.</p>
+                </div>
             </div>
         </section>
 
@@ -926,11 +930,19 @@
                 if (!els.length) return;
                 els.forEach(function (el) { el.classList.add('lp-reveal', 'reveal-pending'); });
 
+                var pendingExits = new WeakMap();
+
                 var observer = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
                         var el = entry.target;
                         var idx = els.indexOf(el);
                         if (entry.isIntersecting) {
+                            // Cancel any pending exit — likely just a boundary
+                            // flicker, not a genuine scroll-away. Everything
+                            // below is identical to the original entrance logic.
+                            var pending = pendingExits.get(el);
+                            if (pending) { clearTimeout(pending); pendingExits.delete(el); }
+
                             el.classList.remove('reveal-out', 'reveal-settled');
                             el.style.animationDelay = (idx * (stagger || 0)) + 'ms';
                             el.classList.add('reveal-in');
@@ -940,13 +952,21 @@
                                 el.removeEventListener('animationend', onIn);
                             });
                         } else if (el.classList.contains('reveal-settled') || el.classList.contains('reveal-in')) {
-                            el.classList.remove('reveal-in', 'reveal-settled');
-                            el.style.animationDelay = '0ms';
-                            el.classList.add('reveal-out');
-                            el.addEventListener('animationend', function onOut() {
-                                el.classList.remove('reveal-out');
-                                el.removeEventListener('animationend', onOut);
-                            });
+                            // Debounce the exit only: wait briefly to confirm
+                            // this is a real scroll-away, not a sub-pixel
+                            // flicker right at the trigger boundary.
+                            if (pendingExits.has(el)) return;
+                            var t = setTimeout(function () {
+                                pendingExits.delete(el);
+                                el.classList.remove('reveal-in', 'reveal-settled');
+                                el.style.animationDelay = '0ms';
+                                el.classList.add('reveal-out');
+                                el.addEventListener('animationend', function onOut() {
+                                    el.classList.remove('reveal-out');
+                                    el.removeEventListener('animationend', onOut);
+                                });
+                            }, 180);
+                            pendingExits.set(el, t);
                         }
                     });
                 }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
@@ -1556,4 +1576,4 @@
          ================================================================ -->
 
 
-<iframe frameborder="0" allowtransparency="true" id="Hf5zX" name="paystack-checkout-background-Hf5zX" style="z-index: 2147483647; background: rgba(0, 0, 0, 0.75); border: 0px transparent; overflow: hidden; margin: 0px; padding: 0px; -webkit-tap-highlight-color: transparent; position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; transition: opacity 0.3s; visibility: hidden; display: none;" src="./Studio Booking Portal _ Libertypictures_files/saved_resource.html"></iframe><iframe frameborder="0" allowtransparency="true" allowpaymentrequest="true" id="3ZXVL" name="paystack-checkout-3ZXVL" src="./Studio Booking Portal _ Libertypictures_files/popup.html" style="z-index: 2147483647; background: transparent; border: 0px transparent; overflow: hidden; margin: 0px; padding: 0px; -webkit-tap-highlight-color: transparent; position: fixed; left: 0px; top: 0px; width: 100%; height: 100%; visibility: hidden; display: none;"></iframe></body></html>
+</body></html>
