@@ -926,19 +926,11 @@
                 if (!els.length) return;
                 els.forEach(function (el) { el.classList.add('lp-reveal', 'reveal-pending'); });
 
-                var pendingExits = new WeakMap();
-
                 var observer = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
                         var el = entry.target;
                         var idx = els.indexOf(el);
                         if (entry.isIntersecting) {
-                            // Cancel any pending exit — this entry might just be
-                            // a boundary flicker, not a genuine scroll-away.
-                            var pending = pendingExits.get(el);
-                            if (pending) { clearTimeout(pending); pendingExits.delete(el); }
-
-                            if (el.classList.contains('reveal-settled') || el.classList.contains('reveal-in')) return;
                             el.classList.remove('reveal-out', 'reveal-settled');
                             el.style.animationDelay = (idx * (stagger || 0)) + 'ms';
                             el.classList.add('reveal-in');
@@ -948,20 +940,13 @@
                                 el.removeEventListener('animationend', onIn);
                             });
                         } else if (el.classList.contains('reveal-settled') || el.classList.contains('reveal-in')) {
-                            // Wait briefly to confirm this is a real exit, not a
-                            // sub-pixel flicker right at the trigger boundary.
-                            if (pendingExits.has(el)) return;
-                            var t = setTimeout(function () {
-                                pendingExits.delete(el);
-                                el.classList.remove('reveal-in', 'reveal-settled');
-                                el.style.animationDelay = '0ms';
-                                el.classList.add('reveal-out');
-                                el.addEventListener('animationend', function onOut() {
-                                    el.classList.remove('reveal-out');
-                                    el.removeEventListener('animationend', onOut);
-                                });
-                            }, 180);
-                            pendingExits.set(el, t);
+                            el.classList.remove('reveal-in', 'reveal-settled');
+                            el.style.animationDelay = '0ms';
+                            el.classList.add('reveal-out');
+                            el.addEventListener('animationend', function onOut() {
+                                el.classList.remove('reveal-out');
+                                el.removeEventListener('animationend', onOut);
+                            });
                         }
                     });
                 }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
