@@ -475,6 +475,59 @@
             to   { opacity: 1; transform: translateY(0); }
         }
         .lpb-animate-in { animation: lpb-fade-up 0.35s ease forwards; }
+        /* WIDE DESKTOP — the page was designed around a fairly narrow
+           900px column that looks intentional on tablets and small
+           laptops, but leaves large, unused margins on big monitors.
+           This widens things ONLY above 1200px — nothing here touches
+           or overrides anything the mobile/tablet breakpoints below do. */
+        @media (min-width: 1200px) {
+            .container {
+                max-width: 1140px;
+                padding: 90px 100px;
+            }
+            .tier-grid-3 {
+                grid-template-columns: repeat(3, minmax(0, 320px));
+                gap: 40px;
+            }
+            .tier-grid-2 {
+                grid-template-columns: repeat(2, minmax(0, 360px));
+                gap: 40px;
+            }
+            .addons-container, .invoice-box, .payment-wrapper {
+                max-width: 680px;
+            }
+        }
+
+        /* VIDEO HERO — same pattern as the Melisakim build: video fills
+           the section, a dark gradient scrim keeps the text readable
+           over any footage, and the whole thing gracefully falls back
+           to a plain photo/color if no video is added yet. */
+        .lp-hero { position: relative; height: 88vh; min-height: 560px; display: flex; align-items: flex-end; overflow: hidden; background: #141210; }
+        .lp-hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        .lp-hero-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0.1) 55%); }
+        .lp-hero-content { position: relative; padding: 0 6vw 70px; color: #fff; max-width: 640px; }
+        .lp-hero-eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
+        .lp-hero-title { font-family: 'Poppins', sans-serif; font-weight: 600; font-size: clamp(32px, 5vw, 58px); line-height: 1.15; margin-bottom: 26px; }
+        .lp-hero-cta { display: inline-block; padding: 15px 30px; border: 1px solid #fff; color: #fff; text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: background 0.3s, color 0.3s; }
+        .lp-hero-cta:hover { background: #fff; color: #141210; }
+        @media (max-width: 600px) {
+            .lp-hero { height: 78vh; }
+            .lp-hero-content { padding-bottom: 100px; }
+        }
+
+        /* PROMO POPUP — click-triggered only, never shown automatically */
+        .lp-promo-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 55; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .lp-promo-overlay.is-open { opacity: 1; pointer-events: auto; }
+        .lp-promo-modal {
+            position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%) scale(0.96); z-index: 56;
+            width: min(440px, 90vw); max-height: 70vh; background: var(--bg-container);
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease, transform 0.3s ease;
+            display: flex; flex-direction: column; border-radius: 4px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .lp-promo-modal.is-open { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
+        .lp-promo-header { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
+        .lp-promo-body { overflow-y: auto; padding: 8px 24px 24px; }
+
         @media (max-width: 600px) {
             [data-lp-booking] { padding: 52px 16px; }
             .lpb-card { padding: 28px 20px; }
@@ -525,6 +578,22 @@
     </style>
 </head>
 <body>
+
+    <section class="lp-hero">
+        <video class="lp-hero-video" id="lp-hero-video" autoplay muted loop playsinline poster="">
+            <!-- Add your video: put the file in the same folder as this
+                 page (e.g. "studio-reel.mp4") and uncomment the line
+                 below with that filename. Until then this section just
+                 shows as a plain dark band — nothing breaks either way. -->
+            <!-- <source src="studio-reel.mp4" type="video/mp4"> -->
+        </video>
+        <div class="lp-hero-scrim"></div>
+        <div class="lp-hero-content">
+            <div class="lp-hero-eyebrow">Libertypictures Studio</div>
+            <h1 class="lp-hero-title">Portraits worth keeping, sessions worth booking.</h1>
+            <a href="#packages" class="lp-hero-cta">Book a Session</a>
+        </div>
+    </section>
 
     <div class="container">
         <header class="brand-header">
@@ -850,11 +919,56 @@
 
         <footer class="brand-footer">
             <span style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Libertypictures © 2026</span>
+            <div style="margin-top:10px;">
+                <a href="#" id="lp-promo-trigger" style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color: var(--accent); text-decoration:underline; cursor:pointer;">Current Promos</a>
+            </div>
         </footer>
+    </div>
+
+    <!-- PROMO POPUP — hidden until the footer link above is clicked.
+         Placeholder content for now, matching the honest pattern used
+         throughout: replace with real current offers when you have them. -->
+    <div class="lp-promo-overlay" id="lp-promo-overlay"></div>
+    <div class="lp-promo-modal" id="lp-promo-modal">
+        <div class="lp-promo-header">
+            <span>Current Promos</span>
+            <button id="lp-promo-close" aria-label="Close" style="background:none; border:none; font-size:24px; color:var(--text-secondary); cursor:pointer; line-height:1;">&times;</button>
+        </div>
+        <div class="lp-promo-body">
+            <p style="font-size:13px; color:var(--text-secondary); text-align:center; padding:20px 0;">Nothing running right now — check back soon, or follow the studio's socials so you don't miss the next one.</p>
+        </div>
     </div>
 
     <!-- JAVASCRIPT FOR CART & PAYSTACK INTEGRATION -->
     <script>
+        // PROMO POPUP — opens only on click, closes on the × / overlay / Escape
+        (function () {
+            var overlay = document.getElementById('lp-promo-overlay');
+            var modal = document.getElementById('lp-promo-modal');
+            var trigger = document.getElementById('lp-promo-trigger');
+            var closeBtn = document.getElementById('lp-promo-close');
+            function open(e) { if (e) e.preventDefault(); overlay.classList.add('is-open'); modal.classList.add('is-open'); }
+            function close() { overlay.classList.remove('is-open'); modal.classList.remove('is-open'); }
+            trigger.addEventListener('click', open);
+            closeBtn.addEventListener('click', close);
+            overlay.addEventListener('click', close);
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+        })();
+
+        // HERO VIDEO — mobile browsers commonly pause video when the app
+        // is backgrounded and won't resume it automatically; this brings
+        // it back on the next real tap/scroll, since that's the one thing
+        // iOS specifically still allows (a lesson learned building the
+        // Melisakim site's hero video).
+        (function () {
+            var video = document.getElementById('lp-hero-video');
+            if (!video) return;
+            function resume() { if (video.paused) video.play().catch(function () {}); }
+            document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') resume(); });
+            window.addEventListener('pageshow', resume);
+            ['touchstart', 'click', 'scroll'].forEach(function (evt) { document.addEventListener(evt, resume, { passive: true }); });
+        })();
+
         // Floating Progress Stepper: watch a zero-height sentinel placed just
         // above the stepper. Once it scrolls out of view, the stepper is
         // stuck to the top, so we add a class to condense it into a slim bar.
@@ -1217,55 +1331,64 @@
                 email: emailInput,
                 amount: amountInKobo,
                 currency: 'NGN',
-                callback: async function(response) {
-                    payBtn.disabled = true;
-                    payBtn.textContent = 'Confirming your booking…';
-
-                    try {
-                        const confirmRes = await fetch(LPB_WORKER_URL + '/confirm-payment', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                bookingId: window.lpbBookingData.id,
-                                reference: response.reference,
-                                packageName: cart.baseName,
-                                packagePrice: cart.basePrice,
-                                addons: cart.addons,
-                                totalAmount: cart.subtotal,
-                                retainerAmount: cart.retainer
-                            })
-                        });
-                        const confirmResult = await confirmRes.json();
-                        if (!confirmRes.ok || !confirmResult.success) {
-                            throw new Error('Payment succeeded, but saving the booking failed.');
-                        }
-
-                        // Payment succeeded AND the booking is now genuinely
-                        // saved — this is the moment the whole flow is real,
-                        // not just the payment step in isolation.
-                        updateStep(3);
-                        document.getElementById('client-email').style.display = 'none';
-                        document.getElementById('policy-ack').closest('label').style.display = 'none';
-                        payBtn.style.display = 'none';
-                        document.getElementById('payment-secure-note').style.display = 'none';
-                        document.getElementById('lpb-payment-reference').textContent = response.reference;
-                        document.getElementById('lpb-payment-success').style.display = 'block';
-                    } catch (err) {
-                        // Payment genuinely went through on Paystack's side even
-                        // if this save failed — so this must never claim the
-                        // booking didn't happen. It tells the truth and gives a
-                        // real way to resolve it, instead of losing a paid
-                        // booking silently.
-                        payBtn.disabled = false;
-                        payBtn.textContent = 'Retry Confirming Booking';
-                        alert('Your payment went through (Reference: ' + response.reference + '), but we hit an issue saving your booking. Please save this reference and reach out to us on WhatsApp so we can confirm it manually — nothing has been lost.');
-                    }
+                callback: function(response) {
+                    // Paystack's own checkout script strictly checks that
+                    // this callback is a plain function (not async) — so
+                    // the actual async work happens in a separate function
+                    // called from here, rather than making this one async.
+                    handlePaymentSuccess(response);
                 },
                 onClose: function() {
                     alert('Payment window closed.');
                 }
             });
             handler.openIframe();
+        }
+
+        async function handlePaymentSuccess(response) {
+            const payBtn = document.getElementById('pay-btn');
+            payBtn.disabled = true;
+            payBtn.textContent = 'Confirming your booking…';
+
+            try {
+                const confirmRes = await fetch(LPB_WORKER_URL + '/confirm-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        bookingId: window.lpbBookingData.id,
+                        reference: response.reference,
+                        packageName: cart.baseName,
+                        packagePrice: cart.basePrice,
+                        addons: cart.addons,
+                        totalAmount: cart.subtotal,
+                        retainerAmount: cart.retainer
+                    })
+                });
+                const confirmResult = await confirmRes.json();
+                if (!confirmRes.ok || !confirmResult.success) {
+                    throw new Error('Payment succeeded, but saving the booking failed.');
+                }
+
+                // Payment succeeded AND the booking is now genuinely
+                // saved — this is the moment the whole flow is real,
+                // not just the payment step in isolation.
+                updateStep(3);
+                document.getElementById('client-email').style.display = 'none';
+                document.getElementById('policy-ack').closest('label').style.display = 'none';
+                payBtn.style.display = 'none';
+                document.getElementById('payment-secure-note').style.display = 'none';
+                document.getElementById('lpb-payment-reference').textContent = response.reference;
+                document.getElementById('lpb-payment-success').style.display = 'block';
+            } catch (err) {
+                // Payment genuinely went through on Paystack's side even
+                // if this save failed — so this must never claim the
+                // booking didn't happen. It tells the truth and gives a
+                // real way to resolve it, instead of losing a paid
+                // booking silently.
+                payBtn.disabled = false;
+                payBtn.textContent = 'Retry Confirming Booking';
+                alert('Your payment went through (Reference: ' + response.reference + '), but we hit an issue saving your booking. Please save this reference and reach out to us on WhatsApp so we can confirm it manually — nothing has been lost.');
+            }
         }
     </script>
 
