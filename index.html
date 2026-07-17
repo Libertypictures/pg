@@ -813,7 +813,12 @@
                 <button type="button" class="cta-btn-primary" id="pay-btn" onclick="payWithPaystack()" disabled="">
                     Select a session to pay
                 </button>
-                <p style="font-size: 11px; margin-top: 15px; color: var(--text-secondary);">Payments securely processed by Paystack.</p>
+                <p style="font-size: 11px; margin-top: 15px; color: var(--text-secondary);" id="payment-secure-note">Payments securely processed by Paystack.</p>
+                <div id="lpb-payment-success" style="display:none; text-align:center; padding: 24px 4px 4px;">
+                    <div style="font-size:15px; font-weight:600; margin-bottom:8px;">You're booked. 🎉</div>
+                    <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:6px;">Your retainer has been received and your session is confirmed. A receipt is on its way to your email.</p>
+                    <p style="font-size:11px; color:var(--text-secondary);">Reference: <span id="lpb-payment-reference"></span></p>
+                </div>
             </div>
         </div>
 
@@ -1169,7 +1174,7 @@
             }
 
             // Enforce Book Appointment → Pay Retainer order: no retainer
-            // charge without a confirmed Cal.com booking behind it.
+            // charge without a real, saved booking behind it.
             if (!window.lpbBookingConfirmed) {
                 alert('Please pick a date, time, and enter your details in the booking form above — and press "Book Appointment" — before paying the retainer.');
                 var secureSessionEl = document.getElementById('secure-session');
@@ -1212,9 +1217,49 @@
                 email: emailInput,
                 amount: amountInKobo,
                 currency: 'NGN',
-                callback: function(response) {
-                    updateStep(3);
-                    alert('Payment complete! Reference: ' + response.reference + '\nWe will contact you shortly to confirm your booking.');
+                callback: async function(response) {
+                    payBtn.disabled = true;
+                    payBtn.textContent = 'Confirming your booking…';
+
+                    try {
+                        const confirmRes = await fetch(LPB_WORKER_URL + '/confirm-payment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                bookingId: window.lpbBookingData.id,
+                                reference: response.reference,
+                                packageName: cart.baseName,
+                                packagePrice: cart.basePrice,
+                                addons: cart.addons,
+                                totalAmount: cart.subtotal,
+                                retainerAmount: cart.retainer
+                            })
+                        });
+                        const confirmResult = await confirmRes.json();
+                        if (!confirmRes.ok || !confirmResult.success) {
+                            throw new Error('Payment succeeded, but saving the booking failed.');
+                        }
+
+                        // Payment succeeded AND the booking is now genuinely
+                        // saved — this is the moment the whole flow is real,
+                        // not just the payment step in isolation.
+                        updateStep(3);
+                        document.getElementById('client-email').style.display = 'none';
+                        document.getElementById('policy-ack').closest('label').style.display = 'none';
+                        payBtn.style.display = 'none';
+                        document.getElementById('payment-secure-note').style.display = 'none';
+                        document.getElementById('lpb-payment-reference').textContent = response.reference;
+                        document.getElementById('lpb-payment-success').style.display = 'block';
+                    } catch (err) {
+                        // Payment genuinely went through on Paystack's side even
+                        // if this save failed — so this must never claim the
+                        // booking didn't happen. It tells the truth and gives a
+                        // real way to resolve it, instead of losing a paid
+                        // booking silently.
+                        payBtn.disabled = false;
+                        payBtn.textContent = 'Retry Confirming Booking';
+                        alert('Your payment went through (Reference: ' + response.reference + '), but we hit an issue saving your booking. Please save this reference and reach out to us on WhatsApp so we can confirm it manually — nothing has been lost.');
+                    }
                 },
                 onClose: function() {
                     alert('Payment window closed.');
@@ -1241,7 +1286,7 @@
            Set this to your deployed Cloudflare Worker's base URL (no
            trailing slash), e.g. 'https://liberty-booking.yoursubdomain.workers.dev'
         ------------------------------------------------------------------ */
-        var LPB_WORKER_URL = 'https://liberty-booking.visualsliberty.workers.dev'; // Cloudflare Worker (Cal.com backend)
+        var LPB_WORKER_URL = 'https://liberty-booking-api.visualsliberty.workers.dev'; // real backend, own database — no Cal.com dependency
         var LPB_TIMEZONE   = 'Africa/Lagos';
 
         /* ------------------------------------------------------------------
@@ -1269,9 +1314,9 @@
 
         /* ------------------------------------------------------------------
            AVAILABILITY — calls the Worker's GET /availability route and
-           converts each Cal.com slot into a { label, iso } pair: `label`
+           converts each real slot into a { label, iso } pair: `label`
            is what the client sees ("10:00 AM"), `iso` is the exact UTC
-           start time that gets sent back to Cal.com on submit.
+           start time that gets sent back on submit.
         ------------------------------------------------------------------ */
         async function loadAvailableTimes(dateObj) {
             var dateParam = formatDateParam(dateObj);
@@ -1523,13 +1568,13 @@
             submitBtn.textContent = 'Sending…';
 
             try {
-                await submitBooking(booking);
+                var savedBooking = await submitBooking(booking);
 
                 // Unlocks the existing "Pay Retainer" step further down the
-                // page — payment can't fire until a real Cal.com booking
-                // has been confirmed, matching the Book → Pay order.
+                // page — payment can't fire until a real booking has been
+                // saved (holding the slot), matching the Book → Pay order.
                 window.lpbBookingConfirmed = true;
-                window.lpbBookingData = booking;
+                window.lpbBookingData = Object.assign({}, booking, { id: savedBooking.id });
 
                 if (typeof updateStep === 'function') updateStep(3); // moving into Payment
 
