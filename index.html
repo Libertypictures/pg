@@ -966,7 +966,7 @@
             function resume() { if (video.paused) video.play().catch(function () {}); }
             document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') resume(); });
             window.addEventListener('pageshow', resume);
-            ['touchstart', 'click', 'scroll'].forEach(function (evt) { document.addEventListener(evt, resume, { passive: true }); });
+            ['touchstart', 'click'].forEach(function (evt) { document.addEventListener(evt, resume, { passive: true }); });
         })();
 
         // Floating Progress Stepper: watch a zero-height sentinel placed just
