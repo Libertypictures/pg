@@ -98,7 +98,7 @@
         .brand-header { margin-bottom: 50px; text-align: center; }
         .brand-logo { max-width: 90px; height: auto; margin: 0 auto 12px auto; display: block; filter: var(--logo-filter); transition: filter 0.3s ease; }
         .brand-name { font-size: 24px; letter-spacing: 4px; font-weight: 500; color: var(--text-primary); line-height: 1.2; margin-bottom: 8px; text-transform: uppercase; }
-        .brand-subtitle { font-size: 9px; letter-spacing: 5px; text-transform: uppercase; color: var(--text-primary); font-weight: 600; margin-bottom: 34px; display: block; }
+        .brand-subtitle { font-size: 9px; letter-spacing: 5px; text-transform: uppercase; color: var(--text-primary); font-weight: 600; margin-bottom: 18px; display: block; }
         .brand-intro { font-size: 14px; max-width: 500px; line-height: 1.7; margin: 0 auto; }
         
         /* Section Architecture */
@@ -262,24 +262,24 @@
             border-bottom: 1px solid transparent;
         }
         .sticky-progress-wrap.is-stuck {
-            padding-top: 14px;
-            padding-bottom: 12px;
+            padding-top: 10px;
+            padding-bottom: 8px;
             box-shadow: 0 10px 24px var(--shadow-hover);
             border-bottom-color: var(--border-color);
         }
         .progress-stepper { display: flex; align-items: center; justify-content: center; max-width: 460px; margin: 0 auto; transition: max-width 0.35s ease; }
-        .sticky-progress-wrap.is-stuck .progress-stepper { max-width: 340px; }
+        .sticky-progress-wrap.is-stuck .progress-stepper { max-width: 280px; }
         .stepper-item { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 0 0 auto; }
         .stepper-circle { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--text-secondary); background-color: var(--bg-container); transition: all 0.3s ease; }
-        .sticky-progress-wrap.is-stuck .stepper-circle { width: 24px; height: 24px; font-size: 10px; }
+        .sticky-progress-wrap.is-stuck .stepper-circle { width: 18px; height: 18px; font-size: 8px; }
         .stepper-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); white-space: nowrap; transition: all 0.3s ease; }
-        .sticky-progress-wrap.is-stuck .stepper-label { font-size: 7.5px; }
+        .sticky-progress-wrap.is-stuck .stepper-label { font-size: 6px; }
         .stepper-item.active .stepper-circle { border-color: var(--accent); background-color: var(--accent); color: var(--bg-container); }
         .stepper-item.active .stepper-label { color: var(--text-primary); font-weight: 600; }
         .stepper-item.done .stepper-circle { border-color: var(--accent); background-color: var(--bg-container); color: var(--accent); }
         .stepper-item.done .stepper-label { color: var(--accent); }
         .stepper-line { flex: 1 1 auto; height: 1px; background-color: var(--border-color); margin: 0 8px; margin-bottom: 19px; transition: background-color 0.3s ease, margin-bottom 0.3s ease; }
-        .sticky-progress-wrap.is-stuck .stepper-line { margin-bottom: 15px; }
+        .sticky-progress-wrap.is-stuck .stepper-line { margin-bottom: 11px; }
         .stepper-line.done { background-color: var(--accent); }
 
         /* ============================================================
@@ -511,7 +511,7 @@
         .lp-hero-cta { display: inline-block; padding: 15px 30px; border: 1px solid #fff; color: #fff; text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: background 0.3s, color 0.3s; }
         .lp-hero-cta:hover { background: #fff; color: #141210; }
         @media (max-width: 600px) {
-            .lp-hero { height: 54vh; min-height: 340px; }
+            .lp-hero { height: 66vh; min-height: 420px; }
             .lp-hero-content { padding-bottom: 50px; }
         }
 
@@ -565,12 +565,13 @@
             .booking-section { padding: 40px 10px; border-left: none; border-right: none; border-radius: 0; margin-left: -15px; margin-right: -15px; }
 
             .sticky-progress-wrap { margin: 0 -15px 40px -15px; padding: 16px 15px 12px 15px; }
-            .sticky-progress-wrap.is-stuck { padding: 10px 15px 8px 15px; }
+            .sticky-progress-wrap.is-stuck { padding: 8px 15px 6px 15px; }
             .progress-stepper { max-width: 300px; }
-            .sticky-progress-wrap.is-stuck .progress-stepper { max-width: 240px; }
+            .sticky-progress-wrap.is-stuck .progress-stepper { max-width: 200px; }
             .stepper-label { font-size: 7.5px; }
             .stepper-circle { width: 26px; height: 26px; font-size: 11px; }
-            .sticky-progress-wrap.is-stuck .stepper-circle { width: 20px; height: 20px; font-size: 9px; }
+            .sticky-progress-wrap.is-stuck .stepper-circle { width: 16px; height: 16px; font-size: 7px; }
+            .sticky-progress-wrap.is-stuck .stepper-label { font-size: 5.5px; }
 
             .payment-wrapper { padding: 35px 20px; border-radius: 4px; }
             .protocol-grid { grid-template-columns: 1fr; gap: 30px; }
