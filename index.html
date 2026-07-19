@@ -113,28 +113,21 @@
         .section-title { font-size: 14px; letter-spacing: 5px; text-transform: uppercase; color: var(--text-primary); font-weight: 600; padding-bottom: 12px; border-bottom: 2px solid var(--text-primary); margin-bottom: 20px; text-align: center; }
         .section-meta { font-size: 13px; color: var(--text-primary); font-style: italic; margin-top: -10px; margin-bottom: 30px; text-align: center; }
 
-        /* Pricing Cards - Custom Constrained Grids */
-        /* PACKAGES CAROUSEL — one card holds focus at a time in a
-           contained scroll area; neighbors are visible but receded, not
-           full grid siblings competing for attention. The container
-           scrolls independently of the page — cards above/below the
-           focused one stay confined to this box. */
-        .tier-carousel {
-            height: 560px; max-height: 74vh; overflow-y: auto; overflow-x: hidden;
-            scroll-snap-type: y mandatory; -webkit-overflow-scrolling: touch;
-            position: relative; max-width: 300px; margin: 0 auto;
-            scrollbar-width: none; -ms-overflow-style: none;
+        /* PACKAGES — a normal vertical stack in the page's own flow, no
+           separate scroll container. As you scroll the PAGE (one single
+           scroll, never a boxed-off second one), whichever card is
+           nearest center gets visual focus — full size, full opacity —
+           while others recede slightly. Every card stays fully visible
+           and fully clickable regardless of focus state; the effect is
+           a spotlight, not a gate. */
+        .tier-stack { display: flex; flex-direction: column; align-items: center; gap: 46px; max-width: 460px; margin: 0 auto; }
+        .tier-stack .tier-card {
+            width: 100%;
+            opacity: 0.55; transform: scale(0.93);
+            transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1);
         }
-        .tier-carousel::-webkit-scrollbar { display: none; }
-        .tier-carousel-track { display: flex; flex-direction: column; align-items: center; }
-        .tier-carousel .tier-card {
-            scroll-snap-align: center; scroll-snap-stop: always; flex-shrink: 0;
-            width: 100%; opacity: 0.3; transform: scale(0.8);
-            transition: opacity 0.45s cubic-bezier(0.16,1,0.3,1), transform 0.45s cubic-bezier(0.16,1,0.3,1);
-            pointer-events: none; /* only the focused card is interactive — a receded neighbor shouldn't be tappable */
-        }
-        .tier-carousel .tier-card.is-focused { opacity: 1; transform: scale(1); pointer-events: auto; }
-        .tier-carousel .tier-card.is-focused.photo-revealed .tier-scrim { transition-delay: 0.25s; }
+        .tier-stack .tier-card.is-focused { opacity: 1; transform: scale(1); }
+        .tier-stack .tier-card.is-focused.photo-revealed .tier-scrim { transition-delay: 0.25s; }
 
         .tier-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 260px)); justify-content: center; gap: 28px; }
         .tier-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 290px)); justify-content: center; gap: 28px; }
@@ -538,7 +531,7 @@
             .lp-hero { height: 70vh; min-height: 420px; }
             .lp-hero-content { padding-bottom: 50px; }
             .lp-hero-title { font-size: clamp(18px, 6.4vw, 27px); white-space: nowrap; }
-            .tier-carousel { max-width: 78vw; height: 500px; }
+            .tier-stack { max-width: 100%; gap: 34px; }
         }
 
         /* PROMO POPUP — click-triggered only, never shown automatically */
@@ -659,10 +652,8 @@
         <section class="section-block" id="packages">
             <h2 class="section-title">Our Sessions</h2>
             <p class="section-meta">Perfect for Portraits, Pre-birthdays, Maternity, Corporate Headshots, Duo, and Family sessions.</p>
-            <div class="tier-carousel" id="packages-carousel">
-                <div class="tier-carousel-track" id="packages-grid">
-                    <p style="text-align:center; color:#8c8577; font-size:13px;">Loading sessions&hellip;</p>
-                </div>
+            <div class="tier-stack" id="packages-grid">
+                <p style="text-align:center; color:#8c8577; font-size:13px;">Loading sessions&hellip;</p>
             </div>
         </section>
 
@@ -914,7 +905,6 @@
         // is exactly what shoppers see, no GitHub-hosted files involved.
         (function () {
             var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
-            var carousel = document.getElementById('packages-carousel');
             var grid = document.getElementById('packages-grid');
 
             function escapeHtmlLocal(str) {
@@ -946,26 +936,18 @@
                 '</div>';
             }
 
-            // Watches which card is genuinely centered in the carousel and
-            // marks it focused — everything else stays receded. Scoped to
-            // the carousel itself (root), not the page, so this never
-            // touches or conflicts with anything happening elsewhere on
-            // scroll.
-            function initCarouselFocus() {
+            // Watches which card is nearest the center of the actual
+            // browser viewport as the visitor scrolls the PAGE — there's
+            // no separate scroll area here, this rides entirely on the
+            // page's own single scroll. Whichever card is most central
+            // gets visual focus; others recede but stay fully visible
+            // and fully clickable the whole time.
+            function initFocusTracking() {
                 var cards = grid.querySelectorAll('.tier-card');
                 if (!cards.length || !('IntersectionObserver' in window)) {
                     cards.forEach(function (c) { c.classList.add('is-focused', 'photo-revealed'); });
                     return;
                 }
-
-                // Padding so the first and last cards can actually reach
-                // true center — without this, they'd hit the scroll edge
-                // before ever centering.
-                var containerHeight = carousel.clientHeight;
-                var cardHeight = cards[0].getBoundingClientRect().height;
-                var edgeSpace = Math.max(0, (containerHeight - cardHeight) / 2);
-                grid.style.paddingTop = edgeSpace + 'px';
-                grid.style.paddingBottom = edgeSpace + 'px';
 
                 var focusObserver = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
@@ -976,13 +958,9 @@
                             card.classList.remove('is-focused', 'photo-revealed');
                         }
                     });
-                }, { root: carousel, threshold: 0.6 });
+                }, { rootMargin: '-38% 0px -38% 0px', threshold: 0 }); // a band across the middle of the actual screen — whichever card crosses into it becomes focused
 
                 cards.forEach(function (card) { focusObserver.observe(card); });
-
-                // Focus the first card immediately, before any scrolling —
-                // otherwise the carousel opens with nothing highlighted.
-                cards[0].classList.add('is-focused', 'photo-revealed');
             }
 
             fetch(API_BASE + '/api/packages?activeOnly=true')
@@ -994,12 +972,9 @@
                         return;
                     }
                     grid.innerHTML = packages.map(cardHtml).join('');
-                    // Two frames so layout has genuinely settled (card
-                    // heights, container size) before measuring anything —
-                    // measuring mid-paint gives unreliable numbers.
                     requestAnimationFrame(function () {
                         requestAnimationFrame(function () {
-                            initCarouselFocus();
+                            initFocusTracking();
                         });
                     });
                 })
