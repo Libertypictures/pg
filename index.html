@@ -503,7 +503,7 @@
            over any footage, and the whole thing gracefully falls back
            to a plain photo/color if no video is added yet. */
         .lp-hero { position: relative; height: 62vh; min-height: 420px; display: flex; align-items: flex-end; overflow: hidden; background: #141210; }
-        .lp-hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        .lp-hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 35%; }
         .lp-hero-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0.1) 55%); }
         .lp-hero-content { position: relative; padding: 0 6vw 70px; color: #fff; max-width: 640px; }
         .lp-hero-eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
@@ -921,12 +921,20 @@
                         return;
                     }
                     grid.innerHTML = packages.map(cardHtml).join('');
-                    if (typeof lpInitScrollReveal === 'function') {
-                        lpInitScrollReveal(grid.querySelectorAll('.tier-card'), 90);
-                    }
-                    if (typeof window.initPackageDwellReveal === 'function') {
-                        window.initPackageDwellReveal(grid.querySelectorAll('.tier-card'));
-                    }
+                    // Wait two frames so the browser has fully painted the
+                    // cards' default (hidden) state before either observer
+                    // starts watching them — starting mid-paint is what
+                    // likely caused the jittery "wiggle" during scroll.
+                    requestAnimationFrame(function () {
+                        requestAnimationFrame(function () {
+                            if (typeof lpInitScrollReveal === 'function') {
+                                lpInitScrollReveal(grid.querySelectorAll('.tier-card'), 90);
+                            }
+                            if (typeof window.initPackageDwellReveal === 'function') {
+                                window.initPackageDwellReveal(grid.querySelectorAll('.tier-card'));
+                            }
+                        });
+                    });
                 })
                 .catch(function (err) {
                     grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#8c8577; font-size:13px;">Couldn\'t load sessions right now \u2014 please refresh.</p>';
