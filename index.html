@@ -511,7 +511,7 @@
         .lp-hero-cta { display: inline-block; padding: 15px 30px; border: 1px solid #fff; color: #fff; text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: background 0.3s, color 0.3s; }
         .lp-hero-cta:hover { background: #fff; color: #141210; }
         @media (max-width: 600px) {
-            .lp-hero { height: 66vh; min-height: 420px; }
+            .lp-hero { height: 78vh; min-height: 420px; }
             .lp-hero-content { padding-bottom: 50px; }
             .lp-hero-title { font-size: clamp(22px, 7.4vw, 32px); white-space: nowrap; }
         }
@@ -543,7 +543,7 @@
         /* 📱 MOBILE OPTIMIZATION ENGINE */
         @media (max-width: 768px) {
             body { padding: 0; background-color: var(--bg-container); }
-            .container { padding: 35px 15px; border: none; box-shadow: none; }
+            .container { padding: 15px 15px 35px 15px; border: none; box-shadow: none; }
             .brand-name { font-size: 20px; }
             .brand-intro, .section-title, .section-meta { text-align: center; }
             
@@ -1098,11 +1098,11 @@
                                     el.classList.remove('reveal-out');
                                     el.removeEventListener('animationend', onOut);
                                 });
-                            }, 180);
+                            }, 400);
                             pendingExits.set(el, t);
                         }
                     });
-                }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+                }, { threshold: 0.1, rootMargin: '-8% 0px -8% 0px' });
 
                 els.forEach(function (el) { observer.observe(el); });
             }
@@ -1156,7 +1156,7 @@
                             if (card.classList.contains('photo-revealed') || photoTimers.has(card)) return;
                             var t = setTimeout(function () {
                                 card.classList.add('photo-revealed');
-                            }, 1400);
+                            }, 1200);
                             photoTimers.set(card, t);
                         } else {
                             var existing = photoTimers.get(card);
