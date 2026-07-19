@@ -1149,14 +1149,19 @@
                             if (existing) { clearTimeout(existing); photoTimers.delete(card); }
 
                             if (!card.classList.contains('photo-revealed') || pendingHides.has(card)) return;
+                            // Widened from 180ms — a slow, held scroll can leave
+                            // a card hovering right at the trigger boundary for
+                            // longer than that, causing it to rapidly hide and
+                            // re-show. This gives more real buffer before it
+                            // commits to hiding.
                             var hideTimer = setTimeout(function () {
                                 pendingHides.delete(card);
                                 card.classList.remove('photo-revealed');
-                            }, 180);
+                            }, 450);
                             pendingHides.set(card, hideTimer);
                         }
                     });
-                }, { rootMargin: '-35% 0px -35% 0px', threshold: 0 });
+                }, { rootMargin: '-30% 0px -30% 0px', threshold: 0 });
                 cards.forEach(function (card) { dwellObserver.observe(card); });
             }
             window.initPackageDwellReveal = initPackageDwellReveal;
