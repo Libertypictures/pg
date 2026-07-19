@@ -114,6 +114,28 @@
         .section-meta { font-size: 13px; color: var(--text-primary); font-style: italic; margin-top: -10px; margin-bottom: 30px; text-align: center; }
 
         /* Pricing Cards - Custom Constrained Grids */
+        /* PACKAGES CAROUSEL — one card holds focus at a time in a
+           contained scroll area; neighbors are visible but receded, not
+           full grid siblings competing for attention. The container
+           scrolls independently of the page — cards above/below the
+           focused one stay confined to this box. */
+        .tier-carousel {
+            height: 560px; max-height: 74vh; overflow-y: auto; overflow-x: hidden;
+            scroll-snap-type: y mandatory; -webkit-overflow-scrolling: touch;
+            position: relative; max-width: 300px; margin: 0 auto;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .tier-carousel::-webkit-scrollbar { display: none; }
+        .tier-carousel-track { display: flex; flex-direction: column; align-items: center; }
+        .tier-carousel .tier-card {
+            scroll-snap-align: center; scroll-snap-stop: always; flex-shrink: 0;
+            width: 100%; opacity: 0.3; transform: scale(0.8);
+            transition: opacity 0.45s cubic-bezier(0.16,1,0.3,1), transform 0.45s cubic-bezier(0.16,1,0.3,1);
+            pointer-events: none; /* only the focused card is interactive — a receded neighbor shouldn't be tappable */
+        }
+        .tier-carousel .tier-card.is-focused { opacity: 1; transform: scale(1); pointer-events: auto; }
+        .tier-carousel .tier-card.is-focused.photo-revealed .tier-scrim { transition-delay: 0.25s; }
+
         .tier-grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 260px)); justify-content: center; gap: 28px; }
         .tier-grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 290px)); justify-content: center; gap: 28px; }
 
@@ -516,6 +538,7 @@
             .lp-hero { height: 70vh; min-height: 420px; }
             .lp-hero-content { padding-bottom: 50px; }
             .lp-hero-title { font-size: clamp(18px, 6.4vw, 27px); white-space: nowrap; }
+            .tier-carousel { max-width: 78vw; height: 500px; }
         }
 
         /* PROMO POPUP — click-triggered only, never shown automatically */
@@ -636,8 +659,10 @@
         <section class="section-block" id="packages">
             <h2 class="section-title">Our Sessions</h2>
             <p class="section-meta">Perfect for Portraits, Pre-birthdays, Maternity, Corporate Headshots, Duo, and Family sessions.</p>
-            <div class="tier-grid-3" id="packages-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); max-width: 900px; margin: 0 auto; min-height: 380px;">
-                <p style="grid-column:1/-1; text-align:center; color:#8c8577; font-size:13px;">Loading sessions&hellip;</p>
+            <div class="tier-carousel" id="packages-carousel">
+                <div class="tier-carousel-track" id="packages-grid">
+                    <p style="text-align:center; color:#8c8577; font-size:13px;">Loading sessions&hellip;</p>
+                </div>
             </div>
         </section>
 
@@ -889,6 +914,7 @@
         // is exactly what shoppers see, no GitHub-hosted files involved.
         (function () {
             var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
+            var carousel = document.getElementById('packages-carousel');
             var grid = document.getElementById('packages-grid');
 
             function escapeHtmlLocal(str) {
@@ -920,44 +946,65 @@
                 '</div>';
             }
 
+            // Watches which card is genuinely centered in the carousel and
+            // marks it focused — everything else stays receded. Scoped to
+            // the carousel itself (root), not the page, so this never
+            // touches or conflicts with anything happening elsewhere on
+            // scroll.
+            function initCarouselFocus() {
+                var cards = grid.querySelectorAll('.tier-card');
+                if (!cards.length || !('IntersectionObserver' in window)) {
+                    cards.forEach(function (c) { c.classList.add('is-focused', 'photo-revealed'); });
+                    return;
+                }
+
+                // Padding so the first and last cards can actually reach
+                // true center — without this, they'd hit the scroll edge
+                // before ever centering.
+                var containerHeight = carousel.clientHeight;
+                var cardHeight = cards[0].getBoundingClientRect().height;
+                var edgeSpace = Math.max(0, (containerHeight - cardHeight) / 2);
+                grid.style.paddingTop = edgeSpace + 'px';
+                grid.style.paddingBottom = edgeSpace + 'px';
+
+                var focusObserver = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        var card = entry.target;
+                        if (entry.isIntersecting) {
+                            card.classList.add('is-focused', 'photo-revealed');
+                        } else {
+                            card.classList.remove('is-focused', 'photo-revealed');
+                        }
+                    });
+                }, { root: carousel, threshold: 0.6 });
+
+                cards.forEach(function (card) { focusObserver.observe(card); });
+
+                // Focus the first card immediately, before any scrolling —
+                // otherwise the carousel opens with nothing highlighted.
+                cards[0].classList.add('is-focused', 'photo-revealed');
+            }
+
             fetch(API_BASE + '/api/packages?activeOnly=true')
                 .then(function (res) { return res.json(); })
                 .then(function (data) {
                     var packages = (data.packages || []).slice().sort(function (a, b) { return a.displayOrder - b.displayOrder; });
                     if (!packages.length) {
-                        grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#8c8577; font-size:13px;">Sessions are being updated \u2014 check back shortly.</p>';
+                        grid.innerHTML = '<p style="text-align:center; color:#8c8577; font-size:13px;">Sessions are being updated \u2014 check back shortly.</p>';
                         return;
                     }
                     grid.innerHTML = packages.map(cardHtml).join('');
-                    // Wait two frames so the browser has fully painted the
-                    // cards' default (hidden) state before either observer
-                    // starts watching them — starting mid-paint is what
-                    // likely caused the jittery "wiggle" during scroll.
-                    //
-                    // Also poll briefly for the reveal functions themselves:
-                    // they're defined inside a separate DOMContentLoaded
-                    // callback, and in rare cases this fetch could resolve
-                    // before that's finished running. Retrying for a moment
-                    // instead of checking once guarantees the animation
-                    // starts rather than silently never firing.
-                    function triggerReveal(attemptsLeft) {
-                        var ready = typeof window.lpInitScrollReveal === 'function' && typeof window.initPackageDwellReveal === 'function';
-                        if (!ready) {
-                            if (attemptsLeft > 0) setTimeout(function () { triggerReveal(attemptsLeft - 1); }, 50);
-                            else console.error('Reveal animation functions never became available.');
-                            return;
-                        }
-                        window.lpInitScrollReveal(grid.querySelectorAll('.tier-card'), 90);
-                        window.initPackageDwellReveal(grid.querySelectorAll('.tier-card'));
-                    }
+                    // Two frames so layout has genuinely settled (card
+                    // heights, container size) before measuring anything —
+                    // measuring mid-paint gives unreliable numbers.
                     requestAnimationFrame(function () {
                         requestAnimationFrame(function () {
-                            triggerReveal(20); // up to ~1s of retrying
+                            initCarouselFocus();
                         });
                     });
                 })
                 .catch(function (err) {
-                    grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#8c8577; font-size:13px;">Couldn\'t load sessions right now \u2014 please refresh.</p>';
+                    grid.innerHTML = '<p style="text-align:center; color:#8c8577; font-size:13px;">Couldn\'t load sessions right now \u2014 please refresh.</p>';
                     console.error('Packages load failed:', err);
                 });
         })();
@@ -1072,6 +1119,12 @@
                 els.forEach(function (el) { el.classList.add('lp-reveal', 'reveal-pending'); });
 
                 var pendingExits = new WeakMap();
+                var activeListeners = new WeakMap(); // el -> {event, handler} of the currently-armed animationend listener, so an interrupted one never gets left dangling
+
+                function clearActiveListener(el) {
+                    var active = activeListeners.get(el);
+                    if (active) { el.removeEventListener('animationend', active); activeListeners.delete(el); }
+                }
 
                 var observer = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
@@ -1079,19 +1132,29 @@
                         var idx = els.indexOf(el);
                         if (entry.isIntersecting) {
                             // Cancel any pending exit — likely just a boundary
-                            // flicker, not a genuine scroll-away. Everything
-                            // below is identical to the original entrance logic.
+                            // flicker, not a genuine scroll-away.
                             var pending = pendingExits.get(el);
                             if (pending) { clearTimeout(pending); pendingExits.delete(el); }
 
-                            el.classList.remove('reveal-out', 'reveal-settled');
+                            // If it was still fully visible (exit only ever
+                            // pending, never actually happened), leave it
+                            // alone rather than needlessly replaying the
+                            // entrance animation on something the visitor
+                            // never actually saw disappear.
+                            if (el.classList.contains('reveal-settled')) return;
+
+                            clearActiveListener(el); // in case a previous entrance/exit was interrupted mid-flight
+                            el.classList.remove('reveal-out', 'reveal-in');
+                            void el.offsetWidth; // force a reflow so the browser treats this as a genuinely new animation start, not a no-op
                             el.style.animationDelay = (idx * (stagger || 0)) + 'ms';
                             el.classList.add('reveal-in');
-                            el.addEventListener('animationend', function onIn() {
+                            function onIn() {
                                 el.classList.remove('reveal-in');
                                 el.classList.add('reveal-settled');
-                                el.removeEventListener('animationend', onIn);
-                            });
+                                activeListeners.delete(el);
+                            }
+                            el.addEventListener('animationend', onIn);
+                            activeListeners.set(el, onIn);
                         } else if (el.classList.contains('reveal-settled') || el.classList.contains('reveal-in')) {
                             // Debounce the exit only: wait briefly to confirm
                             // this is a real scroll-away, not a sub-pixel
@@ -1099,13 +1162,17 @@
                             if (pendingExits.has(el)) return;
                             var t = setTimeout(function () {
                                 pendingExits.delete(el);
+                                clearActiveListener(el); // in case the entrance was still mid-flight when this exit fired
                                 el.classList.remove('reveal-in', 'reveal-settled');
+                                void el.offsetWidth;
                                 el.style.animationDelay = '0ms';
                                 el.classList.add('reveal-out');
-                                el.addEventListener('animationend', function onOut() {
+                                function onOut() {
                                     el.classList.remove('reveal-out');
-                                    el.removeEventListener('animationend', onOut);
-                                });
+                                    activeListeners.delete(el);
+                                }
+                                el.addEventListener('animationend', onOut);
+                                activeListeners.set(el, onOut);
                             }, 400);
                             pendingExits.set(el, t);
                         }
