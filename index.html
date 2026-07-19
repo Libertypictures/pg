@@ -509,7 +509,7 @@
         .lp-hero-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(var(--hero-scrim-rgb),0.65), rgba(var(--hero-scrim-rgb),0.1) 55%); }
         .lp-hero-content { position: relative; padding: 0 6vw 70px; color: #fff; max-width: 640px; margin: 0 auto; text-align: center; }
         .lp-hero-eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
-        .lp-hero-title { font-family: 'Poppins', sans-serif; font-weight: 500; font-size: clamp(26px, 4.2vw, 46px); line-height: 1.15; margin-bottom: 26px; color: rgba(255,255,255,0.45); }
+        .lp-hero-title { font-family: 'Poppins', sans-serif; font-weight: 500; font-size: clamp(26px, 4.2vw, 46px); line-height: 1.15; margin-bottom: 26px; color: rgba(255,255,255,0.45); text-shadow: 0 2px 12px rgba(0,0,0,0.5); }
         .lp-hero-cta { display: inline-block; padding: 15px 30px; border: 1px solid #fff; color: #fff; text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: background 0.3s, color 0.3s; }
         .lp-hero-cta:hover { background: #fff; color: #141210; }
         @media (max-width: 600px) {
@@ -636,7 +636,7 @@
         <section class="section-block" id="packages">
             <h2 class="section-title">Our Sessions</h2>
             <p class="section-meta">Perfect for Portraits, Pre-birthdays, Maternity, Corporate Headshots, Duo, and Family sessions.</p>
-            <div class="tier-grid-3" id="packages-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); max-width: 900px; margin: 0 auto;">
+            <div class="tier-grid-3" id="packages-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); max-width: 900px; margin: 0 auto; min-height: 380px;">
                 <p style="grid-column:1/-1; text-align:center; color:#8c8577; font-size:13px;">Loading sessions&hellip;</p>
             </div>
         </section>
@@ -876,6 +876,7 @@
                     if (!s.hero_video_url) return; // nothing uploaded yet — plain dark band is the correct fallback
                     var oldVideo = document.getElementById('lp-hero-video');
                     var newVideo = oldVideo.cloneNode(false);
+                    newVideo.muted = true; // explicit property, not just the cloned attribute — autoplay strictly requires this and attribute-cloning can be inconsistent
                     newVideo.innerHTML = '<source src="' + API_BASE + s.hero_video_url + '" type="video/mp4">';
                     oldVideo.parentNode.replaceChild(newVideo, oldVideo);
                     newVideo.play().catch(function (err) { console.error('Hero video could not autoplay:', err.message); });
@@ -898,7 +899,7 @@
 
             function cardHtml(p) {
                 var photoHtml = p.imageUrl
-                    ? '<img src="' + API_BASE + p.imageUrl + '" alt="" loading="lazy" decoding="async">'
+                    ? '<img src="' + API_BASE + p.imageUrl + '" alt="' + escapeHtmlLocal(p.name) + '" loading="lazy" decoding="async">'
                     : '';
                 var bullets = (p.description || '').split('\n').filter(function (line) { return line.trim(); });
                 var bulletsHtml = bullets.length
@@ -981,9 +982,10 @@
         // iOS specifically still allows (a lesson learned building the
         // Melisakim site's hero video).
         (function () {
-            var video = document.getElementById('lp-hero-video');
-            if (!video) return;
-            function resume() { if (video.paused) video.play().catch(function () {}); }
+            function resume() {
+                var video = document.getElementById('lp-hero-video');
+                if (video && video.paused) video.play().catch(function () {});
+            }
             document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') resume(); });
             window.addEventListener('pageshow', resume);
             ['touchstart', 'click'].forEach(function (evt) { document.addEventListener(evt, resume, { passive: true }); });
