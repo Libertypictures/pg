@@ -123,7 +123,7 @@
         .tier-stack { display: flex; flex-direction: column; align-items: center; gap: 46px; max-width: 460px; margin: 0 auto; }
         .tier-stack .tier-card {
             width: 100%;
-            opacity: 0.55; transform: scale(0.8);
+            opacity: 0.55; transform: scale(0.86);
             transition: opacity 0.42s ease-in-out, transform 0.42s ease-in-out;
         }
         .tier-stack .tier-card.is-focused { opacity: 1; transform: scale(1); }
@@ -937,6 +937,17 @@
                     return;
                 }
 
+                // IntersectionObserver always fires once immediately with
+                // whatever's already true the moment observing starts —
+                // if a card happens to already sit in the center band as
+                // soon as the section loads, that counts as this first,
+                // automatic firing, not a real scroll action. Suppressing
+                // transitions for just that first batch means it appears
+                // instantly, correctly, without an unwanted "growing into
+                // focus" animation nobody actually triggered by scrolling.
+                var isFirstBatch = true;
+                cards.forEach(function (c) { c.style.transition = 'none'; });
+
                 var focusObserver = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
                         var card = entry.target;
@@ -946,7 +957,15 @@
                             card.classList.remove('is-focused', 'photo-revealed');
                         }
                     });
-                }, { rootMargin: '-38% 0px -38% 0px', threshold: 0 }); // a band across the middle of the actual screen — whichever card crosses into it becomes focused
+                    if (isFirstBatch) {
+                        isFirstBatch = false;
+                        requestAnimationFrame(function () {
+                            requestAnimationFrame(function () {
+                                cards.forEach(function (c) { c.style.transition = ''; }); // restore normal animated transitions for every real scroll change from here on
+                            });
+                        });
+                    }
+                }, { rootMargin: '-25% 0px -25% 0px', threshold: 0 }); // a band across the middle of the actual screen — whichever card crosses into it becomes focused
 
                 cards.forEach(function (card) { focusObserver.observe(card); });
             }
