@@ -505,13 +505,13 @@
         .lp-hero { position: relative; height: 62vh; min-height: 420px; display: flex; align-items: flex-end; overflow: hidden; background: #141210; }
         .lp-hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 35%; }
         .lp-hero-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.65), rgba(0,0,0,0.1) 55%); }
-        .lp-hero-content { position: relative; padding: 0 6vw 70px; color: #fff; max-width: 640px; }
+        .lp-hero-content { position: relative; padding: 0 6vw 70px; color: #fff; max-width: 640px; margin: 0 auto; text-align: center; }
         .lp-hero-eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
-        .lp-hero-title { font-family: 'Fraunces', serif; font-weight: 500; font-size: clamp(32px, 5vw, 58px); line-height: 1.15; margin-bottom: 26px; }
+        .lp-hero-title { font-family: 'Poppins', sans-serif; font-weight: 500; font-size: clamp(32px, 5vw, 58px); line-height: 1.15; margin-bottom: 26px; color: rgba(255,255,255,0.72); }
         .lp-hero-cta { display: inline-block; padding: 15px 30px; border: 1px solid #fff; color: #fff; text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: background 0.3s, color 0.3s; }
         .lp-hero-cta:hover { background: #fff; color: #141210; }
         @media (max-width: 600px) {
-            .lp-hero { height: 78vh; min-height: 420px; }
+            .lp-hero { height: 55vh; min-height: 380px; }
             .lp-hero-content { padding-bottom: 50px; }
             .lp-hero-title { font-size: clamp(22px, 7.4vw, 32px); white-space: nowrap; }
         }
@@ -543,7 +543,11 @@
         /* 📱 MOBILE OPTIMIZATION ENGINE */
         @media (max-width: 768px) {
             body { padding: 0; background-color: var(--bg-container); }
-            .container { padding: 15px 15px 35px 15px; border: none; box-shadow: none; }
+            .container { padding: 8px 15px 30px 15px; border: none; box-shadow: none; }
+            .brand-header { margin-bottom: 20px; }
+            .brand-logo { max-width: 60px; margin: 0 auto 6px auto; }
+            .brand-subtitle { margin-bottom: 10px; }
+            .brand-intro { font-size: 13px; line-height: 1.55; }
             .brand-name { font-size: 20px; }
             .brand-intro, .section-title, .section-meta { text-align: center; }
             
@@ -591,7 +595,7 @@
         </video>
         <div class="lp-hero-scrim"></div>
         <div class="lp-hero-content">
-            <h1 class="lp-hero-title">Intimate visual stories.</h1>
+            <h1 class="lp-hero-title">Intimate visual stories</h1>
         </div>
     </section>
 
