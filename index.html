@@ -856,6 +856,26 @@
 
     <!-- JAVASCRIPT FOR CART & PAYSTACK INTEGRATION -->
     <script>
+        // HERO VIDEO — loaded from Settings, same pattern as Packages.
+        // Previously this only worked if you manually added a file to
+        // the GitHub repo — now it actually reads what's uploaded in
+        // the dashboard.
+        (function () {
+            var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
+            fetch(API_BASE + '/api/settings')
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    var s = data.settings || {};
+                    if (!s.hero_video_url) return; // nothing uploaded yet — plain dark band is the correct fallback
+                    var oldVideo = document.getElementById('lp-hero-video');
+                    var newVideo = oldVideo.cloneNode(false);
+                    newVideo.innerHTML = '<source src="' + API_BASE + s.hero_video_url + '" type="video/mp4">';
+                    oldVideo.parentNode.replaceChild(newVideo, oldVideo);
+                    newVideo.play().catch(function (err) { console.error('Hero video could not autoplay:', err.message); });
+                })
+                .catch(function (err) { console.error('Could not load hero video from Settings:', err); });
+        })();
+
         // PACKAGES — loaded from the real backend, matching the same
         // pattern used throughout Melisakim: whatever's in the dashboard
         // is exactly what shoppers see, no GitHub-hosted files involved.
@@ -901,6 +921,12 @@
                         return;
                     }
                     grid.innerHTML = packages.map(cardHtml).join('');
+                    if (typeof lpInitScrollReveal === 'function') {
+                        lpInitScrollReveal(grid.querySelectorAll('.tier-card'), 90);
+                    }
+                    if (typeof window.initPackageDwellReveal === 'function') {
+                        window.initPackageDwellReveal(grid.querySelectorAll('.tier-card'));
+                    }
                 })
                 .catch(function (err) {
                     grid.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#8c8577; font-size:13px;">Couldn\'t load sessions right now \u2014 please refresh.</p>';
@@ -1060,7 +1086,6 @@
                 els.forEach(function (el) { observer.observe(el); });
             }
 
-            lpInitScrollReveal(document.querySelectorAll('.tier-card'), 90);
             lpInitScrollReveal(document.querySelectorAll('#lpb-form-card'), 0);
             lpInitScrollReveal(document.querySelectorAll('#payment-recap-package'), 0);
 
@@ -1088,9 +1113,14 @@
             // viewport (not just "40% visible anywhere") so a card only
             // starts its dwell timer once it's genuinely centered on
             // screen — not merely peeking in at the top or bottom edge.
-            if ('IntersectionObserver' in window) {
+            //
+            // Pulled into a named function (rather than running once
+            // inline) so it can be called again after the real package
+            // cards load in from the API — they don't exist yet at the
+            // point this script first runs.
+            function initPackageDwellReveal(cards) {
+                if (!('IntersectionObserver' in window)) return;
                 var photoTimers = new WeakMap();
-                var packageCards = document.querySelectorAll('.tier-card');
                 var pendingHides = new WeakMap();
                 var dwellObserver = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
@@ -1119,8 +1149,9 @@
                         }
                     });
                 }, { rootMargin: '-35% 0px -35% 0px', threshold: 0 });
-                packageCards.forEach(function (card) { dwellObserver.observe(card); });
+                cards.forEach(function (card) { dwellObserver.observe(card); });
             }
+            window.initPackageDwellReveal = initPackageDwellReveal;
         });
 
         // Shared smooth-scroll helper — used instead of the browser's native
