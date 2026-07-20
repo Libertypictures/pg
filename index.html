@@ -9,7 +9,7 @@
     <meta property="og:title" content="Studio Booking Portal | Libertypictures">
     <meta property="og:description" content="Choose a session package, pick a date, and secure your slot online with Libertypictures.">
     <meta property="og:type" content="website">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=&#39;[w3.org](http://www.w3.org/2000/svg)&#39; viewBox=&#39;0 0 100 100&#39;%3E%3Ccircle cx=&#39;50&#39; cy=&#39;50&#39; r=&#39;50&#39; fill=&#39;%23000000&#39;/%3E%3Ctext x=&#39;50&#39; y=&#39;68&#39; font-size=&#39;52&#39; font-family=&#39;Georgia, serif&#39; fill=&#39;%23c4a67e&#39; text-anchor=&#39;middle&#39;%3EL%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000000'/%3E%3Ctext x='50' y='68' font-size='52' font-family='Georgia, serif' fill='%23c4a67e' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
     <script type="application/ld+json">
     {
       "@context": "[schema.org](https://schema.org)",
@@ -74,6 +74,14 @@
 
         /* Modern Editorial Reset */
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        /* Consistent keyboard focus across every custom-styled interactive
+           element. :focus-visible only shows this for keyboard navigation
+           (Tab), not mouse clicks — accessible without adding visual noise
+           for the vast majority of visitors using a mouse or touch. */
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
         html { scroll-behavior: smooth; }
 
         body {
@@ -99,7 +107,6 @@
         /* Header Layout */
         .brand-header { margin-bottom: 50px; text-align: center; }
         .brand-logo { max-width: 90px; height: auto; margin: 0 auto 12px auto; display: block; filter: var(--logo-filter); transition: filter 0.3s ease; }
-        .brand-name { font-size: 24px; letter-spacing: 4px; font-weight: 500; color: var(--text-primary); line-height: 1.2; margin-bottom: 8px; text-transform: uppercase; }
         .brand-subtitle { font-size: 9px; letter-spacing: 5px; text-transform: uppercase; color: var(--text-primary); font-weight: 600; margin-bottom: 18px; display: block; }
         .brand-intro { font-size: 14px; max-width: 500px; line-height: 1.7; margin: 0 auto; }
         
@@ -133,7 +140,6 @@
         .tier-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 10px 10px 0 0; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0; transition: opacity 0.35s ease; z-index: 2; }
         .tier-card:hover { transform: translateY(-5px); box-shadow: 0 14px 30px var(--shadow-hover); }
         .tier-card:hover::before { opacity: 1; }
-        .tier-card.featured { border-color: var(--accent); }
         .tier-card.selected { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 14px 30px var(--shadow-hover); }
         .tier-card.selected::before { opacity: 1; }
 
@@ -257,7 +263,7 @@
         
         /* Policies */
         .protocol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 30px; }
-        .protocol-item h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; font-weight: 600; }
+        .protocol-item h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; font-weight: 600; }
         .protocol-item p { font-size: 13px; color: var(--text-secondary); text-align: justify; }
         .highlight-text { color: var(--accent); font-weight: 600; }
 
@@ -454,15 +460,6 @@
             cursor: not-allowed; box-shadow: none; transform: none;
         }
         .lpb-submit-hint { text-align: center; font-size: 11px; color: var(--lpb-muted); margin-top: 12px; min-height: 16px; }
-        .lpb-success { display: none; text-align: center; padding: 48px 20px; }
-        .lpb-success.lpb-visible { display: block; animation: lpb-fade-up 0.5s ease forwards; }
-        .lpb-success-icon {
-            width: 56px; height: 56px; border-radius: 50%; background: var(--lpb-accent-soft);
-            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
-        }
-        .lpb-success-icon svg { color: var(--lpb-accent); }
-        .lpb-success h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: var(--lpb-text); }
-        .lpb-success p { font-size: 13px; color: var(--lpb-muted); line-height: 1.7; }
         /* Compact confirmation banner — appears inline below the form instead
            of replacing it, so the client can just scroll past it whenever
            they're ready to reach payment. No layout takeover, no auto-scroll. */
@@ -512,10 +509,7 @@
         .lp-hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 35%; }
         .lp-hero-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(var(--hero-scrim-rgb),0.65), rgba(var(--hero-scrim-rgb),0.1) 55%); }
         .lp-hero-content { position: relative; padding: 0 6vw 70px; color: #fff; max-width: 640px; margin: 0 auto; text-align: center; }
-        .lp-hero-eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); margin-bottom: 18px; }
         .lp-hero-title { font-family: 'Poppins', sans-serif; font-weight: 500; font-size: clamp(16px, 2.6vw, 28px); letter-spacing: 5px; word-spacing: 8px; line-height: 1.4; margin-bottom: 26px; color: rgba(255,255,255,0.45); text-shadow: 0 2px 12px rgba(0,0,0,0.5); }
-        .lp-hero-cta { display: inline-block; padding: 15px 30px; border: 1px solid #fff; color: #fff; text-decoration: none; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: background 0.3s, color 0.3s; }
-        .lp-hero-cta:hover { background: #fff; color: #141210; }
         @media (max-width: 600px) {
             .lp-hero { height: 70vh; min-height: 420px; }
             .lp-hero-content { padding-bottom: 50px; }
@@ -555,7 +549,6 @@
             .brand-logo { max-width: 54px; margin: 0 auto 4px auto; }
             .brand-subtitle { margin-bottom: 6px; }
             .brand-intro { font-size: 13px; line-height: 1.5; }
-            .brand-name { font-size: 20px; }
             .brand-intro, .section-title, .section-meta { text-align: center; }
             
             .tier-card { border-radius: 14px; box-shadow: 0 6px 18px var(--shadow-subtle); }
@@ -602,7 +595,7 @@
     <div class="container">
         <header class="brand-header">
             <img src="logo.png" alt="Libertypictures" class="brand-logo" id="brand-logo-img">
-            <h1 class="brand-subtitle">Reservations</h1>
+            <h2 class="brand-subtitle">Reservations</h2>
             <p class="brand-intro">
                 Thank you for your interest in our <span style="color: var(--accent);">service</span><br>
                 Select your desired <span style="color: var(--accent);">session configuration</span>, book a <span style="color: var(--accent);">date</span>, and secure your <span style="color: var(--accent);">retainer</span> below
@@ -635,7 +628,7 @@
             <h2 class="section-title">Our Sessions</h2>
             <p class="section-meta">Perfect for Portraits, Pre-birthdays, Maternity, Corporate Headshots, Duo, and Family sessions.</p>
             <div class="tier-stack" id="packages-grid">
-                <p style="text-align:center; color:#8c8577; font-size:13px;">Loading sessions&hellip;</p>
+                <p style="text-align:center; color:var(--text-secondary); font-size:13px;">Loading sessions&hellip;</p>
             </div>
         </section>
 
@@ -815,23 +808,23 @@
             <h2 class="section-title">Studio Policies</h2>
             <div class="protocol-grid">
                 <div class="protocol-item">
-                    <h4>Retainer &amp; Settlement</h4>
+                    <h3>Retainer &amp; Settlement</h3>
                     <p>A <span class="highlight-text">non-refundable retainer fee of 70%</span> is strictly required to lock down your specific date and hour. The remaining <span class="highlight-text">30% balance</span> must be settled completely on the immediate day of your session.</p>
                 </div>
                 <div class="protocol-item">
-                    <h4>Punctuality &amp; Scheduling</h4>
+                    <h3>Punctuality &amp; Scheduling</h3>
                     <p>To preserve our seamless calendar, sessions are time-bound: <span class="highlight-text">60 minutes</span> for 1-look and duo setups, <span class="highlight-text">75 minutes</span> for 2-look portfolios, and <span class="highlight-text">90 minutes</span> for 3-look and family configurations. Arrivals extending <span class="highlight-text">beyond 20 minutes late</span> automatically attract a fee of <span class="highlight-text">₦15,000</span>.</p>
                 </div>
                 <div class="protocol-item">
-                    <h4>Cancellation &amp; Rescheduling</h4>
+                    <h3>Cancellation &amp; Rescheduling</h3>
                     <p>Cancellations do not qualify for refunds. One time rescheduling is allowed free of charge if requested at least <span class="highlight-text">24-48 hours</span> before session. Retainers are valid for 12 months.</p>
                 </div>
                 <div class="protocol-item">
-                    <h4>Selection &amp; Turnaround</h4>
+                    <h3>Selection &amp; Turnaround</h3>
                     <p>Clients select their final images from an unedited JPEG gallery hosted online. Final processed files are delivered within 2 to 4 working days via a secure online gallery <span class="highlight-text">valid for 1 month</span>. The original, unedited camera RAW files (the large native files straight out of the camera, not JPEGs) can be downloaded if requested and paid for.</p>
                 </div>
                 <div class="protocol-item">
-                    <h4>Image Rights &amp; Usage</h4>
+                    <h3>Image Rights &amp; Usage</h3>
                     <p>Clients are granted a <span class="highlight-text">non-exclusive personal-use license</span> for sharing and printing. Libertypictures retains <span class="highlight-text">full ownership</span> of all images, and may share selected images for <span class="highlight-text">portfolio or promotional purposes</span>.</p>
                 </div>
             </div>
@@ -975,7 +968,7 @@
                 .then(function (data) {
                     var packages = (data.packages || []).slice().sort(function (a, b) { return a.displayOrder - b.displayOrder; });
                     if (!packages.length) {
-                        grid.innerHTML = '<p style="text-align:center; color:#8c8577; font-size:13px;">Sessions are being updated \u2014 check back shortly.</p>';
+                        grid.innerHTML = '<p style="text-align:center; color:var(--text-secondary); font-size:13px;">Sessions are being updated \u2014 check back shortly.</p>';
                         return;
                     }
                     grid.innerHTML = packages.map(cardHtml).join('');
@@ -986,7 +979,7 @@
                     });
                 })
                 .catch(function (err) {
-                    grid.innerHTML = '<p style="text-align:center; color:#8c8577; font-size:13px;">Couldn\'t load sessions right now \u2014 please refresh.</p>';
+                    grid.innerHTML = '<p style="text-align:center; color:var(--text-secondary); font-size:13px;">Couldn\'t load sessions right now \u2014 please refresh.</p>';
                     console.error('Packages load failed:', err);
                 });
         })();
