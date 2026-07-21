@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Make a Payment | Libertypictures</title>
+<meta name="description" content="Securely complete a payment to Libertypictures — session balance or any other studio request.">
+<meta name="theme-color" content="#1B4332">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<style>
+    :root {
+        /* Forest green — dominant primary */
+        --forest: #1B4332;
+        --forest-light: #2D6A4F;
+        --forest-soft: #E8F1EC;
+        /* Warm accents — used sparingly, never together at full strength */
+        --gold: #B8935A;
+        --gold-soft: #F5EEE1;
+        --terracotta: #BC6C4A;
+        --teal: #3D6B66;
+        /* Neutrals */
+        --bg: #FAF8F4;
+        --card: #FFFFFF;
+        --ink: #1C1B19;
+        --ink-soft: #6B6558;
+        --ink-faint: #A39D91;
+        --border: #E7E1D6;
+        --error: #B3453A;
+        --shadow-sm: 0 1px 2px rgba(27,67,50,0.04);
+        --shadow-md: 0 8px 24px rgba(27,67,50,0.08);
+        --shadow-lg: 0 16px 48px rgba(27,67,50,0.14);
+        --radius: 14px;
+        --radius-sm: 10px;
+    }
+    @media (prefers-color-scheme: dark) {
+        :root {
+            /* Not an inversion — a genuinely different, warmer dark palette */
+            --forest: #4A8A6C;
+            --forest-light: #5FA382;
+            --forest-soft: #1C2E26;
+            --gold: #D4B27E;
+            --gold-soft: #2A2620;
+            --terracotta: #D08865;
+            --teal: #5B9C95;
+            --bg: #17181A;
+            --card: #1F2120;
+            --ink: #F3F1EC;
+            --ink-soft: #A8A399;
+            --ink-faint: #6E6A61;
+            --border: #33352F;
+            --error: #E08276;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.2);
+            --shadow-md: 0 8px 24px rgba(0,0,0,0.32);
+            --shadow-lg: 0 20px 56px rgba(0,0,0,0.48);
+        }
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-font-smoothing: antialiased; }
+    body {
+        font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--ink);
+        min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center;
+        padding: 28px 18px; line-height: 1.5; font-size: 15px;
+    }
+    a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+        outline: 2px solid var(--forest); outline-offset: 2px; border-radius: 4px;
+    }
+
+    .card {
+        width: 100%; max-width: 420px; background: var(--card);
+        border: 1px solid var(--border); border-radius: var(--radius);
+        box-shadow: var(--shadow-lg); padding: 32px 26px;
+    }
+    .mark { display: flex; align-items: center; justify-content: center; gap: 7px; margin-bottom: 22px; }
+    .mark-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--forest); }
+    .mark-text { font-size: 11px; letter-spacing: 2.2px; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; }
+    h1 { text-align: center; font-size: 20px; font-weight: 600; margin-bottom: 4px; letter-spacing: -0.2px; }
+    .sub { text-align: center; font-size: 13px; color: var(--ink-soft); margin-bottom: 24px; }
+
+    /* ---------- Payment type cards — the page's one deliberate moment ---------- */
+    .type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 22px; }
+    .type-btn {
+        position: relative; background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+        padding: 18px 12px 16px; text-align: center; cursor: pointer; font-family: 'Inter', sans-serif;
+        transition: border-color 0.22s cubic-bezier(0.16,1,0.3,1), transform 0.22s cubic-bezier(0.16,1,0.3,1), box-shadow 0.22s cubic-bezier(0.16,1,0.3,1), background 0.22s ease;
+        box-shadow: var(--shadow-sm);
+    }
+    .type-btn:hover { border-color: var(--ink-faint); transform: translateY(-1px); }
+    .type-icon {
+        width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        margin: 0 auto 10px; background: var(--forest-soft); transition: background 0.22s ease;
+    }
+    .type-icon svg { transition: stroke 0.22s ease; }
+    #type-balance-btn .type-icon svg { stroke: var(--terracotta); }
+    #type-other-btn .type-icon svg { stroke: var(--teal); }
+    .type-btn-label { font-size: 13.5px; font-weight: 600; letter-spacing: -0.1px; }
+    .type-btn.is-selected {
+        border-color: var(--forest); background: var(--forest-soft);
+        transform: translateY(-2px); box-shadow: var(--shadow-md);
+    }
+    .type-btn.is-selected .type-icon { background: var(--forest); }
+    .type-btn.is-selected .type-icon svg { stroke: #fff; }
+    .type-btn.is-selected::after {
+        content: ''; position: absolute; top: 9px; right: 9px; width: 16px; height: 16px; border-radius: 50%;
+        background: var(--forest); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+        background-size: 10px 10px; background-repeat: no-repeat; background-position: center;
+        animation: popIn 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+
+    .form-section { display: none; }
+    .form-section.is-visible { display: block; animation: fadeUp 0.3s cubic-bezier(0.16,1,0.3,1); }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+    .field-group { margin-bottom: 14px; }
+    .field-group label { display: block; font-size: 11.5px; letter-spacing: 0.2px; color: var(--ink-soft); margin-bottom: 6px; font-weight: 500; }
+    .field-group input, .field-group select, .field-group textarea {
+        width: 100%; padding: 13px 14px; background: var(--bg); border: 1.5px solid var(--border);
+        border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: 15px; color: var(--ink);
+        outline: none; transition: border-color 0.18s ease, box-shadow 0.18s ease; -webkit-appearance: none;
+    }
+    .field-group input:focus, .field-group select:focus, .field-group textarea:focus {
+        border-color: var(--forest); box-shadow: 0 0 0 3.5px var(--forest-soft);
+    }
+    .field-group textarea { resize: vertical; min-height: 64px; }
+
+    /* ---------- Amount — the visual focus once a balance is chosen ---------- */
+    .amount-display {
+        background: var(--gold-soft); border: 1px solid var(--border); border-radius: var(--radius-sm);
+        padding: 16px 18px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;
+    }
+    .amount-display .label { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+    .amount-display .value { font-size: 24px; font-weight: 700; color: var(--gold); letter-spacing: -0.4px; }
+
+    .pay-btn {
+        width: 100%; padding: 16px; background: var(--forest); color: #fff; border: none; border-radius: var(--radius-sm);
+        font-family: 'Inter', sans-serif; font-size: 14.5px; font-weight: 600; letter-spacing: 0.1px;
+        cursor: pointer; transition: background 0.18s ease, transform 0.1s ease, box-shadow 0.18s ease;
+        display: flex; align-items: center; justify-content: center; gap: 9px; box-shadow: var(--shadow-sm);
+    }
+    .pay-btn:hover:not(:disabled) { background: var(--forest-light); box-shadow: var(--shadow-md); }
+    .pay-btn:active:not(:disabled) { transform: scale(0.985); }
+    .pay-btn:disabled { background: var(--ink-faint); cursor: not-allowed; box-shadow: none; }
+    .pay-btn .spinner { display: none; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    .pay-btn.is-loading .spinner { display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .secure-note { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: var(--ink-faint); margin-top: 14px; }
+    .error-text { font-size: 12.5px; color: var(--error); margin: -6px 0 14px; min-height: 1em; line-height: 1.5; }
+
+    /* ---------- Success ---------- */
+    .success-view { display: none; text-align: center; padding: 8px 0 2px; }
+    .success-view.is-visible { display: block; animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1); }
+    .success-check {
+        width: 60px; height: 60px; border-radius: 50%; background: var(--forest-soft);
+        display: flex; align-items: center; justify-content: center; margin: 0 auto 18px;
+        animation: checkPop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.1s both;
+    }
+    @keyframes checkPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    .success-view h2 { font-size: 19px; font-weight: 600; margin-bottom: 8px; letter-spacing: -0.2px; }
+    .success-view p { font-size: 13.5px; color: var(--ink-soft); margin-bottom: 5px; }
+    .success-ref { display: inline-block; font-size: 11px; color: var(--ink-faint); margin-top: 4px; padding: 5px 12px; background: var(--bg); border-radius: 20px; }
+    .wa-btn {
+        display: inline-flex; align-items: center; gap: 9px; margin-top: 22px;
+        padding: 14px 28px; background: var(--forest); color: #fff; text-decoration: none;
+        font-size: 13px; font-weight: 600; border-radius: 30px; box-shadow: var(--shadow-md);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .wa-btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-lg); }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <div id="form-view">
+        <div class="mark"><span class="mark-dot"></span><span class="mark-text">Libertypictures</span></div>
+        <h1>Make a Payment</h1>
+        <p class="sub">Choose what this payment is for</p>
+
+        <div class="type-grid">
+            <button type="button" class="type-btn" id="type-balance-btn">
+                <div class="type-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2.5"></rect><path d="M2 10h20"></path><path d="M6 15h4"></path></svg></div>
+                <div class="type-btn-label">Balance Due</div>
+            </button>
+            <button type="button" class="type-btn" id="type-other-btn">
+                <div class="type-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg></div>
+                <div class="type-btn-label">Other Payments</div>
+            </button>
+        </div>
+
+        <!-- BALANCE DUE -->
+        <div class="form-section" id="balance-section">
+            <div class="field-group">
+                <label for="package-select">Your Session Package</label>
+                <select id="package-select">
+                    <option value="">Loading packages…</option>
+                </select>
+            </div>
+            <div class="amount-display" id="balance-amount-display" style="display:none;">
+                <span class="label">Balance Due (30%)</span>
+                <span class="value" id="balance-amount-value">₦0</span>
+            </div>
+        </div>
+
+        <!-- OTHER PAYMENTS -->
+        <div class="form-section" id="other-section">
+            <div class="field-group">
+                <label for="other-amount">Amount (₦)</label>
+                <input type="number" id="other-amount" placeholder="e.g. 20000" min="1">
+            </div>
+            <div class="field-group">
+                <label for="other-description">What's this for?</label>
+                <textarea id="other-description" placeholder="e.g. Extra retouched photos, discounted session, studio request…"></textarea>
+            </div>
+        </div>
+
+        <!-- SHARED CONTACT FIELDS — only shown once a payment type is chosen -->
+        <div id="contact-fields" style="display:none;">
+            <div class="field-group">
+                <label for="customer-name">Your Name</label>
+                <input type="text" id="customer-name" placeholder="Full name">
+            </div>
+            <div class="field-group">
+                <label for="customer-email">Email Address</label>
+                <input type="email" id="customer-email" placeholder="you@example.com">
+            </div>
+            <div class="field-group">
+                <label for="customer-phone">Phone Number <span style="font-weight:400; color:var(--ink-faint);">(optional)</span></label>
+                <input type="tel" id="customer-phone" placeholder="e.g. 08012345678">
+            </div>
+
+            <p class="error-text" id="form-error"></p>
+            <button type="button" class="pay-btn" id="pay-btn" disabled>
+                <span class="spinner"></span>
+                <span class="pay-btn-text">Select an amount to pay</span>
+            </button>
+            <p class="secure-note">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
+                Secured by Paystack
+            </p>
+        </div>
+    </div>
+
+    <div class="success-view" id="success-view">
+        <div class="success-check">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--forest)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+        </div>
+        <h2>Payment Received</h2>
+        <p id="success-message">Thank you — your payment has gone through.</p>
+        <span class="success-ref">Ref: <span id="success-reference"></span></span>
+        <br>
+        <a href="#" id="whatsapp-link" target="_blank" rel="noopener" class="wa-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.87 9.87 0 0 0 12.04 2m0 1.67a8.2 8.2 0 0 1 5.83 2.42 8.19 8.19 0 0 1 2.42 5.83c0 4.54-3.7 8.23-8.24 8.23a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.23-8.24m-4.53 4.72c-.15 0-.4.06-.61.29-.21.24-.8.78-.8 1.9s.82 2.2.93 2.36c.12.15 1.6 2.44 3.87 3.42.55.24.97.38 1.31.48.55.17 1.04.15 1.44.09.44-.06 1.34-.55 1.53-1.08.19-.53.19-.98.13-1.08-.06-.09-.21-.15-.44-.26-.23-.12-1.34-.66-1.55-.74-.21-.07-.36-.11-.51.12-.15.23-.59.73-.72.88-.13.15-.27.17-.5.06-.23-.12-.96-.35-1.83-1.13-.68-.6-1.13-1.35-1.27-1.58-.13-.23-.01-.35.1-.47.11-.11.23-.27.35-.4.12-.15.15-.24.23-.4.08-.15.04-.29-.02-.41-.06-.11-.51-1.25-.72-1.7-.19-.44-.38-.38-.51-.39z"></path></svg>
+            Message Us on WhatsApp
+        </a>
+    </div>
+</div>
+
+<script>
+(function () {
+    var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
+    var WHATSAPP_NUMBER = '2349075170240';
+
+    function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.textContent = String(str == null ? '' : str);
+        return div.innerHTML;
+    }
+    function formatNaira(n) {
+        return '\u20a6' + Math.round(n).toLocaleString();
+    }
+
+    var state = { type: null, packages: [], selectedPackage: null };
+
+    var typeBalanceBtn = document.getElementById('type-balance-btn');
+    var typeOtherBtn = document.getElementById('type-other-btn');
+    var balanceSection = document.getElementById('balance-section');
+    var otherSection = document.getElementById('other-section');
+    var contactFields = document.getElementById('contact-fields');
+    var packageSelect = document.getElementById('package-select');
+    var balanceAmountDisplay = document.getElementById('balance-amount-display');
+    var balanceAmountValue = document.getElementById('balance-amount-value');
+    var otherAmountInput = document.getElementById('other-amount');
+    var otherDescriptionInput = document.getElementById('other-description');
+    var payBtn = document.getElementById('pay-btn');
+    var payBtnText = payBtn.querySelector('.pay-btn-text');
+    var formError = document.getElementById('form-error');
+
+    // Packages load once, immediately — real data, same source as the
+    // storefront's own price cards, so it can never fall out of sync.
+    fetch(API_BASE + '/api/packages')
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+            state.packages = (data.packages || []).filter(function (p) { return p.isActive; });
+            if (!state.packages.length) {
+                packageSelect.innerHTML = '<option value="">No packages available right now</option>';
+                return;
+            }
+            packageSelect.innerHTML = '<option value="">Select your package…</option>' +
+                state.packages.map(function (p) {
+                    return '<option value="' + p.id + '">' + escapeHtml(p.name) + ' \u2014 ' + formatNaira(p.price) + '</option>';
+                }).join('');
+        })
+        .catch(function () {
+            packageSelect.innerHTML = '<option value="">Couldn\'t load packages \u2014 please refresh</option>';
+        });
+
+    function selectType(type) {
+        state.type = type;
+        typeBalanceBtn.classList.toggle('is-selected', type === 'balance');
+        typeOtherBtn.classList.toggle('is-selected', type === 'other');
+        balanceSection.classList.toggle('is-visible', type === 'balance');
+        otherSection.classList.toggle('is-visible', type === 'other');
+        contactFields.style.display = 'block';
+        updatePayButton();
+    }
+    typeBalanceBtn.addEventListener('click', function () { selectType('balance'); });
+    typeOtherBtn.addEventListener('click', function () { selectType('other'); });
+
+    packageSelect.addEventListener('change', function () {
+        var pkg = state.packages.find(function (p) { return String(p.id) === packageSelect.value; });
+        state.selectedPackage = pkg || null;
+        if (pkg) {
+            var balance = pkg.price * 0.3;
+            balanceAmountValue.textContent = formatNaira(balance);
+            balanceAmountDisplay.style.display = 'flex';
+        } else {
+            balanceAmountDisplay.style.display = 'none';
+        }
+        updatePayButton();
+    });
+    otherAmountInput.addEventListener('input', updatePayButton);
+
+    function getCurrentAmount() {
+        if (state.type === 'balance') {
+            return state.selectedPackage ? Math.round(state.selectedPackage.price * 0.3) : 0;
+        }
+        if (state.type === 'other') {
+            return parseInt(otherAmountInput.value, 10) || 0;
+        }
+        return 0;
+    }
+
+    function updatePayButton() {
+        var amount = getCurrentAmount();
+        if (amount > 0) {
+            payBtn.disabled = false;
+            payBtnText.textContent = 'Pay ' + formatNaira(amount);
+        } else {
+            payBtn.disabled = true;
+            payBtnText.textContent = 'Select an amount to pay';
+        }
+    }
+
+    payBtn.addEventListener('click', function () {
+        formError.textContent = '';
+
+        if (typeof PaystackPop === 'undefined') {
+            formError.textContent = 'The payment module failed to load. Please check your connection or disable any ad blockers, then refresh the page.';
+            return;
+        }
+
+        var amount = getCurrentAmount();
+        if (amount <= 0) { formError.textContent = 'Please select a valid amount.'; return; }
+
+        var name = document.getElementById('customer-name').value.trim();
+        var email = document.getElementById('customer-email').value.trim();
+        var phone = document.getElementById('customer-phone').value.trim();
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!name) { formError.textContent = 'Please enter your name.'; return; }
+        if (!email || !emailRegex.test(email)) { formError.textContent = 'Please enter a valid email address.'; return; }
+        if (state.type === 'other' && !otherDescriptionInput.value.trim()) {
+            formError.textContent = 'Please tell us what this payment is for.';
+            return;
+        }
+
+        var handler = PaystackPop.setup({
+            key: 'pk_live_05373c45337d6a937f51d9c3045c7839369d503d',
+            email: email,
+            amount: amount * 100,
+            currency: 'NGN',
+            callback: function (response) {
+                // Paystack requires a plain (non-async) callback — the
+                // actual async save happens in a separate function.
+                handlePaymentSuccess(response, { amount: amount, name: name, email: email, phone: phone });
+            },
+            onClose: function () {
+                formError.textContent = 'Payment window closed.';
+            }
+        });
+        handler.openIframe();
+    });
+
+    async function handlePaymentSuccess(response, details) {
+        payBtn.disabled = true;
+        payBtn.classList.add('is-loading');
+        payBtnText.textContent = 'Confirming…';
+
+        var payload = {
+            type: state.type,
+            amount: details.amount,
+            customerName: details.name,
+            customerEmail: details.email,
+            customerPhone: details.phone || null,
+            reference: response.reference,
+        };
+        if (state.type === 'balance') {
+            payload.packageName = state.selectedPackage.name;
+        } else {
+            payload.description = otherDescriptionInput.value.trim();
+        }
+
+        try {
+            var res = await fetch(API_BASE + '/confirm-payment-request', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            var result = await res.json();
+            if (!res.ok || !result.success) throw new Error('Save failed');
+            showSuccess(response.reference, details);
+        } catch (err) {
+            // Payment genuinely succeeded on Paystack's side even if this
+            // save failed — never claim otherwise. Give a real way to
+            // resolve it instead of losing a real payment silently.
+            payBtn.disabled = false;
+            payBtn.classList.remove('is-loading');
+            payBtnText.textContent = 'Retry Confirming Payment';
+            formError.textContent = 'Your payment went through (Reference: ' + response.reference + '), but we hit an issue saving it. Please save this reference and message us on WhatsApp so we can confirm it manually — nothing has been lost.';
+        }
+    }
+
+    function showSuccess(reference, details) {
+        document.getElementById('form-view').style.display = 'none';
+        document.getElementById('success-view').classList.add('is-visible');
+        document.getElementById('success-reference').textContent = reference;
+
+        var purpose = state.type === 'balance' ? state.selectedPackage.name + ' balance' : otherDescriptionInput.value.trim();
+        var waMessage = "Hi Libertypictures! I've just paid " + formatNaira(details.amount) + " for " + purpose + " (Reference: " + reference + ").";
+        var waLink = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(waMessage);
+        document.getElementById('whatsapp-link').href = waLink;
+        window.open(waLink, '_blank');
+    }
+})();
+</script>
+</body>
+</html>
