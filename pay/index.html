@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Make a Payment | Libertypictures</title>
-<meta name="description" content="Securely complete a payment to Libertypictures — session balance or any other studio request.">
+<meta name="description" content="Securely complete a payment to Libertyco — a remaining balance or any other request.">
 <meta name="theme-color" content="#1B4332">
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -96,7 +96,8 @@
     .type-icon svg { transition: stroke 0.22s ease; }
     #type-balance-btn .type-icon svg { stroke: var(--terracotta); }
     #type-other-btn .type-icon svg { stroke: var(--teal); }
-    .type-btn-label { font-size: 13.5px; font-weight: 600; letter-spacing: -0.1px; color: var(--ink); }
+    .type-btn-label { font-size: 13.5px; font-weight: 600; letter-spacing: -0.1px; color: var(--ink); margin-bottom: 5px; }
+    .type-btn-desc { font-size: 10.5px; line-height: 1.5; color: var(--ink-soft); }
     .type-btn.is-selected {
         border-color: var(--forest); background: var(--forest-soft);
         transform: translateY(-2px); box-shadow: var(--shadow-md);
@@ -116,6 +117,7 @@
     .form-section.is-visible { display: block; animation: fadeUp 0.3s cubic-bezier(0.16,1,0.3,1); }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
+    .field-hint { font-size: 11.5px; line-height: 1.6; color: var(--ink-soft); margin-top: 7px; }
     .field-group { margin-bottom: 14px; }
     .field-group label { display: block; font-size: 11.5px; letter-spacing: 0.2px; color: var(--ink-soft); margin-bottom: 6px; font-weight: 500; }
     .field-group input, .field-group select, .field-group textarea {
@@ -185,20 +187,23 @@
             <button type="button" class="type-btn" id="type-balance-btn">
                 <div class="type-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="14" rx="2.5"></rect><path d="M2 10h20"></path><path d="M6 15h4"></path></svg></div>
                 <div class="type-btn-label">Balance Due</div>
+                <div class="type-btn-desc">Pay the remaining 30% on something you've already booked</div>
             </button>
             <button type="button" class="type-btn" id="type-other-btn">
                 <div class="type-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v8M8 12h8"></path></svg></div>
                 <div class="type-btn-label">Other Payments</div>
+                <div class="type-btn-desc">A discount, add-on, or anything else agreed with us</div>
             </button>
         </div>
 
         <!-- BALANCE DUE -->
         <div class="form-section" id="balance-section">
             <div class="field-group">
-                <label for="package-select">Your Session Package</label>
+                <label for="package-select">Which Package Did You Book?</label>
                 <select id="package-select">
                     <option value="">Loading packages…</option>
                 </select>
+                <p class="field-hint">This isn't a new booking — we just use it to calculate your exact remaining balance.</p>
             </div>
             <div class="amount-display" id="balance-amount-display" style="display:none;">
                 <span class="label">Balance Due (30%)</span>
@@ -214,7 +219,7 @@
             </div>
             <div class="field-group">
                 <label for="other-description">What's this for?</label>
-                <textarea id="other-description" placeholder="e.g. Extra retouched photos, discounted session, studio request…"></textarea>
+                <textarea id="other-description" placeholder="e.g. Extra items, a discount, a special request…"></textarea>
             </div>
         </div>
 
@@ -257,6 +262,8 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.87 9.87 0 0 0 12.04 2m0 1.67a8.2 8.2 0 0 1 5.83 2.42 8.19 8.19 0 0 1 2.42 5.83c0 4.54-3.7 8.23-8.24 8.23a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.23-8.24m-4.53 4.72c-.15 0-.4.06-.61.29-.21.24-.8.78-.8 1.9s.82 2.2.93 2.36c.12.15 1.6 2.44 3.87 3.42.55.24.97.38 1.31.48.55.17 1.04.15 1.44.09.44-.06 1.34-.55 1.53-1.08.19-.53.19-.98.13-1.08-.06-.09-.21-.15-.44-.26-.23-.12-1.34-.66-1.55-.74-.21-.07-.36-.11-.51.12-.15.23-.59.73-.72.88-.13.15-.27.17-.5.06-.23-.12-.96-.35-1.83-1.13-.68-.6-1.13-1.35-1.27-1.58-.13-.23-.01-.35.1-.47.11-.11.23-.27.35-.4.12-.15.15-.24.23-.4.08-.15.04-.29-.02-.41-.06-.11-.51-1.25-.72-1.7-.19-.44-.38-.38-.51-.39z"></path></svg>
             Message Us on WhatsApp
         </a>
+        <p style="font-size:11px; color:var(--ink-faint); margin-top:12px;">If WhatsApp didn't open automatically, tap the button above.</p>
+        <button type="button" id="success-reset-btn" style="margin-top:18px; background:none; border:none; color:var(--ink-soft); font-size:12.5px; text-decoration:underline; cursor:pointer; font-family:'Inter',sans-serif;">Make Another Payment</button>
     </div>
 </div>
 
@@ -446,6 +453,32 @@
         document.getElementById('whatsapp-link').href = waLink;
         window.open(waLink, '_blank');
     }
+
+    document.getElementById('success-reset-btn').addEventListener('click', function () {
+        // Full reset — same starting state as a fresh page load, so a
+        // second payment can't accidentally reuse stale details from
+        // the one that just succeeded.
+        state = { type: null, packages: state.packages, selectedPackage: null };
+        typeBalanceBtn.classList.remove('is-selected');
+        typeOtherBtn.classList.remove('is-selected');
+        balanceSection.classList.remove('is-visible');
+        otherSection.classList.remove('is-visible');
+        contactFields.style.display = 'none';
+        packageSelect.value = '';
+        balanceAmountDisplay.style.display = 'none';
+        otherAmountInput.value = '';
+        otherDescriptionInput.value = '';
+        document.getElementById('customer-name').value = '';
+        document.getElementById('customer-email').value = '';
+        document.getElementById('customer-phone').value = '';
+        formError.textContent = '';
+        payBtn.disabled = true;
+        payBtn.classList.remove('is-loading');
+        payBtnText.textContent = 'Select an amount to pay';
+
+        document.getElementById('success-view').classList.remove('is-visible');
+        document.getElementById('form-view').style.display = 'block';
+    });
 })();
 </script>
 </body>
