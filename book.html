@@ -103,7 +103,10 @@
             -webkit-font-smoothing: antialiased;
             padding: 80px 20px;
             transition: background-color 0.3s ease, color 0.3s ease;
+            opacity: 0;
+            animation: lp-page-in 0.7s ease 0.05s forwards;
         }
+        @keyframes lp-page-in { to { opacity: 1; } }
         .serif { font-family: 'Fraunces', serif; }
 
         .container {
@@ -116,14 +119,20 @@
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
+        /* SITE HEADER — same fixed logo header as Home and Portfolio,
+           frosted once scrolled past the hero. */
+        .site-header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 28px 0; transition: padding 0.35s ease, background 0.35s ease, box-shadow 0.35s ease; }
+        .site-header.is-scrolled { padding: 16px 0; background: rgba(250,248,244,0.72); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); box-shadow: 0 1px 0 var(--border-color); }
+        @media (prefers-color-scheme: dark) { .site-header.is-scrolled { background: rgba(22,21,19,0.72); } }
+        .site-logo-link { display: block; }
+        .site-logo { height: 34px; width: auto; filter: var(--logo-filter); transition: filter 0.35s ease, height 0.35s ease; }
+        .site-header.is-scrolled .site-logo { height: 28px; }
+
         /* Header Layout — the brand mark now sits within a quieter,
            more spacious editorial block; the eyebrow label is softened
            and the intro copy is set in a size that reads as a genuine
            welcome rather than dense instructions. */
-        .lp-back-home { display: inline-block; font-size: 12px; letter-spacing: 0.3px; color: var(--ink-soft); text-decoration: none; margin-bottom: 28px; transition: color 0.15s ease; }
-        .lp-back-home:hover { color: var(--accent); }
         .brand-header { margin-bottom: 64px; text-align: center; }
-        .brand-logo { max-width: 82px; height: auto; margin: 0 auto 22px auto; display: block; filter: var(--logo-filter); transition: filter 0.3s ease; }
         .brand-subtitle { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 22px; display: block; }
         .brand-intro { font-size: 15.5px; max-width: 480px; line-height: 1.85; margin: 0 auto; color: var(--text-secondary); }
         .brand-intro span { color: var(--accent); font-weight: 500; }
@@ -513,23 +522,7 @@
             }
         }
 
-        /* VIDEO HERO — cinematic editorial treatment: taller, quieter
-           scrim, refined type. Same video/scrim mechanics as before. */
-        .lp-hero { position: relative; height: 68vh; min-height: 460px; display: flex; align-items: flex-end; overflow: hidden; background: #141210; }
-        .lp-hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 35%; }
-        .lp-hero-slideshow { position: absolute; inset: 0; }
-        .lp-hero-slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity 0.9s ease; }
-        .lp-hero-slide.is-active { opacity: 1; }
-        .lp-hero-flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 3; transition: opacity 0.1s ease; }
-        .lp-hero-flash.is-flashing { opacity: 0.32; transition: opacity 0.06s ease; }
-        .lp-hero-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(var(--hero-scrim-rgb),0.72), rgba(var(--hero-scrim-rgb),0.05) 60%); }
-        .lp-hero-content { position: relative; padding: 0 6vw 84px; color: #fff; max-width: 640px; margin: 0 auto; text-align: center; }
-        .lp-hero-eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: rgba(255,255,255,0.55); margin-bottom: 18px; font-weight: 500; }
-        .lp-hero-title { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(20px, 3.2vw, 34px); letter-spacing: 0; word-spacing: 0; line-height: 1.3; margin-bottom: 0; color: rgba(255,255,255,0.94); text-shadow: 0 4px 24px rgba(0,0,0,0.4); }
         @media (max-width: 600px) {
-            .lp-hero { height: 74vh; min-height: 480px; }
-            .lp-hero-content { padding-bottom: 64px; }
-            .lp-hero-title { font-size: clamp(17px, 5.2vw, 24px); white-space: normal; }
             .tier-stack { max-width: 100%; gap: 34px; }
         }
 
@@ -553,9 +546,8 @@
         /* 📱 MOBILE OPTIMIZATION ENGINE */
         @media (max-width: 768px) {
             body { padding: 0; background-color: var(--bg-container); }
-            .container { padding: 4px 20px 44px 20px; border: none; box-shadow: none; }
+            .container { padding: 96px 20px 44px 20px; border: none; box-shadow: none; }
             .brand-header { margin-bottom: 20px; }
-            .brand-logo { max-width: 58px; margin: 0 auto 10px auto; }
             .brand-subtitle { margin-bottom: 10px; }
             .brand-intro { font-size: 13.5px; line-height: 1.7; }
             .brand-intro, .section-title, .section-meta { text-align: center; }
@@ -595,27 +587,12 @@
 </head>
 <body>
 
-    <section class="lp-hero">
-        <video class="lp-hero-video" id="lp-hero-video" autoplay muted loop playsinline poster="">
-            <!-- Add your video: put the file in the same folder as this
-                 page (e.g. "studio-reel.mp4") and uncomment the line
-                 below with that filename. Until then this section just
-                 shows as a plain dark band — nothing breaks either way. -->
-            <!-- <source src="studio-reel.mp4" type="video/mp4"> -->
-        </video>
-        <div class="lp-hero-slideshow" id="lp-hero-slideshow" style="display:none;"></div>
-        <div class="lp-hero-flash" id="lp-hero-flash"></div>
-        <div class="lp-hero-scrim"></div>
-        <div class="lp-hero-content">
-            <div class="lp-hero-eyebrow">Libertypictures</div>
-            <h1 class="lp-hero-title">Intimate visual stories</h1>
-        </div>
-    </section>
+    <header class="site-header" id="site-header">
+        <a href="./" class="site-logo-link"><img src="" alt="Libertypictures" class="site-logo" id="site-logo-img"></a>
+    </header>
 
     <div class="container">
-        <a href="./" class="lp-back-home">&larr; Back to Home</a>
         <header class="brand-header">
-            <img src="logo.png" alt="Libertypictures" class="brand-logo" id="brand-logo-img">
             <p class="brand-intro">
                 Thank you for your interest in our <span>service</span>.
                 Select your desired <span>session</span>, book a <span>date</span>, and secure your <span>retainer</span> below.
@@ -872,57 +849,12 @@
 
     <!-- JAVASCRIPT FOR CART & PAYSTACK INTEGRATION -->
     <script>
-        // HERO VIDEO + SLIDESHOW + LOGO — loaded from Settings. Two
-        // completely separate rendering paths based on hero_mode: the
-        // video path never runs slideshow code, and the slideshow path
-        // never touches the video element or its properties (autoplay,
-        // loop, muted) — each mode only ever does its own thing.
+        // HERO VIDEO + LOGO — loaded from Settings. This page deliberately
+        // only ever shows video (no slideshow) — the slideshow lives on
+        // the Home page, which is where the storytelling happens; this
+        // page's job is to get someone through booking quickly.
         (function () {
             var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
-
-            function renderVideo(s) {
-                if (!s.hero_video_url) return; // nothing uploaded yet — plain dark band is the correct fallback
-                var oldVideo = document.getElementById('lp-hero-video');
-                var newVideo = oldVideo.cloneNode(false);
-                newVideo.muted = true; // explicit property, not just the cloned attribute — autoplay strictly requires this and attribute-cloning can be inconsistent
-                newVideo.innerHTML = '<source src="' + API_BASE + s.hero_video_url + '" type="video/mp4">';
-                oldVideo.parentNode.replaceChild(newVideo, oldVideo);
-                newVideo.play().catch(function (err) { console.error('Hero video could not autoplay:', err.message); });
-            }
-
-            function renderSlideshow() {
-                document.getElementById('lp-hero-video').style.display = 'none';
-                var container = document.getElementById('lp-hero-slideshow');
-                var flash = document.getElementById('lp-hero-flash');
-
-                fetch(API_BASE + '/api/hero-images')
-                    .then(function (res) { return res.json(); })
-                    .then(function (data) {
-                        var images = data.images || [];
-                        if (!images.length) return; // nothing uploaded yet — plain dark band is the correct fallback, same as an empty video
-
-                        container.style.display = 'block';
-                        container.innerHTML = images.map(function (img, i) {
-                            return '<div class="lp-hero-slide' + (i === 0 ? ' is-active' : '') + '" style="background-image:url(' + API_BASE + img.imageUrl + ')"></div>';
-                        }).join('');
-
-                        if (images.length < 2) return; // single photo — nothing to rotate between
-                        var slides = container.querySelectorAll('.lp-hero-slide');
-                        var current = 0;
-                        setInterval(function () {
-                            var next = (current + 1) % slides.length;
-                            // Brief flash right at the crossfade midpoint — a
-                            // restrained nod to a camera flash, not a literal
-                            // one, so it stays premium rather than gimmicky.
-                            flash.classList.add('is-flashing');
-                            setTimeout(function () { flash.classList.remove('is-flashing'); }, 90);
-                            slides[current].classList.remove('is-active');
-                            slides[next].classList.add('is-active');
-                            current = next;
-                        }, 2000);
-                    })
-                    .catch(function (err) { console.error('Could not load hero slideshow:', err); });
-            }
 
             fetch(API_BASE + '/api/settings')
                 .then(function (res) { return res.json(); })
@@ -930,17 +862,21 @@
                     var s = data.settings || {};
 
                     if (s.logo_url) {
-                        var logoImg = document.getElementById('brand-logo-img');
-                        if (logoImg) logoImg.src = API_BASE + s.logo_url;
-                    }
-
-                    if (s.hero_mode === 'slideshow') {
-                        renderSlideshow();
-                    } else {
-                        renderVideo(s);
+                        var headerLogoImg = document.getElementById('site-logo-img');
+                        if (headerLogoImg) headerLogoImg.src = API_BASE + s.logo_url;
                     }
                 })
-                .catch(function (err) { console.error('Could not load hero video/logo from Settings:', err); });
+                .catch(function (err) { console.error('Could not load logo from Settings:', err); });
+        })();
+
+        // SITE HEADER — no hero to key off on this page, so it just goes
+        // frosted after a small, real scroll distance instead.
+        (function () {
+            var header = document.getElementById('site-header');
+            if (!header) return;
+            window.addEventListener('scroll', function () {
+                header.classList.toggle('is-scrolled', window.scrollY > 30);
+            }, { passive: true });
         })();
 
         // PACKAGES — loaded from the real backend, matching the same
@@ -1058,21 +994,6 @@
             closeBtn.addEventListener('click', close);
             overlay.addEventListener('click', close);
             document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
-        })();
-
-        // HERO VIDEO — mobile browsers commonly pause video when the app
-        // is backgrounded and won't resume it automatically; this brings
-        // it back on the next real tap/scroll, since that's the one thing
-        // iOS specifically still allows (a lesson learned building the
-        // Melisakim site's hero video).
-        (function () {
-            function resume() {
-                var video = document.getElementById('lp-hero-video');
-                if (video && video.paused) video.play().catch(function () {});
-            }
-            document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') resume(); });
-            window.addEventListener('pageshow', resume);
-            ['touchstart', 'click'].forEach(function (evt) { document.addEventListener(evt, resume, { passive: true }); });
         })();
 
         // Floating Progress Stepper: watch a zero-height sentinel placed just
