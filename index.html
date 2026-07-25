@@ -118,10 +118,13 @@
         /* GLASS BUTTONS — used specifically over the hero image, where a
            frosted, translucent surface reads clearly; solid buttons
            elsewhere in the page stay as they are. */
-        .btn-glass { display: inline-block; background: rgba(255,255,255,0.14); backdrop-filter: blur(18px) saturate(180%); -webkit-backdrop-filter: blur(18px) saturate(180%); border: none; color: #fff; padding: 17px 38px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; border-radius: 100px; text-decoration: none; cursor: pointer; box-shadow: 0 8px 32px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.28); transition: all 0.45s cubic-bezier(0.16,1,0.3,1); }
-        .btn-glass:hover { background: rgba(255,255,255,0.26); transform: translateY(-3px); box-shadow: 0 16px 40px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.4); }
-        .btn-glass.is-primary { background: rgba(138,115,85,0.4); }
-        .btn-glass.is-primary:hover { background: rgba(138,115,85,0.58); }
+        .btn-glass { display: inline-block; background: rgba(255,255,255,0.10); backdrop-filter: blur(20px) saturate(70%); -webkit-backdrop-filter: blur(20px) saturate(70%); border: none; color: #fff; padding: 16px 34px; font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.8px; border-radius: 100px; text-decoration: none; cursor: pointer; box-shadow: 0 4px 24px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.18); transition: all 0.45s cubic-bezier(0.16,1,0.3,1); }
+        .btn-glass:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.26); }
+        .btn-glass.is-primary { background: rgba(20,18,16,0.28); }
+        .btn-glass.is-primary:hover { background: rgba(20,18,16,0.4); }
+        @media (max-width: 600px) {
+            .btn-glass { padding: 13px 26px; font-size: 10.5px; letter-spacing: 1.4px; }
+        }
 
         /* HERO — identical mechanics to the booking page: video or
            slideshow, controlled entirely from Settings. */
@@ -138,7 +141,7 @@
         .lp-hero-ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
         /* FEATURED WORK */
-        .work-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 46px; }
+        .work-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 46px; min-height: 260px; }
         .work-item { position: relative; aspect-ratio: 3/4; border-radius: var(--radius-md); overflow: hidden; background: var(--bg-card); box-shadow: 0 6px 20px var(--shadow-subtle); }
         .work-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         .work-item:hover img { transform: scale(1.05); }
@@ -160,18 +163,32 @@
         .testi-quote::after { content: '\201D'; }
         .testi-name { font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; }
 
-        /* BEGIN YOUR STORY — bridges Portfolio and Book */
+        /* BEGIN YOUR STORY — bridges Portfolio and Book. Interactive:
+           clicking a session name swaps in that session's real photo
+           (same source as Book) and eases its description in — no
+           description shown until something's actually been picked. */
         .bridge-grid { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 60px; align-items: center; }
-        .bridge-photo { border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 4/5; background: var(--bg-card); box-shadow: 0 16px 40px var(--shadow-subtle); }
-        .bridge-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .bridge-photo-wrap { position: relative; border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 4/5; background: var(--bg-card); box-shadow: 0 16px 40px var(--shadow-subtle); }
+        .bridge-photo { width: 100%; height: 100%; }
+        .bridge-photo img { width: 100%; height: 100%; object-fit: cover; display: block; animation: lp-photo-fade 0.5s ease; }
+        @keyframes lp-photo-fade { from { opacity: 0.3; } to { opacity: 1; } }
+        .bridge-desc {
+            position: absolute; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top, rgba(20,18,16,0.9), rgba(20,18,16,0) 85%);
+            padding: 50px 24px 22px;
+            opacity: 0; transform: translateY(16px);
+            transition: opacity 0.5s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1);
+            pointer-events: none;
+        }
+        .bridge-desc.is-visible { opacity: 1; transform: translateY(0); }
+        .bridge-desc h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 18px; color: #fff; margin-bottom: 8px; }
+        .bridge-desc p { font-size: 12.5px; color: rgba(255,255,255,0.86); line-height: 1.8; white-space: pre-line; }
 
-        /* PACKAGES PREVIEW — compact rows rather than a wide card grid,
-           since this now sits in a narrower half-column beside the photo. */
-        .pkg-grid { display: flex; flex-direction: column; gap: 2px; margin: 26px 0 30px; border-top: 1px solid var(--border-color); }
-        .pkg-card { display: flex; align-items: center; justify-content: space-between; padding: 16px 4px; text-align: left; border-bottom: 1px solid var(--border-color); transition: padding-left 0.25s ease; }
+        /* SESSION LIST — names only, no prices; that's kept for Book */
+        .pkg-grid { display: flex; flex-direction: column; gap: 2px; margin: 26px 0 30px; border-top: 1px solid var(--border-color); min-height: 180px; }
+        .pkg-card { display: block; width: 100%; text-align: left; padding: 15px 4px; border: none; border-bottom: 1px solid var(--border-color); background: none; font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px; color: var(--text-primary); cursor: pointer; transition: padding-left 0.25s ease, color 0.25s ease; }
         .pkg-card:hover { padding-left: 8px; }
-        .pkg-name { font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px; }
-        .pkg-price { font-size: 13px; color: var(--accent); font-weight: 600; }
+        .pkg-card.is-active { padding-left: 8px; color: var(--accent); font-weight: 600; }
 
         .brand-footer { padding: 60px 0; text-align: center; border-top: 1px solid var(--border-color); }
         .footer-mark { font-size: 15px; font-weight: 500; letter-spacing: 0.3px; }
@@ -182,21 +199,22 @@
             .about-photo { max-width: 340px; margin: 0 auto; }
             .testi-grid { grid-template-columns: 1fr; }
             .bridge-grid { grid-template-columns: 1fr; gap: 30px; }
-            .bridge-photo { max-width: 320px; margin: 0 auto; }
+            .bridge-photo-wrap { max-width: 320px; margin: 0 auto; }
         }
         @media (max-width: 600px) {
             .container { padding: 0 22px; }
             .section-block { padding: 70px 0; }
             .section-title { font-size: 25px; }
-            .lp-hero { height: 100vh; }
+            .lp-hero { height: 100vh; align-items: flex-end; padding-bottom: 12vh; }
             .lp-hero-title { font-size: clamp(26px, 8vw, 34px); }
+            .lp-hero-ctas { gap: 10px; }
         }
     </style>
 </head>
 <body>
 
     <header class="site-header" id="site-header">
-        <a href="./" class="site-logo-link"><img src="" alt="Libertypictures" class="site-logo" id="site-logo-img"></a>
+        <a href="./" class="site-logo-link"><img src="logo.png" alt="Libertypictures" class="site-logo" id="site-logo-img"></a>
     </header>
 
     <section class="lp-hero">
@@ -255,7 +273,10 @@
     <section class="section-block is-tinted">
         <div class="container">
             <div class="bridge-grid">
-                <div class="bridge-photo" id="bridge-photo"></div>
+                <div class="bridge-photo-wrap">
+                    <div class="bridge-photo" id="bridge-photo"></div>
+                    <div class="bridge-desc" id="bridge-desc"></div>
+                </div>
                 <div class="bridge-content">
                     <div class="about-eyebrow">Begin Your Story</div>
                     <h2 class="serif" style="font-size:28px; margin-bottom:16px; line-height:1.3;">You've seen the work.<br>Now let's plan yours.</h2>
@@ -373,15 +394,6 @@
                 grid.innerHTML = sample.map(function (item) {
                     return '<div class="work-item"><img src="' + API_BASE + item.imageUrl + '" alt="' + escapeHtml(item.category) + '" loading="lazy"></div>';
                 }).join('');
-
-                // Reuse one of the same real photos to visually anchor the
-                // "Begin Your Story" section just below — a genuine link
-                // between the work just shown and the booking that follows.
-                var bridgePhoto = document.getElementById('bridge-photo');
-                if (bridgePhoto && items.length) {
-                    var pick = items[Math.floor(items.length / 2)];
-                    bridgePhoto.innerHTML = '<img src="' + API_BASE + pick.imageUrl + '" alt="' + escapeHtml(pick.category) + '" loading="lazy">';
-                }
             })
             .catch(function () { grid.innerHTML = '<p class="work-empty">Couldn\'t load work right now.</p>'; });
     })();
@@ -403,21 +415,60 @@
             .catch(function (err) { console.error('Could not load testimonials:', err); });
     })();
 
-    // PACKAGES PREVIEW — light teaser only (name + price), no selection
-    // mechanic here — that lives entirely on book.html.
+    // SESSION LIST — interactive: clicking a name swaps in that
+    // session's real photo (same /api/packages source Book uses, so a
+    // photo change there reflects here immediately) and eases its
+    // description in. No description shows until something's picked;
+    // clicking the already-active one just replays the reveal.
     (function () {
         var grid = document.getElementById('pkg-grid');
+        var photoEl = document.getElementById('bridge-photo');
+        var descEl = document.getElementById('bridge-desc');
+        var packages = [];
+
+        function showDescription(pkg) {
+            descEl.classList.remove('is-visible');
+            void descEl.offsetWidth; // force reflow so the animation replays even on a repeat click
+            descEl.innerHTML = '<h3>' + escapeHtml(pkg.name) + '</h3><p>' + escapeHtml(pkg.description || '') + '</p>';
+            requestAnimationFrame(function () { descEl.classList.add('is-visible'); });
+        }
+
+        function selectPackage(id) {
+            var pkg = packages.find(function (p) { return String(p.id) === id; });
+            if (!pkg) return;
+
+            grid.querySelectorAll('.pkg-card').forEach(function (btn) {
+                btn.classList.toggle('is-active', btn.dataset.id === id);
+            });
+
+            if (pkg.imageUrl) {
+                photoEl.innerHTML = '<img src="' + API_BASE + pkg.imageUrl + '" alt="' + escapeHtml(pkg.name) + '">';
+            }
+            showDescription(pkg);
+        }
+
         fetch(API_BASE + '/api/packages?activeOnly=true')
             .then(function (res) { return res.json(); })
             .then(function (data) {
-                var packages = (data.packages || []).slice().sort(function (a, b) { return a.displayOrder - b.displayOrder; });
+                packages = (data.packages || []).slice().sort(function (a, b) { return a.displayOrder - b.displayOrder; });
                 if (!packages.length) {
                     grid.innerHTML = '<p class="work-empty">Sessions are being updated \u2014 check back shortly.</p>';
                     return;
                 }
+
                 grid.innerHTML = packages.map(function (p) {
-                    return '<a href="book.html" class="pkg-card" style="text-decoration:none; color:inherit;"><div class="pkg-name serif">' + escapeHtml(p.name) + '</div><div class="pkg-price">' + formatNaira(p.price) + '</div></a>';
+                    return '<button type="button" class="pkg-card serif" data-id="' + p.id + '">' + escapeHtml(p.name) + '</button>';
                 }).join('');
+
+                // Starting photo only — no description until a session is
+                // actually chosen, per the brief.
+                if (packages[0].imageUrl) {
+                    photoEl.innerHTML = '<img src="' + API_BASE + packages[0].imageUrl + '" alt="' + escapeHtml(packages[0].name) + '">';
+                }
+
+                grid.querySelectorAll('.pkg-card').forEach(function (btn) {
+                    btn.addEventListener('click', function () { selectPackage(btn.dataset.id); });
+                });
             })
             .catch(function () { grid.innerHTML = '<p class="work-empty">Couldn\'t load sessions right now.</p>'; });
     })();
