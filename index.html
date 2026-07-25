@@ -112,19 +112,16 @@
         .site-header.is-scrolled { padding: 16px 0; background: rgba(250,248,244,0.72); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); box-shadow: 0 1px 0 var(--border-color); }
         @media (prefers-color-scheme: dark) { .site-header.is-scrolled { background: rgba(22,21,19,0.72); } }
         .site-logo-link { display: block; }
-        .site-logo { height: 34px; width: auto; filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0,0,0,0.25)); transition: filter 0.35s ease, height 0.35s ease; }
-        .site-header.is-scrolled .site-logo { filter: var(--logo-filter, none); height: 28px; }
+        .site-logo { height: 44px; width: auto; filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0,0,0,0.25)); transition: filter 0.35s ease, height 0.35s ease; }
+        .site-header.is-scrolled .site-logo { filter: var(--logo-filter, none); height: 36px; }
 
         /* GLASS BUTTONS — used specifically over the hero image, where a
            frosted, translucent surface reads clearly; solid buttons
            elsewhere in the page stay as they are. */
-        .btn-glass { display: inline-block; background: rgba(255,255,255,0.10); backdrop-filter: blur(20px) saturate(70%); -webkit-backdrop-filter: blur(20px) saturate(70%); border: none; color: #fff; padding: 16px 34px; font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.8px; border-radius: 100px; text-decoration: none; cursor: pointer; box-shadow: 0 4px 24px rgba(0,0,0,0.1), inset 0 1px 0 rgba(255,255,255,0.18); transition: all 0.45s cubic-bezier(0.16,1,0.3,1); }
-        .btn-glass:hover { background: rgba(255,255,255,0.18); transform: translateY(-2px); box-shadow: 0 10px 28px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.26); }
-        .btn-glass.is-primary { background: rgba(20,18,16,0.28); }
-        .btn-glass.is-primary:hover { background: rgba(20,18,16,0.4); }
-        @media (max-width: 600px) {
-            .btn-glass { padding: 13px 26px; font-size: 10.5px; letter-spacing: 1.4px; }
-        }
+        .btn-glass { display: inline-block; background: rgba(255,255,255,0.14); backdrop-filter: blur(18px) saturate(180%); -webkit-backdrop-filter: blur(18px) saturate(180%); border: none; color: #fff; padding: 17px 38px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; border-radius: 100px; text-decoration: none; cursor: pointer; box-shadow: 0 8px 32px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.28); transition: all 0.45s cubic-bezier(0.16,1,0.3,1); }
+        .btn-glass:hover { background: rgba(255,255,255,0.26); transform: translateY(-3px); box-shadow: 0 16px 40px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.4); }
+        .btn-glass.is-primary { background: rgba(138,115,85,0.4); }
+        .btn-glass.is-primary:hover { background: rgba(138,115,85,0.58); }
 
         /* HERO — identical mechanics to the booking page: video or
            slideshow, controlled entirely from Settings. */
@@ -137,7 +134,8 @@
         .lp-hero-flash.is-flashing { opacity: 0.32; transition: opacity 0.06s ease; }
         .lp-hero-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(var(--hero-scrim-rgb),0.7), rgba(var(--hero-scrim-rgb),0.15) 55%); }
         .lp-hero-content { position: relative; padding: 0 6vw; color: #fff; max-width: 700px; text-align: center; }
-        .lp-hero-title { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(30px, 5.5vw, 58px); line-height: 1.2; margin-bottom: 38px; color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+        .lp-hero-title { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(30px, 5.5vw, 58px); line-height: 1.2; margin-bottom: 20px; color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+        .lp-hero-sub { font-size: 15px; color: rgba(255,255,255,0.82); max-width: 440px; margin: 0 auto 36px; line-height: 1.8; }
         .lp-hero-ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
 
         /* FEATURED WORK */
@@ -205,16 +203,16 @@
             .container { padding: 0 22px; }
             .section-block { padding: 70px 0; }
             .section-title { font-size: 25px; }
-            .lp-hero { height: 100vh; align-items: flex-end; padding-bottom: 12vh; }
+            .lp-hero { height: 100vh; }
             .lp-hero-title { font-size: clamp(26px, 8vw, 34px); }
-            .lp-hero-ctas { gap: 10px; }
+            .lp-hero-ctas { gap: 14px; }
         }
     </style>
 </head>
 <body>
 
     <header class="site-header" id="site-header">
-        <a href="./" class="site-logo-link"><img src="logo.png" alt="Libertypictures" class="site-logo" id="site-logo-img"></a>
+        <a href="./" class="site-logo-link"><img src="" alt="Libertypictures" class="site-logo" id="site-logo-img" style="display:none;"></a>
     </header>
 
     <section class="lp-hero">
@@ -226,6 +224,7 @@
         <div class="lp-hero-scrim"></div>
         <div class="lp-hero-content">
             <h1 class="lp-hero-title">Intimate visual stories</h1>
+            <p class="lp-hero-sub">Portraits that feel personal and beautifully authentic.</p>
             <div class="lp-hero-ctas">
                 <a href="portfolio.html" class="btn-glass">View Portfolio</a>
                 <a href="book.html" class="btn-glass is-primary">Book a Session</a>
@@ -350,7 +349,9 @@
                 if (s.hero_mode === 'slideshow') { renderSlideshow(); } else { renderVideo(s); }
 
                 if (s.logo_url) {
-                    document.getElementById('site-logo-img').src = API_BASE + s.logo_url;
+                    var siteLogo = document.getElementById('site-logo-img');
+                    siteLogo.src = API_BASE + s.logo_url;
+                    siteLogo.style.display = 'block';
                 }
 
                 // ABOUT — only shown once real content exists in Settings,
@@ -418,13 +419,16 @@
     // SESSION LIST — interactive: clicking a name swaps in that
     // session's real photo (same /api/packages source Book uses, so a
     // photo change there reflects here immediately) and eases its
-    // description in. No description shows until something's picked;
-    // clicking the already-active one just replays the reveal.
+    // description in. The first session's description eases in on its
+    // own once this section scrolls into view, rather than waiting on
+    // a click; clicking any session afterward (including the same one
+    // again) replays the reveal for that one.
     (function () {
         var grid = document.getElementById('pkg-grid');
         var photoEl = document.getElementById('bridge-photo');
         var descEl = document.getElementById('bridge-desc');
         var packages = [];
+        var hasAutoRevealed = false;
 
         function showDescription(pkg) {
             descEl.classList.remove('is-visible');
@@ -460,14 +464,32 @@
                     return '<button type="button" class="pkg-card serif" data-id="' + p.id + '">' + escapeHtml(p.name) + '</button>';
                 }).join('');
 
-                // Starting photo only — no description until a session is
-                // actually chosen, per the brief.
+                // Starting photo shows immediately; its description waits
+                // for the scroll-triggered reveal below (or an earlier
+                // click, if someone's quick).
                 if (packages[0].imageUrl) {
                     photoEl.innerHTML = '<img src="' + API_BASE + packages[0].imageUrl + '" alt="' + escapeHtml(packages[0].name) + '">';
                 }
 
+                var bridgeSection = document.getElementById('pkg-grid').closest('.section-block');
+                if (bridgeSection && 'IntersectionObserver' in window) {
+                    var revealObserver = new IntersectionObserver(function (entries) {
+                        entries.forEach(function (entry) {
+                            if (entry.isIntersecting && !hasAutoRevealed) {
+                                hasAutoRevealed = true;
+                                selectPackage(String(packages[0].id));
+                                revealObserver.disconnect();
+                            }
+                        });
+                    }, { threshold: 0.4 });
+                    revealObserver.observe(bridgeSection);
+                }
+
                 grid.querySelectorAll('.pkg-card').forEach(function (btn) {
-                    btn.addEventListener('click', function () { selectPackage(btn.dataset.id); });
+                    btn.addEventListener('click', function () {
+                        hasAutoRevealed = true; // a real click always counts as having revealed something
+                        selectPackage(btn.dataset.id);
+                    });
                 });
             })
             .catch(function () { grid.innerHTML = '<p class="work-empty">Couldn\'t load sessions right now.</p>'; });
