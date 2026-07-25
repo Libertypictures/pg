@@ -147,20 +147,15 @@
         .section-title { font-family: 'Fraunces', serif; font-weight: 500; font-size: 30px; letter-spacing: -0.3px; color: var(--text-primary); margin-bottom: 14px; text-align: center; border: none; padding: 0; }
         .section-meta { font-size: 14px; color: var(--text-secondary); font-style: normal; margin-top: 0; margin-bottom: 44px; text-align: center; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.7; }
 
-        /* PACKAGES — same focus-carousel mechanic as before (untouched
-           in behavior), presented with softer, deeper shadows and a
-           more generous radius for an editorial print-card feel. */
+        /* PACKAGES — clean scroll-reveal (reusing the same lpInitScrollReveal
+           utility used elsewhere on this page), sharp corners, no
+           carousel/focus effect and no separate delayed photo reveal —
+           each card eases in once, as a whole. */
         .tier-stack { display: flex; flex-direction: column; align-items: center; gap: 52px; max-width: 460px; margin: 0 auto; }
-        .tier-stack .tier-card {
-            width: 100%;
-            opacity: 0.55; transform: scale(0.86);
-            transition: opacity 0.42s ease-in-out, transform 0.42s ease-in-out;
-        }
-        .tier-stack .tier-card.is-focused { opacity: 1; transform: scale(1); }
-        .tier-stack .tier-card.is-focused.photo-revealed .tier-scrim { transition-delay: 0.55s; }
+        .tier-stack .tier-card { width: 100%; }
 
-        .tier-card { position: relative; overflow: hidden; aspect-ratio: 3 / 4; min-height: 380px; background-color: var(--bg-card); border: none; border-radius: var(--radius-lg); transition: all 0.4s cubic-bezier(0.16,1,0.3,1); box-shadow: 0 8px 28px var(--shadow-subtle); }
-        .tier-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: var(--radius-lg) var(--radius-lg) 0 0; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0; transition: opacity 0.35s ease; z-index: 2; }
+        .tier-card { position: relative; overflow: hidden; aspect-ratio: 3 / 4; min-height: 380px; background-color: var(--bg-card); border: none; transition: all 0.4s cubic-bezier(0.16,1,0.3,1); box-shadow: 0 8px 28px var(--shadow-subtle); }
+        .tier-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0; transition: opacity 0.35s ease; z-index: 2; }
         .tier-card:hover { transform: translateY(-6px); box-shadow: 0 22px 44px var(--shadow-lift); }
         .tier-card:hover::before { opacity: 1; }
         .tier-card.selected { box-shadow: 0 22px 44px var(--shadow-lift); }
@@ -173,10 +168,7 @@
             position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
             background: linear-gradient(to top, rgba(15,12,9,0.95) 0%, rgba(15,12,9,0.8) 60%, rgba(15,12,9,0) 100%);
             padding: 76px 26px 26px 26px;
-            opacity: 0; transform: translateY(14px);
-            transition: opacity 0.85s cubic-bezier(0.33, 0, 0.2, 1), transform 0.85s cubic-bezier(0.33, 0, 0.2, 1);
         }
-        .tier-card.photo-revealed .tier-scrim { opacity: 1; transform: translateY(0); }
         .tier-scrim h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 20px; letter-spacing: 0; text-transform: none; margin-bottom: 14px; color: #f6f1e7; }
 
         .tier-details { list-style: none; font-size: 13px; color: #d9cdb8; margin-bottom: 22px; line-height: 1.8; }
@@ -280,6 +272,40 @@
         .highlight-text { color: var(--accent); font-weight: 600; }
 
         .brand-footer { margin-top: 60px; padding-top: 44px; border-top: 1px solid var(--border-color); text-align: center; }
+
+        /* Progress Stepper — visible from page load, condenses to a
+           slim bar once scrolled past. */
+        .stepper-sentinel { height: 1px; }
+        .sticky-progress-wrap {
+            position: sticky;
+            top: 0;
+            z-index: 500;
+            background-color: var(--bg-container);
+            margin: 0 -80px 40px -80px;
+            padding: 28px 80px 20px 80px;
+            transition: padding 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+            border-bottom: 1px solid transparent;
+        }
+        .sticky-progress-wrap.is-stuck {
+            padding-top: 12px;
+            padding-bottom: 10px;
+            box-shadow: 0 12px 28px var(--shadow-hover);
+            border-bottom-color: var(--border-color);
+        }
+        .progress-stepper { display: flex; align-items: center; justify-content: center; max-width: 460px; margin: 0 auto; transition: max-width 0.35s ease; }
+        .sticky-progress-wrap.is-stuck .progress-stepper { max-width: 320px; }
+        .stepper-item { display: flex; flex-direction: column; align-items: center; gap: 9px; flex: 0 0 auto; }
+        .stepper-circle { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 13px; font-weight: 500; color: var(--text-secondary); background-color: var(--bg-container); transition: all 0.35s cubic-bezier(0.16,1,0.3,1); }
+        .sticky-progress-wrap.is-stuck .stepper-circle { width: 18px; height: 18px; font-size: 8px; }
+        .stepper-label { font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-secondary); white-space: nowrap; transition: all 0.3s ease; font-weight: 500; }
+        .sticky-progress-wrap.is-stuck .stepper-label { font-size: 6px; }
+        .stepper-item.active .stepper-circle { border-color: var(--accent); background-color: var(--accent); color: #fff; }
+        .stepper-item.active .stepper-label { color: var(--text-primary); font-weight: 600; }
+        .stepper-item.done .stepper-circle { border-color: var(--accent); background-color: var(--bg-container); color: var(--accent); }
+        .stepper-item.done .stepper-label { color: var(--accent); }
+        .stepper-line { flex: 1 1 auto; height: 1px; background-color: var(--border-color); margin: 0 10px; margin-bottom: 19px; transition: background-color 0.3s ease, margin-bottom 0.3s ease; }
+        .sticky-progress-wrap.is-stuck .stepper-line { margin-bottom: 11px; }
+        .stepper-line.done { background-color: var(--accent); }
 
         /* ============================================================
            LP BOOKING COMPONENT CSS — same namespace, refined tokens
@@ -507,7 +533,7 @@
             .section-title { font-size: 24px; }
             .section-block { margin-bottom: 68px; }
 
-            .tier-card { border-radius: var(--radius-lg); box-shadow: 0 10px 26px var(--shadow-subtle); }
+            .tier-card { box-shadow: 0 10px 26px var(--shadow-subtle); }
             .tier-scrim { padding: 56px 22px 22px 22px; }
             .select-btn { width: auto; min-width: 140px; padding: 12px 22px; font-size: 11px; text-align: center; }
 
@@ -542,6 +568,27 @@
                 Select your desired <span>session</span>, book a <span>date</span>, and secure your <span>retainer</span> below.
             </p>
         </header>
+
+        <!-- PROGRESS STEPPER (floats to the top while scrolling) -->
+        <div class="stepper-sentinel" id="stepper-sentinel"></div>
+        <div class="sticky-progress-wrap is-stuck" id="sticky-progress-wrap">
+            <div class="progress-stepper" id="progress-stepper">
+                <div class="stepper-item active" id="step-1">
+                    <span class="stepper-circle">01</span>
+                    <span class="stepper-label">Choose Your Session</span>
+                </div>
+                <div class="stepper-line" id="line-1"></div>
+                <div class="stepper-item" id="step-2">
+                    <span class="stepper-circle">02</span>
+                    <span class="stepper-label">Pick a Date</span>
+                </div>
+                <div class="stepper-line" id="line-2"></div>
+                <div class="stepper-item" id="step-3">
+                    <span class="stepper-circle">03</span>
+                    <span class="stepper-label">Secure with Retainer</span>
+                </div>
+            </div>
+        </div>
 
         <!-- PACKAGES SECTION -->
         <section class="section-block" id="packages">
@@ -841,52 +888,6 @@
                 '</div>';
             }
 
-            // Watches which card is nearest the center of the actual
-            // browser viewport as the visitor scrolls the PAGE — there's
-            // no separate scroll area here, this rides entirely on the
-            // page's own single scroll. Whichever card is most central
-            // gets visual focus; others recede but stay fully visible
-            // and fully clickable the whole time.
-            function initFocusTracking() {
-                var cards = grid.querySelectorAll('.tier-card');
-                if (!cards.length || !('IntersectionObserver' in window)) {
-                    cards.forEach(function (c) { c.classList.add('is-focused', 'photo-revealed'); });
-                    return;
-                }
-
-                // IntersectionObserver always fires once immediately with
-                // whatever's already true the moment observing starts —
-                // if a card happens to already sit in the center band as
-                // soon as the section loads, that counts as this first,
-                // automatic firing, not a real scroll action. Suppressing
-                // transitions for just that first batch means it appears
-                // instantly, correctly, without an unwanted "growing into
-                // focus" animation nobody actually triggered by scrolling.
-                var isFirstBatch = true;
-                cards.forEach(function (c) { c.style.transition = 'none'; });
-
-                var focusObserver = new IntersectionObserver(function (entries) {
-                    entries.forEach(function (entry) {
-                        var card = entry.target;
-                        if (entry.isIntersecting) {
-                            card.classList.add('is-focused', 'photo-revealed');
-                        } else {
-                            card.classList.remove('is-focused', 'photo-revealed');
-                        }
-                    });
-                    if (isFirstBatch) {
-                        isFirstBatch = false;
-                        requestAnimationFrame(function () {
-                            requestAnimationFrame(function () {
-                                cards.forEach(function (c) { c.style.transition = ''; }); // restore normal animated transitions for every real scroll change from here on
-                            });
-                        });
-                    }
-                }, { rootMargin: '-25% 0px -25% 0px', threshold: 0 }); // a band across the middle of the actual screen — whichever card crosses into it becomes focused
-
-                cards.forEach(function (card) { focusObserver.observe(card); });
-            }
-
             fetch(API_BASE + '/api/packages?activeOnly=true')
                 .then(function (res) { return res.json(); })
                 .then(function (data) {
@@ -896,11 +897,9 @@
                         return;
                     }
                     grid.innerHTML = packages.map(cardHtml).join('');
-                    requestAnimationFrame(function () {
-                        requestAnimationFrame(function () {
-                            initFocusTracking();
-                        });
-                    });
+                    if (typeof window.lpInitScrollReveal === 'function') {
+                        window.lpInitScrollReveal(grid.querySelectorAll('.tier-card'), 100);
+                    }
                 })
                 .catch(function (err) {
                     grid.innerHTML = '<p style="text-align:center; color:var(--text-secondary); font-size:13px;">Couldn\'t load sessions right now \u2014 please refresh.</p>';
@@ -1071,46 +1070,6 @@
                 });
             }
 
-            // Package card photo/description reveal — eases in as soon
-            // as the card scrolls into view, no waiting. Uses a thin
-            // band centered in the viewport so a card only reveals once
-            // it's genuinely centered on screen, not merely peeking in
-            // at the top or bottom edge.
-            //
-            // Pulled into a named function (rather than running once
-            // inline) so it can be called again after the real package
-            // cards load in from the API — they don't exist yet at the
-            // point this script first runs.
-            function initPackageDwellReveal(cards) {
-                if (!('IntersectionObserver' in window)) return;
-                var pendingHides = new WeakMap();
-                var dwellObserver = new IntersectionObserver(function (entries) {
-                    entries.forEach(function (entry) {
-                        var card = entry.target;
-                        if (entry.isIntersecting) {
-                            // Cancel any pending hide — likely just a boundary
-                            // flicker, not a genuine scroll-away.
-                            var pendingHide = pendingHides.get(card);
-                            if (pendingHide) { clearTimeout(pendingHide); pendingHides.delete(card); }
-                            card.classList.add('photo-revealed');
-                        } else {
-                            if (!card.classList.contains('photo-revealed') || pendingHides.has(card)) return;
-                            // Widened from 180ms — a slow, held scroll can leave
-                            // a card hovering right at the trigger boundary for
-                            // longer than that, causing it to rapidly hide and
-                            // re-show. This gives more real buffer before it
-                            // commits to hiding.
-                            var hideTimer = setTimeout(function () {
-                                pendingHides.delete(card);
-                                card.classList.remove('photo-revealed');
-                            }, 450);
-                            pendingHides.set(card, hideTimer);
-                        }
-                    });
-                }, { rootMargin: '-30% 0px -30% 0px', threshold: 0 });
-                cards.forEach(function (card) { dwellObserver.observe(card); });
-            }
-            window.initPackageDwellReveal = initPackageDwellReveal;
         });
 
         // Shared smooth-scroll helper — used instead of the browser's native
