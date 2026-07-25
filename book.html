@@ -125,8 +125,8 @@
         .site-header.is-scrolled { padding: 16px 0; background: rgba(250,248,244,0.72); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); box-shadow: 0 1px 0 var(--border-color); }
         @media (prefers-color-scheme: dark) { .site-header.is-scrolled { background: rgba(22,21,19,0.72); } }
         .site-logo-link { display: block; }
-        .site-logo { height: 34px; width: auto; filter: var(--logo-filter); transition: filter 0.35s ease, height 0.35s ease; }
-        .site-header.is-scrolled .site-logo { height: 28px; }
+        .site-logo { height: 38px; width: auto; filter: var(--logo-filter); transition: filter 0.35s ease, height 0.35s ease; }
+        .site-header.is-scrolled .site-logo { height: 32px; }
 
         /* Header Layout — the brand mark now sits within a quieter,
            more spacious editorial block; the eyebrow label is softened
@@ -280,53 +280,6 @@
         .highlight-text { color: var(--accent); font-weight: 600; }
 
         .brand-footer { margin-top: 60px; padding-top: 44px; border-top: 1px solid var(--border-color); text-align: center; }
-
-        /* Progress Stepper — same tracking mechanic, refined into a
-           quieter, more considered visual language: thinner lines, more
-           restrained typography, softer transitions. */
-        .stepper-sentinel { height: 1px; }
-        /* Hidden until the client actually reaches the booking flow — the
-           stepper only means something once there's real progress to
-           track, so it stays out of the way during the purely editorial
-           opening (hero, welcome, session browsing). Revealed by a new,
-           entirely separate observer further down; does not touch or
-           replace the existing is-stuck condensing behavior at all. */
-        .sticky-progress-wrap {
-            position: sticky;
-            top: 0;
-            z-index: 500;
-            background-color: var(--bg-container);
-            margin: 0 -80px 40px -80px;
-            padding: 28px 80px 20px 80px;
-            transition: padding 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease, opacity 0.4s ease;
-            border-bottom: 1px solid transparent;
-            opacity: 0;
-            pointer-events: none;
-        }
-        .sticky-progress-wrap.lp-context-visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        .sticky-progress-wrap.is-stuck {
-            padding-top: 12px;
-            padding-bottom: 10px;
-            box-shadow: 0 12px 28px var(--shadow-hover);
-            border-bottom-color: var(--border-color);
-        }
-        .progress-stepper { display: flex; align-items: center; justify-content: center; max-width: 460px; margin: 0 auto; transition: max-width 0.35s ease; }
-        .sticky-progress-wrap.is-stuck .progress-stepper { max-width: 320px; }
-        .stepper-item { display: flex; flex-direction: column; align-items: center; gap: 9px; flex: 0 0 auto; }
-        .stepper-circle { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 13px; font-weight: 500; color: var(--text-secondary); background-color: var(--bg-container); transition: all 0.35s cubic-bezier(0.16,1,0.3,1); }
-        .sticky-progress-wrap.is-stuck .stepper-circle { width: 18px; height: 18px; font-size: 8px; }
-        .stepper-label { font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-secondary); white-space: nowrap; transition: all 0.3s ease; font-weight: 500; }
-        .sticky-progress-wrap.is-stuck .stepper-label { font-size: 6px; }
-        .stepper-item.active .stepper-circle { border-color: var(--accent); background-color: var(--accent); color: #fff; }
-        .stepper-item.active .stepper-label { color: var(--text-primary); font-weight: 600; }
-        .stepper-item.done .stepper-circle { border-color: var(--accent); background-color: var(--bg-container); color: var(--accent); }
-        .stepper-item.done .stepper-label { color: var(--accent); }
-        .stepper-line { flex: 1 1 auto; height: 1px; background-color: var(--border-color); margin: 0 10px; margin-bottom: 19px; transition: background-color 0.3s ease, margin-bottom 0.3s ease; }
-        .sticky-progress-wrap.is-stuck .stepper-line { margin-bottom: 11px; }
-        .stepper-line.done { background-color: var(--accent); }
 
         /* ============================================================
            LP BOOKING COMPONENT CSS — same namespace, refined tokens
@@ -565,15 +518,6 @@
 
             .booking-section { padding: 48px 16px; border-left: none; border-right: none; border-radius: 0; margin-left: -20px; margin-right: -20px; box-shadow: none; }
 
-            .sticky-progress-wrap { margin: 0 -20px 28px -20px; padding: 18px 20px 14px 20px; }
-            .sticky-progress-wrap.is-stuck { padding: 10px 20px 8px 20px; }
-            .progress-stepper { max-width: 330px; }
-            .sticky-progress-wrap.is-stuck .progress-stepper { max-width: 240px; }
-            .stepper-label { font-size: 7.5px; }
-            .stepper-circle { width: 26px; height: 26px; font-size: 11px; }
-            .sticky-progress-wrap.is-stuck .stepper-circle { width: 16px; height: 16px; font-size: 7px; }
-            .sticky-progress-wrap.is-stuck .stepper-label { font-size: 5.5px; }
-
             .payment-wrapper { padding: 40px 24px; }
             .protocol-grid { grid-template-columns: 1fr; gap: 36px; }
 
@@ -588,7 +532,7 @@
 <body>
 
     <header class="site-header" id="site-header">
-        <a href="./" class="site-logo-link"><img src="" alt="Libertypictures" class="site-logo" id="site-logo-img"></a>
+        <a href="./" class="site-logo-link"><img src="" alt="Libertypictures" class="site-logo" id="site-logo-img" style="display:none;"></a>
     </header>
 
     <div class="container">
@@ -598,27 +542,6 @@
                 Select your desired <span>session</span>, book a <span>date</span>, and secure your <span>retainer</span> below.
             </p>
         </header>
-
-        <!-- PROGRESS STEPPER (floats to the top while scrolling) -->
-        <div class="stepper-sentinel" id="stepper-sentinel"></div>
-        <div class="sticky-progress-wrap is-stuck" id="sticky-progress-wrap">
-            <div class="progress-stepper" id="progress-stepper">
-                <div class="stepper-item active" id="step-1">
-                    <span class="stepper-circle">01</span>
-                    <span class="stepper-label">Choose Your Session</span>
-                </div>
-                <div class="stepper-line" id="line-1"></div>
-                <div class="stepper-item" id="step-2">
-                    <span class="stepper-circle">02</span>
-                    <span class="stepper-label">Pick a Date</span>
-                </div>
-                <div class="stepper-line" id="line-2"></div>
-                <div class="stepper-item" id="step-3">
-                    <span class="stepper-circle">03</span>
-                    <span class="stepper-label">Secure with Retainer</span>
-                </div>
-            </div>
-        </div>
 
         <!-- PACKAGES SECTION -->
         <section class="section-block" id="packages">
@@ -863,7 +786,10 @@
 
                     if (s.logo_url) {
                         var headerLogoImg = document.getElementById('site-logo-img');
-                        if (headerLogoImg) headerLogoImg.src = API_BASE + s.logo_url;
+                        if (headerLogoImg) {
+                            headerLogoImg.src = API_BASE + s.logo_url;
+                            headerLogoImg.style.display = 'block';
+                        }
                     }
                 })
                 .catch(function (err) { console.error('Could not load logo from Settings:', err); });
@@ -994,21 +920,6 @@
             closeBtn.addEventListener('click', close);
             overlay.addEventListener('click', close);
             document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
-        })();
-
-        // Floating Progress Stepper: watch a zero-height sentinel placed just
-        // above the stepper. Once it scrolls out of view, the stepper is
-        // stuck to the top, so we add a class to condense it into a slim bar.
-        (function () {
-            const sentinel = document.getElementById('stepper-sentinel');
-            const wrap = document.getElementById('sticky-progress-wrap');
-            if (sentinel && wrap && 'IntersectionObserver' in window) {
-                const observer = new IntersectionObserver(
-                    ([entry]) => wrap.classList.toggle('is-stuck', !entry.isIntersecting),
-                    { threshold: 0 }
-                );
-                observer.observe(sentinel);
-            }
         })();
 
         // State Management
@@ -1160,14 +1071,11 @@
                 });
             }
 
-            // Package card photo reveal — a portrait thumbnail eases in
-            // beside the description once the card has sat in view for a
-            // beat (not an instant scroll-trigger). Cancels the pending
-            // timer if the card leaves view before it fires, and resets so
-            // it can play again next time. Uses a thin band centered in the
-            // viewport (not just "40% visible anywhere") so a card only
-            // starts its dwell timer once it's genuinely centered on
-            // screen — not merely peeking in at the top or bottom edge.
+            // Package card photo/description reveal — eases in as soon
+            // as the card scrolls into view, no waiting. Uses a thin
+            // band centered in the viewport so a card only reveals once
+            // it's genuinely centered on screen, not merely peeking in
+            // at the top or bottom edge.
             //
             // Pulled into a named function (rather than running once
             // inline) so it can be called again after the real package
@@ -1175,7 +1083,6 @@
             // point this script first runs.
             function initPackageDwellReveal(cards) {
                 if (!('IntersectionObserver' in window)) return;
-                var photoTimers = new WeakMap();
                 var pendingHides = new WeakMap();
                 var dwellObserver = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
@@ -1185,16 +1092,8 @@
                             // flicker, not a genuine scroll-away.
                             var pendingHide = pendingHides.get(card);
                             if (pendingHide) { clearTimeout(pendingHide); pendingHides.delete(card); }
-
-                            if (card.classList.contains('photo-revealed') || photoTimers.has(card)) return;
-                            var t = setTimeout(function () {
-                                card.classList.add('photo-revealed');
-                            }, 1200);
-                            photoTimers.set(card, t);
+                            card.classList.add('photo-revealed');
                         } else {
-                            var existing = photoTimers.get(card);
-                            if (existing) { clearTimeout(existing); photoTimers.delete(card); }
-
                             if (!card.classList.contains('photo-revealed') || pendingHides.has(card)) return;
                             // Widened from 180ms — a slow, held scroll can leave
                             // a card hovering right at the trigger boundary for
@@ -1810,33 +1709,5 @@
     <!-- ================================================================
          END LP BOOKING COMPONENT JAVASCRIPT
          ================================================================ -->
-
-    <!-- ================================================================
-         STEPPER CONTEXTUAL VISIBILITY — entirely new, entirely separate
-         from the two script blocks above. Reads no variable they define,
-         calls no function they define, modifies no logic they contain.
-         Its only job: reveal the already-existing sticky stepper once
-         the client scrolls into the packages section (the real start of
-         the booking decision), instead of it being visible immediately
-         at the top of the page.
-         ================================================================ -->
-    <script>
-    (function () {
-        var wrap = document.getElementById('sticky-progress-wrap');
-        var trigger = document.getElementById('packages');
-        if (!wrap || !trigger || !('IntersectionObserver' in window)) return;
-
-        var observer = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-                if (entry.isIntersecting) {
-                    wrap.classList.add('lp-context-visible');
-                    observer.disconnect(); // once relevant, stays relevant — no need to keep watching
-                }
-            });
-        }, { rootMargin: '-10% 0px -60% 0px', threshold: 0 });
-
-        observer.observe(trigger);
-    })();
-    </script>
 
 </body></html>
