@@ -125,7 +125,7 @@
 
         /* HERO — identical mechanics to the booking page: video or
            slideshow, controlled entirely from Settings. */
-        .lp-hero { position: relative; height: 92vh; min-height: 560px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #141210; }
+        .lp-hero { position: relative; height: 92vh; height: 92dvh; min-height: 560px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #141210; }
         .lp-hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 35%; }
         .lp-hero-slideshow { position: absolute; inset: 0; }
         .lp-hero-slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity 0.9s ease; }
@@ -195,8 +195,9 @@
             .container { padding: 0 22px; }
             .section-block { padding: 70px 0; }
             .section-title { font-size: 25px; }
-            .lp-hero { height: 100vh; }
+            .lp-hero { height: 100vh; height: 100dvh; }
             .lp-hero-title { font-size: clamp(26px, 8vw, 34px); }
+            .lp-hero-sub { font-size: clamp(11px, 3.6vw, 14px); white-space: nowrap; max-width: none; }
             .lp-hero-ctas { gap: 14px; }
             .pkg-item-photo { flex-basis: 78px; width: 78px; height: 98px; }
         }
