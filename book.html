@@ -168,7 +168,16 @@
             position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
             background: linear-gradient(to top, rgba(15,12,9,0.95) 0%, rgba(15,12,9,0.8) 60%, rgba(15,12,9,0) 100%);
             padding: 76px 26px 26px 26px;
+            opacity: 0; transform: translateY(16px); will-change: opacity, transform;
+            transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1) 0.3s, transform 0.6s cubic-bezier(0.16,1,0.3,1) 0.3s;
         }
+        /* Follows the card's own reveal by 0.3s (set above), rather than
+           appearing at the same instant — card first, description
+           shortly after. Tied to the same reveal-in/-settled classes
+           the card already gets, so it stays reversible in step with it
+           and needs no separate observer. */
+        .tier-card.reveal-in .tier-scrim,
+        .tier-card.reveal-settled .tier-scrim { opacity: 1; transform: translateY(0); }
         .tier-scrim h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 20px; letter-spacing: 0; text-transform: none; margin-bottom: 14px; color: #f6f1e7; }
 
         .tier-details { list-style: none; font-size: 13px; color: #d9cdb8; margin-bottom: 22px; line-height: 1.8; }
@@ -198,7 +207,7 @@
         .tier-card.selected .select-btn { background-color: var(--accent); border-color: var(--accent); color: #fff; }
 
         /* Generic premium ease-in/out scroll reveal — unchanged mechanics */
-        .lp-reveal.reveal-pending { opacity: 0; transform: translateY(28px); }
+        .lp-reveal.reveal-pending { opacity: 0; transform: translateY(28px); will-change: opacity, transform; }
         .lp-reveal.reveal-settled { opacity: 1; transform: translateY(0); }
         @keyframes lp-reveal-in-kf {
             from { opacity: 0; transform: translateY(28px); }
@@ -1009,6 +1018,19 @@
                     if (active) { el.removeEventListener('animationend', active); activeListeners.delete(el); }
                 }
 
+                // Anything genuinely on-screen the instant this runs (most
+                // relevantly, the first card on page load) shows immediately,
+                // no animation — it was never scrolled to, so there's
+                // nothing to "reveal". The narrower band below is only for
+                // things that arrive into view through an actual scroll.
+                els.forEach(function (el) {
+                    var rect = el.getBoundingClientRect();
+                    if (rect.bottom > 0 && rect.top < window.innerHeight) {
+                        el.classList.remove('reveal-pending');
+                        el.classList.add('reveal-settled');
+                    }
+                });
+
                 var observer = new IntersectionObserver(function (entries) {
                     entries.forEach(function (entry) {
                         var el = entry.target;
@@ -1060,7 +1082,7 @@
                             pendingExits.set(el, t);
                         }
                     });
-                }, { threshold: 0.1, rootMargin: '-25% 0px -25% 0px' });
+                }, { threshold: 0.1, rootMargin: window.innerWidth <= 700 ? '-5% 0px -5% 0px' : '-15% 0px -15% 0px' });
 
                 els.forEach(function (el) { observer.observe(el); });
             }
@@ -1068,6 +1090,8 @@
 
             lpInitScrollReveal(document.querySelectorAll('#lpb-form-card'), 0);
             lpInitScrollReveal(document.querySelectorAll('#payment-recap-package'), 0);
+            lpInitScrollReveal(document.querySelectorAll('#addons-box'), 0);
+            lpInitScrollReveal(document.querySelectorAll('.payment-wrapper'), 0);
 
             // "Studio Policies" link in the payment acknowledgment — smooth
             // scroll matching the rest of the site, cleared of the sticky bar.
