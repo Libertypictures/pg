@@ -571,7 +571,7 @@
 
         <!-- PROGRESS STEPPER (floats to the top while scrolling) -->
         <div class="stepper-sentinel" id="stepper-sentinel"></div>
-        <div class="sticky-progress-wrap is-stuck" id="sticky-progress-wrap">
+        <div class="sticky-progress-wrap" id="sticky-progress-wrap">
             <div class="progress-stepper" id="progress-stepper">
                 <div class="stepper-item active" id="step-1">
                     <span class="stepper-circle">01</span>
@@ -919,6 +919,21 @@
             closeBtn.addEventListener('click', close);
             overlay.addEventListener('click', close);
             document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+        })();
+
+        // Floating Progress Stepper: watch a zero-height sentinel placed just
+        // above the stepper. Once it scrolls out of view, the stepper is
+        // stuck to the top, so we add a class to condense it into a slim bar.
+        (function () {
+            const sentinel = document.getElementById('stepper-sentinel');
+            const wrap = document.getElementById('sticky-progress-wrap');
+            if (sentinel && wrap && 'IntersectionObserver' in window) {
+                const observer = new IntersectionObserver(
+                    ([entry]) => wrap.classList.toggle('is-stuck', !entry.isIntersecting),
+                    { threshold: 0 }
+                );
+                observer.observe(sentinel);
+            }
         })();
 
         // State Management
