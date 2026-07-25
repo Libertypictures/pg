@@ -118,10 +118,6 @@
         /* GLASS BUTTONS — used specifically over the hero image, where a
            frosted, translucent surface reads clearly; solid buttons
            elsewhere in the page stay as they are. */
-        .btn-glass { display: inline-block; background: rgba(255,255,255,0.14); backdrop-filter: blur(18px) saturate(180%); -webkit-backdrop-filter: blur(18px) saturate(180%); border: none; color: #fff; padding: 17px 38px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; border-radius: 100px; text-decoration: none; cursor: pointer; box-shadow: 0 8px 32px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.28); transition: all 0.45s cubic-bezier(0.16,1,0.3,1); }
-        .btn-glass:hover { background: rgba(255,255,255,0.26); transform: translateY(-3px); box-shadow: 0 16px 40px rgba(0,0,0,0.18), inset 0 1px 0 rgba(255,255,255,0.4); }
-        .btn-glass.is-primary { background: rgba(138,115,85,0.4); }
-        .btn-glass.is-primary:hover { background: rgba(138,115,85,0.58); }
 
         /* HERO — identical mechanics to the booking page: video or
            slideshow, controlled entirely from Settings. */
@@ -135,8 +131,27 @@
         .lp-hero-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(var(--hero-scrim-rgb),0.7), rgba(var(--hero-scrim-rgb),0.15) 55%); }
         .lp-hero-content { position: relative; padding: 0 6vw; color: #fff; max-width: 700px; text-align: center; }
         .lp-hero-title { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(30px, 5.5vw, 58px); line-height: 1.2; margin-bottom: 20px; color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,0.4); }
-        .lp-hero-sub { font-size: 15px; color: rgba(255,255,255,0.82); max-width: 440px; margin: 0 auto 36px; line-height: 1.8; }
-        .lp-hero-ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+        .lp-hero-sub { font-size: 15px; color: rgba(255,255,255,0.82); max-width: 440px; margin: 0 auto; line-height: 1.8; }
+
+        /* SCROLL INDICATOR — same frosted-glass properties as the
+           buttons it replaces, just reshaped into a small circle with a
+           gentle, continuous bounce to read as "more below." */
+        .lp-scroll-indicator {
+            position: absolute; left: 50%; bottom: 34px; transform: translateX(-50%);
+            width: 42px; height: 42px; border-radius: 50%;
+            background: rgba(255,255,255,0.14);
+            backdrop-filter: blur(18px) saturate(180%);
+            -webkit-backdrop-filter: blur(18px) saturate(180%);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.28);
+            animation: lp-scroll-bounce 2.4s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes lp-scroll-bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(7px); }
+        }
 
         /* FEATURED WORK */
         .work-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 46px; min-height: 260px; }
@@ -169,17 +184,17 @@
         @keyframes lp-photo-fade { from { opacity: 0.3; } to { opacity: 1; } }
 
         /* SESSION LIST — names only, no prices; that's kept for Book.
-           Each title's description + photo expand directly beneath it. */
+           Every session shows fully open; each item eases in as a
+           whole (title + description + photo together) the moment it
+           scrolls into view. */
         .pkg-grid { display: flex; flex-direction: column; margin: 26px 0 30px; border-top: 1px solid var(--border-color); min-height: 180px; }
-        .pkg-item { border-bottom: 1px solid var(--border-color); }
-        .pkg-card { display: block; width: 100%; text-align: left; padding: 15px 4px; border: none; background: none; font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px; color: var(--text-primary); cursor: pointer; transition: padding-left 0.25s ease, color 0.25s ease; }
-        .pkg-card:hover { padding-left: 8px; }
-        .pkg-card.is-active { padding-left: 8px; color: var(--accent); font-weight: 600; }
-        .pkg-item-desc { max-height: 0; overflow: hidden; opacity: 0; transition: max-height 0.45s cubic-bezier(0.16,1,0.3,1), opacity 0.35s ease, padding 0.45s ease; padding: 0 4px; }
-        .pkg-item-desc.is-visible { max-height: 240px; opacity: 1; padding: 0 4px 18px; }
+        .pkg-item { border-bottom: 1px solid var(--border-color); padding: 20px 4px; }
+        .pkg-item.lp-reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.7s cubic-bezier(0.16,1,0.3,1), transform 0.7s cubic-bezier(0.16,1,0.3,1); will-change: opacity, transform; }
+        .pkg-item.lp-reveal.is-in { opacity: 1; transform: translateY(0); }
+        .pkg-card { font-family: 'Fraunces', serif; font-weight: 500; font-size: 17px; color: var(--text-primary); margin-bottom: 10px; }
         .pkg-item-desc-inner { display: flex; align-items: flex-start; gap: 18px; }
         .pkg-item-photo { flex: 0 0 96px; width: 96px; height: 120px; overflow: hidden; background: var(--bg-card); }
-        .pkg-item-photo img { width: 100%; height: 100%; object-fit: cover; display: block; animation: lp-photo-fade 0.5s ease; }
+        .pkg-item-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .pkg-item-desc p { font-size: 13px; color: var(--text-secondary); line-height: 1.85; white-space: pre-line; }
 
         .brand-footer { padding: 60px 0; text-align: center; border-top: 1px solid var(--border-color); }
@@ -198,7 +213,6 @@
             .lp-hero { height: 100vh; height: 100dvh; }
             .lp-hero-title { font-size: clamp(26px, 8vw, 34px); }
             .lp-hero-sub { font-size: clamp(11px, 3.6vw, 14px); white-space: nowrap; max-width: none; }
-            .lp-hero-ctas { gap: 14px; }
             .pkg-item-photo { flex-basis: 78px; width: 78px; height: 98px; }
         }
     </style>
@@ -219,10 +233,9 @@
         <div class="lp-hero-content">
             <h1 class="lp-hero-title">Intimate visual stories</h1>
             <p class="lp-hero-sub">Portraits that feel personal and beautifully authentic.</p>
-            <div class="lp-hero-ctas">
-                <a href="portfolio.html" class="btn-glass">View Portfolio</a>
-                <a href="book.html" class="btn-glass is-primary">Book a Session</a>
-            </div>
+        </div>
+        <div class="lp-scroll-indicator" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </div>
     </section>
 
@@ -288,6 +301,38 @@
         return div.innerHTML;
     }
     function formatNaira(n) { return '\u20a6' + Math.round(n).toLocaleString(); }
+
+    // Simple one-time scroll reveal — fades/slides each element in the
+    // moment it scrolls into view, staggered by index for a gentle
+    // cascade. `.lp-reveal` alone (before this runs) is a no-op, so
+    // content stays visible if JS fails.
+    function lpRevealOnScroll(elements, stagger) {
+        if (!('IntersectionObserver' in window)) return;
+        var els = Array.prototype.slice.call(elements);
+        if (!els.length) return;
+        els.forEach(function (el) { el.classList.add('lp-reveal'); });
+
+        // Anything already genuinely on-screen the instant this runs
+        // shows immediately, no animation or scroll needed to "earn" it.
+        els.forEach(function (el) {
+            var rect = el.getBoundingClientRect();
+            if (rect.bottom > 0 && rect.top < window.innerHeight) {
+                el.classList.add('is-in');
+            }
+        });
+
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                if (entry.target.classList.contains('is-in')) { observer.unobserve(entry.target); return; }
+                var idx = els.indexOf(entry.target);
+                entry.target.style.transitionDelay = (idx * (stagger || 0)) + 'ms';
+                entry.target.classList.add('is-in');
+                observer.unobserve(entry.target);
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
+        els.forEach(function (el) { observer.observe(el); });
+    }
 
     // HERO — identical logic to the booking page: two separate render
     // paths based on hero_mode, never mixing video and slideshow.
@@ -403,34 +448,16 @@
             .catch(function (err) { console.error('Could not load testimonials:', err); });
     })();
 
-    // SESSION LIST — interactive: clicking a name expands its
-    // description directly beneath that title, with its real photo
-    // (same /api/packages source Book uses, so a photo change there
-    // reflects here immediately) sitting right beside the text. The
-    // first session opens on its own once this section scrolls into
-    // view, rather than waiting on a click; clicking any title toggles
-    // its own item (collapsing whichever was open before).
+    // SESSION LIST — every session shows open, photo and description
+    // both visible from the start (no click needed); each one eases in
+    // individually the moment it scrolls into view.
     (function () {
         var grid = document.getElementById('pkg-grid');
-        var packages = [];
-        var hasAutoRevealed = false;
-
-        function selectPackage(id) {
-            var pkg = packages.find(function (p) { return String(p.id) === id; });
-            if (!pkg) return;
-
-            grid.querySelectorAll('.pkg-card').forEach(function (btn) {
-                btn.classList.toggle('is-active', btn.dataset.id === id);
-            });
-            grid.querySelectorAll('.pkg-item-desc').forEach(function (d) {
-                d.classList.toggle('is-visible', d.dataset.id === id);
-            });
-        }
 
         fetch(API_BASE + '/api/packages?activeOnly=true')
             .then(function (res) { return res.json(); })
             .then(function (data) {
-                packages = (data.packages || []).slice().sort(function (a, b) { return a.displayOrder - b.displayOrder; });
+                var packages = (data.packages || []).slice().sort(function (a, b) { return a.displayOrder - b.displayOrder; });
                 if (!packages.length) {
                     grid.innerHTML = '<p class="work-empty">Sessions are being updated \u2014 check back shortly.</p>';
                     return;
@@ -441,33 +468,14 @@
                         ? '<div class="pkg-item-photo"><img src="' + API_BASE + p.imageUrl + '" alt="' + escapeHtml(p.name) + '" loading="lazy"></div>'
                         : '';
                     return '<div class="pkg-item">' +
-                        '<button type="button" class="pkg-card serif" data-id="' + p.id + '">' + escapeHtml(p.name) + '</button>' +
-                        '<div class="pkg-item-desc" data-id="' + p.id + '">' +
+                        '<div class="pkg-card serif">' + escapeHtml(p.name) + '</div>' +
+                        '<div class="pkg-item-desc">' +
                             '<div class="pkg-item-desc-inner"><p>' + escapeHtml(p.description || '') + '</p>' + photoHtml + '</div>' +
                         '</div>' +
                     '</div>';
                 }).join('');
 
-                var bridgeSection = document.getElementById('pkg-grid').closest('.section-block');
-                if (bridgeSection && 'IntersectionObserver' in window) {
-                    var revealObserver = new IntersectionObserver(function (entries) {
-                        entries.forEach(function (entry) {
-                            if (entry.isIntersecting && !hasAutoRevealed) {
-                                hasAutoRevealed = true;
-                                selectPackage(String(packages[0].id));
-                                revealObserver.disconnect();
-                            }
-                        });
-                    }, { threshold: 0.4 });
-                    revealObserver.observe(bridgeSection);
-                }
-
-                grid.querySelectorAll('.pkg-card').forEach(function (btn) {
-                    btn.addEventListener('click', function () {
-                        hasAutoRevealed = true; // a real click always counts as having revealed something
-                        selectPackage(btn.dataset.id);
-                    });
-                });
+                lpRevealOnScroll(grid.querySelectorAll('.pkg-item'), 80);
             })
             .catch(function () { grid.innerHTML = '<p class="work-empty">Couldn\'t load sessions right now.</p>'; });
     })();
