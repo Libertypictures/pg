@@ -164,10 +164,22 @@
         }
 
         /* FEATURED WORK */
-        .work-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 46px; min-height: 260px; }
-        .work-item { position: relative; aspect-ratio: 3/4; overflow: hidden; background: var(--bg-card); box-shadow: 0 6px 20px var(--shadow-subtle); }
-        .work-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
+        /* FEATURED WORK — an editorial, magazine-style layout rather
+           than a uniform grid: varied widths, varied aspect ratios, and
+           deliberate vertical offsets create the asymmetric rhythm real
+           print spreads use. Pattern repeats every 6 photos so it stays
+           coherent regardless of how many are uploaded. */
+        .work-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; margin-bottom: 46px; min-height: 260px; }
+        .work-item { position: relative; overflow: hidden; background: var(--bg-card); box-shadow: 0 6px 20px var(--shadow-subtle); grid-column: span 6; aspect-ratio: 3/4; }
+        .work-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
         .work-item:hover img { transform: scale(1.05); }
+
+        .work-item:nth-child(6n+1) { grid-column: span 7; aspect-ratio: 4/5; }
+        .work-item:nth-child(6n+2) { grid-column: span 5; aspect-ratio: 3/4; margin-top: 64px; }
+        .work-item:nth-child(6n+3) { grid-column: span 4; aspect-ratio: 3/4; }
+        .work-item:nth-child(6n+4) { grid-column: span 4; aspect-ratio: 4/5; margin-top: -36px; }
+        .work-item:nth-child(6n+5) { grid-column: span 4; aspect-ratio: 3/4; margin-top: 24px; }
+        .work-item:nth-child(6n+6) { grid-column: span 12; aspect-ratio: 5/4; }
         .work-empty { text-align: center; color: var(--text-secondary); font-size: 13.5px; padding: 40px 0; }
 
         /* ABOUT */
@@ -207,8 +219,40 @@
         .brand-footer { padding: 60px 0; text-align: center; border-top: 1px solid var(--border-color); }
         .footer-mark { font-size: 15px; font-weight: 500; letter-spacing: 0.3px; }
 
+        /* MOBILE FEATURED WORK — a completely different presentation
+           from the desktop editorial grid: one large main photo, with
+           the rest looping continuously, top to bottom, in a narrow
+           frosted glass strip along the edge. Tapping a thumbnail
+           crossfades the main photo to it. Desktop-only otherwise;
+           this never appears above the 900px breakpoint. */
+        .work-mobile-feature { display: none; }
         @media (max-width: 900px) {
-            .work-grid { grid-template-columns: repeat(2, 1fr); }
+            .work-grid { display: none; }
+            .work-mobile-feature {
+                display: flex; aspect-ratio: 2.5/4; overflow: hidden; position: relative;
+                background: var(--bg-card); box-shadow: 0 6px 20px var(--shadow-subtle); margin-bottom: 46px;
+            }
+            .work-main-photo { flex: 1; position: relative; overflow: hidden; min-width: 0; }
+            .work-main-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
+            .work-main-photo img.is-active { opacity: 1; }
+            .work-strip-wrap {
+                width: 20%; position: relative; overflow: hidden;
+                background: rgba(255,255,255,0.12);
+                backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+            }
+            @media (prefers-color-scheme: dark) { .work-strip-wrap { background: rgba(255,255,255,0.07); } }
+            .work-strip-track { display: flex; flex-direction: column; animation: work-strip-loop 26s linear infinite; }
+            .work-strip-track.is-paused { animation-play-state: paused; }
+            .work-strip-thumb { width: 100%; aspect-ratio: 1/1; border: none; padding: 2px; background: none; cursor: pointer; display: block; }
+            .work-strip-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.65; transition: opacity 0.25s ease; }
+            .work-strip-thumb.is-active img { opacity: 1; }
+            @keyframes work-strip-loop {
+                from { transform: translateY(0); }
+                to { transform: translateY(-50%); } /* the thumbnail list is duplicated once, so -50% is exactly one full pass — the loop point is invisible */
+            }
+        }
+
+        @media (max-width: 900px) {
             .about-grid { grid-template-columns: 1fr; gap: 32px; }
             .about-photo { max-width: 340px; margin: 0 auto; }
             .testi-grid { grid-template-columns: 1fr; }
@@ -253,6 +297,7 @@
             <div class="work-grid" id="work-grid">
                 <p class="work-empty">Loading work&hellip;</p>
             </div>
+            <div class="work-mobile-feature" id="work-mobile-feature"></div>
             <div style="text-align:center;"><a href="portfolio.html" class="btn-dark">View Full Portfolio</a></div>
         </div>
     </section>
@@ -438,9 +483,12 @@
     })();
 
     // FEATURED WORK — a small real sample from the portfolio, one per
-    // category where possible, linking to the full gallery.
+    // category where possible, linking to the full gallery. Builds both
+    // the desktop editorial grid and the mobile main+strip component
+    // from the same data; only one is ever visible at a time (CSS).
     (function () {
         var grid = document.getElementById('work-grid');
+        var mobileFeature = document.getElementById('work-mobile-feature');
         fetch(API_BASE + '/api/portfolio?publishedOnly=true')
             .then(function (res) { return res.json(); })
             .then(function (data) {
@@ -453,8 +501,47 @@
                 grid.innerHTML = sample.map(function (item) {
                     return '<div class="work-item"><img src="' + API_BASE + item.imageUrl + '" alt="' + escapeHtml(item.category) + '" loading="lazy"></div>';
                 }).join('');
+
+                buildMobileFeature(sample);
             })
             .catch(function () { grid.innerHTML = '<p class="work-empty">Couldn\'t load work right now.</p>'; });
+
+        function buildMobileFeature(sample) {
+            if (!mobileFeature || sample.length < 2) return; // need at least 2 photos for a main photo + a strip to make sense
+
+            function thumbsHtml() {
+                return sample.map(function (item, i) {
+                    return '<button type="button" class="work-strip-thumb' + (i === 0 ? ' is-active' : '') + '" data-index="' + i + '"><img src="' + API_BASE + item.imageUrl + '" alt="" loading="lazy"></button>';
+                }).join('');
+            }
+
+            mobileFeature.innerHTML =
+                '<div class="work-main-photo">' +
+                    sample.map(function (item, i) {
+                        return '<img src="' + API_BASE + item.imageUrl + '" alt="' + escapeHtml(item.category) + '" class="' + (i === 0 ? 'is-active' : '') + '" data-index="' + i + '">';
+                    }).join('') +
+                '</div>' +
+                '<div class="work-strip-wrap">' +
+                    '<div class="work-strip-track" id="work-strip-track">' + thumbsHtml() + thumbsHtml() + '</div>' +
+                '</div>';
+
+            var mainImgs = mobileFeature.querySelectorAll('.work-main-photo img');
+            var track = document.getElementById('work-strip-track');
+
+            mobileFeature.querySelectorAll('.work-strip-thumb').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var idx = btn.dataset.index;
+                    mainImgs.forEach(function (img) { img.classList.toggle('is-active', img.dataset.index === idx); });
+                    mobileFeature.querySelectorAll('.work-strip-thumb').forEach(function (t) { t.classList.toggle('is-active', t.dataset.index === idx); });
+                });
+            });
+
+            // Pauses the loop while actually being touched, so tapping a
+            // specific thumbnail is reliable rather than fighting a
+            // constantly-moving target.
+            track.addEventListener('touchstart', function () { track.classList.add('is-paused'); }, { passive: true });
+            track.addEventListener('touchend', function () { track.classList.remove('is-paused'); }, { passive: true });
+        }
     })();
 
     // TESTIMONIALS — real quotes only, section stays hidden if none exist yet.
