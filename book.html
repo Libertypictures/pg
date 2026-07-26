@@ -173,11 +173,10 @@
         }
         /* Follows the card's own reveal by 0.3s (set above), rather than
            appearing at the same instant — card first, description
-           shortly after. Tied to the same reveal-in/-settled classes
-           the card already gets, so it stays reversible in step with it
-           and needs no separate observer. */
-        .tier-card.reveal-in .tier-scrim,
-        .tier-card.reveal-settled .tier-scrim { opacity: 1; transform: translateY(0); }
+           shortly after. Tied to the same is-in class the card already
+           gets, so it stays reversible in step with it and needs no
+           separate observer. */
+        .tier-card.is-in .tier-scrim { opacity: 1; transform: translateY(0); }
         .tier-scrim h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 20px; letter-spacing: 0; text-transform: none; margin-bottom: 14px; color: #f6f1e7; }
 
         .tier-details { list-style: none; font-size: 13px; color: #d9cdb8; margin-bottom: 22px; line-height: 1.8; }
@@ -207,19 +206,15 @@
         .select-btn:hover { background-color: rgba(246,241,231,0.26); }
         .tier-card.selected .select-btn { background-color: rgba(138,115,85,0.55); box-shadow: inset 0 1px 0 rgba(255,255,255,0.3); color: #fff; }
 
-        /* Generic premium ease-in/out scroll reveal — unchanged mechanics */
-        .lp-reveal.reveal-pending { opacity: 0; transform: translateY(28px); will-change: opacity, transform; }
-        .lp-reveal.reveal-settled { opacity: 1; transform: translateY(0); }
-        @keyframes lp-reveal-in-kf {
-            from { opacity: 0; transform: translateY(28px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes lp-reveal-out-kf {
-            from { opacity: 1; transform: translateY(0); }
-            to { opacity: 0; transform: translateY(28px); }
-        }
-        .lp-reveal.reveal-in { animation: lp-reveal-in-kf 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-        .lp-reveal.reveal-out { animation: lp-reveal-out-kf 0.5s cubic-bezier(0.7, 0, 0.84, 0) forwards; }
+        /* Generic premium ease-in/out scroll reveal — plain CSS
+           transition driven by a single class toggle, not keyframe
+           animations with animationend listeners. The listener-based
+           version had real edge cases where a listener could be dropped
+           mid-flight across repeated scroll cycles, silently breaking
+           the reveal after the first time. This is simpler and more
+           reliably reversible. */
+        .lp-reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); will-change: opacity, transform; }
+        .lp-reveal.is-in { opacity: 1; transform: translateY(0); }
 
         /* Add-ons Box — border removed in favor of a soft shadow + tint,
            reading as one calm surface rather than a bordered form panel. */
@@ -1005,36 +1000,30 @@
                 spySections.forEach(function (s) { spyObserver.observe(s.el); });
             }
 
-            // Reusable premium ease-in/out scroll reveal. `stagger` (ms)
-            // offsets each subsequent element for a gentle cascade;
-            // omit/0 for a single element. Reversible: scrolling an
-            // element out of view resets it so scrolling back plays the
-            // reveal again. Releases the animation once settled, so
-            // hover/other transitions on the same element work normally.
+            // Reusable premium scroll reveal. `stagger` (ms) offsets
+            // each subsequent element for a gentle cascade; omit/0 for
+            // a single element. Reversible: scrolling an element out of
+            // view resets it so scrolling back plays the reveal again.
+            // A single class toggle driving a plain CSS transition —
+            // deliberately simpler than an animationend-listener-based
+            // version, which had edge cases where a listener could get
+            // dropped mid-flight across repeated cycles and silently
+            // stop working after the first time.
             function lpInitScrollReveal(elements, stagger) {
                 if (!('IntersectionObserver' in window)) return;
                 var els = Array.prototype.slice.call(elements);
                 if (!els.length) return;
-                els.forEach(function (el) { el.classList.add('lp-reveal', 'reveal-pending'); });
+                els.forEach(function (el) { el.classList.add('lp-reveal'); });
 
-                var pendingExits = new WeakMap();
-                var activeListeners = new WeakMap(); // el -> {event, handler} of the currently-armed animationend listener, so an interrupted one never gets left dangling
+                var pendingHides = new WeakMap();
 
-                function clearActiveListener(el) {
-                    var active = activeListeners.get(el);
-                    if (active) { el.removeEventListener('animationend', active); activeListeners.delete(el); }
-                }
-
-                // Anything genuinely on-screen the instant this runs (most
-                // relevantly, the first card on page load) shows immediately,
-                // no animation — it was never scrolled to, so there's
-                // nothing to "reveal". The narrower band below is only for
-                // things that arrive into view through an actual scroll.
+                // Anything genuinely on-screen the instant this runs
+                // shows immediately, no animation or scroll needed to
+                // "earn" it.
                 els.forEach(function (el) {
                     var rect = el.getBoundingClientRect();
                     if (rect.bottom > 0 && rect.top < window.innerHeight) {
-                        el.classList.remove('reveal-pending');
-                        el.classList.add('reveal-settled');
+                        el.classList.add('is-in');
                     }
                 });
 
@@ -1043,50 +1032,22 @@
                         var el = entry.target;
                         var idx = els.indexOf(el);
                         if (entry.isIntersecting) {
-                            // Cancel any pending exit — likely just a boundary
-                            // flicker, not a genuine scroll-away.
-                            var pending = pendingExits.get(el);
-                            if (pending) { clearTimeout(pending); pendingExits.delete(el); }
-
-                            // If it was still fully visible (exit only ever
-                            // pending, never actually happened), leave it
-                            // alone rather than needlessly replaying the
-                            // entrance animation on something the visitor
-                            // never actually saw disappear.
-                            if (el.classList.contains('reveal-settled')) return;
-
-                            clearActiveListener(el); // in case a previous entrance/exit was interrupted mid-flight
-                            el.classList.remove('reveal-out', 'reveal-in');
-                            void el.offsetWidth; // force a reflow so the browser treats this as a genuinely new animation start, not a no-op
-                            el.style.animationDelay = (idx * (stagger || 0)) + 'ms';
-                            el.classList.add('reveal-in');
-                            function onIn() {
-                                el.classList.remove('reveal-in');
-                                el.classList.add('reveal-settled');
-                                activeListeners.delete(el);
-                            }
-                            el.addEventListener('animationend', onIn);
-                            activeListeners.set(el, onIn);
-                        } else if (el.classList.contains('reveal-settled') || el.classList.contains('reveal-in')) {
-                            // Debounce the exit only: wait briefly to confirm
-                            // this is a real scroll-away, not a sub-pixel
-                            // flicker right at the trigger boundary.
-                            if (pendingExits.has(el)) return;
-                            var t = setTimeout(function () {
-                                pendingExits.delete(el);
-                                clearActiveListener(el); // in case the entrance was still mid-flight when this exit fired
-                                el.classList.remove('reveal-in', 'reveal-settled');
-                                void el.offsetWidth;
-                                el.style.animationDelay = '0ms';
-                                el.classList.add('reveal-out');
-                                function onOut() {
-                                    el.classList.remove('reveal-out');
-                                    activeListeners.delete(el);
-                                }
-                                el.addEventListener('animationend', onOut);
-                                activeListeners.set(el, onOut);
+                            var pendingHide = pendingHides.get(el);
+                            if (pendingHide) { clearTimeout(pendingHide); pendingHides.delete(el); }
+                            if (el.classList.contains('is-in')) return;
+                            el.style.transitionDelay = (idx * (stagger || 0)) + 'ms';
+                            el.classList.add('is-in');
+                        } else {
+                            if (!el.classList.contains('is-in') || pendingHides.has(el)) return;
+                            // Debounced: a brief wait confirms this is a
+                            // real scroll-away, not a sub-pixel flicker
+                            // right at the trigger boundary.
+                            var hideTimer = setTimeout(function () {
+                                pendingHides.delete(el);
+                                el.style.transitionDelay = '0ms';
+                                el.classList.remove('is-in');
                             }, 400);
-                            pendingExits.set(el, t);
+                            pendingHides.set(el, hideTimer);
                         }
                     });
                 }, { threshold: 0.1, rootMargin: window.innerWidth <= 700 ? '-5% 0px -5% 0px' : '-15% 0px -15% 0px' });
