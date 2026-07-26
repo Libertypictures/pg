@@ -144,13 +144,13 @@
            animation is explicitly cleared when hidden, since a running
            keyframe animation would otherwise keep fighting the fade. */
         .lp-scroll-indicator {
-            position: absolute; left: 0; right: 0; bottom: -22px;
-            height: 44px;
+            position: absolute; left: 0; right: 0; bottom: -14px;
+            height: 56px;
             background: rgba(255,255,255,0.14);
             backdrop-filter: blur(18px) saturate(180%);
             -webkit-backdrop-filter: blur(18px) saturate(180%);
             display: flex; align-items: flex-start; justify-content: center;
-            padding-top: 10px;
+            padding-top: 14px;
             color: #fff;
             box-shadow: 0 -4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.22);
             animation: lp-breathe 4s ease-in-out infinite;
@@ -315,6 +315,8 @@
         if (!els.length) return;
         els.forEach(function (el) { el.classList.add('lp-reveal'); });
 
+        var pendingHides = new WeakMap();
+
         // Anything already genuinely on-screen the instant this runs
         // shows immediately, no animation or scroll needed to "earn" it.
         els.forEach(function (el) {
@@ -326,12 +328,23 @@
 
         var observer = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
-                if (!entry.isIntersecting) return;
-                if (entry.target.classList.contains('is-in')) { observer.unobserve(entry.target); return; }
-                var idx = els.indexOf(entry.target);
-                entry.target.style.transitionDelay = (idx * (stagger || 0)) + 'ms';
-                entry.target.classList.add('is-in');
-                observer.unobserve(entry.target);
+                var el = entry.target;
+                if (entry.isIntersecting) {
+                    var pendingHide = pendingHides.get(el);
+                    if (pendingHide) { clearTimeout(pendingHide); pendingHides.delete(el); }
+                    if (el.classList.contains('is-in')) return;
+                    var idx = els.indexOf(el);
+                    el.style.transitionDelay = (idx * (stagger || 0)) + 'ms';
+                    el.classList.add('is-in');
+                } else {
+                    if (!el.classList.contains('is-in') || pendingHides.has(el)) return;
+                    var hideTimer = setTimeout(function () {
+                        pendingHides.delete(el);
+                        el.style.transitionDelay = '0ms';
+                        el.classList.remove('is-in');
+                    }, 400);
+                    pendingHides.set(el, hideTimer);
+                }
             });
         }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
         els.forEach(function (el) { observer.observe(el); });
