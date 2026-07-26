@@ -115,10 +115,6 @@
         .site-logo { height: 38px; width: auto; filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0,0,0,0.25)); transition: filter 0.35s ease, height 0.35s ease; }
         .site-header.is-scrolled .site-logo { filter: var(--logo-filter, none); height: 32px; }
 
-        /* GLASS BUTTONS — used specifically over the hero image, where a
-           frosted, translucent surface reads clearly; solid buttons
-           elsewhere in the page stay as they are. */
-
         /* HERO — identical mechanics to the booking page: video or
            slideshow, controlled entirely from Settings. */
         .lp-hero { position: relative; height: 92vh; height: 92dvh; min-height: 560px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #141210; }
@@ -163,7 +159,6 @@
             50% { opacity: 1; }
         }
 
-        /* FEATURED WORK */
         /* FEATURED WORK — an editorial, magazine-style layout rather
            than a uniform grid: varied widths, varied aspect ratios, and
            deliberate vertical offsets create the asymmetric rhythm real
@@ -198,11 +193,6 @@
         .testi-quote::after { content: '\201D'; }
         .testi-name { font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; }
 
-        /* BEGIN YOUR STORY — bridges Portfolio and Book. Interactive:
-           clicking a session name expands its description directly
-           beneath that title, with its real photo (same source as
-           Book) sitting right beside the description text. */
-
         /* THE EXPERIENCE — an emotional bridge between Portfolio and
            Book: no session names, no prices, just what working
            together actually feels like. All text is dashboard-editable. */
@@ -215,16 +205,14 @@
         .experience-card.lp-reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); will-change: opacity, transform; }
         .experience-card.lp-reveal.is-in { opacity: 1; transform: translateY(0); }
 
-
         .brand-footer { padding: 60px 0; text-align: center; border-top: 1px solid var(--border-color); }
         .footer-mark { font-size: 15px; font-weight: 500; letter-spacing: 0.3px; }
 
         /* MOBILE FEATURED WORK — a completely different presentation
-           from the desktop editorial grid: one large main photo, with
-           the rest looping continuously, top to bottom, in a narrow
-           frosted glass strip along the edge. Tapping a thumbnail
-           crossfades the main photo to it. Desktop-only otherwise;
-           this never appears above the 900px breakpoint. */
+           from the desktop editorial grid: one large main photo, with a
+           narrow frosted glass strip along the edge for the rest.
+           Tapping a thumbnail crossfades the main photo to it.
+           Desktop-only otherwise; never appears above 900px. */
         .work-mobile-feature { display: none; }
         @media (max-width: 900px) {
             .work-grid { display: none; }
@@ -307,7 +295,6 @@
                 <p class="work-empty">Loading work&hellip;</p>
             </div>
             <div class="work-mobile-feature" id="work-mobile-feature"></div>
-            <div style="text-align:center;"><a href="portfolio.html" class="btn-dark">View Full Portfolio</a></div>
         </div>
     </section>
 
@@ -341,7 +328,10 @@
         <div class="container">
             <h2 class="experience-heading" id="experience-heading"></h2>
             <div class="experience-grid" id="experience-grid"></div>
-            <div style="text-align:center;"><a href="book.html" class="btn-dark">Book a Session</a></div>
+            <div style="text-align:center;">
+                <a href="book.html" class="btn-dark">Book a Session</a>
+                <div style="margin-top:16px;"><a href="portfolio.html" class="btn-dark">View Full Portfolio</a></div>
+            </div>
         </div>
     </section>
 
