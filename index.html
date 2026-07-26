@@ -236,39 +236,22 @@
             .work-main-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
             .work-main-photo img.is-active { opacity: 1; }
             .work-strip-wrap {
-                width: 30%; position: relative; overflow: hidden;
+                width: 20%; position: relative; overflow-y: auto; overflow-x: hidden;
                 background: rgba(255,255,255,0.22);
                 backdrop-filter: blur(22px) saturate(200%); -webkit-backdrop-filter: blur(22px) saturate(200%);
                 box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), inset 1px 0 0 rgba(255,255,255,0.2);
-            }
-            @media (prefers-color-scheme: dark) { .work-strip-wrap { background: rgba(255,255,255,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), inset 1px 0 0 rgba(255,255,255,0.08); } }
-
-            /* Ambient color-bleed — a heavily blurred copy of whichever
-               photo is currently selected, sitting behind the glass
-               layer above. Rather than trying to extract a single
-               "dominant color" programmatically, the actual photo
-               itself (blurred past recognition) does that job more
-               naturally — the glass just tints toward whatever's showing.
-               Lives outside the scrolling element so it stays put while
-               the thumbnails scroll past it. */
-            .work-strip-bleed { position: absolute; inset: -20%; z-index: 0; }
-            .work-strip-bleed img { width: 100%; height: 100%; object-fit: cover; filter: blur(30px) saturate(160%); opacity: 0; transition: opacity 0.6s ease; transform: scale(1.2); }
-            .work-strip-bleed img.is-active { opacity: 0.55; }
-            @media (prefers-color-scheme: dark) { .work-strip-bleed img.is-active { opacity: 0.4; } }
-
-            .work-strip-scroll {
-                position: relative; z-index: 1; width: 100%; height: 100%;
-                overflow-y: auto; overflow-x: hidden;
                 scroll-behavior: smooth; scrollbar-width: none;
             }
-            .work-strip-scroll::-webkit-scrollbar { display: none; }
+            .work-strip-wrap::-webkit-scrollbar { display: none; }
+            @media (prefers-color-scheme: dark) { .work-strip-wrap { background: rgba(255,255,255,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), inset 1px 0 0 rgba(255,255,255,0.08); } }
             .work-strip-track { display: flex; flex-direction: column; }
             .work-strip-thumb { position: relative; width: 100%; aspect-ratio: 1/1; border: none; padding: 3px; background: none; cursor: pointer; display: block; }
-            .work-strip-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.65; transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16,1,0.3,1); }
-            /* Active indicator — a frosted glass ring plus a gentle
-               scale-up, so the selected thumbnail feels genuinely
-               "picked up" rather than just marked. */
-            .work-strip-thumb.is-active img { opacity: 1; transform: scale(1.08); }
+            .work-strip-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.65; transition: opacity 0.25s ease; }
+            /* Active indicator — a frosted glass ring around the
+               selected thumbnail, not just a plain opacity/border
+               change, so it stays consistent with the rest of the
+               glass language. */
+            .work-strip-thumb.is-active img { opacity: 1; }
             .work-strip-thumb.is-active::after {
                 content: ""; position: absolute; inset: 2px;
                 border: 2px solid rgba(255,255,255,0.75);
@@ -538,9 +521,6 @@
             var thumbsHtml = sample.map(function (item, i) {
                 return '<button type="button" class="work-strip-thumb' + (i === 0 ? ' is-active' : '') + '" data-index="' + i + '"><img src="' + API_BASE + item.imageUrl + '" alt="" loading="lazy"></button>';
             }).join('');
-            var bleedHtml = sample.map(function (item, i) {
-                return '<img src="' + API_BASE + item.imageUrl + '" alt="" class="' + (i === 0 ? 'is-active' : '') + '" data-index="' + i + '">';
-            }).join('');
 
             mobileFeature.innerHTML =
                 '<div class="work-main-photo">' +
@@ -548,23 +528,18 @@
                         return '<img src="' + API_BASE + item.imageUrl + '" alt="' + escapeHtml(item.category) + '" class="' + (i === 0 ? 'is-active' : '') + '" data-index="' + i + '">';
                     }).join('') +
                 '</div>' +
-                '<div class="work-strip-wrap">' +
-                    '<div class="work-strip-bleed">' + bleedHtml + '</div>' +
-                    '<div class="work-strip-scroll" id="work-strip-scroll">' +
-                        '<div class="work-strip-track">' + thumbsHtml + '</div>' +
-                    '</div>' +
+                '<div class="work-strip-wrap" id="work-strip-wrap">' +
+                    '<div class="work-strip-track">' + thumbsHtml + '</div>' +
                 '</div>';
 
             var mainImgs = mobileFeature.querySelectorAll('.work-main-photo img');
-            var bleedImgs = mobileFeature.querySelectorAll('.work-strip-bleed img');
-            var stripScroll = document.getElementById('work-strip-scroll');
+            var stripWrap = document.getElementById('work-strip-wrap');
             var thumbs = mobileFeature.querySelectorAll('.work-strip-thumb');
 
             thumbs.forEach(function (btn, i) {
                 btn.addEventListener('click', function () {
                     var idx = btn.dataset.index;
                     mainImgs.forEach(function (img) { img.classList.toggle('is-active', img.dataset.index === idx); });
-                    bleedImgs.forEach(function (img) { img.classList.toggle('is-active', img.dataset.index === idx); });
                     thumbs.forEach(function (t) { t.classList.toggle('is-active', t.dataset.index === idx); });
 
                     // Clicking near the end of what's currently visible
@@ -572,7 +547,7 @@
                     // below — the strip itself no longer auto-moves, so
                     // this is what keeps the rest reachable.
                     if (i >= sample.length - 3) {
-                        stripScroll.scrollBy({ top: btn.offsetHeight * 3, behavior: 'smooth' });
+                        stripWrap.scrollBy({ top: btn.offsetHeight * 3, behavior: 'smooth' });
                     }
                 });
             });
