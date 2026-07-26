@@ -236,19 +236,27 @@
             .work-main-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
             .work-main-photo img.is-active { opacity: 1; }
             .work-strip-wrap {
-                width: 20%; position: relative; overflow: hidden;
+                width: 20%; position: relative; overflow-y: auto; overflow-x: hidden;
                 background: rgba(255,255,255,0.12);
                 backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%);
+                scroll-behavior: smooth; scrollbar-width: none;
             }
+            .work-strip-wrap::-webkit-scrollbar { display: none; }
             @media (prefers-color-scheme: dark) { .work-strip-wrap { background: rgba(255,255,255,0.07); } }
-            .work-strip-track { display: flex; flex-direction: column; animation: work-strip-loop 26s linear infinite; }
-            .work-strip-track.is-paused { animation-play-state: paused; }
-            .work-strip-thumb { width: 100%; aspect-ratio: 1/1; border: none; padding: 2px; background: none; cursor: pointer; display: block; }
+            .work-strip-track { display: flex; flex-direction: column; }
+            .work-strip-thumb { position: relative; width: 100%; aspect-ratio: 1/1; border: none; padding: 3px; background: none; cursor: pointer; display: block; }
             .work-strip-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.65; transition: opacity 0.25s ease; }
+            /* Active indicator — a frosted glass ring around the
+               selected thumbnail, not just a plain opacity/border
+               change, so it stays consistent with the rest of the
+               glass language. */
             .work-strip-thumb.is-active img { opacity: 1; }
-            @keyframes work-strip-loop {
-                from { transform: translateY(0); }
-                to { transform: translateY(-50%); } /* the thumbnail list is duplicated once, so -50% is exactly one full pass — the loop point is invisible */
+            .work-strip-thumb.is-active::after {
+                content: ""; position: absolute; inset: 2px;
+                border: 2px solid rgba(255,255,255,0.75);
+                background: rgba(255,255,255,0.08);
+                backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
+                pointer-events: none;
             }
         }
 
@@ -509,11 +517,9 @@
         function buildMobileFeature(sample) {
             if (!mobileFeature || sample.length < 2) return; // need at least 2 photos for a main photo + a strip to make sense
 
-            function thumbsHtml() {
-                return sample.map(function (item, i) {
-                    return '<button type="button" class="work-strip-thumb' + (i === 0 ? ' is-active' : '') + '" data-index="' + i + '"><img src="' + API_BASE + item.imageUrl + '" alt="" loading="lazy"></button>';
-                }).join('');
-            }
+            var thumbsHtml = sample.map(function (item, i) {
+                return '<button type="button" class="work-strip-thumb' + (i === 0 ? ' is-active' : '') + '" data-index="' + i + '"><img src="' + API_BASE + item.imageUrl + '" alt="" loading="lazy"></button>';
+            }).join('');
 
             mobileFeature.innerHTML =
                 '<div class="work-main-photo">' +
@@ -521,26 +527,29 @@
                         return '<img src="' + API_BASE + item.imageUrl + '" alt="' + escapeHtml(item.category) + '" class="' + (i === 0 ? 'is-active' : '') + '" data-index="' + i + '">';
                     }).join('') +
                 '</div>' +
-                '<div class="work-strip-wrap">' +
-                    '<div class="work-strip-track" id="work-strip-track">' + thumbsHtml() + thumbsHtml() + '</div>' +
+                '<div class="work-strip-wrap" id="work-strip-wrap">' +
+                    '<div class="work-strip-track">' + thumbsHtml + '</div>' +
                 '</div>';
 
             var mainImgs = mobileFeature.querySelectorAll('.work-main-photo img');
-            var track = document.getElementById('work-strip-track');
+            var stripWrap = document.getElementById('work-strip-wrap');
+            var thumbs = mobileFeature.querySelectorAll('.work-strip-thumb');
 
-            mobileFeature.querySelectorAll('.work-strip-thumb').forEach(function (btn) {
+            thumbs.forEach(function (btn, i) {
                 btn.addEventListener('click', function () {
                     var idx = btn.dataset.index;
                     mainImgs.forEach(function (img) { img.classList.toggle('is-active', img.dataset.index === idx); });
-                    mobileFeature.querySelectorAll('.work-strip-thumb').forEach(function (t) { t.classList.toggle('is-active', t.dataset.index === idx); });
+                    thumbs.forEach(function (t) { t.classList.toggle('is-active', t.dataset.index === idx); });
+
+                    // Clicking near the end of what's currently visible
+                    // scrolls the strip ahead, revealing more thumbnails
+                    // below — the strip itself no longer auto-moves, so
+                    // this is what keeps the rest reachable.
+                    if (i >= sample.length - 3) {
+                        stripWrap.scrollBy({ top: btn.offsetHeight * 3, behavior: 'smooth' });
+                    }
                 });
             });
-
-            // Pauses the loop while actually being touched, so tapping a
-            // specific thumbnail is reliable rather than fighting a
-            // constantly-moving target.
-            track.addEventListener('touchstart', function () { track.classList.add('is-paused'); }, { passive: true });
-            track.addEventListener('touchend', function () { track.classList.remove('is-paused'); }, { passive: true });
         }
     })();
 
