@@ -52,7 +52,7 @@
         .category-block { padding: 20px 0 60px; }
         .category-title { font-family: 'Fraunces', serif; font-weight: 500; font-size: 22px; margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--border-color); }
         .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-        .photo-item { border-radius: var(--radius-md); overflow: hidden; aspect-ratio: 4/5; background: var(--bg-card); box-shadow: 0 6px 20px var(--shadow-subtle); cursor: pointer; border: none; padding: 0; }
+        .photo-item { overflow: hidden; aspect-ratio: 4/5; background: var(--bg-card); box-shadow: 0 6px 20px var(--shadow-subtle); cursor: pointer; border: none; padding: 0; }
         .photo-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         .photo-item:hover img { transform: scale(1.05); }
 
@@ -62,7 +62,7 @@
         /* Lightbox — a simple, real enlarge-on-click view */
         .lightbox { position: fixed; inset: 0; background: rgba(10,9,8,0.94); z-index: 100; display: none; align-items: center; justify-content: center; padding: 30px; }
         .lightbox.is-open { display: flex; }
-        .lightbox img { max-width: 90vw; max-height: 88vh; border-radius: 4px; }
+        .lightbox img { max-width: 90vw; max-height: 88vh; }
         .lightbox-close { position: absolute; top: 24px; right: 30px; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; line-height: 1; }
 
         .cta-band { text-align: center; padding: 90px 0; background: var(--bg-container); border-top: 1px solid var(--border-color); }
