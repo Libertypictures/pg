@@ -189,10 +189,11 @@
         .select-btn {
             width: auto;
             min-width: 140px;
-            background-color: rgba(246,241,231,0.08);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(246,241,231,0.5);
+            background-color: rgba(246,241,231,0.14);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: none;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.22);
             color: #f6f1e7;
             padding: 11px 24px;
             font-size: 10.5px;
@@ -203,8 +204,8 @@
             transition: all 0.3s ease;
             border-radius: 30px;
         }
-        .select-btn:hover { background-color: rgba(246,241,231,0.2); border-color: #f6f1e7; }
-        .tier-card.selected .select-btn { background-color: var(--accent); border-color: var(--accent); color: #fff; }
+        .select-btn:hover { background-color: rgba(246,241,231,0.26); }
+        .tier-card.selected .select-btn { background-color: rgba(138,115,85,0.55); box-shadow: inset 0 1px 0 rgba(255,255,255,0.3); color: #fff; }
 
         /* Generic premium ease-in/out scroll reveal — unchanged mechanics */
         .lp-reveal.reveal-pending { opacity: 0; transform: translateY(28px); will-change: opacity, transform; }
@@ -269,9 +270,9 @@
         .email-input { width: 100%; padding: 15px 16px; background: var(--bg-body); border: 1.5px solid var(--border-color); color: var(--text-primary); font-family: 'Poppins'; border-radius: var(--radius-sm); font-size: 16px; outline: none; transition: border-color 0.25s ease, box-shadow 0.25s ease; }
         .email-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3.5px rgba(138,115,85,0.12); }
 
-        .cta-btn-primary { display: block; width: 100%; background-color: var(--btn-primary-bg); color: var(--btn-primary-text); padding: 19px 45px; font-size: 13.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.8px; border: none; border-radius: 30px; cursor: pointer; transition: all 0.4s cubic-bezier(0.16,1,0.3,1); }
-        .cta-btn-primary:hover { background-color: var(--accent); color: #fff; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(138, 115, 85, 0.28); }
-        .cta-btn-primary:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; transform: none; box-shadow: none; }
+        .cta-btn-primary { display: block; width: 100%; background-color: rgba(26,24,21,0.88); backdrop-filter: blur(16px) saturate(160%); -webkit-backdrop-filter: blur(16px) saturate(160%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); color: #fff; padding: 19px 45px; font-size: 13.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.8px; border: none; border-radius: 30px; cursor: pointer; transition: all 0.4s cubic-bezier(0.16,1,0.3,1); }
+        .cta-btn-primary:hover { background-color: rgba(138,115,85,0.92); color: #fff; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(138, 115, 85, 0.28), inset 0 1px 0 rgba(255,255,255,0.16); }
+        .cta-btn-primary:disabled { background-color: var(--border-color); backdrop-filter: none; -webkit-backdrop-filter: none; color: var(--text-secondary); cursor: not-allowed; transform: none; box-shadow: none; }
         
         /* Policies — quieter, editorial presentation; no card chrome,
            just calm columns of text with generous line length control. */
@@ -289,11 +290,16 @@
             position: sticky;
             top: 0;
             z-index: 500;
-            background-color: var(--bg-container);
+            background-color: rgba(250,248,244,0.72);
+            backdrop-filter: blur(16px) saturate(160%);
+            -webkit-backdrop-filter: blur(16px) saturate(160%);
             margin: 0 -80px 40px -80px;
             padding: 28px 80px 20px 80px;
             transition: padding 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
             border-bottom: 1px solid transparent;
+        }
+        @media (prefers-color-scheme: dark) {
+            .sticky-progress-wrap { background-color: rgba(22,21,19,0.72); }
         }
         .sticky-progress-wrap.is-stuck {
             padding-top: 12px;
@@ -512,6 +518,7 @@
 
         @media (max-width: 600px) {
             .tier-stack { max-width: 100%; gap: 34px; }
+            .sticky-progress-wrap { margin: 0 -20px 40px -20px; padding-left: 20px; padding-right: 20px; }
         }
 
         /* PROMO POPUP — click-triggered only, never shown automatically */
