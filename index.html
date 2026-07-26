@@ -479,14 +479,14 @@
         }, { passive: true });
     })();
 
-    // FEATURED WORK — a small real sample from the portfolio, one per
-    // category where possible, linking to the full gallery. Builds both
-    // the desktop editorial grid and the mobile main+strip component
-    // from the same data; only one is ever visible at a time (CSS).
+    // FEATURED WORK — pulled from its own, separately-curated photo set
+    // (not Portfolio) — builds both the desktop editorial grid and the
+    // mobile main+strip component from the same data; only one is ever
+    // visible at a time (CSS).
     (function () {
         var grid = document.getElementById('work-grid');
         var mobileFeature = document.getElementById('work-mobile-feature');
-        fetch(API_BASE + '/api/portfolio?publishedOnly=true')
+        fetch(API_BASE + '/api/featured-work')
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 var items = data.items || [];
@@ -496,7 +496,7 @@
                 }
                 var sample = items.slice(0, 8);
                 grid.innerHTML = sample.map(function (item) {
-                    return '<div class="work-item"><img src="' + API_BASE + item.imageUrl + '" alt="' + escapeHtml(item.category) + '" loading="lazy"></div>';
+                    return '<div class="work-item"><img src="' + API_BASE + item.imageUrl + '" alt="Featured work" loading="lazy"></div>';
                 }).join('');
 
                 buildMobileFeature(sample);
@@ -513,7 +513,7 @@
             mobileFeature.innerHTML =
                 '<div class="work-main-photo">' +
                     sample.map(function (item, i) {
-                        return '<img src="' + API_BASE + item.imageUrl + '" alt="' + escapeHtml(item.category) + '" class="' + (i === 0 ? 'is-active' : '') + '" data-index="' + i + '">';
+                        return '<img src="' + API_BASE + item.imageUrl + '" alt="Featured work" class="' + (i === 0 ? 'is-active' : '') + '" data-index="' + i + '">';
                     }).join('') +
                 '</div>' +
                 '<div class="work-strip-wrap" id="work-strip-wrap">' +
