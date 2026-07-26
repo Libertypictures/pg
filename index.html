@@ -133,24 +133,45 @@
         .lp-hero-title { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(30px, 5.5vw, 58px); line-height: 1.2; margin-bottom: 20px; color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,0.4); }
         .lp-hero-sub { font-size: 14px; color: rgba(255,255,255,0.82); max-width: 380px; margin: 0 auto; line-height: 1.7; }
 
-        /* SCROLL INDICATOR — same frosted-glass properties as the
-           buttons it replaces, just reshaped into a small circle with a
-           gentle, continuous bounce to read as "more below." */
+        /* SCROLL INDICATOR — a frosted glass pill embedded into the
+           hero's own bottom edge rather than floating above it. It sits
+           straddling the boundary; the hero's existing overflow:hidden
+           naturally clips its lower half, so only the upper half (with
+           the chevron) is ever visible — genuinely built into the
+           section rather than placed on top of it. A slow breathing
+           pulse and an occasional, faint shimmer keep it alive without
+           drawing attention; it fades away entirely once scrolling
+           actually begins. */
         .lp-scroll-indicator {
-            position: absolute; left: 50%; bottom: 34px; transform: translateX(-50%);
-            width: 42px; height: 42px; border-radius: 50%;
+            position: absolute; left: 50%; bottom: -23px; transform: translateX(-50%);
+            width: 58px; height: 46px; border-radius: 100px;
             background: rgba(255,255,255,0.14);
             backdrop-filter: blur(18px) saturate(180%);
             -webkit-backdrop-filter: blur(18px) saturate(180%);
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: flex-start; justify-content: center;
+            padding-top: 11px;
             color: #fff;
             box-shadow: 0 8px 32px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.28);
-            animation: lp-scroll-bounce 2.4s ease-in-out infinite;
+            overflow: hidden;
+            animation: lp-breathe 3.6s ease-in-out infinite;
+            transition: opacity 0.6s ease;
             pointer-events: none;
         }
-        @keyframes lp-scroll-bounce {
-            0%, 100% { transform: translateX(-50%) translateY(0); }
-            50% { transform: translateX(-50%) translateY(7px); }
+        .lp-scroll-indicator.is-hidden { opacity: 0; }
+        .lp-scroll-indicator::before {
+            content: ""; position: absolute; top: 0; left: -60%;
+            width: 40%; height: 100%;
+            background: linear-gradient(115deg, transparent, rgba(255,255,255,0.22), transparent);
+            animation: lp-shimmer 6s ease-in-out infinite;
+        }
+        .lp-scroll-indicator svg { position: relative; z-index: 1; }
+        @keyframes lp-breathe {
+            0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.8; }
+            50% { transform: translateX(-50%) scale(1.06); opacity: 1; }
+        }
+        @keyframes lp-shimmer {
+            0%, 82%, 100% { left: -60%; }
+            91% { left: 130%; }
         }
 
         /* FEATURED WORK */
@@ -402,6 +423,16 @@
             });
         }, { threshold: 0, rootMargin: '-80% 0px 0px 0px' });
         observer.observe(hero);
+    })();
+
+    // SCROLL INDICATOR — fades away the moment the visitor actually
+    // starts scrolling; its job is done at that point.
+    (function () {
+        var indicator = document.querySelector('.lp-scroll-indicator');
+        if (!indicator) return;
+        window.addEventListener('scroll', function () {
+            indicator.classList.toggle('is-hidden', window.scrollY > 12);
+        }, { passive: true });
     })();
 
     // FEATURED WORK — a small real sample from the portfolio, one per
