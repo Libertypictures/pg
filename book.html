@@ -168,8 +168,8 @@
             position: absolute; left: 0; right: 0; bottom: 0; z-index: 1;
             background: linear-gradient(to top, rgba(15,12,9,0.95) 0%, rgba(15,12,9,0.8) 60%, rgba(15,12,9,0) 100%);
             padding: 76px 26px 26px 26px;
-            opacity: 0; transform: translateY(16px); will-change: opacity, transform;
-            transition: opacity 0.6s cubic-bezier(0.16,1,0.3,1) 0.3s, transform 0.6s cubic-bezier(0.16,1,0.3,1) 0.3s;
+            opacity: 0; transform: translateY(14px); will-change: opacity, transform;
+            transition: opacity 1.4s cubic-bezier(0.25,0.46,0.45,0.94) 0.4s, transform 1.4s cubic-bezier(0.25,0.46,0.45,0.94) 0.4s;
         }
         /* Follows the card's own reveal by 0.3s (set above), rather than
            appearing at the same instant — card first, description
@@ -213,7 +213,7 @@
            mid-flight across repeated scroll cycles, silently breaking
            the reveal after the first time. This is simpler and more
            reliably reversible. */
-        .lp-reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); will-change: opacity, transform; }
+        .lp-reveal { opacity: 0; transform: translateY(20px); transition: opacity 1.3s cubic-bezier(0.25,0.46,0.45,0.94), transform 1.3s cubic-bezier(0.25,0.46,0.45,0.94); will-change: opacity, transform; }
         .lp-reveal.is-in { opacity: 1; transform: translateY(0); }
 
         /* Add-ons Box — border removed in favor of a soft shadow + tint,
