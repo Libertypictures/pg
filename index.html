@@ -363,15 +363,11 @@
 
         var pendingHides = new WeakMap();
 
-        // Anything already genuinely on-screen the instant this runs
-        // shows immediately, no animation or scroll needed to "earn" it.
-        els.forEach(function (el) {
-            var rect = el.getBoundingClientRect();
-            if (rect.bottom > 0 && rect.top < window.innerHeight) {
-                el.classList.add('is-in');
-            }
-        });
-
+        // No "already visible, skip the animation" shortcut here.
+        // IntersectionObserver always fires immediately upon observe()
+        // with whatever's currently true, so anything on-screen the
+        // moment observation starts still gets a real, correct entrance
+        // through the exact same path below — never a silent skip.
         var observer = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
                 var el = entry.target;
