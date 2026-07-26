@@ -63,7 +63,16 @@
         .lightbox { position: fixed; inset: 0; background: rgba(10,9,8,0.94); z-index: 100; display: none; align-items: center; justify-content: center; padding: 30px; }
         .lightbox.is-open { display: flex; }
         .lightbox img { max-width: 90vw; max-height: 88vh; }
-        .lightbox-close { position: absolute; top: 24px; right: 30px; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; line-height: 1; }
+        .lightbox-close { position: absolute; top: 24px; right: 30px; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; line-height: 1; z-index: 2; }
+        .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: none; color: #fff; width: 48px; height: 48px; border-radius: 50%; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.25s ease; z-index: 2; }
+        .lightbox-nav:hover { background: rgba(255,255,255,0.2); }
+        .lightbox-prev { left: 16px; }
+        .lightbox-next { right: 16px; }
+        @media (max-width: 600px) {
+            .lightbox-nav { width: 40px; height: 40px; font-size: 22px; }
+            .lightbox-prev { left: 6px; }
+            .lightbox-next { right: 6px; }
+        }
 
         .cta-band { text-align: center; padding: 90px 0; background: var(--bg-container); border-top: 1px solid var(--border-color); }
         .cta-band h2 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 28px; margin-bottom: 16px; }
@@ -115,7 +124,9 @@
 
     <div class="lightbox" id="lightbox">
         <button class="lightbox-close" id="lightbox-close" aria-label="Close">&times;</button>
+        <button class="lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Previous photo">&#8249;</button>
         <img id="lightbox-img" src="" alt="">
+        <button class="lightbox-nav lightbox-next" id="lightbox-next" aria-label="Next photo">&#8250;</button>
     </div>
 
 <script>
@@ -159,8 +170,16 @@
 
     var lightbox = document.getElementById('lightbox');
     var lightboxImg = document.getElementById('lightbox-img');
-    function openLightbox(url) {
-        lightboxImg.src = url;
+    var allPhotoUrls = []; // flat list across every category, in page order
+    var currentPhotoIndex = 0;
+
+    function showPhotoAt(index) {
+        if (!allPhotoUrls.length) return;
+        currentPhotoIndex = (index + allPhotoUrls.length) % allPhotoUrls.length; // wraps both directions
+        lightboxImg.src = allPhotoUrls[currentPhotoIndex];
+    }
+    function openLightbox(index) {
+        showPhotoAt(index);
         lightbox.classList.add('is-open');
     }
     function closeLightbox() {
@@ -168,8 +187,27 @@
         lightboxImg.src = '';
     }
     document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+    document.getElementById('lightbox-prev').addEventListener('click', function () { showPhotoAt(currentPhotoIndex - 1); });
+    document.getElementById('lightbox-next').addEventListener('click', function () { showPhotoAt(currentPhotoIndex + 1); });
     lightbox.addEventListener('click', function (e) { if (e.target === lightbox) closeLightbox(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeLightbox(); });
+    document.addEventListener('keydown', function (e) {
+        if (!lightbox.classList.contains('is-open')) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') showPhotoAt(currentPhotoIndex - 1);
+        if (e.key === 'ArrowRight') showPhotoAt(currentPhotoIndex + 1);
+    });
+
+    // Touch swipe — a real, simple left/right gesture, not a full
+    // drag-tracking carousel.
+    (function () {
+        var touchStartX = 0;
+        lightbox.addEventListener('touchstart', function (e) { touchStartX = e.changedTouches[0].clientX; }, { passive: true });
+        lightbox.addEventListener('touchend', function (e) {
+            var dx = e.changedTouches[0].clientX - touchStartX;
+            if (Math.abs(dx) < 40) return; // too small to count as a swipe
+            if (dx < 0) { showPhotoAt(currentPhotoIndex + 1); } else { showPhotoAt(currentPhotoIndex - 1); }
+        }, { passive: true });
+    })();
 
     (function () {
         var content = document.getElementById('portfolio-content');
@@ -189,19 +227,23 @@
                     byCategory[item.category].push(item);
                 });
 
+                allPhotoUrls = [];
                 content.innerHTML = order.map(function (category) {
                     var photos = byCategory[category];
                     return '<div class="category-block">' +
                         '<h2 class="category-title">' + escapeHtml(category) + '</h2>' +
                         '<div class="photo-grid">' +
                         photos.map(function (p) {
-                            return '<button type="button" class="photo-item" data-url="' + API_BASE + p.imageUrl + '"><img src="' + API_BASE + p.imageUrl + '" alt="' + escapeHtml(category) + '" loading="lazy"></button>';
+                            var url = API_BASE + p.imageUrl;
+                            var idx = allPhotoUrls.length;
+                            allPhotoUrls.push(url);
+                            return '<button type="button" class="photo-item" data-index="' + idx + '"><img src="' + url + '" alt="' + escapeHtml(category) + '" loading="lazy"></button>';
                         }).join('') +
                         '</div></div>';
                 }).join('');
 
                 content.querySelectorAll('.photo-item').forEach(function (btn) {
-                    btn.addEventListener('click', function () { openLightbox(btn.dataset.url); });
+                    btn.addEventListener('click', function () { openLightbox(Number(btn.dataset.index)); });
                 });
             })
             .catch(function (err) {
