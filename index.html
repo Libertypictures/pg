@@ -108,8 +108,8 @@
            white over the hero image; gains a soft frosted backing once
            the hero has scrolled past, so the logo stays legible against
            whatever content follows. */
-        .site-header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 28px 0; transition: padding 0.35s ease, background 0.35s ease, box-shadow 0.35s ease; }
-        .site-header.is-scrolled { padding: 16px 0; background: rgba(250,248,244,0.72); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); box-shadow: 0 1px 0 var(--border-color); }
+        .site-header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 16px 0; transition: padding 0.35s ease, background 0.35s ease, box-shadow 0.35s ease; }
+        .site-header.is-scrolled { padding: 10px 0; background: rgba(250,248,244,0.72); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); box-shadow: 0 1px 0 var(--border-color); }
         @media (prefers-color-scheme: dark) { .site-header.is-scrolled { background: rgba(22,21,19,0.72); } }
         .site-logo-link { display: block; }
         .site-logo { height: 38px; width: auto; filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0,0,0,0.25)); transition: filter 0.35s ease, height 0.35s ease; }
@@ -131,7 +131,7 @@
         .lp-hero-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(var(--hero-scrim-rgb),0.7), rgba(var(--hero-scrim-rgb),0.15) 55%); }
         .lp-hero-content { position: relative; padding: 0 6vw; color: #fff; max-width: 700px; text-align: center; }
         .lp-hero-title { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(30px, 5.5vw, 58px); line-height: 1.2; margin-bottom: 20px; color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,0.4); }
-        .lp-hero-sub { font-size: 15px; color: rgba(255,255,255,0.82); max-width: 440px; margin: 0 auto; line-height: 1.8; }
+        .lp-hero-sub { font-size: 14px; color: rgba(255,255,255,0.82); max-width: 380px; margin: 0 auto; line-height: 1.7; }
 
         /* SCROLL INDICATOR — same frosted-glass properties as the
            buttons it replaces, just reshaped into a small circle with a
@@ -212,7 +212,7 @@
             .section-title { font-size: 25px; }
             .lp-hero { height: 100vh; height: 100dvh; }
             .lp-hero-title { font-size: clamp(26px, 8vw, 34px); }
-            .lp-hero-sub { font-size: clamp(11px, 3.6vw, 14px); white-space: nowrap; max-width: none; }
+            .lp-hero-sub { font-size: clamp(9.5px, 3.1vw, 12px); white-space: nowrap; max-width: none; }
             .pkg-item-photo { flex-basis: 78px; width: 78px; height: 98px; }
         }
     </style>
