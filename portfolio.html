@@ -47,6 +47,7 @@
 
         .page-hero { text-align: center; padding: 130px 0 40px; }
         .page-hero .eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+        .page-intro { font-family: 'Fraunces', serif; font-style: italic; font-size: clamp(16px, 2.4vw, 20px); color: var(--text-secondary); max-width: 480px; margin: 22px auto 0; line-height: 1.7; white-space: pre-line; }
 
         .category-block { padding: 20px 0 60px; }
         .category-title { font-family: 'Fraunces', serif; font-weight: 500; font-size: 22px; margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid var(--border-color); }
@@ -92,6 +93,7 @@
     <section class="page-hero">
         <div class="container">
             <div class="eyebrow">Portfolio</div>
+            <p class="page-intro" id="portfolio-intro" style="display:none;"></p>
         </div>
     </section>
 
@@ -125,7 +127,8 @@
         return div.innerHTML;
     }
 
-    // LOGO — real logo from Settings, same source as the Home page.
+    // LOGO + INTRO TEXT — real logo and editorial intro from Settings,
+    // same source as the Home page. Intro stays hidden if not filled in.
     (function () {
         fetch(API_BASE + '/api/settings')
             .then(function (res) { return res.json(); })
@@ -135,6 +138,11 @@
                     var siteLogo = document.getElementById('site-logo-img');
                     siteLogo.src = API_BASE + s.logo_url;
                     siteLogo.style.display = 'block';
+                }
+                if (s.portfolio_intro) {
+                    var introEl = document.getElementById('portfolio-intro');
+                    introEl.textContent = s.portfolio_intro;
+                    introEl.style.display = 'block';
                 }
             })
             .catch(function (err) { console.error('Could not load logo:', err); });
