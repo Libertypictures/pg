@@ -46,6 +46,7 @@
             --radius-lg: 18px;
             --radius-md: 12px;
             --radius-sm: 6px;
+            --film-edge: rgba(26,24,21,0.16);
         }
         @media (prefers-color-scheme: dark) {
             :root {
@@ -66,6 +67,7 @@
                 --shadow-lift: rgba(0,0,0,0.55);
                 --logo-filter: invert(1);
                 --hero-scrim-rgb: 6,6,7;
+                --film-edge: rgba(255,255,255,0.16);
             }
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -164,7 +166,7 @@
            deliberate vertical offsets create the asymmetric rhythm real
            print spreads use. Pattern repeats every 6 photos so it stays
            coherent regardless of how many are uploaded. */
-        .work-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; margin-bottom: 46px; min-height: 260px; }
+        .work-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; margin-bottom: 24px; min-height: 260px; }
         .work-item { position: relative; overflow: hidden; background: var(--bg-card); box-shadow: 0 6px 20px var(--shadow-subtle); grid-column: span 6; aspect-ratio: 3/4; }
         .work-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
         .work-item:hover img { transform: scale(1.05); }
@@ -176,7 +178,7 @@
         .work-item:nth-child(6n+5) { grid-column: span 4; aspect-ratio: 3/4; }
         .work-item:nth-child(6n+6) { grid-column: span 12; aspect-ratio: 21/9; }
         .work-empty { text-align: center; color: var(--text-secondary); font-size: 13.5px; padding: 40px 0; }
-        .work-section { padding-bottom: 20px; }
+        .work-section { padding-bottom: 0; }
 
         /* ABOUT */
         .about-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 60px; align-items: center; }
@@ -194,7 +196,7 @@
            back — memories surfacing, not slides changing. No cards, no
            borders, no quote marks. Typography carries the whole thing. */
         .voices-stage { position: relative; max-width: 900px; height: 300px; margin: 0 auto; }
-        .voices-section { padding: 20px 0 60px; }
+        .voices-section { padding: 0 0 60px; }
 
         /* Background word field — organic, non-grid placement; each
            word breathes almost imperceptibly on its own independent
@@ -260,6 +262,10 @@
 
         .brand-footer { padding: 60px 0; text-align: center; border-top: 1px solid var(--border-color); }
         .footer-mark { font-size: 15px; font-weight: 500; letter-spacing: 0.3px; }
+        .footer-contact { margin-top: 14px; font-size: 12.5px; color: var(--text-secondary); }
+        .footer-contact a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; }
+        .footer-contact a:hover { color: var(--accent); }
+        .footer-contact-divider { margin: 0 10px; opacity: 0.5; }
 
         /* MOBILE FEATURED WORK — a completely different presentation
            from the desktop editorial grid: one large main photo, with a
@@ -271,29 +277,40 @@
             .work-grid { display: none; }
             .work-mobile-feature {
                 display: flex; gap: 3px; aspect-ratio: 2.5/3.3; overflow: hidden; position: relative;
-                margin-bottom: 46px;
+                margin-bottom: 24px;
             }
 
             .work-main-photo { flex: 1; position: relative; overflow: hidden; min-width: 0; }
             .work-main-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
             .work-main-photo img.is-active { opacity: 1; }
             .work-strip-wrap {
-                width: 20%; position: relative; overflow-y: auto; overflow-x: hidden;
+                width: 23%; position: relative; overflow-y: auto; overflow-x: hidden;
                 scroll-behavior: smooth; scrollbar-width: none;
             }
             .work-strip-wrap::-webkit-scrollbar { display: none; }
 
-            /* A quiet nod to analogue film — small, understated
-               perforations along the inner edge of the strip. Restrained
-               on purpose: muted tone, modest size, no attempt at being
-               literal or decorative for its own sake. */
-            .work-strip-wrap::before {
-                content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; z-index: 1;
-                background-image: radial-gradient(circle, var(--border-color) 1.4px, transparent 1.4px);
-                background-size: 100% 16px; background-repeat: repeat-y; background-position: center top;
-                opacity: 0.7;
+            /* A real nod to analogue film — actual punched perforations
+               (not painted dots) along BOTH edges of the strip: a solid
+               "film edge" band is masked with a repeating hole pattern,
+               so the true page/photo behind always shows through the
+               hole itself, with a soft graduated rim around each hole
+               faking the beveled depth of a real punched sprocket hole.
+               Because this is a mask over a theme color rather than a
+               fixed dot color, it stays correctly visible in both light
+               and dark mode automatically. */
+            .work-strip-wrap::before,
+            .work-strip-wrap::after {
+                content: ""; position: absolute; top: 0; bottom: 0; width: 10px; z-index: 2;
+                background: var(--film-edge);
+                -webkit-mask-image: radial-gradient(circle at center, transparent 0, transparent 2.4px, rgba(0,0,0,0.45) 2.8px, #000 3.6px);
+                mask-image: radial-gradient(circle at center, transparent 0, transparent 2.4px, rgba(0,0,0,0.45) 2.8px, #000 3.6px);
+                -webkit-mask-size: 100% 18px; mask-size: 100% 18px;
+                -webkit-mask-repeat: repeat-y; mask-repeat: repeat-y;
+                -webkit-mask-position: center top; mask-position: center top;
             }
-            .work-strip-track { display: flex; flex-direction: column; padding-left: 7px; }
+            .work-strip-wrap::before { left: 0; }
+            .work-strip-wrap::after { right: 0; }
+            .work-strip-track { display: flex; flex-direction: column; padding: 0 13px; }
             .work-strip-thumb { position: relative; width: 100%; aspect-ratio: 1/1; border: none; padding: 3px; background: none; cursor: pointer; display: block; }
             /* Active state — a slightly frosted photographic viewer
                rather than a border: everything not currently selected
@@ -403,6 +420,11 @@
 
     <footer class="brand-footer">
         <span class="serif footer-mark">Libertypictures © 2026</span>
+        <div class="footer-contact">
+            <a href="https://wa.me/2349075170240" target="_blank" rel="noopener">WhatsApp</a>
+            <span class="footer-contact-divider">·</span>
+            <a href="mailto:visualsliberty@gmail.com">Email</a>
+        </div>
     </footer>
 
 <script>
