@@ -188,12 +188,63 @@
         .about-text p { font-size: 14.5px; color: var(--text-secondary); line-height: 1.9; white-space: pre-line; }
 
         /* TESTIMONIALS */
-        .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
-        .testi-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 32px 28px; }
-        .testi-quote { font-family: 'Fraunces', serif; font-style: italic; font-size: 15.5px; line-height: 1.7; margin-bottom: 20px; color: var(--text-primary); }
-        .testi-quote::before { content: '\201C'; }
-        .testi-quote::after { content: '\201D'; }
-        .testi-name { font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--text-secondary); font-weight: 600; }
+        /* TESTIMONIALS / "VOICES" — an editorial installation, not a
+           testimonial section. A field of scattered emotional words
+           occupies quiet whitespace; one real testimonial at a time
+           gently comes into focus among them, holds, and dissolves
+           back — memories surfacing, not slides changing. No cards, no
+           borders, no quote marks. Typography carries the whole thing. */
+        .voices-stage { position: relative; max-width: 900px; height: 380px; margin: 0 auto; }
+
+        /* Background word field — organic, non-grid placement; each
+           word breathes almost imperceptibly on its own independent
+           rhythm, and softens further while a testimonial is in focus. */
+        .voices-word {
+            position: absolute; font-family: 'Fraunces', serif; font-style: italic;
+            color: var(--text-secondary); opacity: 0.16; white-space: nowrap;
+            animation: voices-breathe 7s ease-in-out infinite;
+            transition: opacity 1.2s ease;
+        }
+        .voices-stage.is-focused .voices-word { opacity: 0.07; }
+        @keyframes voices-breathe {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(1.5px, -2px); }
+        }
+
+        /* The featured quote — dead center, floating above the word
+           field. Reveal is blur-to-sharp + opacity + a small upward
+           settle, never a typewriter and never abrupt. */
+        .voices-quote-wrap {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            width: min(560px, 88%); text-align: center; pointer-events: none;
+        }
+        .voices-quote {
+            font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
+            font-size: clamp(20px, 2.8vw, 27px); line-height: 1.6; color: var(--text-primary);
+            opacity: 0; filter: blur(6px); transform: translateY(8px);
+            transition: opacity 1.4s cubic-bezier(0.22,1,0.36,1), filter 1.4s cubic-bezier(0.22,1,0.36,1), transform 1.4s cubic-bezier(0.22,1,0.36,1);
+        }
+        .voices-quote.is-visible { opacity: 1; filter: blur(0); transform: translateY(0); }
+        .voices-name {
+            margin-top: 20px; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
+            color: var(--accent); font-weight: 600;
+            opacity: 0; filter: blur(4px); transform: translateY(6px);
+            transition: opacity 1s cubic-bezier(0.22,1,0.36,1) 0.5s, filter 1s cubic-bezier(0.22,1,0.36,1) 0.5s, transform 1s cubic-bezier(0.22,1,0.36,1) 0.5s;
+        }
+        .voices-name.is-visible { opacity: 1; filter: blur(0); transform: translateY(0); }
+
+        @media (max-width: 700px) {
+            .voices-stage { height: 320px; }
+            .voices-word { display: none; }
+            .voices-word.voices-word-mobile { display: block; }
+        }
+
+        /* Reduced motion — the installation becomes a simple, calm
+           crossfade; no blur, no drift, no upward settle. */
+        @media (prefers-reduced-motion: reduce) {
+            .voices-word { animation: none !important; transition: opacity 0.6s ease !important; }
+            .voices-quote, .voices-name { filter: none !important; transform: none !important; transition: opacity 0.6s ease !important; }
+        }
 
         /* THE EXPERIENCE — an emotional bridge between Portfolio and
            Book: no session names, no prices, just what working
@@ -227,11 +278,23 @@
                 padding: 12px;
             }
             @media (prefers-color-scheme: dark) { .work-mobile-feature { background: rgba(255,255,255,0.05); box-shadow: 0 6px 20px var(--shadow-subtle), inset 0 1px 0 rgba(255,255,255,0.08); } }
-            .work-main-photo { flex: 1; position: relative; overflow: hidden; min-width: 0; }
+
+            /* Ambient frame bleed — the active photo, heavily blurred,
+               sitting behind the whole frame (both the main photo and
+               the strip). Visible through the 12px padding border and
+               the small gap between them, so the glass genuinely tints
+               toward whatever's currently showing rather than staying
+               a fixed neutral color. */
+            .work-frame-bleed { position: absolute; inset: -25%; z-index: 0; }
+            .work-frame-bleed img { width: 100%; height: 100%; object-fit: cover; filter: blur(34px) saturate(160%); opacity: 0; transition: opacity 0.6s ease; }
+            .work-frame-bleed img.is-active { opacity: 0.5; }
+            @media (prefers-color-scheme: dark) { .work-frame-bleed img.is-active { opacity: 0.35; } }
+
+            .work-main-photo { flex: 1; position: relative; z-index: 1; overflow: hidden; min-width: 0; }
             .work-main-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
             .work-main-photo img.is-active { opacity: 1; }
             .work-strip-wrap {
-                width: 20%; position: relative; overflow-y: auto; overflow-x: hidden;
+                width: 20%; position: relative; z-index: 1; overflow-y: auto; overflow-x: hidden;
                 background: rgba(26,24,21,0.07);
                 backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%);
                 box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 1px 0 0 rgba(255,255,255,0.25), 0 4px 20px rgba(26,24,21,0.06);
@@ -259,7 +322,6 @@
         @media (max-width: 900px) {
             .about-grid { grid-template-columns: 1fr; gap: 32px; }
             .about-photo { max-width: 340px; margin: 0 auto; }
-            .testi-grid { grid-template-columns: 1fr; }
             .experience-grid { grid-template-columns: 1fr; gap: 40px; max-width: 340px; margin-left: auto; margin-right: auto; }
         }
         @media (max-width: 600px) {
@@ -319,12 +381,13 @@
         </div>
     </section>
 
-    <!-- TESTIMONIALS -->
+    <!-- VOICES — an editorial installation built from real client
+         words, deliberately not framed as a conventional testimonials
+         section. -->
     <section class="section-block" id="testimonials-section" style="display:none;">
         <div class="container">
-            <h2 class="section-title serif">Kind Words</h2>
-            <p class="section-meta">From clients who trusted us with their moments.</p>
-            <div class="testi-grid" id="testi-grid"></div>
+            <div class="about-eyebrow" style="text-align:center;">Voices</div>
+            <div class="voices-stage" id="voices-stage"></div>
         </div>
     </section>
 
@@ -514,8 +577,12 @@
             var thumbsHtml = sample.map(function (item, i) {
                 return '<button type="button" class="work-strip-thumb' + (i === 0 ? ' is-active' : '') + '" data-index="' + i + '"><img src="' + API_BASE + item.imageUrl + '" alt="" loading="lazy"></button>';
             }).join('');
+            var bleedHtml = sample.map(function (item, i) {
+                return '<img src="' + API_BASE + item.imageUrl + '" alt="" class="' + (i === 0 ? 'is-active' : '') + '" data-index="' + i + '">';
+            }).join('');
 
             mobileFeature.innerHTML =
+                '<div class="work-frame-bleed">' + bleedHtml + '</div>' +
                 '<div class="work-main-photo">' +
                     sample.map(function (item, i) {
                         return '<img src="' + API_BASE + item.imageUrl + '" alt="Featured work" class="' + (i === 0 ? 'is-active' : '') + '" data-index="' + i + '">';
@@ -526,6 +593,7 @@
                 '</div>';
 
             var mainImgs = mobileFeature.querySelectorAll('.work-main-photo img');
+            var bleedImgs = mobileFeature.querySelectorAll('.work-frame-bleed img');
             var stripWrap = document.getElementById('work-strip-wrap');
             var thumbs = mobileFeature.querySelectorAll('.work-strip-thumb');
 
@@ -533,6 +601,7 @@
                 btn.addEventListener('click', function () {
                     var idx = btn.dataset.index;
                     mainImgs.forEach(function (img) { img.classList.toggle('is-active', img.dataset.index === idx); });
+                    bleedImgs.forEach(function (img) { img.classList.toggle('is-active', img.dataset.index === idx); });
                     thumbs.forEach(function (t) { t.classList.toggle('is-active', t.dataset.index === idx); });
 
                     // Clicking near the end of what's currently visible
@@ -547,21 +616,130 @@
         }
     })();
 
-    // TESTIMONIALS — real quotes only, section stays hidden if none exist yet.
+    // VOICES — an editorial installation, not a testimonial carousel.
+    // A scattered field of atmosphere words sits in the background;
+    // real testimonials surface into focus one at a time — reveal,
+    // hold, dissolve — and the field softens while one is showing.
+    // Pauses entirely when off-screen or under prefers-reduced-motion.
     (function () {
-        var grid = document.getElementById('testi-grid');
+        var stage = document.getElementById('voices-stage');
         var section = document.getElementById('testimonials-section');
+        var items = [];
+        var lastIndex = -1;
+        var running = false;
+        var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var timers = [];
+
+        // Purely decorative atmosphere — generic words evoking the
+        // feeling of a session, not quotes attributed to any specific
+        // client (real testimonials only ever come from the API below).
+        var ATMOSPHERE_WORDS = ['beautiful', 'effortless', 'authentic', 'unforgettable', 'comfortable', 'timeless', 'emotional', 'natural', 'confident', 'seen', 'gentle', 'genuine', 'warm', 'alive', 'graceful'];
+
+        // Hand-placed, deliberately not gridded — a curated scatter
+        // rather than a random one. Kept clear of the dead-center zone
+        // where the featured quote sits.
+        var SLOTS = [
+            { x: 6, y: 10 }, { x: 84, y: 9 }, { x: 15, y: 80 }, { x: 87, y: 76 },
+            { x: 3, y: 44 }, { x: 93, y: 42 }, { x: 24, y: 4 }, { x: 68, y: 90 },
+            { x: 9, y: 92 }, { x: 79, y: 22 }, { x: 42, y: 5 }, { x: 55, y: 94 },
+            { x: 30, y: 92 }, { x: 63, y: 8 },
+        ];
+
+        function buildWordField() {
+            // A sparser, deliberately-chosen subset stays visible on
+            // mobile — real redesign for the smaller canvas, rather
+            // than either cramming in all fourteen or showing none.
+            var MOBILE_SLOT_INDEXES = [0, 2, 4, 6, 9, 12];
+            var html = SLOTS.map(function (slot, i) {
+                var word = ATMOSPHERE_WORDS[i % ATMOSPHERE_WORDS.length];
+                var size = 11 + (i % 4) * 2; // a little size variety, still restrained
+                var delay = (i * 0.45).toFixed(2);
+                var mobileClass = MOBILE_SLOT_INDEXES.indexOf(i) !== -1 ? ' voices-word-mobile' : '';
+                return '<span class="voices-word' + mobileClass + '" style="left:' + slot.x + '%; top:' + slot.y + '%; font-size:' + size + 'px; animation-delay:' + delay + 's;">' + word + '</span>';
+            }).join('');
+            stage.insertAdjacentHTML('afterbegin', html);
+        }
+
+        function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+        function after(ms, fn) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+
+        function pickNext() {
+            if (items.length === 1) return 0;
+            var idx;
+            do { idx = Math.floor(Math.random() * items.length); } while (idx === lastIndex);
+            lastIndex = idx;
+            return idx;
+        }
+
+        function runCycle() {
+            if (!running) return;
+            var t = items[pickNext()];
+
+            var quoteEl = document.getElementById('voices-quote');
+            var nameEl = document.getElementById('voices-name');
+            quoteEl.textContent = t.quote;
+            nameEl.textContent = t.clientName;
+
+            stage.classList.add('is-focused');
+            // A frame of delay before adding is-visible so the browser
+            // registers the text change first — otherwise the reveal
+            // transition can be skipped entirely on some browsers.
+            after(reducedMotion ? 30 : 60, function () {
+                quoteEl.classList.add('is-visible');
+                nameEl.classList.add('is-visible');
+            });
+
+            var holdFor = reducedMotion ? 3200 : 4600;
+            var revealTime = reducedMotion ? 300 : 1500;
+            var dissolveTime = reducedMotion ? 300 : 1400;
+
+            after(revealTime + holdFor, function () {
+                quoteEl.classList.remove('is-visible');
+                nameEl.classList.remove('is-visible');
+                stage.classList.remove('is-focused');
+            });
+
+            after(revealTime + holdFor + dissolveTime + 900, runCycle);
+        }
+
+        function start() {
+            if (running) return;
+            running = true;
+            runCycle();
+        }
+        function stop() {
+            running = false;
+            clearTimers();
+        }
+
         fetch(API_BASE + '/api/testimonials?publishedOnly=true')
             .then(function (res) { return res.json(); })
             .then(function (data) {
-                var items = data.testimonials || [];
+                items = data.testimonials || [];
                 if (!items.length) return;
-                grid.innerHTML = items.slice(0, 6).map(function (t) {
-                    return '<div class="testi-card"><p class="testi-quote">' + escapeHtml(t.quote) + '</p><div class="testi-name">' + escapeHtml(t.clientName) + '</div></div>';
-                }).join('');
+
+                buildWordField();
+                stage.insertAdjacentHTML('beforeend',
+                    '<div class="voices-quote-wrap">' +
+                        '<p class="voices-quote" id="voices-quote"></p>' +
+                        '<div class="voices-name" id="voices-name"></div>' +
+                    '</div>'
+                );
+
                 section.style.display = 'block';
+
+                if ('IntersectionObserver' in window) {
+                    var observer = new IntersectionObserver(function (entries) {
+                        entries.forEach(function (entry) {
+                            if (entry.isIntersecting) start(); else stop();
+                        });
+                    }, { threshold: 0.2 });
+                    observer.observe(section);
+                } else {
+                    start();
+                }
             })
-            .catch(function (err) { console.error('Could not load testimonials:', err); });
+            .catch(function (err) { console.error('Could not load Voices content:', err); });
     })();
 
     // THE EXPERIENCE — pulled entirely from Settings (dashboard-editable).
