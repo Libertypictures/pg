@@ -166,7 +166,7 @@
            deliberate vertical offsets create the asymmetric rhythm real
            print spreads use. Pattern repeats every 6 photos so it stays
            coherent regardless of how many are uploaded. */
-        .work-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; margin-bottom: 10px; min-height: 260px; }
+        .work-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; margin-bottom: 0; min-height: 260px; }
         .work-item { position: relative; overflow: hidden; background: var(--bg-card); box-shadow: 0 6px 20px var(--shadow-subtle); grid-column: span 6; aspect-ratio: 3/4; }
         .work-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
         .work-item:hover img { transform: scale(1.05); }
@@ -195,8 +195,9 @@
            gently comes into focus among them, holds, and dissolves
            back — memories surfacing, not slides changing. No cards, no
            borders, no quote marks. Typography carries the whole thing. */
-        .voices-stage { position: relative; max-width: 900px; height: 220px; margin: 0 auto; }
+        .voices-stage { position: relative; max-width: 900px; height: 190px; margin: 0 auto; }
         .voices-section { padding: 0 0 60px; }
+        .voices-section .about-eyebrow { margin-bottom: 6px; }
 
         /* Background word field — organic, non-grid placement; each
            word breathes almost imperceptibly on its own independent
@@ -236,7 +237,7 @@
         .voices-name.is-visible { opacity: 1; filter: blur(0); transform: translateY(0); }
 
         @media (max-width: 700px) {
-            .voices-stage { height: 170px; }
+            .voices-stage { height: 150px; }
             .voices-word { display: none; }
             .voices-word.voices-word-mobile { display: block; }
         }
@@ -252,13 +253,16 @@
            Book: no session names, no prices, just what working
            together actually feels like. All text is dashboard-editable. */
         .experience-heading { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(24px, 3.4vw, 32px); text-align: center; max-width: 620px; margin: 0 auto 56px; line-height: 1.4; color: var(--text-primary); }
-        .experience-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 44px; margin-bottom: 54px; }
+        .experience-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 44px; margin-bottom: 20px; }
+        .experience-section { padding-bottom: 40px; }
         .experience-card { text-align: center; padding: 0 12px; }
         .experience-num { font-family: 'Fraunces', serif; font-style: italic; font-size: 13px; color: var(--accent); margin-bottom: 18px; }
         .experience-card h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 19px; margin-bottom: 14px; }
         .experience-card p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.85; }
         .experience-card.lp-reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); will-change: opacity, transform; }
         .experience-card.lp-reveal.is-in { opacity: 1; transform: translateY(0); }
+
+        .book-cta-section { padding-top: 40px; }
 
         .brand-footer { padding: 60px 0; text-align: center; border-top: 1px solid var(--border-color); }
         .footer-mark { font-size: 15px; font-weight: 500; letter-spacing: 0.3px; }
@@ -277,7 +281,7 @@
             .work-grid { display: none; }
             .work-mobile-feature {
                 display: flex; gap: 3px; aspect-ratio: 2.5/3.3; overflow: hidden; position: relative;
-                margin-bottom: 10px;
+                margin-bottom: 0;
             }
 
             .work-main-photo { flex: 1; position: relative; overflow: hidden; min-width: 0; }
@@ -411,7 +415,7 @@
     </section>
 
     <!-- BOOK SESSION — the final step -->
-    <section class="section-block">
+    <section class="section-block book-cta-section">
         <div class="container" style="text-align:center;">
             <a href="book.html" class="btn-dark">Book a Session</a>
             <div style="margin-top:16px;"><a href="portfolio.html" class="btn-dark">View Full Portfolio</a></div>
@@ -701,7 +705,7 @@
                 nameEl.classList.add('is-visible');
             });
 
-            var holdFor = reducedMotion ? 2000 : 2600;
+            var holdFor = reducedMotion ? 1500 : 1800;
             var revealTime = reducedMotion ? 300 : 1100;
             var dissolveTime = reducedMotion ? 300 : 1000;
 
