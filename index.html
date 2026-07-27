@@ -170,11 +170,11 @@
         .work-item:hover img { transform: scale(1.05); }
 
         .work-item:nth-child(6n+1) { grid-column: span 7; aspect-ratio: 4/5; }
-        .work-item:nth-child(6n+2) { grid-column: span 5; aspect-ratio: 3/4; margin-top: 64px; }
+        .work-item:nth-child(6n+2) { grid-column: span 5; aspect-ratio: 4/5; margin-top: 48px; }
         .work-item:nth-child(6n+3) { grid-column: span 4; aspect-ratio: 3/4; }
-        .work-item:nth-child(6n+4) { grid-column: span 4; aspect-ratio: 4/5; margin-top: -36px; }
-        .work-item:nth-child(6n+5) { grid-column: span 4; aspect-ratio: 3/4; margin-top: 24px; }
-        .work-item:nth-child(6n+6) { grid-column: span 12; aspect-ratio: 5/4; }
+        .work-item:nth-child(6n+4) { grid-column: span 4; aspect-ratio: 3/4; margin-top: 48px; }
+        .work-item:nth-child(6n+5) { grid-column: span 4; aspect-ratio: 3/4; }
+        .work-item:nth-child(6n+6) { grid-column: span 12; aspect-ratio: 21/9; }
         .work-empty { text-align: center; color: var(--text-secondary); font-size: 13.5px; padding: 40px 0; }
         .work-section { padding-bottom: 40px; }
         .experience-section { padding-top: 40px; }
@@ -194,7 +194,8 @@
            gently comes into focus among them, holds, and dissolves
            back — memories surfacing, not slides changing. No cards, no
            borders, no quote marks. Typography carries the whole thing. */
-        .voices-stage { position: relative; max-width: 900px; height: 380px; margin: 0 auto; }
+        .voices-stage { position: relative; max-width: 900px; height: 300px; margin: 0 auto; }
+        .voices-section { padding: 60px 0; }
 
         /* Background word field — organic, non-grid placement; each
            word breathes almost imperceptibly on its own independent
@@ -222,19 +223,19 @@
             font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
             font-size: clamp(20px, 2.8vw, 27px); line-height: 1.6; color: var(--text-primary);
             opacity: 0; filter: blur(6px); transform: translateY(8px);
-            transition: opacity 1.4s cubic-bezier(0.22,1,0.36,1), filter 1.4s cubic-bezier(0.22,1,0.36,1), transform 1.4s cubic-bezier(0.22,1,0.36,1);
+            transition: opacity 1.1s cubic-bezier(0.22,1,0.36,1), filter 1.1s cubic-bezier(0.22,1,0.36,1), transform 1.1s cubic-bezier(0.22,1,0.36,1);
         }
         .voices-quote.is-visible { opacity: 1; filter: blur(0); transform: translateY(0); }
         .voices-name {
             margin-top: 20px; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase;
             color: var(--accent); font-weight: 600;
             opacity: 0; filter: blur(4px); transform: translateY(6px);
-            transition: opacity 1s cubic-bezier(0.22,1,0.36,1) 0.5s, filter 1s cubic-bezier(0.22,1,0.36,1) 0.5s, transform 1s cubic-bezier(0.22,1,0.36,1) 0.5s;
+            transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1) 0.35s, filter 0.8s cubic-bezier(0.22,1,0.36,1) 0.35s, transform 0.8s cubic-bezier(0.22,1,0.36,1) 0.35s;
         }
         .voices-name.is-visible { opacity: 1; filter: blur(0); transform: translateY(0); }
 
         @media (max-width: 700px) {
-            .voices-stage { height: 320px; }
+            .voices-stage { height: 250px; }
             .voices-word { display: none; }
             .voices-word.voices-word-mobile { display: block; }
         }
@@ -285,10 +286,7 @@
                the small gap between them, so the glass genuinely tints
                toward whatever's currently showing rather than staying
                a fixed neutral color. */
-            .work-frame-bleed { position: absolute; inset: -25%; z-index: 0; }
-            .work-frame-bleed img { width: 100%; height: 100%; object-fit: cover; filter: blur(34px) saturate(160%); opacity: 0; transition: opacity 0.6s ease; }
-            .work-frame-bleed img.is-active { opacity: 0.5; }
-            @media (prefers-color-scheme: dark) { .work-frame-bleed img.is-active { opacity: 0.35; } }
+            .work-frame-bleed { display: none; }
 
             .work-main-photo { flex: 1; position: relative; z-index: 1; overflow: hidden; min-width: 0; }
             .work-main-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
@@ -384,9 +382,9 @@
     <!-- VOICES — an editorial installation built from real client
          words, deliberately not framed as a conventional testimonials
          section. -->
-    <section class="section-block" id="testimonials-section" style="display:none;">
+    <section class="section-block voices-section" id="testimonials-section" style="display:none;">
         <div class="container">
-            <div class="about-eyebrow" style="text-align:center;">Voices</div>
+            <div class="about-eyebrow" style="text-align:center;">In Their Voices</div>
             <div class="voices-stage" id="voices-stage"></div>
         </div>
     </section>
@@ -633,7 +631,7 @@
         // Purely decorative atmosphere — generic words evoking the
         // feeling of a session, not quotes attributed to any specific
         // client (real testimonials only ever come from the API below).
-        var ATMOSPHERE_WORDS = ['beautiful', 'effortless', 'authentic', 'unforgettable', 'comfortable', 'timeless', 'emotional', 'natural', 'confident', 'seen', 'gentle', 'genuine', 'warm', 'alive', 'graceful'];
+        var ATMOSPHERE_WORDS = ['beautiful', 'effortless', 'authentic', 'unforgettable', 'comfortable', 'timeless', 'gorgeous', 'natural', 'confident', 'seen', 'gentle', 'genuine', 'warm', 'alive', 'graceful'];
 
         // Hand-placed, deliberately not gridded — a curated scatter
         // rather than a random one. Kept clear of the dead-center zone
@@ -689,9 +687,9 @@
                 nameEl.classList.add('is-visible');
             });
 
-            var holdFor = reducedMotion ? 3200 : 4600;
-            var revealTime = reducedMotion ? 300 : 1500;
-            var dissolveTime = reducedMotion ? 300 : 1400;
+            var holdFor = reducedMotion ? 2000 : 2600;
+            var revealTime = reducedMotion ? 300 : 1100;
+            var dissolveTime = reducedMotion ? 300 : 1000;
 
             after(revealTime + holdFor, function () {
                 quoteEl.classList.remove('is-visible');
