@@ -176,8 +176,7 @@
         .work-item:nth-child(6n+5) { grid-column: span 4; aspect-ratio: 3/4; }
         .work-item:nth-child(6n+6) { grid-column: span 12; aspect-ratio: 21/9; }
         .work-empty { text-align: center; color: var(--text-secondary); font-size: 13.5px; padding: 40px 0; }
-        .work-section { padding-bottom: 40px; }
-        .experience-section { padding-top: 40px; }
+        .work-section { padding-bottom: 20px; }
 
         /* ABOUT */
         .about-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 60px; align-items: center; }
@@ -195,7 +194,7 @@
            back — memories surfacing, not slides changing. No cards, no
            borders, no quote marks. Typography carries the whole thing. */
         .voices-stage { position: relative; max-width: 900px; height: 300px; margin: 0 auto; }
-        .voices-section { padding: 60px 0; }
+        .voices-section { padding: 20px 0 60px; }
 
         /* Background word field — organic, non-grid placement; each
            word breathes almost imperceptibly on its own independent
@@ -271,50 +270,42 @@
         @media (max-width: 900px) {
             .work-grid { display: none; }
             .work-mobile-feature {
-                display: flex; gap: 6px; aspect-ratio: 2.5/3.3; overflow: hidden; position: relative;
-                background: rgba(26,24,21,0.06);
-                backdrop-filter: blur(18px) saturate(160%); -webkit-backdrop-filter: blur(18px) saturate(160%);
-                box-shadow: 0 6px 20px var(--shadow-subtle), inset 0 1px 0 rgba(255,255,255,0.3);
+                display: flex; gap: 3px; aspect-ratio: 2.5/3.3; overflow: hidden; position: relative;
                 margin-bottom: 46px;
-                padding: 12px;
             }
-            @media (prefers-color-scheme: dark) { .work-mobile-feature { background: rgba(255,255,255,0.05); box-shadow: 0 6px 20px var(--shadow-subtle), inset 0 1px 0 rgba(255,255,255,0.08); } }
 
-            /* Ambient frame bleed — the active photo, heavily blurred,
-               sitting behind the whole frame (both the main photo and
-               the strip). Visible through the 12px padding border and
-               the small gap between them, so the glass genuinely tints
-               toward whatever's currently showing rather than staying
-               a fixed neutral color. */
-            .work-frame-bleed { display: none; }
-
-            .work-main-photo { flex: 1; position: relative; z-index: 1; overflow: hidden; min-width: 0; }
+            .work-main-photo { flex: 1; position: relative; overflow: hidden; min-width: 0; }
             .work-main-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
             .work-main-photo img.is-active { opacity: 1; }
             .work-strip-wrap {
-                width: 20%; position: relative; z-index: 1; overflow-y: auto; overflow-x: hidden;
-                background: rgba(26,24,21,0.07);
-                backdrop-filter: blur(22px) saturate(180%); -webkit-backdrop-filter: blur(22px) saturate(180%);
-                box-shadow: inset 0 1px 0 rgba(255,255,255,0.4), inset 1px 0 0 rgba(255,255,255,0.25), 0 4px 20px rgba(26,24,21,0.06);
+                width: 20%; position: relative; overflow-y: auto; overflow-x: hidden;
                 scroll-behavior: smooth; scrollbar-width: none;
             }
             .work-strip-wrap::-webkit-scrollbar { display: none; }
-            @media (prefers-color-scheme: dark) { .work-strip-wrap { background: rgba(255,255,255,0.1); box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), inset 1px 0 0 rgba(255,255,255,0.08); } }
-            .work-strip-track { display: flex; flex-direction: column; }
-            .work-strip-thumb { position: relative; width: 100%; aspect-ratio: 1/1; border: none; padding: 3px; background: none; cursor: pointer; display: block; }
-            .work-strip-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0.65; transition: opacity 0.25s ease; }
-            /* Active indicator — a frosted glass ring around the
-               selected thumbnail, not just a plain opacity/border
-               change, so it stays consistent with the rest of the
-               glass language. */
-            .work-strip-thumb.is-active img { opacity: 1; }
-            .work-strip-thumb.is-active::after {
-                content: ""; position: absolute; inset: 2px;
-                border: 2px solid rgba(255,255,255,0.75);
-                background: rgba(255,255,255,0.08);
-                backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
-                pointer-events: none;
+
+            /* A quiet nod to analogue film — small, understated
+               perforations along the inner edge of the strip. Restrained
+               on purpose: muted tone, modest size, no attempt at being
+               literal or decorative for its own sake. */
+            .work-strip-wrap::before {
+                content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; z-index: 1;
+                background-image: radial-gradient(circle, var(--border-color) 1.4px, transparent 1.4px);
+                background-size: 100% 16px; background-repeat: repeat-y; background-position: center top;
+                opacity: 0.7;
             }
+            .work-strip-track { display: flex; flex-direction: column; padding-left: 7px; }
+            .work-strip-thumb { position: relative; width: 100%; aspect-ratio: 1/1; border: none; padding: 3px; background: none; cursor: pointer; display: block; }
+            /* Active state — a slightly frosted photographic viewer
+               rather than a border: everything not currently selected
+               sits back with a soft blur and a touch less brightness;
+               the active frame alone is fully clear and sharp. No
+               bright outlines, nothing loud. */
+            .work-strip-thumb img {
+                width: 100%; height: 100%; object-fit: cover; display: block;
+                filter: blur(1.1px) brightness(0.82); opacity: 0.72;
+                transition: filter 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+            }
+            .work-strip-thumb.is-active img { filter: blur(0) brightness(1); opacity: 1; }
         }
 
         @media (max-width: 900px) {
@@ -365,6 +356,19 @@
         </div>
     </section>
 
+    <!-- VOICES — an editorial installation built from real client
+         words, deliberately not framed as a conventional testimonials
+         section. Sits immediately after Featured Work, deliberately
+         without a section break between them — meant to read as one
+         continuous chapter, the photography's emotional continuation
+         rather than end-of-page validation. -->
+    <section class="section-block voices-section" id="testimonials-section" style="display:none;">
+        <div class="container">
+            <div class="about-eyebrow" style="text-align:center;">In Their Voices</div>
+            <div class="voices-stage" id="voices-stage"></div>
+        </div>
+    </section>
+
     <!-- ABOUT -->
     <section class="section-block is-tinted" id="about-section" style="display:none;">
         <div class="container">
@@ -386,16 +390,6 @@
         <div class="container">
             <h2 class="experience-heading" id="experience-heading"></h2>
             <div class="experience-grid" id="experience-grid"></div>
-        </div>
-    </section>
-
-    <!-- VOICES — an editorial installation built from real client
-         words, deliberately not framed as a conventional testimonials
-         section. -->
-    <section class="section-block voices-section" id="testimonials-section" style="display:none;">
-        <div class="container">
-            <div class="about-eyebrow" style="text-align:center;">In Their Voices</div>
-            <div class="voices-stage" id="voices-stage"></div>
         </div>
     </section>
 
@@ -579,12 +573,8 @@
             var thumbsHtml = sample.map(function (item, i) {
                 return '<button type="button" class="work-strip-thumb' + (i === 0 ? ' is-active' : '') + '" data-index="' + i + '"><img src="' + API_BASE + item.imageUrl + '" alt="" loading="lazy"></button>';
             }).join('');
-            var bleedHtml = sample.map(function (item, i) {
-                return '<img src="' + API_BASE + item.imageUrl + '" alt="" class="' + (i === 0 ? 'is-active' : '') + '" data-index="' + i + '">';
-            }).join('');
 
             mobileFeature.innerHTML =
-                '<div class="work-frame-bleed">' + bleedHtml + '</div>' +
                 '<div class="work-main-photo">' +
                     sample.map(function (item, i) {
                         return '<img src="' + API_BASE + item.imageUrl + '" alt="Featured work" class="' + (i === 0 ? 'is-active' : '') + '" data-index="' + i + '">';
@@ -595,7 +585,6 @@
                 '</div>';
 
             var mainImgs = mobileFeature.querySelectorAll('.work-main-photo img');
-            var bleedImgs = mobileFeature.querySelectorAll('.work-frame-bleed img');
             var stripWrap = document.getElementById('work-strip-wrap');
             var thumbs = mobileFeature.querySelectorAll('.work-strip-thumb');
 
@@ -603,7 +592,6 @@
                 btn.addEventListener('click', function () {
                     var idx = btn.dataset.index;
                     mainImgs.forEach(function (img) { img.classList.toggle('is-active', img.dataset.index === idx); });
-                    bleedImgs.forEach(function (img) { img.classList.toggle('is-active', img.dataset.index === idx); });
                     thumbs.forEach(function (t) { t.classList.toggle('is-active', t.dataset.index === idx); });
 
                     // Clicking near the end of what's currently visible
