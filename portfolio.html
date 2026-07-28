@@ -6,6 +6,16 @@
     <meta name="description" content="Libertypictures portfolio — real work across portraits, couples, maternity, family, and corporate photography.">
     <meta name="theme-color" content="#8a7355">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000000'/%3E%3Ctext x='50' y='68' font-size='52' font-family='Georgia, serif' fill='%23c4a67e' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "Libertypictures",
+      "description": "Photography studio portfolio spanning portrait, maternity, couple, family, and corporate photography.",
+      "priceRange": "₦₦",
+      "areaServed": "NG"
+    }
+    </script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com/">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
@@ -38,12 +48,12 @@
 
         /* SITE HEADER — same fixed logo header as Home, frosted once
            scrolled past the initial pale hero band. */
-        .site-header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 26px 0; transition: padding 0.35s ease, background 0.35s ease, box-shadow 0.35s ease; }
+        .site-header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 28px 0; transition: padding 0.35s ease, background 0.35s ease, box-shadow 0.35s ease; }
         .site-header.is-scrolled { padding: 16px 0; background: rgba(250,248,244,0.72); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); box-shadow: 0 1px 0 var(--border-color); }
         @media (prefers-color-scheme: dark) { .site-header.is-scrolled { background: rgba(22,21,19,0.72); } }
         .site-logo-link { display: block; }
-        .site-logo { height: 36px; width: auto; filter: var(--logo-filter, none); transition: height 0.35s ease; }
-        .site-header.is-scrolled .site-logo { height: 30px; }
+        .site-logo { height: 38px; width: auto; filter: var(--logo-filter, none); transition: height 0.35s ease; }
+        .site-header.is-scrolled .site-logo { height: 32px; }
 
         .page-hero { text-align: center; padding: 130px 0 40px; }
         .page-hero .eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); font-weight: 600; }
@@ -56,6 +66,7 @@
         .photo-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         .photo-item:hover img { transform: scale(1.05); }
 
+        #portfolio-content { transition: opacity 0.4s ease; }
         .empty-state { text-align: center; color: var(--text-secondary); font-size: 14px; padding: 100px 20px; }
         .empty-state a { color: var(--accent); }
 
@@ -86,6 +97,10 @@
 
         .brand-footer { padding: 50px 0; text-align: center; }
         .footer-mark { font-size: 15px; font-weight: 500; }
+        .footer-contact { margin-top: 14px; font-size: 12.5px; color: var(--text-secondary); }
+        .footer-contact a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; }
+        .footer-contact a:hover { color: var(--accent); }
+        .footer-contact-divider { margin: 0 10px; opacity: 0.5; }
 
         @media (max-width: 700px) {
             .container { padding: 0 22px; }
@@ -120,6 +135,11 @@
 
     <footer class="brand-footer">
         <span class="serif footer-mark">Libertypictures © 2026</span>
+        <div class="footer-contact">
+            <a href="https://wa.me/2349075170240" target="_blank" rel="noopener">WhatsApp</a>
+            <span class="footer-contact-divider">·</span>
+            <a href="mailto:visualsliberty@gmail.com">Email</a>
+        </div>
     </footer>
 
     <div class="lightbox" id="lightbox">
@@ -211,12 +231,25 @@
 
     (function () {
         var content = document.getElementById('portfolio-content');
+
+        // Eases the real grid in rather than having it snap into place
+        // the instant "Loading portfolio…" is replaced. This is a
+        // visual polish pass, not a scroll-jump fix — since this
+        // content sits at the very top of the page, the fetch almost
+        // always resolves before there's anything to scroll past.
+        function setContent(html, onReady) {
+            content.innerHTML = html;
+            if (onReady) onReady();
+            content.style.opacity = '0';
+            requestAnimationFrame(function () { content.style.opacity = '1'; });
+        }
+
         fetch(API_BASE + '/api/portfolio?publishedOnly=true')
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 var items = data.items || [];
                 if (!items.length) {
-                    content.innerHTML = '<p class="empty-state">New work is on its way \u2014 check back soon, or <a href="book.html">book a session</a> to be part of it.</p>';
+                    setContent('<p class="empty-state">New work is on its way \u2014 check back soon, or <a href="book.html">book a session</a> to be part of it.</p>');
                     return;
                 }
 
@@ -228,7 +261,7 @@
                 });
 
                 allPhotoUrls = [];
-                content.innerHTML = order.map(function (category) {
+                var html = order.map(function (category) {
                     var photos = byCategory[category];
                     return '<div class="category-block">' +
                         '<h2 class="category-title">' + escapeHtml(category) + '</h2>' +
@@ -242,12 +275,14 @@
                         '</div></div>';
                 }).join('');
 
-                content.querySelectorAll('.photo-item').forEach(function (btn) {
-                    btn.addEventListener('click', function () { openLightbox(Number(btn.dataset.index)); });
+                setContent(html, function () {
+                    content.querySelectorAll('.photo-item').forEach(function (btn) {
+                        btn.addEventListener('click', function () { openLightbox(Number(btn.dataset.index)); });
+                    });
                 });
             })
             .catch(function (err) {
-                content.innerHTML = '<p class="empty-state">Couldn\'t load the portfolio right now \u2014 please refresh.</p>';
+                setContent('<p class="empty-state">Couldn\'t load the portfolio right now \u2014 please refresh.</p>');
                 console.error('Could not load portfolio:', err);
             });
     })();
