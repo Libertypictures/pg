@@ -295,8 +295,8 @@
            Because this is a mask over a theme color rather than a
            fixed dot color, it stays correctly visible in both light
            and dark mode automatically. */
-        .work-strip-wrap::before,
-        .work-strip-wrap::after {
+        .work-strip-track::before,
+        .work-strip-track::after {
             content: ""; position: absolute; top: 0; bottom: 0; width: 10px; z-index: 2;
             background: var(--film-edge);
             -webkit-mask-image: radial-gradient(circle at center, transparent 0, transparent 2.4px, rgba(0,0,0,0.45) 2.8px, #000 3.6px);
@@ -305,9 +305,9 @@
             -webkit-mask-repeat: repeat-y; mask-repeat: repeat-y;
             -webkit-mask-position: center top; mask-position: center top;
         }
-        .work-strip-wrap::before { left: 0; }
-        .work-strip-wrap::after { right: 0; }
-        .work-strip-track { display: flex; flex-direction: column; padding: 0 13px; }
+        .work-strip-track::before { left: 0; }
+        .work-strip-track::after { right: 0; }
+        .work-strip-track { display: flex; flex-direction: column; padding: 0 13px; position: relative; will-change: transform; }
         .work-strip-thumb { position: relative; width: 100%; aspect-ratio: 1/1; border: none; padding: 3px; background: none; cursor: pointer; display: block; }
         /* Active state — a slightly frosted photographic viewer
            rather than a border: everything not currently selected
@@ -613,7 +613,7 @@
             }
 
             var thumbsHtml = sample.map(function (item, i) {
-                return '<button type="button" class="work-strip-thumb' + (i === 0 ? ' is-active' : '') + '" data-index="' + i + '"><img src="' + API_BASE + item.imageUrl + '" alt="" loading="lazy"></button>';
+                return '<button type="button" class="work-strip-thumb' + (i === 0 ? ' is-active' : '') + '" data-index="' + i + '"><img src="' + API_BASE + item.imageUrl + '" alt="" loading="lazy" decoding="async"></button>';
             }).join('');
 
             mobileFeature.innerHTML =
