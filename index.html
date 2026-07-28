@@ -87,7 +87,7 @@
         .container { max-width: 1080px; margin: 0 auto; padding: 0 40px; }
         .section-block { padding: 100px 0; }
         .async-reveal { max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.7s cubic-bezier(0.16,1,0.3,1), opacity 0.5s ease; }
-        .async-reveal.is-visible { max-height: 900px; opacity: 1; }
+        .async-reveal.is-visible { max-height: 3000px; opacity: 1; }
         @media (prefers-reduced-motion: reduce) {
             .async-reveal { transition: opacity 0.4s ease; }
         }
@@ -166,24 +166,10 @@
             50% { opacity: 1; }
         }
 
-        /* FEATURED WORK — an editorial, magazine-style layout rather
-           than a uniform grid: varied widths, varied aspect ratios, and
-           deliberate vertical offsets create the asymmetric rhythm real
-           print spreads use. Pattern repeats every 6 photos so it stays
-           coherent regardless of how many are uploaded. */
-        .work-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; margin-bottom: 28px; min-height: 260px; }
-        .work-item { position: relative; overflow: hidden; background: var(--bg-card); box-shadow: 0 6px 20px var(--shadow-subtle); grid-column: span 6; aspect-ratio: 3/4; }
-        .work-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
-        .work-item:hover img { transform: scale(1.05); }
-
-        .work-item:nth-child(6n+1) { grid-column: span 7; aspect-ratio: 4/5; }
-        .work-item:nth-child(6n+2) { grid-column: span 5; aspect-ratio: 4/5; margin-top: 48px; }
-        .work-item:nth-child(6n+3) { grid-column: span 4; aspect-ratio: 3/4; }
-        .work-item:nth-child(6n+4) { grid-column: span 4; aspect-ratio: 3/4; margin-top: 48px; }
-        .work-item:nth-child(6n+5) { grid-column: span 4; aspect-ratio: 3/4; }
-        .work-item:nth-child(6n+6) { grid-column: span 12; aspect-ratio: 21/9; }
+        /* FEATURED WORK */
         .work-empty { text-align: center; color: var(--text-secondary); font-size: 13.5px; padding: 40px 0; }
         .work-section { padding-top: 130px; padding-bottom: 0; }
+
 
         /* ABOUT */
         .about-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 60px; align-items: center; }
@@ -276,64 +262,72 @@
         .footer-contact a:hover { color: var(--accent); }
         .footer-contact-divider { margin: 0 10px; opacity: 0.5; }
 
-        /* MOBILE FEATURED WORK — a completely different presentation
-           from the desktop editorial grid: one large main photo, with a
-           narrow frosted glass strip along the edge for the rest.
-           Tapping a thumbnail crossfades the main photo to it.
-           Desktop-only otherwise; never appears above 900px. */
-        .work-mobile-feature { display: none; }
-        @media (max-width: 900px) {
-            .work-grid { display: none; }
-            .work-mobile-feature {
-                display: flex; gap: 3px; aspect-ratio: 2.5/3.3; overflow: hidden; position: relative;
-                margin-bottom: 28px;
-            }
-
-            .work-main-photo { flex: 1; position: relative; overflow: hidden; min-width: 0; }
-            .work-main-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
-            .work-main-photo img.is-active { opacity: 1; }
-            .work-strip-wrap {
-                width: 23%; position: relative; overflow-y: auto; overflow-x: hidden;
-                scroll-behavior: smooth; scrollbar-width: none;
-                -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain;
-            }
-            .work-strip-wrap::-webkit-scrollbar { display: none; }
-
-            /* A real nod to analogue film — actual punched perforations
-               (not painted dots) along BOTH edges of the strip: a solid
-               "film edge" band is masked with a repeating hole pattern,
-               so the true page/photo behind always shows through the
-               hole itself, with a soft graduated rim around each hole
-               faking the beveled depth of a real punched sprocket hole.
-               Because this is a mask over a theme color rather than a
-               fixed dot color, it stays correctly visible in both light
-               and dark mode automatically. */
-            .work-strip-wrap::before,
-            .work-strip-wrap::after {
-                content: ""; position: absolute; top: 0; bottom: 0; width: 10px; z-index: 2;
-                background: var(--film-edge);
-                -webkit-mask-image: radial-gradient(circle at center, transparent 0, transparent 2.4px, rgba(0,0,0,0.45) 2.8px, #000 3.6px);
-                mask-image: radial-gradient(circle at center, transparent 0, transparent 2.4px, rgba(0,0,0,0.45) 2.8px, #000 3.6px);
-                -webkit-mask-size: 100% 18px; mask-size: 100% 18px;
-                -webkit-mask-repeat: repeat-y; mask-repeat: repeat-y;
-                -webkit-mask-position: center top; mask-position: center top;
-            }
-            .work-strip-wrap::before { left: 0; }
-            .work-strip-wrap::after { right: 0; }
-            .work-strip-track { display: flex; flex-direction: column; padding: 0 13px; }
-            .work-strip-thumb { position: relative; width: 100%; aspect-ratio: 1/1; border: none; padding: 3px; background: none; cursor: pointer; display: block; }
-            /* Active state — a slightly frosted photographic viewer
-               rather than a border: everything not currently selected
-               sits back with a soft blur and a touch less brightness;
-               the active frame alone is fully clear and sharp. No
-               bright outlines, nothing loud. */
-            .work-strip-thumb img {
-                width: 100%; height: 100%; object-fit: cover; display: block;
-                filter: blur(1.1px) brightness(0.82); opacity: 0.72;
-                transition: filter 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
-            }
-            .work-strip-thumb.is-active img { filter: blur(0) brightness(1); opacity: 1; }
+        /* FEATURED WORK PRESENTATION — one large main photo with a
+           perforated film-strip of thumbnails along the edge, at every
+           screen size. Tapping a thumbnail crossfades the main photo
+           to it. Previously desktop showed a separate editorial grid;
+           that's retired in favor of one consistent presentation. */
+        .work-mobile-feature {
+            display: flex; gap: 3px; aspect-ratio: 2.5/3.3; overflow: hidden; position: relative;
+            margin-bottom: 28px; background: #141210;
         }
+
+        .work-mobile-feature.is-empty { aspect-ratio: auto; display: block; overflow: visible; }
+
+        .work-main-photo { flex: 1; position: relative; overflow: hidden; min-width: 0; }
+        .work-main-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
+        .work-main-photo img.is-active { opacity: 1; }
+        .work-strip-wrap {
+            width: 23%; position: relative; overflow-y: auto; overflow-x: hidden;
+            scroll-behavior: smooth; scrollbar-width: none;
+            -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain;
+        }
+        .work-strip-wrap::-webkit-scrollbar { display: none; }
+
+        /* A real nod to analogue film — actual punched perforations
+           (not painted dots) along BOTH edges of the strip: a solid
+           "film edge" band is masked with a repeating hole pattern,
+           so the true page/photo behind always shows through the
+           hole itself, with a soft graduated rim around each hole
+           faking the beveled depth of a real punched sprocket hole.
+           Because this is a mask over a theme color rather than a
+           fixed dot color, it stays correctly visible in both light
+           and dark mode automatically. */
+        .work-strip-wrap::before,
+        .work-strip-wrap::after {
+            content: ""; position: absolute; top: 0; bottom: 0; width: 10px; z-index: 2;
+            background: var(--film-edge);
+            -webkit-mask-image: radial-gradient(circle at center, transparent 0, transparent 2.4px, rgba(0,0,0,0.45) 2.8px, #000 3.6px);
+            mask-image: radial-gradient(circle at center, transparent 0, transparent 2.4px, rgba(0,0,0,0.45) 2.8px, #000 3.6px);
+            -webkit-mask-size: 100% 18px; mask-size: 100% 18px;
+            -webkit-mask-repeat: repeat-y; mask-repeat: repeat-y;
+            -webkit-mask-position: center top; mask-position: center top;
+        }
+        .work-strip-wrap::before { left: 0; }
+        .work-strip-wrap::after { right: 0; }
+        .work-strip-track { display: flex; flex-direction: column; padding: 0 13px; }
+        .work-strip-thumb { position: relative; width: 100%; aspect-ratio: 1/1; border: none; padding: 3px; background: none; cursor: pointer; display: block; }
+        /* Active state — a slightly frosted photographic viewer
+           rather than a border: everything not currently selected
+           sits back with a soft blur and a touch less brightness;
+           the active frame alone is fully clear and sharp. No
+           bright outlines, nothing loud. */
+        .work-strip-thumb img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+            filter: blur(1.1px) brightness(0.82); opacity: 0.72;
+            transition: filter 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+        }
+        .work-strip-thumb.is-active img { filter: blur(0) brightness(1); opacity: 1; }
+
+        /* Wider screens get a shorter, more landscape main photo (the
+           mobile portrait ratio would otherwise stretch absurdly tall
+           across a ~1000px container) and a narrower strip, so more
+           thumbnails are visible at once without excess scrolling. */
+        @media (min-width: 900px) {
+            .work-mobile-feature { aspect-ratio: 21/10; }
+            .work-strip-wrap { width: 14%; }
+        }
+
 
         @media (max-width: 900px) {
             .about-grid { grid-template-columns: 1fr; gap: 32px; }
@@ -377,9 +371,6 @@
     <section class="section-block work-section">
         <div class="container">
             <h2 class="section-title serif">Featured Works</h2>
-            <div class="work-grid" id="work-grid">
-                <p class="work-empty">Loading work&hellip;</p>
-            </div>
             <div class="work-mobile-feature" id="work-mobile-feature"></div>
 
             <!-- VOICES — merged directly into the same section and
@@ -444,8 +435,7 @@
         div.textContent = String(str == null ? '' : str);
         return div.innerHTML;
     }
-    function formatNaira(n) { return '\u20a6' + Math.round(n).toLocaleString(); }
-
+    
     // Reveals an `.async-reveal` element (grow + fade) instead of an
     // instant display:none -> block snap. Used for sections whose
     // content only exists after an API fetch resolves (About, Voices) —
@@ -603,31 +593,35 @@
     })();
 
     // FEATURED WORK — pulled from its own, separately-curated photo set
-    // (not Portfolio) — builds both the desktop editorial grid and the
-    // mobile main+strip component from the same data; only one is ever
-    // visible at a time (CSS).
+    // (not Portfolio). Builds the main-photo + film-strip presentation
+    // used at every screen size.
     (function () {
-        var grid = document.getElementById('work-grid');
         var mobileFeature = document.getElementById('work-mobile-feature');
+        if (!mobileFeature) return;
+
         fetch(API_BASE + '/api/featured-work')
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 var items = data.items || [];
                 if (!items.length) {
-                    grid.innerHTML = '<p class="work-empty">New work coming soon.</p>';
+                    mobileFeature.classList.add('is-empty');
+                    mobileFeature.innerHTML = '<p class="work-empty">New work coming soon.</p>';
                     return;
                 }
-                var sample = items.slice(0, 8);
-                grid.innerHTML = sample.map(function (item) {
-                    return '<div class="work-item"><img src="' + API_BASE + item.imageUrl + '" alt="Featured work" loading="lazy"></div>';
-                }).join('');
-
-                buildMobileFeature(sample);
+                buildMobileFeature(items);
             })
-            .catch(function () { grid.innerHTML = '<p class="work-empty">Couldn\'t load work right now.</p>'; });
+            .catch(function () {
+                mobileFeature.classList.add('is-empty');
+                mobileFeature.innerHTML = '<p class="work-empty">Couldn\'t load work right now.</p>';
+            });
 
         function buildMobileFeature(sample) {
-            if (!mobileFeature || sample.length < 2) return; // need at least 2 photos for a main photo + a strip to make sense
+            // A single photo doesn't need a strip — just show it plainly
+            // rather than showing nothing (the old behavior here).
+            if (sample.length < 2) {
+                mobileFeature.innerHTML = '<div class="work-main-photo"><img src="' + API_BASE + sample[0].imageUrl + '" alt="Featured work" class="is-active"></div>';
+                return;
+            }
 
             var thumbsHtml = sample.map(function (item, i) {
                 return '<button type="button" class="work-strip-thumb' + (i === 0 ? ' is-active' : '') + '" data-index="' + i + '"><img src="' + API_BASE + item.imageUrl + '" alt="" loading="lazy"></button>';
