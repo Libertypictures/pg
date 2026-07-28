@@ -121,12 +121,9 @@
 
         /* SITE HEADER — same fixed logo header as Home and Portfolio,
            frosted once scrolled past the hero. */
-        .site-header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 28px 0; transition: padding 0.35s ease, background 0.35s ease, box-shadow 0.35s ease; }
-        .site-header.is-scrolled { padding: 16px 0; background: rgba(250,248,244,0.72); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); box-shadow: 0 1px 0 var(--border-color); }
-        @media (prefers-color-scheme: dark) { .site-header.is-scrolled { background: rgba(22,21,19,0.72); } }
+        .site-header { position: absolute; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 28px 0; }
         .site-logo-link { display: block; }
-        .site-logo { height: 38px; width: auto; filter: var(--logo-filter); transition: filter 0.35s ease, height 0.35s ease; }
-        .site-header.is-scrolled .site-logo { height: 32px; }
+        .site-logo { height: 38px; width: auto; filter: var(--logo-filter); }
 
         /* Header Layout — the brand mark now sits within a quieter,
            more spacious editorial block; the eyebrow label is softened
@@ -860,16 +857,6 @@
                     }
                 })
                 .catch(function (err) { console.error('Could not load logo from Settings:', err); });
-        })();
-
-        // SITE HEADER — no hero to key off on this page, so it just goes
-        // frosted after a small, real scroll distance instead.
-        (function () {
-            var header = document.getElementById('site-header');
-            if (!header) return;
-            window.addEventListener('scroll', function () {
-                header.classList.toggle('is-scrolled', window.scrollY > 30);
-            }, { passive: true });
         })();
 
         // PACKAGES — loaded from the real backend, matching the same
