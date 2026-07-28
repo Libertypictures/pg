@@ -166,7 +166,7 @@
            deliberate vertical offsets create the asymmetric rhythm real
            print spreads use. Pattern repeats every 6 photos so it stays
            coherent regardless of how many are uploaded. */
-        .work-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; margin-bottom: 0; min-height: 260px; }
+        .work-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; margin-bottom: 28px; min-height: 260px; }
         .work-item { position: relative; overflow: hidden; background: var(--bg-card); box-shadow: 0 6px 20px var(--shadow-subtle); grid-column: span 6; aspect-ratio: 3/4; }
         .work-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); }
         .work-item:hover img { transform: scale(1.05); }
@@ -178,7 +178,7 @@
         .work-item:nth-child(6n+5) { grid-column: span 4; aspect-ratio: 3/4; }
         .work-item:nth-child(6n+6) { grid-column: span 12; aspect-ratio: 21/9; }
         .work-empty { text-align: center; color: var(--text-secondary); font-size: 13.5px; padding: 40px 0; }
-        .work-section { padding-bottom: 0; }
+        .work-section { padding-top: 130px; padding-bottom: 0; }
 
         /* ABOUT */
         .about-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 60px; align-items: center; }
@@ -281,7 +281,7 @@
             .work-grid { display: none; }
             .work-mobile-feature {
                 display: flex; gap: 3px; aspect-ratio: 2.5/3.3; overflow: hidden; position: relative;
-                margin-bottom: 0;
+                margin-bottom: 28px;
             }
 
             .work-main-photo { flex: 1; position: relative; overflow: hidden; min-width: 0; }
@@ -337,6 +337,7 @@
         @media (max-width: 600px) {
             .container { padding: 0 22px; }
             .section-block { padding: 70px 0; }
+            .work-section { padding-top: 96px; padding-bottom: 0; }
             .section-title { font-size: 21px; }
             .lp-hero { height: 100vh; height: 100dvh; }
             .lp-hero-title { font-size: clamp(26px, 8vw, 34px); }
