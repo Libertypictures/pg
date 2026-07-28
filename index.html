@@ -70,7 +70,6 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-        html { scroll-behavior: smooth; }
         body {
             font-family: 'Poppins', sans-serif;
             background-color: var(--bg-body);
@@ -111,20 +110,16 @@
         body { opacity: 0; animation: lp-page-in 0.7s ease 0.05s forwards; }
         @keyframes lp-page-in { to { opacity: 1; } }
 
-        /* SITE HEADER — fixed, minimal, logo only. Transparent and
-           white over the hero image; gains a soft frosted backing once
-           the hero has scrolled past, so the logo stays legible against
-           whatever content follows. */
-        .site-header { position: fixed; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 8px 0; transition: padding 0.35s ease, background 0.35s ease, box-shadow 0.35s ease; }
-        .site-header.is-scrolled { padding: 6px 0; background: rgba(250,248,244,0.72); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); box-shadow: 0 1px 0 var(--border-color); }
-        @media (prefers-color-scheme: dark) { .site-header.is-scrolled { background: rgba(22,21,19,0.72); } }
+        /* SITE HEADER — sits over the hero and scrolls away naturally
+           with it, like ordinary page content, rather than staying
+           pinned to the viewport. */
+        .site-header { position: absolute; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 8px 0; }
         .site-logo-link { display: block; }
-        .site-logo { height: 38px; width: auto; filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0,0,0,0.25)); transition: filter 0.35s ease, height 0.35s ease; }
-        .site-header.is-scrolled .site-logo { filter: var(--logo-filter, none); height: 32px; }
+        .site-logo { height: 38px; width: auto; filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0,0,0,0.25)); }
 
         /* HERO — identical mechanics to the booking page: video or
            slideshow, controlled entirely from Settings. */
-        .lp-hero { position: relative; height: 92vh; height: 92dvh; min-height: 560px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #141210; }
+        .lp-hero { position: relative; height: 92vh; height: 92svh; min-height: 560px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #141210; }
         .lp-hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 35%; }
         .lp-hero-slideshow { position: absolute; inset: 0; }
         .lp-hero-slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity 0.9s ease; }
@@ -339,7 +334,7 @@
             .section-block { padding: 70px 0; }
             .work-section { padding-top: 96px; padding-bottom: 0; }
             .section-title { font-size: 17px; }
-            .lp-hero { height: 100vh; height: 100dvh; }
+            .lp-hero { height: 100vh; height: 100svh; }
             .lp-hero-title { font-size: clamp(26px, 8vw, 34px); }
             .lp-hero-sub { font-size: clamp(9.5px, 3.1vw, 12px); white-space: nowrap; max-width: none; }
         }
@@ -553,20 +548,6 @@
                 }
             })
             .catch(function (err) { console.error('Could not load settings:', err); });
-    })();
-
-    // SITE HEADER — frosted/solid once the hero has scrolled past,
-    // transparent with a whited-out logo while still over the hero image.
-    (function () {
-        var header = document.getElementById('site-header');
-        var hero = document.querySelector('.lp-hero');
-        if (!header || !hero || !('IntersectionObserver' in window)) return;
-        var observer = new IntersectionObserver(function (entries) {
-            entries.forEach(function (entry) {
-                header.classList.toggle('is-scrolled', !entry.isIntersecting);
-            });
-        }, { threshold: 0, rootMargin: '-80% 0px 0px 0px' });
-        observer.observe(hero);
     })();
 
     // SCROLL INDICATOR — fades away the moment the visitor actually
