@@ -46,7 +46,6 @@
             --radius-lg: 18px;
             --radius-md: 12px;
             --radius-sm: 6px;
-            --film-edge: rgba(26,24,21,0.16);
         }
         @media (prefers-color-scheme: dark) {
             :root {
@@ -67,7 +66,6 @@
                 --shadow-lift: rgba(0,0,0,0.55);
                 --logo-filter: invert(1);
                 --hero-scrim-rgb: 6,6,7;
-                --film-edge: rgba(255,255,255,0.16);
             }
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -274,7 +272,7 @@
             margin-bottom: 28px; background: #141210;
         }
 
-        .work-mobile-feature.is-empty { aspect-ratio: auto; display: block; overflow: visible; }
+        .work-mobile-feature.is-empty { aspect-ratio: auto; display: block; overflow: visible; background: none; }
 
         .work-main-photo { flex: 1; position: relative; overflow: hidden; min-width: 0; }
         .work-main-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
@@ -298,7 +296,7 @@
         .work-strip-track::before,
         .work-strip-track::after {
             content: ""; position: absolute; top: 0; bottom: 0; width: 10px; z-index: 2;
-            background: var(--film-edge);
+            background: rgba(255,255,255,0.18);
             -webkit-mask-image: radial-gradient(circle at center, transparent 0, transparent 2.4px, rgba(0,0,0,0.45) 2.8px, #000 3.6px);
             mask-image: radial-gradient(circle at center, transparent 0, transparent 2.4px, rgba(0,0,0,0.45) 2.8px, #000 3.6px);
             -webkit-mask-size: 100% 18px; mask-size: 100% 18px;
@@ -392,7 +390,7 @@
     <section class="section-block is-tinted async-reveal" id="about-section">
         <div class="container">
             <div class="about-grid">
-                <div class="about-photo"><img id="about-photo-img" src="" alt="The photographer"></div>
+                <div class="about-photo"><img id="about-photo-img" src="" alt="The photographer" decoding="async"></div>
                 <div class="about-text">
                     <div class="about-eyebrow">About the Photographer</div>
                     <h2 class="serif">Behind the Camera</h2>
@@ -608,7 +606,7 @@
             // A single photo doesn't need a strip — just show it plainly
             // rather than showing nothing (the old behavior here).
             if (sample.length < 2) {
-                mobileFeature.innerHTML = '<div class="work-main-photo"><img src="' + API_BASE + sample[0].imageUrl + '" alt="Featured work" class="is-active"></div>';
+                mobileFeature.innerHTML = '<div class="work-main-photo"><img src="' + API_BASE + sample[0].imageUrl + '" alt="Featured work" class="is-active" decoding="async"></div>';
                 return;
             }
 
@@ -619,7 +617,7 @@
             mobileFeature.innerHTML =
                 '<div class="work-main-photo">' +
                     sample.map(function (item, i) {
-                        return '<img src="' + API_BASE + item.imageUrl + '" alt="Featured work" class="' + (i === 0 ? 'is-active' : '') + '" data-index="' + i + '">';
+                        return '<img src="' + API_BASE + item.imageUrl + '" alt="Featured work" class="' + (i === 0 ? 'is-active' : '') + '" data-index="' + i + '" decoding="async">';
                     }).join('') +
                 '</div>' +
                 '<div class="work-strip-wrap" id="work-strip-wrap">' +
