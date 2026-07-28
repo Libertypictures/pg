@@ -86,6 +86,11 @@
 
         .container { max-width: 1080px; margin: 0 auto; padding: 0 40px; }
         .section-block { padding: 100px 0; }
+        .async-reveal { max-height: 0; opacity: 0; overflow: hidden; transition: max-height 0.7s cubic-bezier(0.16,1,0.3,1), opacity 0.5s ease; }
+        .async-reveal.is-visible { max-height: 900px; opacity: 1; }
+        @media (prefers-reduced-motion: reduce) {
+            .async-reveal { transition: opacity 0.4s ease; }
+        }
         .section-block.is-tinted { background: var(--bg-container); }
         .section-title { font-family: 'Fraunces', serif; font-weight: 500; font-size: 20px; letter-spacing: -0.3px; text-align: center; margin-bottom: 4px; }
         .section-meta { font-size: 14.5px; color: var(--text-secondary); text-align: center; max-width: 460px; margin: 0 auto 50px; line-height: 1.75; }
@@ -290,6 +295,7 @@
             .work-strip-wrap {
                 width: 23%; position: relative; overflow-y: auto; overflow-x: hidden;
                 scroll-behavior: smooth; scrollbar-width: none;
+                -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain;
             }
             .work-strip-wrap::-webkit-scrollbar { display: none; }
 
@@ -382,7 +388,7 @@
                  than just visually close. Reads as one continuous
                  chapter: the photography's emotional continuation,
                  not end-of-page validation. -->
-            <div class="voices-section" id="testimonials-section" style="display:none;">
+            <div class="voices-section async-reveal" id="testimonials-section">
                 <div class="about-eyebrow" style="text-align:center;">In Their Voices</div>
                 <div class="voices-stage" id="voices-stage"></div>
             </div>
@@ -390,7 +396,7 @@
     </section>
 
     <!-- ABOUT -->
-    <section class="section-block is-tinted" id="about-section" style="display:none;">
+    <section class="section-block is-tinted async-reveal" id="about-section">
         <div class="container">
             <div class="about-grid">
                 <div class="about-photo"><img id="about-photo-img" src="" alt="The photographer"></div>
@@ -439,6 +445,31 @@
         return div.innerHTML;
     }
     function formatNaira(n) { return '\u20a6' + Math.round(n).toLocaleString(); }
+
+    // Reveals an `.async-reveal` element (grow + fade) instead of an
+    // instant display:none -> block snap. Used for sections whose
+    // content only exists after an API fetch resolves (About, Voices) —
+    // a late-arriving fetch should never cause a sudden layout jump if
+    // it resolves while the visitor is already scrolling past that
+    // point. Cleans up the temporary max-height/overflow afterward so
+    // nothing (e.g. a photo's box-shadow) stays clipped once fully shown.
+    function lpRevealSmoothly(el) {
+        if (!el) return;
+        var done = false;
+        function cleanup() {
+            if (done) return;
+            done = true;
+            el.style.maxHeight = 'none';
+            el.style.overflow = 'visible';
+        }
+        el.addEventListener('transitionend', function onEnd(e) {
+            if (e.propertyName !== 'max-height') return;
+            el.removeEventListener('transitionend', onEnd);
+            cleanup();
+        });
+        setTimeout(cleanup, 900); // safety net — covers prefers-reduced-motion, where max-height has no transition and transitionend never fires for it
+        requestAnimationFrame(function () { el.classList.add('is-visible'); });
+    }
 
     // Simple one-time scroll reveal — fades/slides each element in the
     // moment it scrolls into view, staggered by index for a gentle
@@ -534,11 +565,14 @@
                 }
 
                 // ABOUT — only shown once real content exists in Settings,
-                // never with placeholder/fabricated text.
+                // never with placeholder/fabricated text. Smooth reveal
+                // (not an instant display swap) so a late-arriving fetch
+                // never causes a sudden layout jump if it resolves while
+                // the visitor is already scrolling past this point.
                 if (s.about_photo_url && s.about_bio) {
                     document.getElementById('about-photo-img').src = API_BASE + s.about_photo_url;
                     document.getElementById('about-bio-text').textContent = s.about_bio;
-                    document.getElementById('about-section').style.display = 'block';
+                    lpRevealSmoothly(document.getElementById('about-section'));
                 }
             })
             .catch(function (err) { console.error('Could not load settings:', err); });
@@ -741,7 +775,7 @@
                     '</div>'
                 );
 
-                section.style.display = 'block';
+                lpRevealSmoothly(section);
 
                 if ('IntersectionObserver' in window) {
                     var observer = new IntersectionObserver(function (entries) {
