@@ -277,6 +277,10 @@
         .highlight-text { color: var(--accent); font-weight: 600; }
 
         .brand-footer { margin-top: 60px; padding-top: 44px; border-top: 1px solid var(--border-color); text-align: center; }
+        .footer-contact { margin-top: 14px; font-size: 12.5px; color: var(--text-secondary); }
+        .footer-contact a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; }
+        .footer-contact a:hover { color: var(--accent); }
+        .footer-contact-divider { margin: 0 10px; opacity: 0.5; }
 
         /* Progress Stepper — visible from page load, condenses to a
            slim bar once scrolled past. */
@@ -813,6 +817,11 @@
             <div style="margin-top:14px;">
                 <a href="#" id="lp-promo-trigger" style="font-size:11px; letter-spacing:1px; text-transform:uppercase; color: var(--accent); text-decoration:underline; cursor:pointer;">Current Promos</a>
             </div>
+            <div class="footer-contact">
+                <a href="https://wa.me/2349075170240" target="_blank" rel="noopener">WhatsApp</a>
+                <span class="footer-contact-divider">·</span>
+                <a href="mailto:visualsliberty@gmail.com">Email</a>
+            </div>
         </footer>
     </div>
 
@@ -864,8 +873,9 @@
         })();
 
         // PACKAGES — loaded from the real backend, matching the same
-        // pattern used throughout Melisakim: whatever's in the dashboard
-        // is exactly what shoppers see, no GitHub-hosted files involved.
+        // pattern used throughout Libertypictures: whatever's in the
+        // dashboard is exactly what shoppers see, no GitHub-hosted
+        // files involved.
         (function () {
             var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
             var grid = document.getElementById('packages-grid');
