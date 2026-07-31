@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice | Libertypictures</title>
+    <meta name="description" content="View and pay your Libertypictures invoice online.">
+    <meta name="theme-color" content="#8a7355">
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000000'/%3E%3Ctext x='50' y='68' font-size='52' font-family='Georgia, serif' fill='%23c4a67e' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --bg-body: #faf8f4; --bg-container: #ffffff; --bg-card: #fefdfb; --bg-booking: #f7f4ee;
+            --text-primary: #1a1815; --text-secondary: #6b6459; --accent: #8a7355; --accent-deep: #6e5c44;
+            --border-color: #e8e3d9; --border-dashed: #d8d1c2;
+            --shadow-subtle: rgba(26,24,21,0.04); --shadow-hover: rgba(26,24,21,0.10);
+            --radius-lg: 18px; --radius-md: 12px; --radius-sm: 6px; --logo-filter: invert(0);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-body: #161513; --bg-container: #1f1e1b; --bg-card: #262521; --bg-booking: #1c1b18;
+                --text-primary: #f3f0ea; --text-secondary: #a8a196; --accent: #c4a67e; --accent-deep: #d9bf98;
+                --border-color: #35332d; --border-dashed: #423f37;
+                --shadow-subtle: rgba(0,0,0,0.24); --shadow-hover: rgba(0,0,0,0.42);
+                --logo-filter: invert(1);
+            }
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        body {
+            font-family: 'Poppins', sans-serif; background: var(--bg-body); color: var(--text-primary);
+            line-height: 1.65; -webkit-font-smoothing: antialiased; padding: 110px 20px 60px;
+            opacity: 0; animation: lp-page-in 0.6s ease 0.05s forwards;
+        }
+        @keyframes lp-page-in { to { opacity: 1; } }
+        .serif { font-family: 'Fraunces', serif; }
+
+        .site-header { position: absolute; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 26px 0; }
+        .site-logo-link { display: block; }
+        .site-logo { height: 36px; width: auto; filter: var(--logo-filter, none); }
+
+        .container { max-width: 640px; margin: 0 auto; }
+
+        .state-message { text-align: center; padding: 80px 20px; color: var(--text-secondary); font-size: 14px; }
+
+        .invoice-card {
+            background: var(--bg-container); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+            box-shadow: 0 16px 40px var(--shadow-subtle); padding: 48px 40px; display: none;
+        }
+        .invoice-card.is-visible { display: block; }
+
+        .invoice-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 24px; margin-bottom: 28px; flex-wrap: wrap; }
+        .invoice-brand { font-size: 19px; font-weight: 500; }
+        .invoice-number { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+        .status-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 7px 16px; border-radius: 30px; }
+        .status-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+        .status-pill.is-paid { background: rgba(90,140,90,0.14); color: #4a7a4a; }
+        .status-pill.is-unpaid { background: rgba(138,115,85,0.14); color: var(--accent-deep); }
+        .status-pill.is-overdue { background: rgba(180,80,70,0.14); color: #a8453a; }
+        @media (prefers-color-scheme: dark) {
+            .status-pill.is-paid { color: #7fb37f; }
+            .status-pill.is-overdue { color: #d47a6e; }
+        }
+
+        .invoice-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; margin-bottom: 30px; }
+        .invoice-meta div span { display: block; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 5px; }
+        .invoice-meta div strong { font-size: 14px; font-weight: 500; word-break: break-word; }
+
+        .invoice-items { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+        .invoice-items th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); padding-bottom: 10px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
+        .invoice-items td { padding: 13px 0; border-bottom: 1px dashed var(--border-dashed); font-size: 14px; }
+        .invoice-items td:last-child, .invoice-items th:last-child { text-align: right; }
+        .invoice-items .item-qty { color: var(--text-secondary); font-size: 12.5px; }
+
+        .invoice-totals { max-width: 280px; margin-left: auto; margin-bottom: 8px; }
+        .invoice-totals .total-row { display: flex; justify-content: space-between; font-size: 13.5px; padding: 6px 0; color: var(--text-secondary); }
+        .invoice-totals .total-row.grand { border-top: 1px solid var(--border-color); margin-top: 6px; padding-top: 12px; font-weight: 600; font-size: 16px; color: var(--text-primary); }
+
+        .invoice-notes { margin-top: 24px; padding: 16px 18px; background: var(--bg-booking); border-radius: var(--radius-sm); font-size: 13px; color: var(--text-secondary); line-height: 1.75; }
+
+        .invoice-actions { margin-top: 34px; display: flex; flex-direction: column; gap: 12px; }
+        .btn-pay {
+            display: block; width: 100%; text-align: center; background-color: rgba(26,24,21,0.88);
+            backdrop-filter: blur(16px) saturate(160%); -webkit-backdrop-filter: blur(16px) saturate(160%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); color: #fff; padding: 18px 40px; font-size: 13px;
+            font-weight: 600; text-transform: uppercase; letter-spacing: 1.6px; border: none; border-radius: 30px;
+            cursor: pointer; transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+        }
+        .btn-pay:hover { background-color: rgba(138,115,85,0.92); transform: translateY(-2px); box-shadow: 0 16px 32px rgba(138,115,85,0.28); }
+        .btn-pay:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-secondary {
+            display: block; width: 100%; text-align: center; background: rgba(26,24,21,0.05); border: 1px solid var(--border-color);
+            color: var(--text-primary); padding: 14px 30px; font-size: 11.5px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1.2px; border-radius: 30px; cursor: pointer; transition: all 0.3s ease;
+        }
+        .btn-secondary:hover { background: rgba(138,115,85,0.12); border-color: var(--accent); color: var(--accent-deep); }
+        @media (prefers-color-scheme: dark) { .btn-secondary { background: rgba(255,255,255,0.05); } }
+
+        .paid-banner { display: flex; align-items: center; gap: 14px; background: rgba(90,140,90,0.10); border: 1px solid rgba(90,140,90,0.3); border-radius: var(--radius-sm); padding: 18px 20px; margin-top: 34px; }
+        .paid-banner .check-circle { width: 32px; height: 32px; border-radius: 50%; background: #4a7a4a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .paid-banner p { font-size: 13px; color: var(--text-secondary); margin: 0; }
+        .paid-banner strong { display: block; font-size: 14.5px; color: var(--text-primary); margin-bottom: 3px; }
+
+        .brand-footer { max-width: 640px; margin: 60px auto 0; padding-top: 30px; border-top: 1px solid var(--border-color); text-align: center; }
+        .footer-contact { margin-top: 12px; font-size: 12px; color: var(--text-secondary); }
+        .footer-contact a { color: var(--text-secondary); text-decoration: none; }
+        .footer-contact a:hover { color: var(--accent); }
+        .footer-contact-divider { margin: 0 10px; opacity: 0.5; }
+
+        /* JPEG capture target — a plain, high-contrast rendering,
+           separate from the live theme-following card above it, same
+           reasoning as the Book page receipt: a saved document
+           shouldn't silently change appearance based on the viewer's
+           color scheme. */
+        .invoice-capture { display: none; }
+        .invoice-capture.is-active {
+            display: block; position: fixed; inset: 0; z-index: 200; overflow-y: auto;
+            background: #ffffff; color: #1a1815; padding: 48px 40px; font-family: 'Poppins', sans-serif;
+        }
+        .invoice-capture .cap-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #1a1815; padding-bottom: 18px; margin-bottom: 28px; }
+        .invoice-capture .cap-brand { font-size: 20px; font-weight: 500; }
+        .invoice-capture .cap-number { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: #6b6459; }
+        .invoice-capture .cap-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; margin-bottom: 28px; }
+        .invoice-capture .cap-meta span { display: block; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: #6b6459; margin-bottom: 4px; }
+        .invoice-capture .cap-meta strong { font-size: 13.5px; font-weight: 500; word-break: break-word; }
+        .invoice-capture table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+        .invoice-capture th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: #6b6459; padding-bottom: 10px; border-bottom: 1px solid #e8e3d9; }
+        .invoice-capture td { padding: 12px 0; border-bottom: 1px dashed #e8e3d9; font-size: 13.5px; }
+        .invoice-capture td:last-child, .invoice-capture th:last-child { text-align: right; }
+        .invoice-capture .cap-totals { max-width: 320px; margin-left: auto; }
+        .invoice-capture .cap-totals > div { display: flex; justify-content: space-between; font-size: 13px; padding: 7px 0; color: #6b6459; }
+        .invoice-capture .cap-totals .grand { border-top: 1px solid #1a1815; margin-top: 6px; padding-top: 12px !important; font-weight: 600; color: #1a1815 !important; font-size: 14.5px !important; }
+        .invoice-capture .cap-footer { margin-top: 40px; text-align: center; font-size: 12px; color: #6b6459; font-style: italic; }
+
+        @media (max-width: 600px) {
+            body { padding: 96px 16px 50px; }
+            .invoice-card { padding: 32px 22px; }
+            .invoice-meta { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header" id="site-header">
+        <a href="./" class="site-logo-link"><img src="" alt="Libertypictures" class="site-logo" id="site-logo-img" style="display:none;"></a>
+    </header>
+
+    <div class="container">
+        <div class="state-message" id="state-message">Loading your invoice&hellip;</div>
+
+        <div class="invoice-card" id="invoice-card">
+            <div class="invoice-top">
+                <div>
+                    <div class="invoice-brand serif">Libertypictures</div>
+                    <div class="invoice-number" id="inv-number"></div>
+                </div>
+                <span class="status-pill" id="inv-status-pill"></span>
+            </div>
+
+            <div class="invoice-meta">
+                <div><span>Billed To</span><strong id="inv-client-name"></strong></div>
+                <div><span>Email</span><strong id="inv-client-email"></strong></div>
+                <div><span>Issued</span><strong id="inv-issued-date"></strong></div>
+                <div><span>Due</span><strong id="inv-due-date"></strong></div>
+            </div>
+
+            <table class="invoice-items">
+                <thead><tr><th>Description</th><th>Amount</th></tr></thead>
+                <tbody id="inv-items-body"></tbody>
+            </table>
+
+            <div class="invoice-totals" id="inv-totals"></div>
+
+            <div class="invoice-notes" id="inv-notes" style="display:none;"></div>
+
+            <div class="invoice-actions">
+                <button type="button" class="btn-pay" id="pay-invoice-btn">Pay Now</button>
+                <div class="paid-banner" id="paid-banner" style="display:none;">
+                    <div class="check-circle">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                    </div>
+                    <p><strong>Paid in full</strong><span id="paid-date-text"></span></p>
+                </div>
+                <button type="button" class="btn-secondary" id="save-invoice-btn">Save as JPEG</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="brand-footer">
+        <span class="serif" style="font-size:15px; font-weight:500;">Libertypictures &copy; 2026</span>
+        <div class="footer-contact">
+            <a href="https://wa.me/2349075170240" target="_blank" rel="noopener">WhatsApp</a>
+            <span class="footer-contact-divider">&middot;</span>
+            <a href="mailto:visualsliberty@gmail.com">Email</a>
+        </div>
+    </footer>
+
+    <!-- JPEG capture target — populated and shown only for the instant
+         html2canvas needs it, exactly like the Book page receipt. -->
+    <div class="invoice-capture" id="invoice-capture">
+        <div class="cap-header">
+            <div class="cap-brand serif">Libertypictures</div>
+            <div class="cap-number" id="cap-number"></div>
+        </div>
+        <div class="cap-meta">
+            <div><span>Billed To</span><strong id="cap-client-name"></strong></div>
+            <div><span>Email</span><strong id="cap-client-email"></strong></div>
+            <div><span>Issued</span><strong id="cap-issued-date"></strong></div>
+            <div><span>Due</span><strong id="cap-due-date"></strong></div>
+        </div>
+        <table>
+            <thead><tr><th>Description</th><th>Amount</th></tr></thead>
+            <tbody id="cap-items-body"></tbody>
+        </table>
+        <div class="cap-totals" id="cap-totals"></div>
+        <div class="cap-footer">Libertypictures &mdash; thank you for your business.</div>
+    </div>
+
+<script>
+    var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
+    var PAYSTACK_PUBLIC_KEY = 'pk_live_05373c45337d6a937f51d9c3045c7839369d503d';
+    var token = new URLSearchParams(window.location.search).get('t');
+    var currentInvoice = null;
+
+    function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.textContent = String(str == null ? '' : str);
+        return div.innerHTML;
+    }
+    function formatNaira(n) { return '\u20a6' + Math.round(n || 0).toLocaleString(); }
+    function formatDate(iso) {
+        if (!iso) return '\u2014';
+        try { return new Date(iso).toLocaleDateString('en-NG', { year: 'numeric', month: 'long', day: 'numeric' }); }
+        catch (e) { return iso; }
+    }
+
+    // LOGO — same Settings source as every other page.
+    (function () {
+        fetch(API_BASE + '/api/settings')
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                var s = data.settings || {};
+                if (s.logo_url) {
+                    var logo = document.getElementById('site-logo-img');
+                    logo.src = API_BASE + s.logo_url;
+                    logo.style.display = 'block';
+                }
+            })
+            .catch(function () {});
+    })();
+
+    function applyStatusPill(status) {
+        var pill = document.getElementById('inv-status-pill');
+        var variant = status === 'paid' ? 'is-paid' : (status === 'overdue' ? 'is-overdue' : 'is-unpaid');
+        var label = status === 'paid' ? 'Paid' : (status === 'overdue' ? 'Overdue' : 'Payment Due');
+        pill.className = 'status-pill ' + variant;
+        pill.textContent = label;
+    }
+
+    function renderInvoice(inv) {
+        document.getElementById('inv-number').textContent = inv.invoiceNumber;
+        applyStatusPill(inv.status);
+        document.getElementById('inv-client-name').textContent = inv.clientName;
+        document.getElementById('inv-client-email').textContent = inv.clientEmail;
+        document.getElementById('inv-issued-date').textContent = formatDate(inv.createdAt);
+        document.getElementById('inv-due-date').textContent = inv.dueDate ? formatDate(inv.dueDate) : 'On receipt';
+
+        var rows = inv.lineItems.map(function (item) {
+            var qtyText = item.quantity > 1 ? ' <span class="item-qty">&times; ' + item.quantity + '</span>' : '';
+            return '<tr><td>' + escapeHtml(item.description) + qtyText + '</td><td>' + formatNaira(item.unitPrice * item.quantity) + '</td></tr>';
+        }).join('');
+        document.getElementById('inv-items-body').innerHTML = rows;
+
+        var totalsHtml = '<div class="total-row"><span>Subtotal</span><span>' + formatNaira(inv.subtotal) + '</span></div>';
+        if (inv.discountAmount) totalsHtml += '<div class="total-row"><span>Discount</span><span>-' + formatNaira(inv.discountAmount) + '</span></div>';
+        totalsHtml += '<div class="total-row grand"><span>Total Due</span><span>' + formatNaira(inv.totalAmount) + '</span></div>';
+        document.getElementById('inv-totals').innerHTML = totalsHtml;
+
+        if (inv.notes) {
+            document.getElementById('inv-notes').textContent = inv.notes;
+            document.getElementById('inv-notes').style.display = 'block';
+        }
+
+        var payBtn = document.getElementById('pay-invoice-btn');
+        var paidBanner = document.getElementById('paid-banner');
+        if (inv.status === 'paid') {
+            payBtn.style.display = 'none';
+            paidBanner.style.display = 'flex';
+            document.getElementById('paid-date-text').textContent = inv.paidAt ? ('Received ' + formatDate(inv.paidAt)) : 'Received';
+        } else {
+            payBtn.style.display = 'block';
+            payBtn.textContent = 'Pay ' + formatNaira(inv.totalAmount) + ' Now';
+            paidBanner.style.display = 'none';
+        }
+
+        document.getElementById('invoice-card').classList.add('is-visible');
+        document.getElementById('state-message').style.display = 'none';
+    }
+
+    function loadInvoice() {
+        if (!token) {
+            document.getElementById('state-message').textContent = 'This invoice link looks incomplete \u2014 please check the link your photographer sent you.';
+            return;
+        }
+        fetch(API_BASE + '/api/invoices/public/' + encodeURIComponent(token))
+            .then(function (res) {
+                if (!res.ok) throw new Error('not found');
+                return res.json();
+            })
+            .then(function (inv) {
+                currentInvoice = inv;
+                renderInvoice(inv);
+            })
+            .catch(function () {
+                document.getElementById('state-message').textContent = "We couldn't find that invoice \u2014 please check the link, or reach out to Libertypictures directly.";
+            });
+    }
+    loadInvoice();
+
+    // PAYMENT — mirrors the Book page's Paystack flow, scoped to this
+    // invoice's total instead of a booking retainer.
+    document.getElementById('pay-invoice-btn').addEventListener('click', function () {
+        if (!currentInvoice) return;
+        if (typeof PaystackPop === 'undefined') {
+            alert('The payment module failed to load. Please check your connection or disable any ad blockers, then refresh the page.');
+            return;
+        }
+
+        var payBtn = document.getElementById('pay-invoice-btn');
+        var handler = PaystackPop.setup({
+            key: PAYSTACK_PUBLIC_KEY,
+            email: currentInvoice.clientEmail,
+            amount: currentInvoice.totalAmount * 100,
+            currency: 'NGN',
+            callback: function (response) {
+                confirmInvoicePayment(response.reference);
+            },
+            onClose: function () {
+                // No alert here — closing the checkout isn't an error,
+                // just the client changing their mind mid-flow.
+            }
+        });
+        handler.openIframe();
+
+        async function confirmInvoicePayment(reference) {
+            payBtn.disabled = true;
+            payBtn.textContent = 'Confirming payment\u2026';
+            try {
+                var res = await fetch(API_BASE + '/api/invoices/public/' + encodeURIComponent(token) + '/confirm-payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ reference: reference }),
+                });
+                var updated = await res.json();
+                if (!res.ok) throw new Error(updated.message || 'Could not confirm the payment.');
+                currentInvoice = updated;
+                renderInvoice(updated);
+            } catch (err) {
+                // Payment went through on Paystack's side even if this
+                // save failed — never claim otherwise. Same principle
+                // as the booking flow's own payment confirmation.
+                payBtn.disabled = false;
+                payBtn.textContent = 'Retry Confirming Payment';
+                alert('Your payment went through (Reference: ' + reference + '), but we hit an issue updating this invoice. Please save this reference and message Libertypictures on WhatsApp so it can be confirmed manually \u2014 nothing has been lost.');
+            }
+        }
+    });
+
+    // SAVE AS JPEG — same technique as the Book page receipt: populate
+    // a plain, theme-independent capture target, rasterize it, download.
+    document.getElementById('save-invoice-btn').addEventListener('click', function () {
+        if (!currentInvoice) return;
+        if (typeof html2canvas === 'undefined') {
+            alert('Could not load the image export tool \u2014 please check your connection and try again.');
+            return;
+        }
+        var inv = currentInvoice;
+        document.getElementById('cap-number').textContent = inv.invoiceNumber;
+        document.getElementById('cap-client-name').textContent = inv.clientName;
+        document.getElementById('cap-client-email').textContent = inv.clientEmail;
+        document.getElementById('cap-issued-date').textContent = formatDate(inv.createdAt);
+        document.getElementById('cap-due-date').textContent = inv.dueDate ? formatDate(inv.dueDate) : 'On receipt';
+
+        var rows = inv.lineItems.map(function (item) {
+            var qtyText = item.quantity > 1 ? ' \u00d7 ' + item.quantity : '';
+            return '<tr><td>' + escapeHtml(item.description) + qtyText + '</td><td>' + formatNaira(item.unitPrice * item.quantity) + '</td></tr>';
+        }).join('');
+        document.getElementById('cap-items-body').innerHTML = rows;
+
+        var totalsHtml = '<div><span>Subtotal</span><span>' + formatNaira(inv.subtotal) + '</span></div>';
+        if (inv.discountAmount) totalsHtml += '<div><span>Discount</span><span>-' + formatNaira(inv.discountAmount) + '</span></div>';
+        totalsHtml += '<div class="grand"><span>Total ' + (inv.status === 'paid' ? 'Paid' : 'Due') + '</span><span>' + formatNaira(inv.totalAmount) + '</span></div>';
+        document.getElementById('cap-totals').innerHTML = totalsHtml;
+
+        var captureEl = document.getElementById('invoice-capture');
+        captureEl.classList.add('is-active');
+        var btn = document.getElementById('save-invoice-btn');
+        var originalText = btn.textContent;
+        btn.textContent = 'Preparing\u2026';
+        btn.disabled = true;
+
+        html2canvas(captureEl, { backgroundColor: '#ffffff', scale: 2 }).then(function (canvas) {
+            var link = document.createElement('a');
+            link.download = 'libertypictures-' + inv.invoiceNumber + '.jpg';
+            link.href = canvas.toDataURL('image/jpeg', 0.95);
+            link.click();
+        }).catch(function (err) {
+            console.error('Invoice image export failed:', err);
+            alert('Could not generate the image \u2014 please try again in a moment.');
+        }).finally(function () {
+            captureEl.classList.remove('is-active');
+            btn.textContent = originalText;
+            btn.disabled = false;
+        });
+    });
+</script>
+
+</body></html>
