@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave a Review | Libertypictures</title>
+    <meta name="description" content="Thank you for choosing Libertypictures — we'd love to hear about your experience.">
+    <meta name="theme-color" content="#8a7355">
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000000'/%3E%3Ctext x='50' y='68' font-size='52' font-family='Georgia, serif' fill='%23c4a67e' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-body: #faf8f4; --bg-container: #ffffff; --bg-card: #fefdfb;
+            --text-primary: #1a1815; --text-secondary: #6b6459; --accent: #8a7355; --accent-deep: #6e5c44;
+            --border-color: #e8e3d9;
+            --shadow-subtle: rgba(26,24,21,0.04);
+            --radius-lg: 18px; --radius-sm: 6px; --logo-filter: invert(0);
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-body: #161513; --bg-container: #1f1e1b; --bg-card: #262521;
+                --text-primary: #f3f0ea; --text-secondary: #a8a196; --accent: #c4a67e; --accent-deep: #d9bf98;
+                --border-color: #35332d;
+                --shadow-subtle: rgba(0,0,0,0.24);
+                --logo-filter: invert(1);
+            }
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        a:focus-visible, button:focus-visible, textarea:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        body {
+            font-family: 'Poppins', sans-serif; background: var(--bg-body); color: var(--text-primary);
+            line-height: 1.65; -webkit-font-smoothing: antialiased; padding: 110px 20px 60px;
+            opacity: 0; animation: lp-page-in 0.6s ease 0.05s forwards;
+        }
+        @keyframes lp-page-in { to { opacity: 1; } }
+        .serif { font-family: 'Fraunces', serif; }
+
+        .site-header { position: absolute; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 26px 0; }
+        .site-logo-link { display: block; }
+        .site-logo { height: 36px; width: auto; filter: var(--logo-filter, none); }
+
+        .container { max-width: 480px; margin: 0 auto; text-align: center; }
+        .review-eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 18px; }
+        .review-heading { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(24px, 4vw, 30px); line-height: 1.35; margin-bottom: 14px; }
+        .review-sub { font-size: 14px; color: var(--text-secondary); max-width: 380px; margin: 0 auto 40px; line-height: 1.8; }
+
+        .review-card {
+            background: var(--bg-container); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
+            box-shadow: 0 16px 40px var(--shadow-subtle); padding: 40px 32px; text-align: left;
+        }
+
+        .star-select { display: flex; justify-content: center; gap: 8px; margin-bottom: 30px; }
+        .star-select button { background: none; border: none; font-size: 38px; line-height: 1; cursor: pointer; color: var(--border-color); padding: 2px; transition: color 0.15s ease, transform 0.15s ease; }
+        .star-select button.is-filled { color: var(--accent); }
+        .star-select button:hover { transform: scale(1.1); }
+
+        .field-group { margin-bottom: 20px; }
+        .field-group label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 9px; color: var(--text-secondary); font-weight: 500; }
+        .field-group input, .field-group textarea {
+            width: 100%; padding: 15px 16px; background: var(--bg-body); border: 1.5px solid var(--border-color);
+            color: var(--text-primary); font-family: 'Poppins', sans-serif; border-radius: var(--radius-sm);
+            font-size: 16px; outline: none; transition: border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+        .field-group input:focus, .field-group textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3.5px rgba(138,115,85,0.12); }
+        .field-group textarea { resize: vertical; min-height: 110px; line-height: 1.7; }
+
+        .review-submit-btn {
+            display: block; width: 100%; background-color: rgba(26,24,21,0.88); backdrop-filter: blur(16px) saturate(160%);
+            -webkit-backdrop-filter: blur(16px) saturate(160%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+            color: #fff; padding: 18px 40px; font-size: 13px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1.6px; border: none; border-radius: 30px; cursor: pointer; margin-top: 8px;
+            transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+        }
+        .review-submit-btn:hover { background-color: rgba(138,115,85,0.92); transform: translateY(-2px); box-shadow: 0 16px 32px rgba(138,115,85,0.28); }
+        .review-submit-btn:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; transform: none; box-shadow: none; }
+
+        .form-error { font-size: 12.5px; color: #a8453a; margin-top: -8px; margin-bottom: 16px; min-height: 1em; }
+
+        .thank-you-state { display: none; }
+        .thank-you-state.is-visible { display: block; }
+        .thank-you-state .check-circle {
+            width: 56px; height: 56px; border-radius: 50%; background: rgba(138,115,85,0.14);
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 22px;
+        }
+        .review-form-wrap.is-hidden { display: none; }
+
+        @media (max-width: 600px) {
+            body { padding: 96px 16px 50px; }
+            .review-card { padding: 30px 22px; }
+            .star-select button { font-size: 32px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header" id="site-header">
+        <a href="./" class="site-logo-link"><img src="" alt="Libertypictures" class="site-logo" id="site-logo-img" style="display:none;"></a>
+    </header>
+
+    <div class="container">
+        <div class="review-eyebrow">Thank You</div>
+        <h1 class="review-heading serif">It was a joy capturing your session.</h1>
+        <p class="review-sub">If you have a moment, we'd love to hear how your experience was — it helps other clients find us, and means the world to us.</p>
+
+        <div class="review-card">
+            <div class="review-form-wrap" id="review-form-wrap">
+                <div class="star-select" id="star-select">
+                    <button type="button" class="star-btn" data-star="1">&#9733;</button>
+                    <button type="button" class="star-btn" data-star="2">&#9733;</button>
+                    <button type="button" class="star-btn" data-star="3">&#9733;</button>
+                    <button type="button" class="star-btn" data-star="4">&#9733;</button>
+                    <button type="button" class="star-btn" data-star="5">&#9733;</button>
+                </div>
+
+                <div class="field-group">
+                    <label for="rv-name">Your Name</label>
+                    <input type="text" id="rv-name" placeholder="First &amp; Last Name" autocomplete="name">
+                </div>
+                <div class="field-group">
+                    <label for="rv-quote">Your Review</label>
+                    <textarea id="rv-quote" placeholder="Tell us about your experience&hellip;"></textarea>
+                </div>
+
+                <p class="form-error" id="rv-error"></p>
+                <button type="button" class="review-submit-btn" id="rv-submit-btn">Submit Review</button>
+            </div>
+
+            <div class="thank-you-state" id="thank-you-state">
+                <div class="check-circle">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                </div>
+                <div class="serif" style="font-size:19px; font-weight:500; text-align:center; margin-bottom:10px;">Thank you.</div>
+                <p style="font-size:13.5px; color:var(--text-secondary); line-height:1.8; text-align:center;">Your review means a lot to us. We read every one.</p>
+            </div>
+        </div>
+    </div>
+
+<script>
+    var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
+    var selectedRating = 0;
+
+    // LOGO — same Settings source as every other page.
+    (function () {
+        fetch(API_BASE + '/api/settings')
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                var s = data.settings || {};
+                if (s.logo_url) {
+                    var logo = document.getElementById('site-logo-img');
+                    logo.src = API_BASE + s.logo_url;
+                    logo.style.display = 'block';
+                }
+            })
+            .catch(function () {});
+    })();
+
+    var starSelect = document.getElementById('star-select');
+    starSelect.addEventListener('click', function (e) {
+        var btn = e.target.closest('button[data-star]');
+        if (!btn) return;
+        selectedRating = parseInt(btn.dataset.star, 10);
+        starSelect.querySelectorAll('.star-btn').forEach(function (b) {
+            b.classList.toggle('is-filled', parseInt(b.dataset.star, 10) <= selectedRating);
+        });
+    });
+
+    document.getElementById('rv-submit-btn').addEventListener('click', async function () {
+        var name = document.getElementById('rv-name').value.trim();
+        var quote = document.getElementById('rv-quote').value.trim();
+        var errorEl = document.getElementById('rv-error');
+        errorEl.textContent = '';
+
+        if (!name) { errorEl.textContent = 'Please enter your name.'; return; }
+        if (!selectedRating) { errorEl.textContent = 'Please select a star rating.'; return; }
+        if (!quote) { errorEl.textContent = 'Please write a few words about your experience.'; return; }
+
+        var btn = document.getElementById('rv-submit-btn');
+        btn.disabled = true;
+        btn.textContent = 'Submitting\u2026';
+
+        try {
+            var res = await fetch(API_BASE + '/api/testimonials/submit', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ clientName: name, quote: quote, rating: selectedRating }),
+            });
+            var data = await res.json();
+            if (!res.ok) throw new Error(data.message || 'Something went wrong.');
+
+            document.getElementById('review-form-wrap').classList.add('is-hidden');
+            document.getElementById('thank-you-state').classList.add('is-visible');
+        } catch (err) {
+            errorEl.textContent = err.message || 'Could not submit your review \u2014 please try again.';
+            btn.disabled = false;
+            btn.textContent = 'Submit Review';
+        }
+    });
+</script>
+
+</body></html>
