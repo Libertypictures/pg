@@ -80,6 +80,7 @@
         }
         .serif { font-family: 'Fraunces', serif; }
         img { max-width: 100%; display: block; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
         .container { max-width: 1080px; margin: 0 auto; padding: 0 40px; }
         .section-block { padding: 100px 0; }
@@ -235,18 +236,20 @@
             .voices-quote, .voices-name { filter: none !important; transform: none !important; transition: opacity 0.6s ease !important; }
         }
 
-        /* THE EXPERIENCE — an emotional bridge between Portfolio and
-           Book: no session names, no prices, just what working
-           together actually feels like. All text is dashboard-editable. */
-        .experience-heading { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(24px, 3.4vw, 32px); text-align: center; max-width: 620px; margin: 0 auto 56px; line-height: 1.4; color: var(--text-primary); }
-        .experience-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 44px; margin-bottom: 20px; }
+        /* THE EXPERIENCE — a quiet, editorial sequence of reassuring
+           statements (not a process/steps grid): the emotional bridge
+           between Portfolio and Book. No cards, no numbers, no icons —
+           generous whitespace between each line lets it read almost
+           like a short poem. Each statement fades in independently as
+           it's scrolled to, via the same lpRevealOnScroll used
+           elsewhere on the page. All text is dashboard-editable. */
         .experience-section { padding-bottom: 40px; }
-        .experience-card { text-align: center; padding: 0 12px; }
-        .experience-num { font-family: 'Fraunces', serif; font-style: italic; font-size: 13px; color: var(--accent); margin-bottom: 18px; }
-        .experience-card h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 19px; margin-bottom: 14px; }
-        .experience-card p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.85; }
-        .experience-card.lp-reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); will-change: opacity, transform; }
-        .experience-card.lp-reveal.is-in { opacity: 1; transform: translateY(0); }
+        .experience-sequence { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 90px; }
+        .experience-statement { text-align: center; padding: 0 12px; }
+        .experience-statement .statement-text { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(21px, 3vw, 29px); line-height: 1.55; color: var(--text-primary); }
+        .experience-statement .statement-support { margin-top: 14px; font-size: 13.5px; color: var(--text-secondary); line-height: 1.8; }
+        .experience-statement.lp-reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); will-change: opacity, transform; }
+        .experience-statement.lp-reveal.is-in { opacity: 1; transform: translateY(0); }
 
         .book-cta-section { padding-top: 40px; }
 
@@ -327,7 +330,7 @@
         @media (max-width: 900px) {
             .about-grid { grid-template-columns: 1fr; gap: 32px; }
             .about-photo { max-width: 340px; margin: 0 auto; }
-            .experience-grid { grid-template-columns: 1fr; gap: 40px; max-width: 340px; margin-left: auto; margin-right: auto; }
+            .experience-sequence { gap: 64px; }
         }
         @media (max-width: 600px) {
             .container { padding: 0 22px; }
@@ -395,13 +398,18 @@
         </div>
     </section>
 
-    <!-- THE EXPERIENCE — the emotional bridge between Portfolio and
-         Book. Deliberately no session names, descriptions, or prices —
-         those live on Book. All text here is dashboard-editable. -->
+    <!-- THE EXPERIENCE — a quiet, editorial sequence of reassuring
+         statements, the emotional bridge between Portfolio and Book.
+         Deliberately no session names, descriptions, or prices —
+         those live on Book. No overarching visible heading either
+         (the sequence itself carries the section); an sr-only heading
+         preserves a heading landmark for screen-reader navigation
+         without adding any visible chrome. All text is
+         dashboard-editable. -->
     <section class="section-block experience-section">
         <div class="container">
-            <h2 class="experience-heading" id="experience-heading"></h2>
-            <div class="experience-grid" id="experience-grid"></div>
+            <h2 class="sr-only">The Experience</h2>
+            <div class="experience-sequence" id="experience-sequence"></div>
         </div>
     </section>
 
@@ -760,36 +768,35 @@
             .catch(function (err) { console.error('Could not load Voices content:', err); });
     })();
 
-    // THE EXPERIENCE — pulled entirely from Settings (dashboard-editable).
-    // Stays hidden if the heading hasn't been filled in yet, same honesty
-    // rule as About and Testimonials — never shows placeholder text.
+    // THE EXPERIENCE — a quiet, editorial sequence of reassuring
+    // statements, pulled entirely from Settings (dashboard-editable).
+    // Stays hidden if nothing's been saved yet, same honesty rule as
+    // About and Testimonials — never shows placeholder text. Each
+    // statement fades in independently as it's scrolled to (no
+    // stagger between them — they're already spread across scroll
+    // position by the section's own generous vertical gap, unlike the
+    // old side-by-side cards which needed a stagger to cascade
+    // together).
     (function () {
-        var headingEl = document.getElementById('experience-heading');
-        var gridEl = document.getElementById('experience-grid');
+        var sequenceEl = document.getElementById('experience-sequence');
 
         fetch(API_BASE + '/api/settings')
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 var s = data.settings || {};
-                if (!s.experience_heading) return;
+                if (!s.experience_statements_json) return;
 
-                headingEl.textContent = s.experience_heading;
+                var statements;
+                try { statements = JSON.parse(s.experience_statements_json); } catch (e) { return; }
+                if (!Array.isArray(statements) || !statements.length) return;
 
-                var steps = [
-                    { title: s.experience_step1_title, desc: s.experience_step1_desc },
-                    { title: s.experience_step2_title, desc: s.experience_step2_desc },
-                    { title: s.experience_step3_title, desc: s.experience_step3_desc },
-                ].filter(function (step) { return step.title; });
-
-                gridEl.innerHTML = steps.map(function (step, i) {
-                    return '<div class="experience-card">' +
-                        '<div class="experience-num">0' + (i + 1) + '</div>' +
-                        '<h3 class="serif">' + escapeHtml(step.title) + '</h3>' +
-                        '<p>' + escapeHtml(step.desc || '') + '</p>' +
-                    '</div>';
+                sequenceEl.innerHTML = statements.map(function (item) {
+                    if (!item || !item.text) return '';
+                    var supportHtml = item.supporting ? '<p class="statement-support">' + escapeHtml(item.supporting) + '</p>' : '';
+                    return '<div class="experience-statement"><p class="statement-text serif">' + escapeHtml(item.text) + '</p>' + supportHtml + '</div>';
                 }).join('');
 
-                lpRevealOnScroll(gridEl.querySelectorAll('.experience-card'), 120);
+                lpRevealOnScroll(sequenceEl.querySelectorAll('.experience-statement'), 0);
             })
             .catch(function (err) { console.error('Could not load Experience content:', err); });
     })();
