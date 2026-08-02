@@ -109,6 +109,9 @@
         .paid-banner p { font-size: 13px; color: var(--text-secondary); margin: 0; }
         .paid-banner strong { display: block; font-size: 14.5px; color: var(--text-primary); margin-bottom: 3px; }
 
+        .partial-banner { background: rgba(138,115,85,0.10); border: 1px solid rgba(138,115,85,0.3); border-radius: var(--radius-sm); padding: 16px 18px; font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 4px; }
+        .partial-banner strong { color: var(--text-primary); }
+
         .brand-footer { max-width: 640px; margin: 60px auto 0; padding-top: 30px; border-top: 1px solid var(--border-color); text-align: center; }
         .footer-contact { margin-top: 12px; font-size: 12px; color: var(--text-secondary); }
         .footer-contact a { color: var(--text-secondary); text-decoration: none; }
@@ -182,15 +185,12 @@
 
             <div class="invoice-notes" id="inv-notes" style="display:none;"></div>
 
-            <div class="invoice-actions">
-                <button type="button" class="btn-pay" id="pay-invoice-btn">Pay Now</button>
-                <div class="paid-banner" id="paid-banner" style="display:none;">
-                    <div class="check-circle">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                    </div>
-                    <p><strong>Paid in full</strong><span id="paid-date-text"></span></p>
-                </div>
-                <button type="button" class="btn-secondary" id="save-invoice-btn">Save as JPEG</button>
+            <div class="invoice-actions" id="invoice-actions">
+                <!-- populated by renderPaymentActions() based on status:
+                     unpaid/overdue -> Pay Retainer + Pay in Full
+                     partial         -> Pay Remaining Balance
+                     paid            -> paid banner
+                     Save as JPEG is always present. -->
             </div>
         </div>
     </div>
@@ -260,8 +260,8 @@
 
     function applyStatusPill(status) {
         var pill = document.getElementById('inv-status-pill');
-        var variant = status === 'paid' ? 'is-paid' : (status === 'overdue' ? 'is-overdue' : 'is-unpaid');
-        var label = status === 'paid' ? 'Paid' : (status === 'overdue' ? 'Overdue' : 'Payment Due');
+        var variant = status === 'paid' ? 'is-paid' : (status === 'partial' ? 'is-unpaid' : (status === 'overdue' ? 'is-overdue' : 'is-unpaid'));
+        var label = status === 'paid' ? 'Paid' : (status === 'partial' ? 'Retainer Paid' : (status === 'overdue' ? 'Overdue' : 'Payment Due'));
         pill.className = 'status-pill ' + variant;
         pill.textContent = label;
     }
@@ -291,20 +291,40 @@
             document.getElementById('inv-notes').style.display = 'block';
         }
 
-        var payBtn = document.getElementById('pay-invoice-btn');
-        var paidBanner = document.getElementById('paid-banner');
-        if (inv.status === 'paid') {
-            payBtn.style.display = 'none';
-            paidBanner.style.display = 'flex';
-            document.getElementById('paid-date-text').textContent = inv.paidAt ? ('Received ' + formatDate(inv.paidAt)) : 'Received';
-        } else {
-            payBtn.style.display = 'block';
-            payBtn.textContent = 'Pay ' + formatNaira(inv.totalAmount) + ' Now';
-            paidBanner.style.display = 'none';
-        }
+        renderPaymentActions(inv);
 
         document.getElementById('invoice-card').classList.add('is-visible');
         document.getElementById('state-message').style.display = 'none';
+    }
+
+    // Builds the payment actions for whatever state the invoice is
+    // actually in — a retainer/full choice, a single "pay remaining
+    // balance" button, or a paid confirmation. Save as JPEG is always
+    // available regardless of payment state.
+    function renderPaymentActions(inv) {
+        var actionsEl = document.getElementById('invoice-actions');
+        var html = '';
+
+        if (inv.status === 'paid') {
+            html += '<div class="paid-banner">' +
+                '<div class="check-circle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>' +
+                '<p><strong>Paid in full</strong><span>' + (inv.paidAt ? 'Received ' + formatDate(inv.paidAt) : 'Received') + '</span></p>' +
+            '</div>';
+        } else if (inv.status === 'partial') {
+            html += '<div class="partial-banner">Retainer received \u2014 <strong>' + formatNaira(inv.amountPaid) + '</strong> paid, <strong>' + formatNaira(inv.balanceRemaining) + '</strong> remaining.</div>';
+            html += '<button type="button" class="btn-pay" data-pay-amount="' + inv.balanceRemaining + '" data-pay-label="Pay Remaining Balance">Pay Remaining Balance \u2014 ' + formatNaira(inv.balanceRemaining) + '</button>';
+        } else {
+            html += '<button type="button" class="btn-pay" data-pay-amount="' + inv.retainerAmount + '" data-pay-label="Pay Retainer">Pay Retainer (70%) \u2014 ' + formatNaira(inv.retainerAmount) + '</button>';
+            html += '<button type="button" class="btn-secondary" data-pay-amount="' + inv.totalAmount + '" data-pay-label="Pay in Full">Pay in Full \u2014 ' + formatNaira(inv.totalAmount) + '</button>';
+        }
+
+        html += '<button type="button" class="btn-secondary" id="save-invoice-btn">Save as JPEG</button>';
+        actionsEl.innerHTML = html;
+
+        actionsEl.querySelectorAll('[data-pay-amount]').forEach(function (btn) {
+            btn.addEventListener('click', function () { payInvoice(parseFloat(btn.dataset.payAmount), btn); });
+        });
+        document.getElementById('save-invoice-btn').addEventListener('click', saveInvoiceAsJpeg);
     }
 
     function loadInvoice() {
@@ -327,23 +347,24 @@
     }
     loadInvoice();
 
-    // PAYMENT — mirrors the Book page's Paystack flow, scoped to this
-    // invoice's total instead of a booking retainer.
-    document.getElementById('pay-invoice-btn').addEventListener('click', function () {
-        if (!currentInvoice) return;
+    // PAYMENT — mirrors the Book page's Paystack flow, but the amount
+    // charged depends on which button was clicked (retainer, full, or
+    // remaining balance) rather than always being the invoice total.
+    function payInvoice(amount, btn) {
+        if (!currentInvoice || !amount) return;
         if (typeof PaystackPop === 'undefined') {
             alert('The payment module failed to load. Please check your connection or disable any ad blockers, then refresh the page.');
             return;
         }
 
-        var payBtn = document.getElementById('pay-invoice-btn');
+        var originalLabel = btn.textContent;
         var handler = PaystackPop.setup({
             key: PAYSTACK_PUBLIC_KEY,
             email: currentInvoice.clientEmail,
-            amount: currentInvoice.totalAmount * 100,
+            amount: Math.round(amount * 100),
             currency: 'NGN',
             callback: function (response) {
-                confirmInvoicePayment(response.reference);
+                confirmInvoicePayment(response.reference, amount);
             },
             onClose: function () {
                 // No alert here — closing the checkout isn't an error,
@@ -352,14 +373,14 @@
         });
         handler.openIframe();
 
-        async function confirmInvoicePayment(reference) {
-            payBtn.disabled = true;
-            payBtn.textContent = 'Confirming payment\u2026';
+        async function confirmInvoicePayment(reference, paidAmount) {
+            btn.disabled = true;
+            btn.textContent = 'Confirming payment\u2026';
             try {
                 var res = await fetch(API_BASE + '/api/invoices/public/' + encodeURIComponent(token) + '/confirm-payment', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ reference: reference }),
+                    body: JSON.stringify({ reference: reference, amount: paidAmount }),
                 });
                 var updated = await res.json();
                 if (!res.ok) throw new Error(updated.message || 'Could not confirm the payment.');
@@ -369,16 +390,18 @@
                 // Payment went through on Paystack's side even if this
                 // save failed — never claim otherwise. Same principle
                 // as the booking flow's own payment confirmation.
-                payBtn.disabled = false;
-                payBtn.textContent = 'Retry Confirming Payment';
+                btn.disabled = false;
+                btn.textContent = 'Retry Confirming Payment';
                 alert('Your payment went through (Reference: ' + reference + '), but we hit an issue updating this invoice. Please save this reference and message Libertypictures on WhatsApp so it can be confirmed manually \u2014 nothing has been lost.');
             }
         }
-    });
+    }
 
     // SAVE AS JPEG — same technique as the Book page receipt: populate
     // a plain, theme-independent capture target, rasterize it, download.
-    document.getElementById('save-invoice-btn').addEventListener('click', function () {
+    // A named function (not an inline listener) since the button it's
+    // attached to is recreated by renderPaymentActions() on every render.
+    function saveInvoiceAsJpeg() {
         if (!currentInvoice) return;
         if (typeof html2canvas === 'undefined') {
             alert('Could not load the image export tool \u2014 please check your connection and try again.');
@@ -400,7 +423,12 @@
 
         var totalsHtml = '<div><span>Subtotal</span><span>' + formatNaira(inv.subtotal) + '</span></div>';
         if (inv.discountAmount) totalsHtml += '<div><span>Discount</span><span>-' + formatNaira(inv.discountAmount) + '</span></div>';
-        totalsHtml += '<div class="grand"><span>Total ' + (inv.status === 'paid' ? 'Paid' : 'Due') + '</span><span>' + formatNaira(inv.totalAmount) + '</span></div>';
+        if (inv.status === 'partial') {
+            totalsHtml += '<div><span>Paid So Far</span><span>' + formatNaira(inv.amountPaid) + '</span></div>';
+            totalsHtml += '<div class="grand"><span>Balance Remaining</span><span>' + formatNaira(inv.balanceRemaining) + '</span></div>';
+        } else {
+            totalsHtml += '<div class="grand"><span>Total ' + (inv.status === 'paid' ? 'Paid' : 'Due') + '</span><span>' + formatNaira(inv.totalAmount) + '</span></div>';
+        }
         document.getElementById('cap-totals').innerHTML = totalsHtml;
 
         var captureEl = document.getElementById('invoice-capture');
@@ -423,7 +451,7 @@
             btn.textContent = originalText;
             btn.disabled = false;
         });
-    });
+    }
 </script>
 
 </body></html>
