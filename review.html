@@ -53,10 +53,23 @@
             box-shadow: 0 16px 40px var(--shadow-subtle); padding: 40px 32px; text-align: left;
         }
 
-        .star-select { display: flex; justify-content: center; gap: 8px; margin-bottom: 30px; }
-        .star-select button { background: none; border: none; font-size: 38px; line-height: 1; cursor: pointer; color: var(--border-color); padding: 2px; transition: color 0.15s ease, transform 0.15s ease; }
+        .rating-group { margin-bottom: 28px; }
+        .rating-label { text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 12px; color: var(--text-secondary); font-weight: 600; }
+        .star-select {
+            display: flex; justify-content: center; gap: 4px;
+            background: var(--bg-body); border: 1.5px solid var(--border-color); border-radius: 16px;
+            padding: 20px 16px 16px;
+        }
+        .star-select button {
+            background: none; border: none; font-size: 36px; line-height: 1; cursor: pointer;
+            color: rgba(138,115,85,0.32); padding: 4px 5px;
+            transition: color 0.15s ease, transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+        }
         .star-select button.is-filled { color: var(--accent); }
-        .star-select button:hover { transform: scale(1.1); }
+        .star-select button.is-filled.just-selected { animation: lp-star-pop 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+        @keyframes lp-star-pop { 0% { transform: scale(1); } 45% { transform: scale(1.35); } 100% { transform: scale(1); } }
+        .rating-hint { text-align: center; font-size: 12.5px; color: var(--text-secondary); margin-top: 4px; min-height: 1.4em; transition: color 0.2s ease; }
+        .rating-hint.is-set { color: var(--accent-deep); font-weight: 600; }
 
         .field-group { margin-bottom: 20px; }
         .field-group label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 9px; color: var(--text-secondary); font-weight: 500; }
@@ -108,12 +121,16 @@
 
         <div class="review-card">
             <div class="review-form-wrap" id="review-form-wrap">
-                <div class="star-select" id="star-select">
-                    <button type="button" class="star-btn" data-star="1">&#9733;</button>
-                    <button type="button" class="star-btn" data-star="2">&#9733;</button>
-                    <button type="button" class="star-btn" data-star="3">&#9733;</button>
-                    <button type="button" class="star-btn" data-star="4">&#9733;</button>
-                    <button type="button" class="star-btn" data-star="5">&#9733;</button>
+                <div class="rating-group">
+                    <div class="rating-label">How Was Your Experience?</div>
+                    <div class="star-select" id="star-select">
+                        <button type="button" class="star-btn" data-star="1" aria-label="1 star">&#9733;</button>
+                        <button type="button" class="star-btn" data-star="2" aria-label="2 stars">&#9733;</button>
+                        <button type="button" class="star-btn" data-star="3" aria-label="3 stars">&#9733;</button>
+                        <button type="button" class="star-btn" data-star="4" aria-label="4 stars">&#9733;</button>
+                        <button type="button" class="star-btn" data-star="5" aria-label="5 stars">&#9733;</button>
+                    </div>
+                    <div class="rating-hint" id="rating-hint">Tap a star to rate</div>
                 </div>
 
                 <div class="field-group">
@@ -158,14 +175,39 @@
             .catch(function () {});
     })();
 
+    var RATING_LABELS = { 1: 'Poor', 2: 'Fair', 3: 'Good', 4: 'Great', 5: 'Excellent!' };
     var starSelect = document.getElementById('star-select');
+    var ratingHint = document.getElementById('rating-hint');
+    var starBtns = starSelect.querySelectorAll('.star-btn');
+
+    function paintStars(upTo) {
+        starBtns.forEach(function (b) {
+            b.classList.toggle('is-filled', parseInt(b.dataset.star, 10) <= upTo);
+        });
+    }
+    function showSelectedOrPrompt() {
+        paintStars(selectedRating);
+        ratingHint.textContent = selectedRating ? RATING_LABELS[selectedRating] : 'Tap a star to rate';
+        ratingHint.classList.toggle('is-set', !!selectedRating);
+    }
+
+    starBtns.forEach(function (btn) {
+        btn.addEventListener('mouseenter', function () {
+            var n = parseInt(btn.dataset.star, 10);
+            paintStars(n);
+            ratingHint.textContent = RATING_LABELS[n];
+            ratingHint.classList.add('is-set');
+        });
+    });
+    starSelect.addEventListener('mouseleave', showSelectedOrPrompt);
+
     starSelect.addEventListener('click', function (e) {
         var btn = e.target.closest('button[data-star]');
         if (!btn) return;
         selectedRating = parseInt(btn.dataset.star, 10);
-        starSelect.querySelectorAll('.star-btn').forEach(function (b) {
-            b.classList.toggle('is-filled', parseInt(b.dataset.star, 10) <= selectedRating);
-        });
+        showSelectedOrPrompt();
+        starBtns.forEach(function (b) { b.classList.remove('just-selected'); });
+        btn.classList.add('just-selected');
     });
 
     document.getElementById('rv-submit-btn').addEventListener('click', async function () {
