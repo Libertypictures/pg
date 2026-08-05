@@ -82,7 +82,7 @@
         img { max-width: 100%; display: block; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 
-        .container { max-width: 1080px; margin: 0 auto; padding: 0 40px; }
+        .container { max-width: 1140px; margin: 0 auto; padding: 0 40px; }
         .section-block { padding: 100px 0; }
         .async-reveal { display: none; }
         .async-reveal.is-visible { display: block; animation: lp-fade-in-up 0.6s cubic-bezier(0.16,1,0.3,1); }
@@ -99,7 +99,12 @@
            language as the hero buttons, tuned for legibility over a
            flat cream/dark surface instead of a photograph. No borders
            on either variant, by design. */
-        .btn-dark { display: inline-block; background: rgba(26,24,21,0.05); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); color: var(--text-primary); padding: 16px 36px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; border-radius: 100px; text-decoration: none; transition: all 0.4s cubic-bezier(0.16,1,0.3,1); border: none; cursor: pointer; box-shadow: 0 4px 20px var(--shadow-subtle), inset 0 1px 0 rgba(255,255,255,0.5); }
+        .btn-dark { display: inline-block; background: rgba(26,24,21,0.05); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); color: var(--text-primary); padding: 19px 46px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2.4px; border-radius: 100px; text-decoration: none; transition: all 0.4s cubic-bezier(0.16,1,0.3,1); border: none; cursor: pointer; box-shadow: 0 4px 20px var(--shadow-subtle), inset 0 1px 0 rgba(255,255,255,0.5); }
+        /* Secondary action — a plain text link, deliberately with no
+           button chrome at all, so "Book a Session" reads as the one
+           clear action and this stays visually subordinate to it. */
+        .btn-link-secondary { display: inline-block; margin-top: 22px; color: var(--text-secondary); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.4px; text-decoration: none; border-bottom: 1px solid var(--border-color); padding-bottom: 3px; transition: color 0.3s ease, border-color 0.3s ease; }
+        .btn-link-secondary:hover { color: var(--accent); border-color: var(--accent); }
         .btn-dark:hover { background: rgba(138,115,85,0.16); color: var(--accent-deep); transform: translateY(-2px); box-shadow: 0 14px 32px var(--shadow-hover), inset 0 1px 0 rgba(255,255,255,0.6); }
         @media (prefers-color-scheme: dark) {
             .btn-dark { background: rgba(255,255,255,0.06); box-shadow: 0 4px 20px var(--shadow-subtle), inset 0 1px 0 rgba(255,255,255,0.08); }
@@ -168,12 +173,12 @@
 
 
         /* ABOUT */
-        .about-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 60px; align-items: center; }
-        .about-photo { border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 4/5; background: var(--bg-card); box-shadow: 0 16px 40px var(--shadow-subtle); }
+        .about-grid { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: 72px; align-items: center; }
+        .about-photo { border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 4/5; background: var(--bg-card); box-shadow: 0 24px 56px var(--shadow-hover); }
         .about-photo img { width: 100%; height: 100%; object-fit: cover; }
         .about-eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 16px; }
         .about-text h2 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 28px; margin-bottom: 20px; line-height: 1.3; }
-        .about-text p { font-size: 14.5px; color: var(--text-secondary); line-height: 1.9; white-space: pre-line; }
+        .about-text p { font-size: 14.5px; color: var(--text-secondary); line-height: 2; white-space: pre-line; }
 
         /* TESTIMONIALS */
         /* TESTIMONIALS / "VOICES" — an editorial installation, not a
@@ -194,11 +199,12 @@
             color: var(--text-secondary); opacity: 0.16; white-space: nowrap;
             animation: voices-breathe 7s ease-in-out infinite;
             transition: opacity 1.2s ease;
+            transform: rotate(var(--word-rotation, 0deg));
         }
         .voices-stage.is-focused .voices-word { opacity: 0.07; }
         @keyframes voices-breathe {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(1.5px, -2px); }
+            0%, 100% { transform: translate(0, 0) rotate(var(--word-rotation, 0deg)); }
+            50% { transform: translate(1.5px, -2px) rotate(var(--word-rotation, 0deg)); }
         }
 
         /* The featured quote — dead center, floating above the word
@@ -248,7 +254,7 @@
         .experience-statement { text-align: center; padding: 0 12px; }
         .experience-statement .statement-text { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(21px, 3vw, 29px); line-height: 1.55; color: var(--text-primary); }
         .experience-statement .statement-support { margin-top: 14px; font-size: 13.5px; color: var(--text-secondary); line-height: 1.8; }
-        .experience-statement.lp-reveal { opacity: 0; transform: translateY(22px); transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1); will-change: opacity, transform; }
+        .experience-statement.lp-reveal { opacity: 0; transform: translateY(16px); transition: opacity 1.3s cubic-bezier(0.16,1,0.3,1), transform 1.3s cubic-bezier(0.16,1,0.3,1); }
         .experience-statement.lp-reveal.is-in { opacity: 1; transform: translateY(0); }
 
         .book-cta-section { padding-top: 40px; }
@@ -268,15 +274,20 @@
         .work-mobile-feature {
             display: flex; gap: 3px; aspect-ratio: 2.5/3.3; overflow: hidden; position: relative;
             margin-bottom: 28px; background: #141210;
+            box-shadow: 0 24px 60px var(--shadow-hover);
         }
 
         .work-mobile-feature.is-empty { aspect-ratio: auto; display: block; overflow: visible; background: none; }
 
         .work-main-photo { flex: 1; position: relative; overflow: hidden; min-width: 0; }
         .work-main-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
-        .work-main-photo img.is-active { opacity: 1; }
+        .work-main-photo img.is-active { opacity: 1; animation: lp-ken-burns 16s ease-out forwards; }
+        @keyframes lp-ken-burns { from { transform: scale(1); } to { transform: scale(1.02); } }
+        @media (prefers-reduced-motion: reduce) {
+            .work-main-photo img.is-active { animation: none; }
+        }
         .work-strip-wrap {
-            width: 23%; position: relative; overflow-y: auto; overflow-x: hidden;
+            width: 26%; position: relative; overflow-y: auto; overflow-x: hidden;
             scroll-behavior: smooth; scrollbar-width: none; min-height: 0;
             overscroll-behavior-y: contain;
         }
@@ -304,7 +315,7 @@
         .work-strip-track::before { left: 0; }
         .work-strip-track::after { right: 0; }
         .work-strip-track { display: flex; flex-direction: column; padding: 0 13px; position: relative; }
-        .work-strip-thumb { position: relative; width: 100%; aspect-ratio: 1/1; border: none; padding: 3px; background: none; cursor: pointer; display: block; }
+        .work-strip-thumb { position: relative; width: 100%; aspect-ratio: 1/1; border: none; padding: 4px; background: none; cursor: pointer; display: block; }
         /* Active state — a slightly frosted photographic viewer
            rather than a border: everything not currently selected
            sits back with a soft blur and a touch less brightness;
@@ -312,7 +323,7 @@
            bright outlines, nothing loud. */
         .work-strip-thumb img {
             width: 100%; height: 100%; object-fit: cover; display: block;
-            filter: blur(1.1px) brightness(0.82); opacity: 0.72;
+            filter: blur(1.3px) brightness(0.7); opacity: 0.6;
             transition: filter 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
         }
         .work-strip-thumb.is-active img { filter: blur(0) brightness(1); opacity: 1; }
@@ -322,7 +333,7 @@
            across a ~1000px container) and a narrower strip, so more
            thumbnails are visible at once without excess scrolling. */
         @media (min-width: 900px) {
-            .work-mobile-feature { aspect-ratio: 21/10; }
+            .work-mobile-feature { aspect-ratio: 16/9; }
             .work-strip-wrap { width: 14%; }
         }
 
@@ -336,8 +347,8 @@
             .container { padding: 0 22px; }
             .section-block { padding: 70px 0; }
             .work-section { padding-top: 96px; padding-bottom: 0; }
-            .section-title { font-size: 17px; }
             .lp-hero { height: 100vh; height: 100svh; }
+            .section-title { font-size: 17px; }
             .lp-hero-title { font-size: clamp(26px, 8vw, 34px); }
             .lp-hero-sub { font-size: clamp(9.5px, 3.1vw, 12px); white-space: nowrap; max-width: none; }
         }
@@ -378,7 +389,7 @@
                  chapter: the photography's emotional continuation,
                  not end-of-page validation. -->
             <div class="voices-section async-reveal" id="testimonials-section">
-                <div class="about-eyebrow" style="text-align:center;">In Their Voices</div>
+                <h2 class="about-eyebrow" style="text-align:center;">In Their Voices</h2>
                 <div class="voices-stage" id="voices-stage"></div>
             </div>
         </div>
@@ -388,7 +399,7 @@
     <section class="section-block is-tinted async-reveal" id="about-section">
         <div class="container">
             <div class="about-grid">
-                <div class="about-photo"><img id="about-photo-img" src="" alt="The photographer" decoding="async"></div>
+                <div class="about-photo"><img id="about-photo-img" src="" alt="The photographer" loading="lazy" decoding="async"></div>
                 <div class="about-text">
                     <div class="about-eyebrow">About the Photographer</div>
                     <h2 class="serif">Behind the Camera</h2>
@@ -417,7 +428,7 @@
     <section class="section-block book-cta-section">
         <div class="container" style="text-align:center;">
             <a href="book.html" class="btn-dark">Book a Session</a>
-            <div style="margin-top:16px;"><a href="portfolio.html" class="btn-dark">View Full Portfolio</a></div>
+            <div><a href="portfolio.html" class="btn-link-secondary">View Full Portfolio</a></div>
         </div>
     </section>
 
@@ -432,6 +443,12 @@
 
 <script>
     var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
+
+    // Fetched once, shared by every section that needs Settings data
+    // (Hero, Logo, About, Experience) — previously each fetched
+    // /api/settings independently, doubling that request for no
+    // reason since it's the exact same data every time.
+    var settingsPromise = fetch(API_BASE + '/api/settings').then(function (res) { return res.json(); });
 
     function escapeHtml(str) {
         var div = document.createElement('div');
@@ -455,13 +472,22 @@
     // moment it scrolls into view, staggered by index for a gentle
     // cascade. `.lp-reveal` alone (before this runs) is a no-op, so
     // content stays visible if JS fails.
-    function lpRevealOnScroll(elements, stagger) {
+    function lpRevealOnScroll(elements, minGap) {
         if (!('IntersectionObserver' in window)) return;
         var els = Array.prototype.slice.call(elements);
         if (!els.length) return;
         els.forEach(function (el) { el.classList.add('lp-reveal'); });
 
         var pendingHides = new WeakMap();
+        // Tracks the earliest time the NEXT reveal is allowed to start.
+        // A reveal triggered well after this (normal/slow scrolling)
+        // gets zero delay — instant, tied directly to scroll position,
+        // not to a timer. Only when a reveal is triggered before this
+        // (several elements crossing into view within the same instant,
+        // i.e. a fast scroll) does it get pushed out by minGap from the
+        // previous one, so it still reads as sequential instead of all
+        // popping in together.
+        var nextRevealNotBefore = 0;
 
         // No "already visible, skip the animation" shortcut here.
         // IntersectionObserver always fires immediately upon observe()
@@ -475,8 +501,11 @@
                     var pendingHide = pendingHides.get(el);
                     if (pendingHide) { clearTimeout(pendingHide); pendingHides.delete(el); }
                     if (el.classList.contains('is-in')) return;
-                    var idx = els.indexOf(el);
-                    el.style.transitionDelay = (idx * (stagger || 0)) + 'ms';
+
+                    var now = Date.now();
+                    var delay = Math.max(0, nextRevealNotBefore - now);
+                    nextRevealNotBefore = now + delay + (minGap || 0);
+                    el.style.transitionDelay = delay + 'ms';
                     el.classList.add('is-in');
                 } else {
                     if (!el.classList.contains('is-in') || pendingHides.has(el)) return;
@@ -488,7 +517,7 @@
                     pendingHides.set(el, hideTimer);
                 }
             });
-        }, { threshold: 0.15, rootMargin: '0px 0px -10% 0px' });
+        }, { threshold: 0.15, rootMargin: '0px 0px -25% 0px' });
         els.forEach(function (el) { observer.observe(el); });
     }
 
@@ -532,8 +561,7 @@
                 .catch(function (err) { console.error('Could not load hero slideshow:', err); });
         }
 
-        fetch(API_BASE + '/api/settings')
-            .then(function (res) { return res.json(); })
+        settingsPromise
             .then(function (data) {
                 var s = data.settings || {};
                 if (s.hero_mode === 'slideshow') { renderSlideshow(); } else { renderVideo(s); }
@@ -600,7 +628,7 @@
             }
 
             var thumbsHtml = sample.map(function (item, i) {
-                return '<button type="button" class="work-strip-thumb' + (i === 0 ? ' is-active' : '') + '" data-index="' + i + '"><img src="' + API_BASE + item.imageUrl + '" alt="" loading="lazy" decoding="async"></button>';
+                return '<button type="button" class="work-strip-thumb' + (i === 0 ? ' is-active' : '') + '" data-index="' + i + '" aria-label="View photo ' + (i + 1) + ' of ' + sample.length + '"><img src="' + API_BASE + item.imageUrl + '" alt="" loading="lazy" decoding="async"></button>';
             }).join('');
 
             mobileFeature.innerHTML =
@@ -680,8 +708,9 @@
                 var word = ATMOSPHERE_WORDS[i % ATMOSPHERE_WORDS.length];
                 var size = 11 + (i % 4) * 2; // a little size variety, still restrained
                 var delay = (i * 0.45).toFixed(2);
+                var rotation = ((i % 5) - 2) * 1.4; // small, deterministic tilt (-2.8deg to 2.8deg) — organic, not random jitter
                 var mobileClass = MOBILE_SLOT_INDEXES.indexOf(i) !== -1 ? ' voices-word-mobile' : '';
-                return '<span class="voices-word' + mobileClass + '" style="left:' + slot.x + '%; top:' + slot.y + '%; font-size:' + size + 'px; animation-delay:' + delay + 's;">' + word + '</span>';
+                return '<span class="voices-word' + mobileClass + '" style="left:' + slot.x + '%; top:' + slot.y + '%; font-size:' + size + 'px; animation-delay:' + delay + 's; --word-rotation:' + rotation + 'deg;">' + word + '</span>';
             }).join('');
             stage.insertAdjacentHTML('afterbegin', html);
         }
@@ -771,17 +800,17 @@
     // THE EXPERIENCE — a quiet, editorial sequence of reassuring
     // statements, pulled entirely from Settings (dashboard-editable).
     // Stays hidden if nothing's been saved yet, same honesty rule as
-    // About and Testimonials — never shows placeholder text. Each
-    // statement fades in independently as it's scrolled to (no
-    // stagger between them — they're already spread across scroll
-    // position by the section's own generous vertical gap, unlike the
-    // old side-by-side cards which needed a stagger to cascade
-    // together).
+    // About and Testimonials — never shows placeholder text. Staggered
+    // reveal (not simultaneous) so it always reads as one statement
+    // delivered at a time, even on a fast scroll that brings several
+    // into view within the same instant — lpRevealOnScroll assigns
+    // each element's delay by its fixed position in the sequence, so
+    // they stay visually sequential regardless of how quickly they're
+    // all technically "in view" together.
     (function () {
         var sequenceEl = document.getElementById('experience-sequence');
 
-        fetch(API_BASE + '/api/settings')
-            .then(function (res) { return res.json(); })
+        settingsPromise
             .then(function (data) {
                 var s = data.settings || {};
                 if (!s.experience_statements_json) return;
@@ -796,7 +825,7 @@
                     return '<div class="experience-statement"><p class="statement-text serif">' + escapeHtml(item.text) + '</p>' + supportHtml + '</div>';
                 }).join('');
 
-                lpRevealOnScroll(sequenceEl.querySelectorAll('.experience-statement'), 0);
+                lpRevealOnScroll(sequenceEl.querySelectorAll('.experience-statement'), 180);
             })
             .catch(function (err) { console.error('Could not load Experience content:', err); });
     })();
