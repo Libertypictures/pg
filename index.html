@@ -228,6 +228,12 @@
             transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1) 0.35s, filter 0.8s cubic-bezier(0.22,1,0.36,1) 0.35s, transform 0.8s cubic-bezier(0.22,1,0.36,1) 0.35s;
         }
         .voices-name.is-visible { opacity: 1; filter: blur(0); transform: translateY(0); }
+        .voices-stars {
+            margin-top: 9px; font-size: 11px; letter-spacing: 3px; color: var(--accent);
+            opacity: 0; filter: blur(4px); transform: translateY(6px);
+            transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1) 0.45s, filter 0.8s cubic-bezier(0.22,1,0.36,1) 0.45s, transform 0.8s cubic-bezier(0.22,1,0.36,1) 0.45s;
+        }
+        .voices-stars.is-visible { opacity: 1; filter: blur(0); transform: translateY(0); }
 
         @media (max-width: 700px) {
             .voices-stage { height: 150px; }
@@ -239,7 +245,7 @@
            crossfade; no blur, no drift, no upward settle. */
         @media (prefers-reduced-motion: reduce) {
             .voices-word { animation: none !important; transition: opacity 0.6s ease !important; }
-            .voices-quote, .voices-name { filter: none !important; transform: none !important; transition: opacity 0.6s ease !important; }
+            .voices-quote, .voices-name, .voices-stars { filter: none !important; transform: none !important; transition: opacity 0.6s ease !important; }
         }
 
         /* THE EXPERIENCE — a quiet, editorial sequence of reassuring
@@ -726,14 +732,23 @@
             return idx;
         }
 
+        function starsHtml(rating) {
+            var filled = Math.max(0, Math.min(5, Math.round(rating || 0)));
+            var out = '';
+            for (var i = 1; i <= 5; i++) out += (i <= filled ? '\u2605' : '\u2606');
+            return out;
+        }
+
         function runCycle() {
             if (!running) return;
             var t = items[pickNext()];
 
             var quoteEl = document.getElementById('voices-quote');
             var nameEl = document.getElementById('voices-name');
+            var starsEl = document.getElementById('voices-stars');
             quoteEl.textContent = t.quote;
             nameEl.textContent = t.clientName;
+            starsEl.textContent = starsHtml(t.rating);
 
             stage.classList.add('is-focused');
             // A frame of delay before adding is-visible so the browser
@@ -742,6 +757,7 @@
             after(reducedMotion ? 30 : 60, function () {
                 quoteEl.classList.add('is-visible');
                 nameEl.classList.add('is-visible');
+                starsEl.classList.add('is-visible');
             });
 
             var holdFor = reducedMotion ? 1500 : 1800;
@@ -751,6 +767,7 @@
             after(revealTime + holdFor, function () {
                 quoteEl.classList.remove('is-visible');
                 nameEl.classList.remove('is-visible');
+                starsEl.classList.remove('is-visible');
                 stage.classList.remove('is-focused');
             });
 
@@ -778,6 +795,7 @@
                     '<div class="voices-quote-wrap">' +
                         '<p class="voices-quote" id="voices-quote"></p>' +
                         '<div class="voices-name" id="voices-name"></div>' +
+                        '<div class="voices-stars" id="voices-stars" aria-hidden="true"></div>' +
                     '</div>'
                 );
 
