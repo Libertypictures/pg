@@ -38,17 +38,16 @@
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-        html { scroll-behavior: smooth; }
         body { font-family: 'Poppins', sans-serif; background: var(--bg-body); color: var(--text-primary); line-height: 1.65; -webkit-font-smoothing: antialiased; opacity: 0; animation: lp-page-in 0.7s ease 0.05s forwards; }
         @keyframes lp-page-in { to { opacity: 1; } }
         .serif { font-family: 'Fraunces', serif; }
         img { max-width: 100%; display: block; }
 
-        .container { max-width: 1080px; margin: 0 auto; padding: 0 40px; }
+        .container { max-width: 1140px; margin: 0 auto; padding: 0 40px; }
 
         /* SITE HEADER — same fixed logo header as Home, frosted once
            scrolled past the initial pale hero band. */
-        .site-header { position: absolute; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 28px 0; }
+        .site-header { position: absolute; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 14px 0; }
         .site-logo-link { display: block; }
         .site-logo { height: 38px; width: auto; filter: var(--logo-filter, none); }
 
@@ -62,20 +61,31 @@
         .photo-item { overflow: hidden; aspect-ratio: 4/5; background: var(--bg-card); box-shadow: 0 6px 20px var(--shadow-subtle); cursor: pointer; border: none; padding: 0; }
         .photo-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
         .photo-item:hover img { transform: scale(1.05); }
+        /* Scroll-reveal for portfolio items — same lpRevealOnScroll
+           pattern as the Home page's Experience section, applied here
+           so photos don't just sit flat and static on load. */
+        .photo-item.lp-reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.8s cubic-bezier(0.16,1,0.3,1), transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+        .photo-item.lp-reveal.is-in { opacity: 1; transform: translateY(0); }
 
         #portfolio-content { transition: opacity 0.4s ease; }
         .empty-state { text-align: center; color: var(--text-secondary); font-size: 14px; padding: 100px 20px; }
         .empty-state a { color: var(--accent); }
 
-        /* Lightbox — a simple, real enlarge-on-click view */
+        /* Lightbox — enlarge-on-click with a crossfade between photos */
         .lightbox { position: fixed; inset: 0; background: rgba(10,9,8,0.94); z-index: 100; display: none; align-items: center; justify-content: center; padding: 30px; }
         .lightbox.is-open { display: flex; }
-        .lightbox img { max-width: 90vw; max-height: 88vh; }
+        .lightbox img { max-width: 90vw; max-height: 88vh; transition: opacity 0.35s ease; }
         .lightbox-close { position: absolute; top: 24px; right: 30px; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; line-height: 1; z-index: 2; }
         .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: none; color: #fff; width: 48px; height: 48px; border-radius: 50%; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.25s ease; z-index: 2; }
         .lightbox-nav:hover { background: rgba(255,255,255,0.2); }
         .lightbox-prev { left: 16px; }
         .lightbox-next { right: 16px; }
+        .lightbox-counter {
+            position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            color: rgba(255,255,255,0.75); font-size: 11px; font-weight: 500; letter-spacing: 1px;
+            padding: 6px 16px; border-radius: 20px;
+        }
         @media (max-width: 600px) {
             .lightbox-nav { width: 40px; height: 40px; font-size: 22px; }
             .lightbox-prev { left: 6px; }
@@ -144,6 +154,7 @@
         <button class="lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Previous photo">&#8249;</button>
         <img id="lightbox-img" src="" alt="">
         <button class="lightbox-nav lightbox-next" id="lightbox-next" aria-label="Next photo">&#8250;</button>
+        <div class="lightbox-counter" id="lightbox-counter"></div>
     </div>
 
 <script>
@@ -178,16 +189,29 @@
 
     var lightbox = document.getElementById('lightbox');
     var lightboxImg = document.getElementById('lightbox-img');
-    var allPhotoUrls = []; // flat list across every category, in page order
+    var lightboxCounter = document.getElementById('lightbox-counter');
+    var allPhotoUrls = [];
     var currentPhotoIndex = 0;
 
+    function updateCounter() {
+        lightboxCounter.textContent = (currentPhotoIndex + 1) + ' / ' + allPhotoUrls.length;
+    }
     function showPhotoAt(index) {
         if (!allPhotoUrls.length) return;
-        currentPhotoIndex = (index + allPhotoUrls.length) % allPhotoUrls.length; // wraps both directions
-        lightboxImg.src = allPhotoUrls[currentPhotoIndex];
+        currentPhotoIndex = (index + allPhotoUrls.length) % allPhotoUrls.length;
+        // Crossfade: briefly fade out, swap, fade back in — GPU-only
+        lightboxImg.style.opacity = '0';
+        setTimeout(function () {
+            lightboxImg.src = allPhotoUrls[currentPhotoIndex];
+            lightboxImg.style.opacity = '1';
+            updateCounter();
+        }, 180);
     }
     function openLightbox(index) {
-        showPhotoAt(index);
+        currentPhotoIndex = (index + allPhotoUrls.length) % allPhotoUrls.length;
+        lightboxImg.src = allPhotoUrls[currentPhotoIndex];
+        lightboxImg.style.opacity = '1';
+        updateCounter();
         lightbox.classList.add('is-open');
     }
     function closeLightbox() {
@@ -216,6 +240,42 @@
             if (dx < 0) { showPhotoAt(currentPhotoIndex + 1); } else { showPhotoAt(currentPhotoIndex - 1); }
         }, { passive: true });
     })();
+
+    // Scroll-reveal — same lpRevealOnScroll utility as the Home page,
+    // applied here so portfolio photos ease in as they scroll into
+    // view instead of sitting flat and static on load.
+    function lpRevealOnScroll(elements, minGap) {
+        if (!('IntersectionObserver' in window)) return;
+        var els = Array.prototype.slice.call(elements);
+        if (!els.length) return;
+        els.forEach(function (el) { el.classList.add('lp-reveal'); });
+        var pendingHides = new WeakMap();
+        var nextRevealNotBefore = 0;
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                var el = entry.target;
+                if (entry.isIntersecting) {
+                    var pendingHide = pendingHides.get(el);
+                    if (pendingHide) { clearTimeout(pendingHide); pendingHides.delete(el); }
+                    if (el.classList.contains('is-in')) return;
+                    var now = Date.now();
+                    var delay = Math.max(0, nextRevealNotBefore - now);
+                    nextRevealNotBefore = now + delay + (minGap || 0);
+                    el.style.transitionDelay = delay + 'ms';
+                    el.classList.add('is-in');
+                } else {
+                    if (!el.classList.contains('is-in') || pendingHides.has(el)) return;
+                    var hideTimer = setTimeout(function () {
+                        pendingHides.delete(el);
+                        el.style.transitionDelay = '0ms';
+                        el.classList.remove('is-in');
+                    }, 400);
+                    pendingHides.set(el, hideTimer);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -10% 0px' });
+        els.forEach(function (el) { observer.observe(el); });
+    }
 
     (function () {
         var content = document.getElementById('portfolio-content');
@@ -267,6 +327,7 @@
                     content.querySelectorAll('.photo-item').forEach(function (btn) {
                         btn.addEventListener('click', function () { openLightbox(Number(btn.dataset.index)); });
                     });
+                    lpRevealOnScroll(content.querySelectorAll('.photo-item'), 60);
                 });
             })
             .catch(function (err) {
