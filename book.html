@@ -32,6 +32,7 @@
     
     <!-- Paystack Inline API -->
     <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         /* Color Variables for Light & Dark Mode — same brand accent
@@ -93,7 +94,6 @@
             outline: 2px solid var(--accent);
             outline-offset: 2px;
         }
-        html { scroll-behavior: smooth; }
 
         body {
             font-family: 'Poppins', sans-serif;
@@ -121,7 +121,7 @@
 
         /* SITE HEADER — same fixed logo header as Home and Portfolio,
            frosted once scrolled past the hero. */
-        .site-header { position: absolute; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 28px 0; }
+        .site-header { position: absolute; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 14px 0; }
         .site-logo-link { display: block; }
         .site-logo { height: 38px; width: auto; filter: var(--logo-filter); }
 
@@ -534,6 +534,39 @@
            END LP BOOKING COMPONENT CSS
            ============================================================ */
 
+        /* RECEIPT — a clean document, separate from the rest of the
+           page's visual language on purpose (a receipt should read
+           like a real receipt, not like the marketing page around
+           it). Hidden on screen by default; shown only while being
+           captured for JPEG export. */
+        .receipt-action-btn {
+            background: rgba(26,24,21,0.05); border: 1px solid var(--border-color); color: var(--text-primary);
+            padding: 11px 22px; font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;
+            border-radius: 30px; cursor: pointer; transition: all 0.3s ease;
+        }
+        .receipt-action-btn:hover { background: rgba(138,115,85,0.12); border-color: var(--accent); color: var(--accent-deep); }
+        @media (prefers-color-scheme: dark) { .receipt-action-btn { background: rgba(255,255,255,0.05); } }
+
+        .receipt-doc { display: none; }
+        .receipt-doc.is-active {
+            display: block; position: fixed; inset: 0; z-index: 200; overflow-y: auto;
+            background: #ffffff; color: #1a1815; padding: 48px 40px; font-family: 'Poppins', sans-serif;
+        }
+        .receipt-doc .receipt-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #1a1815; padding-bottom: 18px; margin-bottom: 28px; }
+        .receipt-doc .receipt-logo { font-size: 20px; font-weight: 500; }
+        .receipt-doc .receipt-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: #6b6459; }
+        .receipt-doc .receipt-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; margin-bottom: 28px; }
+        .receipt-doc .receipt-meta span { display: block; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: #6b6459; margin-bottom: 4px; }
+        .receipt-doc .receipt-meta strong { font-size: 13.5px; font-weight: 500; word-break: break-word; }
+        .receipt-doc .receipt-items { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
+        .receipt-doc .receipt-items th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: #6b6459; padding-bottom: 10px; border-bottom: 1px solid #e8e3d9; }
+        .receipt-doc .receipt-items td { padding: 12px 0; border-bottom: 1px dashed #e8e3d9; font-size: 13.5px; }
+        .receipt-doc .receipt-items td:last-child, .receipt-doc .receipt-items th:last-child { text-align: right; }
+        .receipt-doc .receipt-totals { max-width: 320px; margin-left: auto; }
+        .receipt-doc .receipt-totals > div { display: flex; justify-content: space-between; font-size: 13px; padding: 7px 0; color: #6b6459; }
+        .receipt-doc .receipt-paid-today { border-top: 1px solid #1a1815; margin-top: 6px; padding-top: 12px !important; font-weight: 600; color: #1a1815 !important; font-size: 14.5px !important; }
+        .receipt-doc .receipt-footer { margin-top: 40px; text-align: center; font-size: 12px; color: #6b6459; font-style: italic; }
+
         /* 📱 MOBILE OPTIMIZATION ENGINE */
         @media (max-width: 768px) {
             body { padding: 0; background-color: var(--bg-container); }
@@ -779,8 +812,39 @@
                     <p style="font-size:13.5px; color:var(--text-secondary); line-height:1.8; margin-bottom:8px;">Your retainer has been received and your session is confirmed. A receipt is on its way to your email.</p>
                     <p style="font-size:11px; color:var(--text-secondary); margin-bottom:24px;">Reference: <span id="lpb-payment-reference"></span></p>
                     <a href="#" id="lpb-whatsapp-link" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:8px; padding:14px 28px; background:#25D366; color:#fff; text-decoration:none; font-size:12.5px; font-weight:600; letter-spacing:0.4px; border-radius:30px;">Message Us on WhatsApp</a>
+                    <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px;">
+                        <button type="button" id="receipt-jpeg-btn" class="receipt-action-btn">Save Receipt as JPEG</button>
+                    </div>
                 </div>
             </div>
+        </div>
+
+        <!-- RECEIPT TEMPLATE — hidden until "Save Receipt as JPEG" is
+             clicked. Populated from data the protected payment functions
+             above already leave behind (window.lpbBookingData, the cart
+             totals, the reference text) — this reads that state rather
+             than modifying any of those functions. -->
+        <div id="receipt-template" class="receipt-doc">
+            <div class="receipt-header">
+                <div class="receipt-logo serif">Libertypictures</div>
+                <div class="receipt-title">Payment Receipt</div>
+            </div>
+            <div class="receipt-meta">
+                <div><span>Receipt for</span><strong id="receipt-client-name"></strong></div>
+                <div><span>Email</span><strong id="receipt-client-email"></strong></div>
+                <div><span>Date</span><strong id="receipt-date"></strong></div>
+                <div><span>Reference</span><strong id="receipt-reference"></strong></div>
+            </div>
+            <table class="receipt-items">
+                <thead><tr><th>Description</th><th>Amount</th></tr></thead>
+                <tbody id="receipt-items-body"></tbody>
+            </table>
+            <div class="receipt-totals">
+                <div><span>Subtotal</span><strong id="receipt-subtotal"></strong></div>
+                <div><span>Balance due on session day</span><strong id="receipt-balance"></strong></div>
+                <div class="receipt-paid-today"><span>Paid Today (Retainer)</span><strong id="receipt-retainer"></strong></div>
+            </div>
+            <div class="receipt-footer">Thank you for booking with Libertypictures.</div>
         </div>
 
         <section class="section-block" id="studio-policies" style="margin-top: 100px;">
@@ -1316,6 +1380,69 @@
                 alert('Your payment went through (Reference: ' + response.reference + '), but we hit an issue saving your booking. Please save this reference and reach out to us on WhatsApp so we can confirm it manually — nothing has been lost.');
             }
         }
+
+        // RECEIPT — builds a downloadable JPEG receipt purely from
+        // data the functions above already leave behind: the global
+        // `cart` totals, `window.lpbBookingData` (name/email, set by
+        // the booking submit handler), and the reference text already
+        // written into the page by handlePaymentSuccess. This reads
+        // that state rather than modifying any of it.
+        (function () {
+            var jpegBtn = document.getElementById('receipt-jpeg-btn');
+            var receiptEl = document.getElementById('receipt-template');
+            if (!receiptEl || !jpegBtn) return;
+
+            function populateReceipt() {
+                var booking = window.lpbBookingData || {};
+                document.getElementById('receipt-client-name').textContent = booking.name || '';
+                document.getElementById('receipt-client-email').textContent = booking.email || '';
+                document.getElementById('receipt-date').textContent = new Date().toLocaleDateString('en-NG', { year: 'numeric', month: 'long', day: 'numeric' });
+                var refEl = document.getElementById('lpb-payment-reference');
+                document.getElementById('receipt-reference').textContent = refEl ? refEl.textContent : '';
+
+                var rows = '<tr><td>' + escapeReceiptHtml(cart.baseName || 'Session') + '</td><td>' + formatNaira(cart.basePrice) + '</td></tr>';
+                cart.addons.forEach(function (a) {
+                    rows += '<tr><td>' + escapeReceiptHtml(a.name) + '</td><td>' + formatNaira(a.price) + '</td></tr>';
+                });
+                document.getElementById('receipt-items-body').innerHTML = rows;
+
+                document.getElementById('receipt-subtotal').textContent = formatNaira(cart.subtotal);
+                document.getElementById('receipt-balance').textContent = formatNaira(cart.balance);
+                document.getElementById('receipt-retainer').textContent = formatNaira(cart.retainer);
+            }
+
+            function escapeReceiptHtml(str) {
+                var div = document.createElement('div');
+                div.textContent = String(str == null ? '' : str);
+                return div.innerHTML;
+            }
+
+            jpegBtn.addEventListener('click', function () {
+                if (typeof html2canvas === 'undefined') {
+                    alert('Could not load the image export tool — please check your connection and try again.');
+                    return;
+                }
+                populateReceipt();
+                receiptEl.classList.add('is-active');
+                var originalText = jpegBtn.textContent;
+                jpegBtn.textContent = 'Preparing…';
+                jpegBtn.disabled = true;
+                html2canvas(receiptEl, { backgroundColor: '#ffffff', scale: 2 }).then(function (canvas) {
+                    var link = document.createElement('a');
+                    var ref = document.getElementById('receipt-reference').textContent || 'receipt';
+                    link.download = 'libertypictures-receipt-' + ref + '.jpg';
+                    link.href = canvas.toDataURL('image/jpeg', 0.95);
+                    link.click();
+                }).catch(function (err) {
+                    console.error('Receipt image export failed:', err);
+                    alert('Could not generate the image — please try again in a moment.');
+                }).finally(function () {
+                    receiptEl.classList.remove('is-active');
+                    jpegBtn.textContent = originalText;
+                    jpegBtn.disabled = false;
+                });
+            });
+        })();
     </script>
 
     <!-- ================================================================
