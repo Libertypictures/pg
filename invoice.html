@@ -125,8 +125,9 @@
            color scheme. */
         .invoice-capture { display: none; }
         .invoice-capture.is-active {
-            display: block; position: fixed; inset: 0; z-index: 200; overflow-y: auto;
+            display: block; position: absolute; left: 0; right: 0; top: 0; z-index: 200;
             background: #ffffff; color: #1a1815; padding: 48px 40px; font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
         }
         .invoice-capture .cap-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #1a1815; padding-bottom: 18px; margin-bottom: 28px; }
         .invoice-capture .cap-brand { font-size: 20px; font-weight: 500; }
@@ -438,7 +439,7 @@
         btn.textContent = 'Preparing\u2026';
         btn.disabled = true;
 
-        html2canvas(captureEl, { backgroundColor: '#ffffff', scale: 2 }).then(function (canvas) {
+        html2canvas(captureEl, { backgroundColor: '#ffffff', scale: 2, useCORS: true, scrollY: -window.scrollY }).then(function (canvas) {
             var link = document.createElement('a');
             link.download = 'libertypictures-' + inv.invoiceNumber + '.jpg';
             link.href = canvas.toDataURL('image/jpeg', 0.95);
