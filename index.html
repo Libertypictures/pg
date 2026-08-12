@@ -174,10 +174,10 @@
            No title, no eyebrow, no grid. The signature (Fraunces italic
            at display size) carries the identity instead of a label. */
         .about-wrap { max-width: 520px; margin: 0 auto; text-align: center; }
-        .about-photo { width: 100%; overflow: hidden; aspect-ratio: 4/5; background: var(--bg-card); margin-bottom: 32px; }
+        .about-photo { width: 240px; margin: 0 auto 24px; overflow: hidden; aspect-ratio: 4/5; background: var(--bg-card); }
         .about-photo img { width: 100%; height: 100%; object-fit: cover; }
-        .about-bio { font-size: 15px; color: var(--text-secondary); line-height: 1.9; margin-bottom: 28px; white-space: pre-line; }
-        .about-signature { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(28px, 5vw, 38px); color: var(--accent); letter-spacing: -0.5px; }
+        .about-bio { font-size: 13.5px; color: var(--text-secondary); line-height: 1.85; margin-bottom: 20px; max-width: 320px; margin-left: auto; margin-right: auto; text-wrap: balance; white-space: pre-line; }
+
 
         /* TESTIMONIALS */
         /* TESTIMONIALS / "VOICES" — an editorial installation, not a
@@ -353,7 +353,9 @@
 
 
         @media (max-width: 900px) {
-            .about-wrap { max-width: 400px; }
+            .about-wrap { max-width: 360px; }
+            .about-photo { width: 200px; }
+            .about-bio { max-width: 280px; }
             .experience-sequence { gap: 56px; }
         }
         @media (max-width: 600px) {
@@ -414,7 +416,6 @@
             <div class="about-wrap">
                 <div class="about-photo"><img id="about-photo-img" src="" alt="The photographer" loading="lazy" decoding="async"></div>
                 <p class="about-bio" id="about-bio-text"></p>
-                <div class="about-signature serif" id="about-signature"></div>
             </div>
         </div>
     </section>
@@ -588,7 +589,6 @@
                 // never causes a sudden layout jump if it resolves while
                 // the visitor is already scrolling past this point.
                 if (s.about_photo_url && s.about_bio) {
-                    document.getElementById('about-signature').textContent = s.studio_name || 'Libertypictures';
                     document.getElementById('about-photo-img').src = API_BASE + s.about_photo_url;
                     document.getElementById('about-bio-text').textContent = s.about_bio;
                     lpRevealSmoothly(document.getElementById('about-section'));
