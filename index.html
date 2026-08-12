@@ -290,7 +290,7 @@
            that's retired in favor of one consistent presentation. */
         .work-mobile-feature {
             display: flex; gap: 3px; aspect-ratio: 2.5/3.3; overflow: hidden; position: relative;
-            margin-bottom: 28px; background: var(--text-primary);
+            margin-bottom: 28px; background: #141210;
             box-shadow: 0 24px 60px var(--shadow-hover);
         }
 
@@ -299,7 +299,7 @@
         .work-main-photo { flex: 1; position: relative; overflow: hidden; min-width: 0; }
         .work-photo-counter {
             text-align: center; padding: 6px 0 2px; z-index: 3; position: relative;
-            color: rgba(255,255,255,0.6); font-size: 9px; font-weight: 500; letter-spacing: 1.2px;
+            color: rgba(255,255,255,0.5); font-size: 9px; font-weight: 500; letter-spacing: 1.2px;
         }
         .work-main-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
         .work-main-photo img.is-active { opacity: 1; animation: lp-ken-burns 16s ease-out forwards; }
@@ -314,15 +314,10 @@
         }
         .work-strip-wrap::-webkit-scrollbar { display: none; }
 
-        /* A real nod to analogue film — actual punched perforations
-           (not painted dots) along BOTH edges of the strip: a solid
-           "film edge" band is masked with a repeating hole pattern,
-           so the true page/photo behind always shows through the
-           hole itself, with a soft graduated rim around each hole
-           faking the beveled depth of a real punched sprocket hole.
-           Because this is a mask over a theme color rather than a
-           fixed dot color, it stays correctly visible in both light
-           and dark mode automatically. */
+        /* Film perforations — the strip background is permanently dark
+           (#141210), so perforations are always the light-on-dark
+           variant. No theme switching needed here because film is
+           always dark regardless of the page's light/dark mode. */
         .work-strip-track::before,
         .work-strip-track::after {
             content: ""; position: absolute; top: 0; bottom: 0; width: 10px; z-index: 2;
@@ -332,12 +327,6 @@
             -webkit-mask-size: 100% 18px; mask-size: 100% 18px;
             -webkit-mask-repeat: repeat-y; mask-repeat: repeat-y;
             -webkit-mask-position: center top; mask-position: center top;
-        }
-        @media (prefers-color-scheme: dark) {
-            .work-strip-track::before, .work-strip-track::after { background: rgba(255,255,255,0.18); }
-        }
-        @media (prefers-color-scheme: light) {
-            .work-strip-track::before, .work-strip-track::after { background: rgba(0,0,0,0.12); }
         }
         .work-strip-track::before { left: 0; }
         .work-strip-track::after { right: 0; }
