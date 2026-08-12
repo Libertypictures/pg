@@ -186,9 +186,9 @@
            gently comes into focus among them, holds, and dissolves
            back — memories surfacing, not slides changing. No cards, no
            borders, no quote marks. Typography carries the whole thing. */
-        .voices-stage { position: relative; max-width: 900px; height: 130px; margin: 0 auto; }
-        .voices-section { padding: 0 0 24px; }
-        .voices-section .testimonials-label { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 4px; }
+        .voices-stage { position: relative; max-width: 900px; height: 180px; margin: 0 auto; }
+        .voices-section { padding-top: 60px; padding-bottom: 60px; }
+        .voices-section .testimonials-label { font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); font-weight: 600; margin-bottom: 12px; }
 
         /* Background word field — organic, non-grid placement; each
            word breathes almost imperceptibly on its own independent
@@ -211,11 +211,11 @@
            settle, never a typewriter and never abrupt. */
         .voices-quote-wrap {
             position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-            width: min(560px, 88%); text-align: center; pointer-events: none;
+            width: min(640px, 90%); text-align: center; pointer-events: none;
         }
         .voices-quote {
             font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
-            font-size: clamp(18px, 2.5vw, 24px); line-height: 1.6; color: var(--text-primary);
+            font-size: clamp(16px, 2.2vw, 22px); line-height: 1.7; color: var(--text-primary);
             opacity: 0; filter: blur(6px); transform: translateY(8px);
             transition: opacity 1.1s cubic-bezier(0.22,1,0.36,1), filter 1.1s cubic-bezier(0.22,1,0.36,1), transform 1.1s cubic-bezier(0.22,1,0.36,1);
         }
@@ -245,7 +245,7 @@
         }
 
         @media (max-width: 700px) {
-            .voices-stage { height: 110px; }
+            .voices-stage { height: 160px; }
             .voices-word { display: none; }
             .voices-word.voices-word-mobile { display: block; }
         }
@@ -396,17 +396,16 @@
         <div class="container">
             <h2 class="section-title serif">Featured Works</h2>
             <div class="work-mobile-feature" id="work-mobile-feature"></div>
+        </div>
+    </section>
 
-            <!-- VOICES — merged directly into the same section and
-                 container as Featured Work (not a separate section),
-                 so it's genuinely attached below the photos rather
-                 than just visually close. Reads as one continuous
-                 chapter: the photography's emotional continuation,
-                 not end-of-page validation. -->
-            <div class="voices-section async-reveal" id="testimonials-section">
-                <h2 class="testimonials-label" style="text-align:center;">Testimonials</h2>
-                <div class="voices-stage" id="voices-stage"></div>
-            </div>
+    <!-- TESTIMONIALS — now its own section with proper space,
+         so longer quotes don't feel crammed into a corner of the
+         Featured Works area. -->
+    <section class="section-block voices-section async-reveal" id="testimonials-section">
+        <div class="container">
+            <h2 class="testimonials-label" style="text-align:center;">Testimonials</h2>
+            <div class="voices-stage" id="voices-stage"></div>
         </div>
     </section>
 
@@ -768,9 +767,9 @@
                 starsEl.classList.add('is-visible');
             });
 
-            var holdFor = reducedMotion ? 1500 : 1800;
-            var revealTime = reducedMotion ? 300 : 1100;
-            var dissolveTime = reducedMotion ? 300 : 1000;
+            var holdFor = reducedMotion ? 2000 : 3200;
+            var revealTime = reducedMotion ? 400 : 1300;
+            var dissolveTime = reducedMotion ? 400 : 1200;
 
             after(revealTime + holdFor, function () {
                 quoteEl.classList.remove('is-visible');
