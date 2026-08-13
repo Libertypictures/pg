@@ -257,8 +257,12 @@
         }
 
         @media (max-width: 700px) {
+            .voices-stage { flex: none; height: 380px; margin: 0 auto; }
+            .voices-section { padding: 40px 0; }
+            .voices-quote-wrap { width: 90%; }
+            .voices-quote { font-size: clamp(16px, 4.5vw, 20px); }
             .voices-word { display: none; }
-            .voices-word.voices-word-mobile { display: block; }
+            .voices-word.voices-word-mobile { display: block; font-size: 12px !important; }
         }
 
         /* Reduced motion — the installation becomes a simple, calm
@@ -724,14 +728,25 @@
         ];
 
         function buildWordField() {
+            var isMobile = window.innerWidth <= 700;
+            var MOBILE_POSITIONS = [
+                { x: 4, y: 5 }, { x: 82, y: 3 },
+                { x: 2, y: 82 }, { x: 85, y: 85 },
+                { x: 6, y: 40 }, { x: 88, y: 38 },
+                { x: 35, y: 2 },
+            ];
             var MOBILE_SLOT_INDEXES = [0, 2, 4, 6, 8, 9, 12];
             var html = SLOTS.map(function (slot, i) {
                 var word = ATMOSPHERE_WORDS[i % ATMOSPHERE_WORDS.length];
                 var size = 13 + (i % 4) * 3;
                 var delay = (i * 0.5).toFixed(2);
                 var rotation = ((i % 5) - 2) * 1.8;
-                var mobileClass = MOBILE_SLOT_INDEXES.indexOf(i) !== -1 ? ' voices-word-mobile' : '';
-                return '<span class="voices-word' + mobileClass + '" style="left:' + slot.x + '%; top:' + slot.y + '%; font-size:' + size + 'px; animation-delay:' + delay + 's; --word-rotation:' + rotation + 'deg;">' + word + '</span>';
+                var isMobileWord = MOBILE_SLOT_INDEXES.indexOf(i) !== -1;
+                var mobileClass = isMobileWord ? ' voices-word-mobile' : '';
+                var mobilePos = isMobileWord ? MOBILE_POSITIONS[MOBILE_SLOT_INDEXES.indexOf(i)] : null;
+                var useX = (isMobile && mobilePos) ? mobilePos.x : slot.x;
+                var useY = (isMobile && mobilePos) ? mobilePos.y : slot.y;
+                return '<span class="voices-word' + mobileClass + '" style="left:' + useX + '%; top:' + useY + '%; font-size:' + size + 'px; animation-delay:' + delay + 's; --word-rotation:' + rotation + 'deg;">' + word + '</span>';
             }).join('');
             stage.insertAdjacentHTML('afterbegin', html);
         }
