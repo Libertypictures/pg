@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wedding Booking Portal | Libertypictures</title>
+    <meta name="description" content="Book your Libertypictures wedding photography — from intimate ceremonies to full celebrations. Choose a package, pick a date, and secure your slot with a retainer payment.">
+    <meta name="theme-color" content="#8a7355">
+    <meta property="og:title" content="Wedding Booking Portal | Libertypictures">
+    <meta property="og:description" content="Choose a wedding photography package, pick a date, and secure your slot online with Libertypictures.">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000000'/%3E%3Ctext x='50' y='68' font-size='52' font-family='Georgia, serif' fill='%23c4a67e' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "Libertypictures",
+      "description": "Wedding photography — ceremonies, celebrations, pre-wedding shoots, and complete coverage packages.",
+      "priceRange": "₦₦₦",
+      "areaServed": "NG"
+    }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <style>
+        :root {
+            --bg-body: #faf8f4; --bg-container: #ffffff; --bg-card: #fefdfb; --bg-booking: #f7f4ee;
+            --text-primary: #1a1815; --text-secondary: #6b6459;
+            --accent: #8a7355; --accent-deep: #6e5c44;
+            --border-color: #e8e3d9; --border-dashed: #d8d1c2;
+            --btn-primary-bg: #1a1815; --btn-primary-text: #ffffff;
+            --highlight-bg: #f8f4ec;
+            --shadow-subtle: rgba(26,24,21,0.04); --shadow-hover: rgba(26,24,21,0.10); --shadow-lift: rgba(26,24,21,0.16);
+            --logo-filter: invert(0); --hero-scrim-rgb: 20,18,16;
+            --radius-lg: 18px; --radius-md: 12px; --radius-sm: 6px;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-body: #161513; --bg-container: #1f1e1b; --bg-card: #262521; --bg-booking: #1c1b18;
+                --text-primary: #f3f0ea; --text-secondary: #a8a196;
+                --accent: #c4a67e; --accent-deep: #d9bf98;
+                --border-color: #35332d; --border-dashed: #423f37;
+                --btn-primary-bg: #c4a67e; --btn-primary-text: #161513;
+                --highlight-bg: #24221d;
+                --shadow-subtle: rgba(0,0,0,0.24); --shadow-hover: rgba(0,0,0,0.42); --shadow-lift: rgba(0,0,0,0.55);
+                --logo-filter: invert(1); --hero-scrim-rgb: 6,6,7;
+            }
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-body); color: var(--text-primary); line-height: 1.65; -webkit-font-smoothing: antialiased; padding: 80px 20px; opacity: 0; animation: lp-page-in 0.7s ease 0.05s forwards; }
+        @keyframes lp-page-in { to { opacity: 1; } }
+        .serif { font-family: 'Fraunces', serif; }
+        .container { max-width: 900px; margin: 0 auto; background-color: var(--bg-container); padding: 96px 80px; border: 1px solid var(--border-color); box-shadow: 0 4px 32px var(--shadow-subtle); transition: background-color 0.3s ease, border-color 0.3s ease; }
+        .site-header { position: absolute; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 14px 0; }
+        .site-logo-link { display: block; } .site-logo { height: 38px; width: auto; filter: var(--logo-filter); }
+        .brand-header { margin-bottom: 64px; text-align: center; }
+        .brand-intro { font-size: 15.5px; max-width: 480px; line-height: 1.85; margin: 0 auto; color: var(--text-secondary); }
+        .brand-intro span { color: var(--accent); font-weight: 500; }
+        .section-block { margin-bottom: 100px; }
+        #addons { scroll-margin-top: 40px; } #secure-session { scroll-margin-top: 100px; }
+        .section-title { font-family: 'Fraunces', serif; font-weight: 500; font-size: 30px; letter-spacing: -0.3px; color: var(--text-primary); margin-bottom: 14px; text-align: center; border: none; padding: 0; }
+        .section-meta { font-size: 14px; color: var(--text-secondary); margin-bottom: 44px; text-align: center; max-width: 440px; margin-left: auto; margin-right: auto; line-height: 1.7; }
+        .tier-stack { display: flex; flex-direction: column; align-items: center; gap: 52px; max-width: 460px; margin: 0 auto; }
+        .tier-stack .tier-card { width: 100%; }
+        .tier-card { position: relative; overflow: hidden; aspect-ratio: 3 / 4; min-height: 380px; background-color: var(--bg-card); border: none; transition: all 0.4s cubic-bezier(0.16,1,0.3,1); box-shadow: 0 8px 28px var(--shadow-subtle); }
+        .tier-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: 0; transition: opacity 0.35s ease; z-index: 2; }
+        .tier-card:hover { transform: translateY(-6px); box-shadow: 0 22px 44px var(--shadow-lift); }
+        .tier-card:hover::before, .tier-card.selected::before { opacity: 1; }
+        .tier-card.selected { box-shadow: 0 22px 44px var(--shadow-lift); }
+        .tier-photo-full { position: absolute; inset: 0; z-index: 0; }
+        .tier-photo-full img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .tier-card.no-photo .tier-photo-full { background: #1f1a14; }
+        .tier-scrim { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; background: linear-gradient(to top, rgba(15,12,9,0.95) 0%, rgba(15,12,9,0.8) 60%, rgba(15,12,9,0) 100%); padding: 76px 26px 26px 26px; opacity: 0; transform: translateY(14px); will-change: opacity, transform; transition: opacity 1.4s cubic-bezier(0.25,0.46,0.45,0.94) 0.4s, transform 1.4s cubic-bezier(0.25,0.46,0.45,0.94) 0.4s; }
+        .tier-card.is-in .tier-scrim { opacity: 1; transform: translateY(0); }
+        .tier-scrim h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 20px; margin-bottom: 14px; color: #f6f1e7; }
+        .tier-badge { display: inline-block; font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--accent); background: rgba(138,115,85,0.2); padding: 4px 10px; margin-bottom: 10px; }
+        .tier-details { list-style: none; font-size: 13px; color: #d9cdb8; margin-bottom: 22px; line-height: 1.8; }
+        .tier-details li { margin-bottom: 6px; position: relative; padding-left: 16px; }
+        .tier-details li::before { content: "\2014"; font-size: 12px; position: absolute; left: 0; top: 1px; color: var(--accent); }
+        .tier-price-box { display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(246,241,231,0.18); padding-top: 16px; }
+        .tier-price { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 500; color: #f6f1e7; }
+        .select-btn { width: auto; min-width: 140px; background-color: rgba(246,241,231,0.14); backdrop-filter: blur(16px) saturate(180%); -webkit-backdrop-filter: blur(16px) saturate(180%); border: none; box-shadow: inset 0 1px 0 rgba(255,255,255,0.22); color: #f6f1e7; padding: 11px 24px; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.8px; font-weight: 500; cursor: pointer; transition: all 0.3s ease; border-radius: 30px; }
+        .select-btn:hover { background-color: rgba(246,241,231,0.26); }
+        .tier-card.selected .select-btn { background-color: rgba(138,115,85,0.55); box-shadow: inset 0 1px 0 rgba(255,255,255,0.3); color: #fff; }
+        .lp-reveal { opacity: 0; transform: translateY(20px); transition: opacity 1.3s cubic-bezier(0.25,0.46,0.45,0.94), transform 1.3s cubic-bezier(0.25,0.46,0.45,0.94); will-change: opacity, transform; }
+        .lp-reveal.is-in { opacity: 1; transform: translateY(0); }
+        .addons-container { max-width: 600px; margin: 0 auto; border: 1px solid var(--border-color); padding: 36px 34px; background-color: var(--bg-card); border-radius: var(--radius-md); opacity: 0.45; pointer-events: none; transition: 0.35s ease; box-shadow: 0 4px 20px var(--shadow-subtle); }
+        .addons-container.active { opacity: 1; pointer-events: auto; border-color: var(--accent); }
+        .addon-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; padding: 15px 0; border-bottom: 1px dashed var(--border-dashed); cursor: pointer; transition: 0.2s; }
+        .addon-row:first-child { padding-top: 0; } .addon-row:last-child { padding-bottom: 0; border-bottom: none; }
+        .addon-label { display: flex; align-items: center; gap: 14px; cursor: pointer; width: 100%; font-weight: 400; }
+        .addon-label input { accent-color: var(--accent); width: 18px; height: 18px; cursor: pointer; }
+        .addon-price { font-weight: 500; color: var(--accent); white-space: nowrap; font-family: 'Fraunces', serif; }
+        .invoice-box { max-width: 600px; margin: 28px auto 0 auto; background-color: var(--highlight-bg); border: 1px solid var(--border-color); padding: 34px; border-radius: var(--radius-md); display: none; }
+        .invoice-box.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .invoice-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 13px; color: var(--text-secondary); }
+        .invoice-total { border-top: 1px solid var(--border-color); margin-top: 16px; padding-top: 16px; font-weight: 600; color: var(--text-primary); font-size: 16px; display: flex; justify-content: space-between; }
+        .invoice-retainer { background-color: var(--accent); color: #fff; padding: 17px 18px; margin-top: 22px; display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 16px; border-radius: var(--radius-sm); }
+        .booking-section { margin-top: 100px; background-color: var(--bg-booking); padding: 72px 44px; border-radius: var(--radius-lg); border: none; box-shadow: 0 4px 24px var(--shadow-subtle); }
+        .step-heading { font-family: 'Fraunces', serif; font-weight: 500; font-size: 24px; margin-bottom: 28px; text-align: center; border: none; padding-bottom: 0; }
+        .payment-wrapper { max-width: 600px; margin: 0 auto; text-align: center; padding: 52px 38px; background-color: var(--bg-container); border: 1px solid var(--border-color); border-radius: var(--radius-lg); box-shadow: 0 16px 40px var(--shadow-subtle); }
+        .payment-recap-box { text-align: left; border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 18px 22px; margin-bottom: 30px; background-color: var(--highlight-bg); }
+        .payment-recap-row { display: flex; justify-content: space-between; align-items: baseline; font-size: 13.5px; color: var(--text-secondary); gap: 16px; }
+        .payment-recap-row + .payment-recap-row { margin-top: 11px; padding-top: 11px; border-top: 1px dashed var(--border-dashed); }
+        .payment-recap-retainer-row { font-weight: 600; color: var(--accent); font-size: 14.5px; }
+        .input-group { margin-bottom: 22px; text-align: left; }
+        .input-label { display: block; font-size: 11.5px; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 9px; color: var(--text-secondary); font-weight: 500; }
+        .email-input { width: 100%; padding: 15px 16px; background: var(--bg-body); border: 1.5px solid var(--border-color); color: var(--text-primary); font-family: 'Poppins'; border-radius: var(--radius-sm); font-size: 16px; outline: none; transition: border-color 0.25s ease, box-shadow 0.25s ease; }
+        .email-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3.5px rgba(138,115,85,0.12); }
+        .cta-btn-primary { display: block; width: 100%; background-color: rgba(26,24,21,0.88); backdrop-filter: blur(16px) saturate(160%); -webkit-backdrop-filter: blur(16px) saturate(160%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); color: #fff; padding: 19px 45px; font-size: 13.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.8px; border: none; border-radius: 30px; cursor: pointer; transition: all 0.4s cubic-bezier(0.16,1,0.3,1); }
+        .cta-btn-primary:hover { background-color: rgba(138,115,85,0.92); color: #fff; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(138,115,85,0.28), inset 0 1px 0 rgba(255,255,255,0.16); }
+        .cta-btn-primary:disabled { background-color: var(--border-color); backdrop-filter: none; -webkit-backdrop-filter: none; color: var(--text-secondary); cursor: not-allowed; transform: none; box-shadow: none; }
+        .receipt-action-btn { background: rgba(26,24,21,0.05); border: 1px solid var(--border-color); color: var(--text-primary); padding: 11px 22px; font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; border-radius: 30px; cursor: pointer; transition: all 0.3s ease; }
+        .receipt-action-btn:hover { background: rgba(138,115,85,0.12); border-color: var(--accent); color: var(--accent-deep); }
+        @media (prefers-color-scheme: dark) { .receipt-action-btn { background: rgba(255,255,255,0.05); } }
+        .protocol-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px 40px; }
+        .protocol-item h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 16px; margin-bottom: 12px; }
+        .protocol-item p { font-size: 13.5px; color: var(--text-secondary); text-align: left; line-height: 1.85; }
+        .highlight-text { color: var(--accent); font-weight: 600; }
+        .brand-footer { margin-top: 60px; padding-top: 44px; border-top: 1px solid var(--border-color); text-align: center; }
+        .footer-contact { margin-top: 14px; font-size: 12.5px; color: var(--text-secondary); }
+        .footer-contact a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; }
+        .footer-contact a:hover { color: var(--accent); }
+        .footer-contact-divider { margin: 0 10px; opacity: 0.5; }
+        .stepper-sentinel { height: 1px; }
+        .sticky-progress-wrap { position: sticky; top: 0; z-index: 500; background-color: rgba(250,248,244,0.72); backdrop-filter: blur(16px) saturate(160%); -webkit-backdrop-filter: blur(16px) saturate(160%); margin: 0 -80px 40px -80px; padding: 28px 80px 20px 80px; transition: padding 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease; border-bottom: 1px solid transparent; }
+        @media (prefers-color-scheme: dark) { .sticky-progress-wrap { background-color: rgba(22,21,19,0.72); } }
+        .sticky-progress-wrap.is-stuck { padding-top: 12px; padding-bottom: 10px; box-shadow: 0 12px 28px var(--shadow-hover); border-bottom-color: var(--border-color); }
+        .progress-stepper { display: flex; align-items: center; justify-content: center; max-width: 460px; margin: 0 auto; transition: max-width 0.35s ease; }
+        .sticky-progress-wrap.is-stuck .progress-stepper { max-width: 320px; }
+        .stepper-item { display: flex; flex-direction: column; align-items: center; gap: 9px; flex: 0 0 auto; }
+        .stepper-circle { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 13px; font-weight: 500; color: var(--text-secondary); background-color: var(--bg-container); transition: all 0.35s cubic-bezier(0.16,1,0.3,1); }
+        .sticky-progress-wrap.is-stuck .stepper-circle { width: 18px; height: 18px; font-size: 8px; }
+        .stepper-label { font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--text-secondary); white-space: nowrap; transition: all 0.3s ease; font-weight: 500; }
+        .sticky-progress-wrap.is-stuck .stepper-label { font-size: 6px; }
+        .stepper-item.active .stepper-circle { border-color: var(--accent); background-color: var(--accent); color: #fff; }
+        .stepper-item.active .stepper-label { color: var(--text-primary); font-weight: 600; }
+        .stepper-item.done .stepper-circle { border-color: var(--accent); background-color: var(--bg-container); color: var(--accent); }
+        .stepper-item.done .stepper-label { color: var(--accent); }
+        .stepper-line { flex: 1 1 auto; height: 1px; background-color: var(--border-color); margin: 0 10px; margin-bottom: 19px; transition: background-color 0.3s ease, margin-bottom 0.3s ease; }
+        .sticky-progress-wrap.is-stuck .stepper-line { margin-bottom: 11px; }
+        .stepper-line.done { background-color: var(--accent); }
+        [data-lp-booking] { --lpb-bg:#ffffff;--lpb-surface:#faf8f4;--lpb-surface2:#f2ede2;--lpb-border:#e8e3d9;--lpb-text:#1a1815;--lpb-muted:#6b6459;--lpb-accent:#8a7355;--lpb-accent-soft:rgba(138,115,85,.12);--lpb-accent-text:#ffffff;--lpb-disabled:#c9c6bf;--lpb-input-bg:#faf8f4;--lpb-shadow:0 4px 24px rgba(26,24,21,.06);--lpb-radius:18px;--lpb-radius-sm:9px;--lpb-transition:0.25s cubic-bezier(0.16,1,0.3,1); }
+        @media (prefers-color-scheme: dark) { [data-lp-booking] { --lpb-bg:#1c1b18;--lpb-surface:#232220;--lpb-surface2:#2c2a26;--lpb-border:#383530;--lpb-text:#f3f0ea;--lpb-muted:#a8a196;--lpb-accent:#c4a67e;--lpb-accent-soft:rgba(196,166,126,.16);--lpb-accent-text:#1c1b18;--lpb-disabled:#47443c;--lpb-input-bg:#232220;--lpb-shadow:0 4px 24px rgba(0,0,0,.4); } }
+        [data-lp-booking] { background:var(--lpb-bg); color:var(--lpb-text); font-family:'Poppins',sans-serif; padding:88px 20px; transition:background var(--lpb-transition),color var(--lpb-transition); }
+        .lpb-inner { max-width:620px; margin:0 auto; }
+        .lpb-heading { text-align:center; margin-bottom:34px; }
+        .lpb-heading h2 { font-family:'Fraunces',serif; font-weight:500; font-size:26px; color:var(--lpb-text); margin-bottom:12px; }
+        .lpb-heading p { font-size:13.5px; color:var(--lpb-muted); margin-top:6px; line-height:1.7; }
+        .lpb-card { background:var(--lpb-surface); border:1px solid var(--lpb-border); border-radius:var(--lpb-radius); padding:42px 36px; box-shadow:var(--lpb-shadow); }
+        .lpb-step-label { font-size:10.5px; letter-spacing:2.5px; text-transform:uppercase; font-weight:600; color:var(--lpb-accent); margin-bottom:20px; display:block; }
+        .lpb-cal-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+        .lpb-cal-nav-btn { background:none; border:1px solid var(--lpb-border); border-radius:50%; width:34px; height:34px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--lpb-text); transition:background var(--lpb-transition); flex-shrink:0; }
+        .lpb-cal-nav-btn:hover:not(:disabled) { background:var(--lpb-surface2); border-color:var(--lpb-accent); }
+        .lpb-cal-nav-btn:disabled { opacity:0.3; cursor:not-allowed; }
+        .lpb-cal-month { font-family:'Fraunces',serif; font-size:16px; font-weight:500; color:var(--lpb-text); }
+        .lpb-cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+        .lpb-cal-dow { font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--lpb-muted); text-align:center; padding:6px 0 12px; font-weight:500; }
+        .lpb-cal-day { aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:13px; cursor:pointer; transition:all var(--lpb-transition); border:none; background:none; color:var(--lpb-text); font-family:'Poppins',sans-serif; -webkit-tap-highlight-color:transparent; position:relative; }
+        .lpb-cal-day:not(.lpb-day-disabled):not(.lpb-day-empty):hover { background:var(--lpb-accent-soft); color:var(--lpb-accent); }
+        .lpb-cal-day.lpb-day-today { font-weight:700; color:var(--lpb-accent); }
+        .lpb-cal-day.lpb-day-today::after { content:''; position:absolute; bottom:4px; left:50%; transform:translateX(-50%); width:4px; height:4px; border-radius:50%; background:var(--lpb-accent); }
+        .lpb-cal-day.lpb-day-selected { background:var(--lpb-accent)!important; color:var(--lpb-accent-text)!important; font-weight:600; box-shadow:0 4px 14px rgba(138,115,85,.35); }
+        .lpb-cal-day.lpb-day-selected::after { display:none; }
+        .lpb-cal-day.lpb-day-disabled { color:var(--lpb-disabled); cursor:not-allowed; pointer-events:none; }
+        .lpb-cal-day.lpb-day-empty { pointer-events:none; }
+        .lpb-divider { height:1px; background:var(--lpb-border); margin:32px 0; }
+        .lpb-times { display:grid; grid-template-columns:repeat(auto-fill,minmax(108px,1fr)); gap:10px; }
+        .lpb-time-btn { padding:13px 10px; border:1px solid var(--lpb-border); border-radius:var(--lpb-radius-sm); background:var(--lpb-surface); color:var(--lpb-text); font-family:'Poppins',sans-serif; font-size:13px; font-weight:500; cursor:pointer; text-align:center; transition:all var(--lpb-transition); }
+        .lpb-time-btn:hover { border-color:var(--lpb-accent); background:var(--lpb-accent-soft); color:var(--lpb-accent); }
+        .lpb-time-btn.lpb-time-selected { background:var(--lpb-accent); border-color:var(--lpb-accent); color:var(--lpb-accent-text); box-shadow:0 4px 14px rgba(138,115,85,.30); }
+        .lpb-times-placeholder { font-size:13.5px; color:var(--lpb-muted); font-style:italic; text-align:center; padding:14px 0; }
+        .lpb-fields { display:flex; flex-direction:column; gap:18px; }
+        .lpb-field { display:flex; flex-direction:column; gap:8px; }
+        .lpb-field label { font-size:11px; text-transform:uppercase; letter-spacing:1px; font-weight:600; color:var(--lpb-muted); }
+        .lpb-field input, .lpb-field textarea { width:100%; padding:15px 17px; background:var(--lpb-input-bg); border:1.5px solid var(--lpb-border); border-radius:var(--lpb-radius-sm); color:var(--lpb-text); font-family:'Poppins',sans-serif; font-size:16px; outline:none; transition:border-color var(--lpb-transition),box-shadow var(--lpb-transition); -webkit-appearance:none; }
+        .lpb-field input:focus, .lpb-field textarea:focus { border-color:var(--lpb-accent); box-shadow:0 0 0 3.5px var(--lpb-accent-soft); }
+        .lpb-submit-wrap { margin-top:32px; }
+        .lpb-submit { width:100%; padding:19px; background:var(--lpb-accent); border:none; border-radius:50px; color:var(--lpb-accent-text); font-family:'Poppins',sans-serif; font-size:13px; font-weight:600; letter-spacing:1.6px; text-transform:uppercase; cursor:pointer; transition:all 0.35s cubic-bezier(0.16,1,0.3,1); }
+        .lpb-submit:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 14px 32px rgba(138,115,85,.35); }
+        .lpb-submit:disabled { background:var(--lpb-surface2); color:var(--lpb-disabled); cursor:not-allowed; }
+        .lpb-submit-hint { text-align:center; font-size:11.5px; color:var(--lpb-muted); margin-top:14px; min-height:16px; }
+        .lpb-toast { display:none; align-items:flex-start; gap:16px; margin-top:28px; padding:22px 24px; background:var(--lpb-accent-soft); border:1px solid var(--lpb-accent); border-radius:var(--lpb-radius-sm); }
+        .lpb-toast.lpb-visible { display:flex; animation:lpb-fade-up 0.5s cubic-bezier(0.16,1,0.3,1) forwards; }
+        .lpb-toast-icon { width:32px; height:32px; border-radius:50%; background:var(--lpb-accent); display:flex; align-items:center; justify-content:center; flex-shrink:0; animation:lpb-check-pop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.15s both; }
+        @keyframes lpb-check-pop { from { transform:scale(0.4); opacity:0; } to { transform:scale(1); opacity:1; } }
+        .lpb-toast-icon svg { color:var(--lpb-accent-text); }
+        .lpb-toast-body h3 { font-family:'Fraunces',serif; font-weight:500; font-size:15px; margin-bottom:5px; color:var(--lpb-text); }
+        .lpb-toast-body p { font-size:12.5px; color:var(--lpb-muted); line-height:1.7; margin:0; }
+        @keyframes lpb-fade-up { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
+        .lpb-animate-in { animation:lpb-fade-up 0.4s ease forwards; }
+        .receipt-doc { display:none; }
+        .receipt-doc.is-active { display:block; position:fixed; inset:0; z-index:200; overflow-y:auto; background:#fff; color:#1a1815; padding:48px 40px; font-family:'Poppins',sans-serif; }
+        .receipt-doc .receipt-header { display:flex; justify-content:space-between; align-items:baseline; border-bottom:2px solid #1a1815; padding-bottom:18px; margin-bottom:28px; }
+        .receipt-doc .receipt-logo { font-size:20px; font-weight:500; }
+        .receipt-doc .receipt-title { font-size:12px; text-transform:uppercase; letter-spacing:1.5px; color:#6b6459; }
+        .receipt-doc .receipt-meta { display:grid; grid-template-columns:1fr 1fr; gap:14px 24px; margin-bottom:28px; }
+        .receipt-doc .receipt-meta span { display:block; font-size:10.5px; text-transform:uppercase; letter-spacing:1px; color:#6b6459; margin-bottom:4px; }
+        .receipt-doc .receipt-meta strong { font-size:13.5px; font-weight:500; word-break:break-word; }
+        .receipt-doc .receipt-items { width:100%; border-collapse:collapse; margin-bottom:24px; }
+        .receipt-doc .receipt-items th { text-align:left; font-size:10.5px; text-transform:uppercase; letter-spacing:1px; color:#6b6459; padding-bottom:10px; border-bottom:1px solid #e8e3d9; }
+        .receipt-doc .receipt-items td { padding:12px 0; border-bottom:1px dashed #e8e3d9; font-size:13.5px; }
+        .receipt-doc .receipt-items td:last-child, .receipt-doc .receipt-items th:last-child { text-align:right; }
+        .receipt-doc .receipt-totals { max-width:320px; margin-left:auto; }
+        .receipt-doc .receipt-totals > div { display:flex; justify-content:space-between; font-size:13px; padding:7px 0; color:#6b6459; }
+        .receipt-doc .receipt-paid-today { border-top:1px solid #1a1815; margin-top:6px; padding-top:12px!important; font-weight:600; color:#1a1815!important; font-size:14.5px!important; }
+        .receipt-doc .receipt-footer { margin-top:40px; text-align:center; font-size:12px; color:#6b6459; font-style:italic; }
+        @media (max-width: 768px) {
+            body { padding: 0; background-color: var(--bg-container); }
+            .container { padding: 96px 20px 44px 20px; border: none; box-shadow: none; }
+            .brand-header { margin-bottom: 20px; } .brand-intro { font-size: 13.5px; line-height: 1.7; }
+            .section-title { font-size: 24px; } .section-block { margin-bottom: 68px; }
+            .tier-stack { max-width: 100%; gap: 34px; }
+            .tier-scrim { padding: 56px 22px 22px 22px; }
+            .select-btn { min-width: 140px; padding: 12px 22px; font-size: 11px; }
+            .sticky-progress-wrap { margin: 0 -20px 40px -20px; padding-left: 20px; padding-right: 20px; }
+            .addons-container, .invoice-box, .payment-wrapper { max-width: 400px; margin-left: auto; margin-right: auto; }
+            .addons-container { padding: 26px 20px; }
+            .addon-row { flex-direction: column; align-items: flex-start; gap: 8px; padding: 18px 0; }
+            .addon-price { padding-left: 32px; font-size: 13.5px; }
+            .booking-section { padding: 48px 16px; border-left: none; border-right: none; border-radius: 0; margin-left: -20px; margin-right: -20px; box-shadow: none; }
+            .payment-wrapper { padding: 40px 24px; }
+            .protocol-grid { grid-template-columns: 1fr; gap: 36px; }
+            [data-lp-booking] { padding: 60px 18px; }
+            .lpb-card { padding: 32px 22px; }
+            .lpb-cal-day { font-size: 12px; }
+            .lpb-times { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+            .lpb-time-btn { padding: 12px 6px; font-size: 12px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="site-header" id="site-header">
+        <a href="./" class="site-logo-link"><img src="" alt="Libertypictures" class="site-logo" id="site-logo-img" style="display:none;"></a>
+    </header>
+    <div class="container">
+        <header class="brand-header">
+            <p class="brand-intro">Thank you for your interest in our <span>wedding coverage</span>. Select your desired <span>package</span>, book your <span>date</span>, and secure your <span>retainer</span> below.</p>
+        </header>
+        <div class="stepper-sentinel" id="stepper-sentinel"></div>
+        <div class="sticky-progress-wrap" id="sticky-progress-wrap">
+            <div class="progress-stepper" id="progress-stepper">
+                <div class="stepper-item active" id="step-1"><span class="stepper-circle">01</span><span class="stepper-label">Choose Your Package</span></div>
+                <div class="stepper-line" id="line-1"></div>
+                <div class="stepper-item" id="step-2"><span class="stepper-circle">02</span><span class="stepper-label">Pick a Date</span></div>
+                <div class="stepper-line" id="line-2"></div>
+                <div class="stepper-item" id="step-3"><span class="stepper-circle">03</span><span class="stepper-label">Secure with Retainer</span></div>
+            </div>
+        </div>
+        <section class="section-block" id="packages">
+            <h2 class="section-title serif">Wedding Packages</h2>
+            <p class="section-meta">Every package is crafted to honour the beauty of your celebration. Choose what feels right for your day.</p>
+            <div class="tier-stack" id="packages-grid">
+                <p style="text-align:center; color:var(--text-secondary); font-size:13px;">Loading packages&hellip;</p>
+            </div>
+        </section>
+        <section class="section-block" id="addons">
+            <h2 class="section-title serif">Custom Additions</h2>
+            <p class="section-meta">Entirely optional &#8212; enhance your wedding coverage with any of these.</p>
+            <div class="addons-container" id="addons-box"></div>
+            <div class="invoice-box" id="invoice-ui">
+                <h3 class="serif" style="font-size:17px;font-weight:500;margin-bottom:18px;">Booking Summary</h3>
+                <div class="invoice-row"><span id="inv-package-name">Package Name</span><span id="inv-package-price">&#8358;0</span></div>
+                <div id="inv-addons-list"></div>
+                <div class="invoice-total"><span>Subtotal</span><span id="inv-subtotal">&#8358;0</span></div>
+                <div class="invoice-row" style="margin-top:12px;font-size:12.5px;"><span>30% Balance (Due on delivery)</span><span id="inv-balance">&#8358;0</span></div>
+                <div class="invoice-retainer"><span>70% Retainer Due Today:</span><span id="inv-retainer">&#8358;0</span></div>
+            </div>
+        </section>
+        <section data-lp-booking="" id="lp-booking">
+            <div class="lpb-inner">
+                <div class="lpb-heading"><h2 class="serif">Appointment Calendar</h2><p>Choose your wedding date and a consultation time &#8212; we'll confirm within 24 hours.</p></div>
+                <div class="lpb-card" id="lpb-form-card">
+                    <span class="lpb-step-label">Choose a Date</span>
+                    <div class="lpb-cal-nav">
+                        <button class="lpb-cal-nav-btn" id="lpb-prev-month" aria-label="Previous month" disabled=""><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 1 3 7 9 13"></polyline></svg></button>
+                        <span class="lpb-cal-month" id="lpb-cal-month-label" aria-live="polite"></span>
+                        <button class="lpb-cal-nav-btn" id="lpb-next-month" aria-label="Next month"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 1 11 7 5 13"></polyline></svg></button>
+                    </div>
+                    <div class="lpb-cal-grid" id="lpb-cal-grid" role="grid" aria-label="Date picker"></div>
+                    <div class="lpb-divider"></div>
+                    <span class="lpb-step-label">Available Times</span>
+                    <p class="lpb-times-placeholder" id="lpb-times-placeholder">Select a date to see available times</p>
+                    <div class="lpb-times" id="lpb-times-grid" style="display:none;" role="group" aria-label="Available time slots"></div>
+                    <div class="lpb-divider"></div>
+                    <span class="lpb-step-label">Your Details</span>
+                    <div class="lpb-fields">
+                        <div class="lpb-field"><label for="lpb-name">Your Name(s) <span style="color:var(--lpb-accent)">*</span></label><input type="text" id="lpb-name" placeholder="e.g. Amara &amp; Chidi Okafor" autocomplete="name"></div>
+                        <div class="lpb-field"><label for="lpb-email">Email Address <span style="color:var(--lpb-accent)">*</span></label><input type="email" id="lpb-email" placeholder="you@example.com" autocomplete="email"></div>
+                    </div>
+                    <div class="lpb-submit-wrap">
+                        <button class="lpb-submit" id="lpb-submit-btn" disabled="">Book Appointment</button>
+                        <p class="lpb-submit-hint" id="lpb-submit-hint">Select a date, time, name &amp; email to continue</p>
+                    </div>
+                    <div class="lpb-toast" id="lpb-success-card"><div class="lpb-toast-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div><div class="lpb-toast-body"><h3>Request Received</h3><p id="lpb-success-msg">We'll confirm your booking within 24 hours.</p></div></div>
+                </div>
+            </div>
+        </section>
+        <div id="booking" class="booking-section">
+            <h3 class="step-heading serif" id="secure-session">Secure Your Date</h3>
+            <div class="payment-wrapper">
+                <div class="payment-recap-box" id="payment-recap-package" style="display:none;"><div class="payment-recap-row"><span id="payment-recap-name">Package Name</span><span id="payment-recap-subtotal">&#8358;0</span></div><div class="payment-recap-row payment-recap-retainer-row"><span>Retainer Due Today</span><span id="payment-recap-retainer-amount">&#8358;0</span></div></div>
+                <div class="input-group"><label class="input-label" for="client-email">Email Address for Receipt</label><input type="email" id="client-email" class="email-input" placeholder="hello@example.com" required=""><p style="font-size:11px;margin-top:8px;color:var(--text-secondary);">Pre-filled from your booking &#8212; edit if you'd like the receipt sent elsewhere.</p></div>
+                <label style="display:flex;align-items:flex-start;gap:9px;text-align:left;font-size:12px;color:var(--text-secondary);margin-bottom:24px;cursor:pointer;line-height:1.6;"><input type="checkbox" id="policy-ack" style="margin-top:3px;flex-shrink:0;"><span>I've read and agree to the <a href="#terms-conditions" id="policy-link" style="color:var(--accent);text-decoration:underline;">Terms and Conditions</a>.</span></label>
+                <button type="button" class="cta-btn-primary" id="pay-btn" onclick="payWithPaystack()" disabled="">Select a package to pay</button>
+                <p style="font-size:11.5px;margin-top:18px;color:var(--text-secondary);" id="payment-secure-note">Payments securely processed by Paystack.</p>
+                <div id="lpb-payment-success" style="display:none;text-align:center;padding:28px 4px 4px;">
+                    <div style="width:52px;height:52px;border-radius:50%;background:var(--highlight-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
+                    <div class="serif" style="font-size:19px;font-weight:500;margin-bottom:10px;">You're booked.</div>
+                    <p style="font-size:13.5px;color:var(--text-secondary);line-height:1.8;margin-bottom:8px;">Your retainer has been received and your wedding date is secured. We'll be in touch within 24 hours to begin planning.</p>
+                    <p style="font-size:11px;color:var(--text-secondary);margin-bottom:24px;">Reference: <span id="lpb-payment-reference"></span></p>
+                    <a href="#" id="lpb-whatsapp-link" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:#25D366;color:#fff;text-decoration:none;font-size:12.5px;font-weight:600;letter-spacing:0.4px;border-radius:30px;">Message Us on WhatsApp</a>
+                    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;"><button type="button" id="receipt-jpeg-btn" class="receipt-action-btn">Save Receipt as JPEG</button></div>
+                </div>
+            </div>
+        </div>
+        <div id="receipt-template" class="receipt-doc">
+            <div class="receipt-header"><div class="receipt-logo serif">Libertypictures</div><div class="receipt-title">Wedding Payment Receipt</div></div>
+            <div class="receipt-meta"><div><span>Receipt for</span><strong id="receipt-client-name"></strong></div><div><span>Email</span><strong id="receipt-client-email"></strong></div><div><span>Date</span><strong id="receipt-date"></strong></div><div><span>Reference</span><strong id="receipt-reference"></strong></div></div>
+            <table class="receipt-items"><thead><tr><th>Description</th><th>Amount</th></tr></thead><tbody id="receipt-items-body"></tbody></table>
+            <div class="receipt-totals"><div><span>Subtotal</span><strong id="receipt-subtotal"></strong></div><div><span>Balance due on delivery</span><strong id="receipt-balance"></strong></div><div class="receipt-paid-today"><span>Paid Today (Retainer)</span><strong id="receipt-retainer"></strong></div></div>
+            <div class="receipt-footer">Thank you for booking your wedding with Libertypictures.</div>
+        </div>
+        <section class="section-block" id="terms-conditions" style="margin-top:100px;">
+            <h2 class="section-title serif">Terms and Conditions</h2>
+            <div class="protocol-grid">
+                <div class="protocol-item"><h3>Retainer &amp; Settlement</h3><p>A <span class="highlight-text">non-refundable retainer of 70%</span> is required to secure your wedding date. The remaining <span class="highlight-text">30% balance</span> is due on delivery of your final images and albums.</p></div>
+                <div class="protocol-item"><h3>After the Celebration</h3><p>Your photographer will provide a flash drive containing JPEGs for selection, based on your chosen package. By the end of the event or the following day, you'll receive <span class="highlight-text">preview images</span> for personal and social media use.</p></div>
+                <div class="protocol-item"><h3>Selection &amp; Turnaround</h3><p>Turnaround time is <span class="highlight-text">14&#8211;16 working days</span> after you've made your photo selections. This may vary based on additional deliverables or special requests.</p></div>
+                <div class="protocol-item"><h3>Image Rights &amp; Usage</h3><p>Libertypictures retains <span class="highlight-text">full ownership</span> of all images and may use selected images for <span class="highlight-text">portfolio or promotional purposes</span>.</p></div>
+            </div>
+        </section>
+        <footer class="brand-footer">
+            <span class="serif" style="font-size:15px;letter-spacing:0.3px;font-weight:500;">Libertypictures &#169; 2026</span>
+            <div class="footer-contact"><a href="https://wa.me/2349075170240" target="_blank" rel="noopener">WhatsApp</a><span class="footer-contact-divider">&#183;</span><a href="mailto:visualsliberty@gmail.com">Email</a></div>
+        </footer>
+    </div>
+    <script>
+        var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
+
+        /* ── Default data (used when /api/wedding-config has no overrides yet) ── */
+        var DEFAULT_PACKAGES = [
+            { name: "The Vintage", price: 300000, badge: "", description: "300 soft-copy photographs\n20 retouched portraits of client\u2019s choice\nDelivered on a branded flash drive" },
+            { name: "The Vintage Plus", price: 400000, badge: "", description: "200 photographs (client\u2019s selection)\n20 retouched portraits of client\u2019s choice\n1 \u00d7 12\u00d724 synthetic photo album" },
+            { name: "The Standard", price: 600000, badge: "Popular", description: "Pre-wedding shoot (2 outfits, 2 hours)\nPre-wedding video\n2 frames (12\u00d715 & 10\u00d712)\n200\u2013250 photographs (client\u2019s selection)\n15 retouched portraits of client\u2019s choice\n1 \u00d7 12\u00d724 photo album" },
+            { name: "The Complete", price: 800000, badge: "Premium", description: "Full ceremony coverage (all events)\n2 \u00d7 12\u00d715 framed prints\n200 photographs (client\u2019s selection)\n12 retouched portraits of client\u2019s choice\n1 \u00d7 12\u00d724 photo album\n2 photographers on-site\n1 synthetic photo album (bonus)" }
+        ];
+        var DEFAULT_ADDONS = [
+            { name: "Same-Day Preview Reel", price: 100000 },
+            { name: "Additional 12\u00d715 Framed Print", price: 25000 },
+            { name: "Canvas Backdrop On-Site", price: 50000 }
+        ];
+
+        /* ── Logo ── */
+        (function () {
+            fetch(API_BASE + '/api/settings').then(function (r) { return r.json(); }).then(function (d) {
+                var s = d.settings || {};
+                if (s.logo_url) { var img = document.getElementById('site-logo-img'); if (img) { img.src = API_BASE + s.logo_url; img.style.display = 'block'; } }
+            }).catch(function () {});
+        })();
+
+        /* ── Sticky stepper sentinel ── */
+        (function () {
+            var sentinel = document.getElementById('stepper-sentinel');
+            var wrap = document.getElementById('sticky-progress-wrap');
+            if (sentinel && wrap && 'IntersectionObserver' in window) {
+                new IntersectionObserver(function (e) { wrap.classList.toggle('is-stuck', !e[0].isIntersecting); }, { threshold: 0 }).observe(sentinel);
+            }
+        })();
+
+        /* ── Cart state ── */
+        var cart = { basePrice: 0, baseName: "", addons: [], subtotal: 0, retainer: 0, balance: 0 };
+        var formatNaira = function (amount) { return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(amount); };
+
+        function updateStep(stepNumber) {
+            document.querySelectorAll('.stepper-item').forEach(function (el, idx) { var n = idx + 1; el.classList.remove('active', 'done'); if (n < stepNumber) el.classList.add('done'); else if (n === stepNumber) el.classList.add('active'); });
+            document.querySelectorAll('.stepper-line').forEach(function (line, idx) { if (idx + 1 < stepNumber) line.classList.add('done'); else line.classList.remove('done'); });
+        }
+
+        /* ── Helpers ── */
+        function escHtml(str) { var d = document.createElement('div'); d.textContent = String(str == null ? '' : str); return d.innerHTML; }
+        function lpSmoothScrollTo(target, options) {
+            options = options || {}; var duration = options.duration || 700; var offset = options.offset || 0;
+            var startY = window.pageYOffset; var targetY = target.getBoundingClientRect().top + startY + offset;
+            var distance = targetY - startY; var startTime = null;
+            function ease(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2, 3)/2; }
+            function step(ts) { if (!startTime) startTime = ts; var p = Math.min((ts - startTime) / duration, 1); window.scrollTo(0, startY + distance * ease(p)); if (p < 1) requestAnimationFrame(step); }
+            requestAnimationFrame(step);
+        }
+        function lpStickyBarHeight() { var bar = document.getElementById('sticky-progress-wrap'); var h = bar ? bar.getBoundingClientRect().height : 0; return h > 0 ? h : 90; }
+
+        /* ── Dynamic render: Packages ── */
+        function renderPackages(packages) {
+            var grid = document.getElementById('packages-grid');
+            if (!packages.length) { grid.innerHTML = '<p style="text-align:center;color:var(--text-secondary);font-size:13px;">Packages are being updated \u2014 check back shortly.</p>'; return; }
+            grid.innerHTML = packages.map(function (p) {
+                var bullets = (p.description || '').split('\n').filter(function (l) { return l.trim(); });
+                var bulletsHtml = bullets.length ? '<ul class="tier-details">' + bullets.map(function (b) { return '<li>' + escHtml(b) + '</li>'; }).join('') + '</ul>' : '';
+                var badgeHtml = p.badge ? '<span class="tier-badge">' + escHtml(p.badge) + '</span>' : '';
+                var priceLabel = '\u20a6' + Math.round(p.price / 1000) + 'k';
+                return '<div class="tier-card no-photo" data-price="' + p.price + '" data-name="' + escHtml(p.name) + '">' +
+                    '<div class="tier-photo-full"></div>' +
+                    '<div class="tier-scrim">' + badgeHtml + '<h3>' + escHtml(p.name) + '</h3>' + bulletsHtml +
+                    '<div class="tier-price-box"><span class="tier-price">' + priceLabel + '</span>' +
+                    '<button class="select-btn" onclick="selectPackage(this)">Select Package</button></div></div></div>';
+            }).join('');
+            if (typeof window.lpInitScrollReveal === 'function') window.lpInitScrollReveal(grid.querySelectorAll('.tier-card'), 100);
+        }
+
+        /* ── Dynamic render: Add-ons ── */
+        function renderAddons(addons) {
+            var box = document.getElementById('addons-box');
+            box.innerHTML = addons.map(function (a) {
+                return '<label class="addon-row"><div class="addon-label">' +
+                    '<input type="checkbox" class="addon-checkbox" value="' + a.price + '" data-name="' + escHtml(a.name) + '">' +
+                    '<span>' + escHtml(a.name) + '</span></div>' +
+                    '<span class="addon-price">' + formatNaira(a.price) + '</span></label>';
+            }).join('');
+            box.querySelectorAll('.addon-checkbox').forEach(function (cb) {
+                cb.addEventListener('change', function () {
+                    cart.addons = [];
+                    document.querySelectorAll('.addon-checkbox:checked').forEach(function (c) {
+                        cart.addons.push({ name: c.getAttribute('data-name'), price: parseFloat(c.value) });
+                    });
+                    calculateTotals();
+                });
+            });
+        }
+
+        /* ── Fetch config from admin, fall back to defaults ── */
+        (function () {
+            fetch(API_BASE + '/api/wedding-config').then(function (r) { return r.json(); }).then(function (d) {
+                renderPackages((d.packages && d.packages.length) ? d.packages : DEFAULT_PACKAGES);
+                renderAddons((d.addons && d.addons.length) ? d.addons : DEFAULT_ADDONS);
+            }).catch(function () {
+                renderPackages(DEFAULT_PACKAGES);
+                renderAddons(DEFAULT_ADDONS);
+            });
+        })();
+
+        /* ── DOMContentLoaded: scrollspy, reveal, policy link ── */
+        document.addEventListener('DOMContentLoaded', function () {
+            var spySections = [{ el: document.getElementById('packages'), step: 1 }, { el: document.getElementById('lp-booking'), step: 2 }, { el: document.getElementById('booking'), step: 3 }].filter(function (s) { return s.el; });
+            if (spySections.length && 'IntersectionObserver' in window) {
+                var spy = new IntersectionObserver(function (entries) { entries.forEach(function (e) { if (!e.isIntersecting) return; var m = spySections.find(function (s) { return s.el === e.target; }); if (m) updateStep(m.step); }); }, { rootMargin: '-25% 0px -45% 0px', threshold: 0 });
+                spySections.forEach(function (s) { spy.observe(s.el); });
+            }
+            function lpInitScrollReveal(elements, stagger) {
+                if (!('IntersectionObserver' in window)) return;
+                var els = Array.prototype.slice.call(elements); if (!els.length) return;
+                els.forEach(function (el) { el.classList.add('lp-reveal'); });
+                var pendingHides = new WeakMap();
+                var obs = new IntersectionObserver(function (entries) {
+                    entries.forEach(function (entry) {
+                        var el = entry.target; var idx = els.indexOf(el);
+                        if (entry.isIntersecting) {
+                            var ph = pendingHides.get(el); if (ph) { clearTimeout(ph); pendingHides.delete(el); }
+                            if (el.classList.contains('is-in')) return;
+                            el.style.transitionDelay = (idx * (stagger || 0)) + 'ms'; el.classList.add('is-in');
+                        } else {
+                            if (!el.classList.contains('is-in') || pendingHides.has(el)) return;
+                            var ht = setTimeout(function () { pendingHides.delete(el); el.style.transitionDelay = '0ms'; el.classList.remove('is-in'); }, 400);
+                            pendingHides.set(el, ht);
+                        }
+                    });
+                }, { threshold: 0.1, rootMargin: window.innerWidth <= 700 ? '-5% 0px -5% 0px' : '-15% 0px -15% 0px' });
+                els.forEach(function (el) { obs.observe(el); });
+            }
+            window.lpInitScrollReveal = lpInitScrollReveal;
+            lpInitScrollReveal(document.querySelectorAll('#lpb-form-card'), 0);
+            lpInitScrollReveal(document.querySelectorAll('#addons-box'), 0);
+            lpInitScrollReveal(document.querySelectorAll('.payment-wrapper'), 0);
+            var policyLink = document.getElementById('policy-link');
+            if (policyLink) { policyLink.addEventListener('click', function (e) { e.preventDefault(); var t = document.getElementById('terms-conditions'); if (t) lpSmoothScrollTo(t, { duration: 700, offset: -(lpStickyBarHeight() + 20) }); }); }
+        });
+
+        /* ── Protected functions ── */
+        function selectPackage(btn) {
+            document.querySelectorAll('.tier-card').forEach(function (c) { c.classList.remove('selected'); });
+            document.querySelectorAll('.select-btn').forEach(function (b) { b.innerText = 'Select Package'; });
+            var card = btn.closest('.tier-card'); card.classList.add('selected'); btn.innerText = 'Selected';
+            cart.basePrice = parseFloat(card.getAttribute('data-price')); cart.baseName = card.getAttribute('data-name');
+            document.getElementById('addons-box').classList.add('active'); document.getElementById('invoice-ui').classList.add('active');
+            updateStep(2);
+            lpSmoothScrollTo(document.getElementById('addons'), { duration: 750, offset: -(lpStickyBarHeight() + 20) });
+            calculateTotals();
+        }
+        function calculateTotals() {
+            var addonTotal = cart.addons.reduce(function (s, i) { return s + i.price; }, 0);
+            cart.subtotal = cart.basePrice + addonTotal; cart.retainer = cart.subtotal * 0.70; cart.balance = cart.subtotal * 0.30;
+            document.getElementById('inv-package-name').innerText = cart.baseName;
+            document.getElementById('inv-package-price').innerText = formatNaira(cart.basePrice);
+            var al = document.getElementById('inv-addons-list'); al.innerHTML = '';
+            cart.addons.forEach(function (a) { al.innerHTML += '<div class="invoice-row"><span>+ ' + a.name + '</span><span>' + formatNaira(a.price) + '</span></div>'; });
+            document.getElementById('inv-subtotal').innerText = formatNaira(cart.subtotal);
+            document.getElementById('inv-balance').innerText = formatNaira(cart.balance);
+            document.getElementById('inv-retainer').innerText = formatNaira(cart.retainer);
+            document.getElementById('payment-recap-name').innerText = cart.baseName;
+            document.getElementById('payment-recap-subtotal').innerText = formatNaira(cart.subtotal);
+            document.getElementById('payment-recap-retainer-amount').innerText = formatNaira(cart.retainer);
+            document.getElementById('payment-recap-package').style.display = 'block';
+            var payBtn = document.getElementById('pay-btn'); payBtn.removeAttribute('disabled');
+            payBtn.innerText = 'Pay Retainer (' + formatNaira(cart.retainer) + ')';
+        }
+        function payWithPaystack() {
+            if (typeof PaystackPop === 'undefined') { alert("The payment module failed to load. Please check your connection or disable any ad blockers, then refresh."); return; }
+            if (!window.lpbBookingConfirmed) { alert('Please pick a date, time, and enter your details in the booking form above \u2014 and press "Book Appointment" \u2014 before paying the retainer.'); return; }
+            var ack = document.getElementById('policy-ack');
+            if (ack && !ack.checked) { alert("Please confirm you've read and agree to the Terms and Conditions before paying."); ack.focus(); return; }
+            var email = document.getElementById('client-email').value.trim();
+            if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert("Please enter a valid email address."); document.getElementById('client-email').focus(); return; }
+            if (cart.retainer === 0) { alert("Please select a package first."); return; }
+            var handler = PaystackPop.setup({
+                key: 'pk_live_05373c45337d6a937f51d9c3045c7839369d503d', email: email, amount: cart.retainer * 100, currency: 'NGN',
+                callback: function (r) { handlePaymentSuccess(r); },
+                onClose: function () { alert('Payment window closed.'); }
+            });
+            handler.openIframe();
+        }
+        async function handlePaymentSuccess(response) {
+            var payBtn = document.getElementById('pay-btn'); payBtn.disabled = true; payBtn.textContent = 'Confirming your booking\u2026';
+            try {
+                var res = await fetch(API_BASE + '/confirm-payment', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookingId: window.lpbBookingData.id, reference: response.reference, packageName: cart.baseName, packagePrice: cart.basePrice, addons: cart.addons, totalAmount: cart.subtotal, retainerAmount: cart.retainer }) });
+                var result = await res.json();
+                if (!res.ok || !result.success) throw new Error('Save failed');
+                updateStep(3);
+                document.getElementById('client-email').style.display = 'none';
+                document.getElementById('policy-ack').closest('label').style.display = 'none';
+                payBtn.style.display = 'none';
+                document.getElementById('payment-secure-note').style.display = 'none';
+                document.getElementById('lpb-payment-reference').textContent = response.reference;
+                document.getElementById('lpb-payment-success').style.display = 'block';
+                var msg = "Hi Libertypictures! I\u2019ve just paid the retainer for my " + cart.baseName + " wedding package (Reference: " + response.reference + "). Looking forward to it!";
+                var waLink = 'https://wa.me/2349075170240?text=' + encodeURIComponent(msg);
+                document.getElementById('lpb-whatsapp-link').href = waLink;
+                window.open(waLink, '_blank');
+            } catch (e) { payBtn.disabled = false; payBtn.textContent = 'Retry Confirming Booking'; alert('Your payment went through (Ref: ' + response.reference + '), but we hit an issue saving your booking. Please save this reference and reach out on WhatsApp.'); }
+        }
+
+        /* ── Receipt JPEG ── */
+        (function () {
+            var jpegBtn = document.getElementById('receipt-jpeg-btn'), receiptEl = document.getElementById('receipt-template');
+            if (!receiptEl || !jpegBtn) return;
+            function populate() {
+                var b = window.lpbBookingData || {};
+                document.getElementById('receipt-client-name').textContent = b.name || '';
+                document.getElementById('receipt-client-email').textContent = b.email || '';
+                document.getElementById('receipt-date').textContent = new Date().toLocaleDateString('en-NG', { year: 'numeric', month: 'long', day: 'numeric' });
+                document.getElementById('receipt-reference').textContent = (document.getElementById('lpb-payment-reference') || {}).textContent || '';
+                var rows = '<tr><td>' + escHtml(cart.baseName || 'Wedding Package') + '</td><td>' + formatNaira(cart.basePrice) + '</td></tr>';
+                cart.addons.forEach(function (a) { rows += '<tr><td>' + escHtml(a.name) + '</td><td>' + formatNaira(a.price) + '</td></tr>'; });
+                document.getElementById('receipt-items-body').innerHTML = rows;
+                document.getElementById('receipt-subtotal').textContent = formatNaira(cart.subtotal);
+                document.getElementById('receipt-balance').textContent = formatNaira(cart.balance);
+                document.getElementById('receipt-retainer').textContent = formatNaira(cart.retainer);
+            }
+            jpegBtn.addEventListener('click', function () {
+                if (typeof html2canvas === 'undefined') { alert('Could not load the image export tool.'); return; }
+                populate(); receiptEl.classList.add('is-active');
+                var orig = jpegBtn.textContent; jpegBtn.textContent = 'Preparing\u2026'; jpegBtn.disabled = true;
+                html2canvas(receiptEl, { backgroundColor: '#ffffff', scale: 2 }).then(function (canvas) {
+                    var a = document.createElement('a'); var ref = document.getElementById('receipt-reference').textContent || 'receipt';
+                    a.download = 'libertypictures-wedding-receipt-' + ref + '.jpg'; a.href = canvas.toDataURL('image/jpeg', 0.95); a.click();
+                }).catch(function () { alert('Could not generate the image.'); }).finally(function () { receiptEl.classList.remove('is-active'); jpegBtn.textContent = orig; jpegBtn.disabled = false; });
+            });
+        })();
+    </script>
+
+    <!-- LP BOOKING COMPONENT — JAVASCRIPT -->
+    <script>
+    (function () {
+        'use strict';
+        var LPB_WORKER_URL = 'https://liberty-booking-api.visualsliberty.workers.dev';
+        var LPB_TIMEZONE   = 'Africa/Lagos';
+
+        async function submitBooking(bookingData) {
+            var response = await fetch(LPB_WORKER_URL + '/book', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(bookingData) });
+            var result = {}; try { result = await response.json(); } catch (e) {}
+            if (!response.ok || !result.success) throw new Error((result && result.error) || 'Booking failed \u2014 please try again.');
+            return result.booking;
+        }
+        async function loadAvailableTimes(dateObj) {
+            var dateParam = dateObj.getFullYear() + '-' + String(dateObj.getMonth()+1).padStart(2,'0') + '-' + String(dateObj.getDate()).padStart(2,'0');
+            var url = LPB_WORKER_URL + '/availability?date=' + encodeURIComponent(dateParam) + '&timeZone=' + encodeURIComponent(LPB_TIMEZONE);
+            var response = await fetch(url); var result = {}; try { result = await response.json(); } catch (e) {}
+            if (!response.ok || !result.success) throw new Error((result && result.error) || 'Failed to load availability.');
+            return (result.slots || []).map(function (slot) {
+                var label; try { label = new Intl.DateTimeFormat('en-US', { hour:'numeric', minute:'2-digit', hour12:true, timeZone:LPB_TIMEZONE }).format(new Date(slot.start)); } catch (e) { label = slot.start; }
+                return { iso: slot.start, label: label };
+            });
+        }
+
+        var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+        var DOWS = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+        var today = new Date(), viewYear = today.getFullYear(), viewMonth = today.getMonth();
+        var selDate = null, selTime = null, selStartISO = null;
+
+        function $(id) { return document.getElementById(id); }
+        var calGrid = $('lpb-cal-grid'), monthLabel = $('lpb-cal-month-label');
+        var prevBtn = $('lpb-prev-month'), nextBtn = $('lpb-next-month');
+        var timesGrid = $('lpb-times-grid'), timesPlaceholder = $('lpb-times-placeholder');
+        var nameInput = $('lpb-name'), emailInput = $('lpb-email');
+        var submitBtn = $('lpb-submit-btn'), submitHint = $('lpb-submit-hint');
+        var successCard = $('lpb-success-card'), successMsg = $('lpb-success-msg');
+
+        function renderCalendar() {
+            monthLabel.textContent = MONTHS[viewMonth] + ' ' + viewYear;
+            prevBtn.disabled = (viewYear === today.getFullYear() && viewMonth === today.getMonth());
+            calGrid.innerHTML = '';
+            DOWS.forEach(function (d) { var el = document.createElement('div'); el.className = 'lpb-cal-dow'; el.textContent = d; calGrid.appendChild(el); });
+            var firstDow = new Date(viewYear, viewMonth, 1).getDay();
+            var offset = firstDow === 0 ? 6 : firstDow - 1;
+            var daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+            var todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            for (var i = 0; i < offset; i++) { var empty = document.createElement('button'); empty.className = 'lpb-cal-day lpb-day-empty'; empty.disabled = true; empty.setAttribute('aria-hidden','true'); calGrid.appendChild(empty); }
+            for (var d = 1; d <= daysInMonth; d++) {
+                (function (day) {
+                    var btn = document.createElement('button'); btn.type = 'button'; btn.className = 'lpb-cal-day'; btn.textContent = day;
+                    var thisDate = new Date(viewYear, viewMonth, day);
+                    if (thisDate < todayMidnight) { btn.classList.add('lpb-day-disabled'); btn.disabled = true; }
+                    if (thisDate.getTime() === todayMidnight.getTime()) btn.classList.add('lpb-day-today');
+                    if (selDate && selDate.getFullYear() === viewYear && selDate.getMonth() === viewMonth && selDate.getDate() === day) btn.classList.add('lpb-day-selected');
+                    btn.setAttribute('aria-label', MONTHS[viewMonth] + ' ' + day + ', ' + viewYear);
+                    if (thisDate >= todayMidnight) { btn.addEventListener('click', function () { selDate = new Date(viewYear, viewMonth, day); selTime = null; selStartISO = null; renderCalendar(); renderTimes(); updateSubmit(); }); }
+                    calGrid.appendChild(btn);
+                })(d);
+            }
+        }
+        function renderTimes() {
+            if (!selDate) return;
+            selTime = null; selStartISO = null;
+            timesGrid.style.display = 'none'; timesGrid.innerHTML = '';
+            timesPlaceholder.style.display = 'block'; timesPlaceholder.textContent = 'Loading available times\u2026';
+            updateSubmit();
+            var requestedDate = selDate;
+            loadAvailableTimes(requestedDate).then(function (slots) {
+                if (selDate !== requestedDate) return;
+                if (!slots.length) { timesPlaceholder.textContent = 'No available times for this date \u2014 please choose another day.'; timesGrid.style.display = 'none'; return; }
+                timesPlaceholder.style.display = 'none'; timesGrid.style.display = 'grid';
+                timesGrid.innerHTML = '';
+                slots.forEach(function (slot) {
+                    var b = document.createElement('button'); b.type = 'button'; b.className = 'lpb-time-btn'; b.textContent = slot.label;
+                    if (selStartISO === slot.iso) b.classList.add('lpb-time-selected');
+                    b.addEventListener('click', function () { selTime = slot.label; selStartISO = slot.iso; timesGrid.querySelectorAll('.lpb-time-btn').forEach(function (x) { x.classList.remove('lpb-time-selected'); }); b.classList.add('lpb-time-selected'); updateSubmit(); });
+                    timesGrid.appendChild(b);
+                });
+                timesGrid.classList.add('lpb-animate-in');
+            }).catch(function () { if (selDate !== requestedDate) return; timesPlaceholder.textContent = 'Could not load available times \u2014 please try again.'; timesGrid.style.display = 'none'; });
+        }
+        function updateSubmit() {
+            var ok = !!selDate && !!selTime && nameInput.value.trim().length > 1 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim());
+            submitBtn.disabled = !ok;
+            if (!selDate) submitHint.textContent = 'Select a date to continue';
+            else if (!selTime) submitHint.textContent = 'Select an available time';
+            else if (nameInput.value.trim().length <= 1) submitHint.textContent = 'Enter your name to continue';
+            else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim())) submitHint.textContent = 'Enter a valid email address';
+            else submitHint.textContent = '';
+        }
+        prevBtn.addEventListener('click', function () { if (viewMonth === 0) { viewMonth = 11; viewYear--; } else viewMonth--; renderCalendar(); });
+        nextBtn.addEventListener('click', function () { if (viewMonth === 11) { viewMonth = 0; viewYear++; } else viewMonth++; renderCalendar(); });
+        [nameInput, emailInput].forEach(function (el) { el.addEventListener('input', updateSubmit); });
+
+        submitBtn.addEventListener('click', async function () {
+            if (!selStartISO) { submitHint.textContent = 'Please select an available time.'; return; }
+            var booking = { name: nameInput.value.trim(), email: emailInput.value.trim(), start: selStartISO, timeZone: LPB_TIMEZONE };
+            submitBtn.disabled = true; var orig = submitBtn.textContent; submitBtn.textContent = 'Sending\u2026';
+            try {
+                var saved = await submitBooking(booking);
+                window.lpbBookingConfirmed = true;
+                window.lpbBookingData = Object.assign({}, booking, { id: saved.id });
+                if (typeof updateStep === 'function') updateStep(3);
+                var ce = document.getElementById('client-email'); if (ce && !ce.value) ce.value = booking.email;
+                successMsg.innerHTML = 'Your consultation request for <strong>' + MONTHS[selDate.getMonth()] + ' ' + selDate.getDate() + '</strong> at <strong>' + selTime + '</strong> has been received.<br>We\u2019ll confirm within 24 hours \u2014 check <strong>' + booking.email + '</strong>.';
+                successCard.classList.add('lpb-visible');
+            } catch (err) { submitHint.textContent = err.message || 'Something went wrong.'; submitBtn.disabled = false; submitBtn.textContent = orig; }
+        });
+
+        renderCalendar();
+    })();
+    </script>
+
+</body></html>
