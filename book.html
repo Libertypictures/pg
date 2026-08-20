@@ -960,7 +960,7 @@
                 '</div>';
             }
 
-            fetch(API_BASE + '/api/packages?activeOnly=true')
+            fetch(API_BASE + '/api/packages?activeOnly=true&category=Studio')
                 .then(function (res) { return res.json(); })
                 .then(function (data) {
                     var packages = (data.packages || []).slice().sort(function (a, b) { return a.displayOrder - b.displayOrder; });
