@@ -115,8 +115,8 @@ img{display:block}
     <div class="hero-overlay"></div>
     <div class="hero-content">
         <div class="hero-eyebrow">Beloved Imprint</div>
-        <h1 class="hero-title serif">Your love story,<br>told with <em>art</em></h1>
-        <p class="hero-sub">Editorial wedding photography that captures the emotion, the beauty, and the moments that matter most — so you can feel your day again, every time you look.</p>
+        <h1 class="hero-title serif" id="hero-title">Your love story,<br>told with <em>art</em></h1>
+        <p class="hero-sub" id="hero-sub">Editorial wedding photography that captures the emotion, the beauty, and the moments that matter most — so you can feel your day again, every time you look.</p>
 
     </div>
     <div class="hero-scroll"><span></span></div>
@@ -128,9 +128,9 @@ img{display:block}
         <div class="approach reveal">
             <div class="approach-text">
                 <div class="eyebrow">The Approach</div>
-                <h2 class="serif">More than a photographer at your wedding</h2>
-                <p>Every wedding has its own rhythm — the nervous laughter before the doors open, the quiet look exchanged during vows, the unscripted joy on the dance floor. I don't direct those moments. I wait for them.</p>
-                <p>My work sits at the intersection of documentary honesty and editorial beauty. You get photographs that feel like art and look like your actual day — because they are.</p>
+                <h2 class="serif" id="approach-heading">More than a photographer at your wedding</h2>
+                <p id="approach-p1">Every wedding has its own rhythm — the nervous laughter before the doors open, the quiet look exchanged during vows, the unscripted joy on the dance floor. I don't direct those moments. I wait for them.</p>
+                <p id="approach-p2">My work sits at the intersection of documentary honesty and editorial beauty. You get photographs that feel like art and look like your actual day — because they are.</p>
             </div>
             <div class="approach-photo" id="approach-photo">
                 <div style="width:100%;height:100%;background:#1f1a14;"></div>
@@ -164,9 +164,9 @@ img{display:block}
 <!-- CTA -->
 <section class="cta-section">
     <div class="section-narrow reveal">
-        <h2 class="serif">Ready to begin?</h2>
-        <p>Choose your package, pick your date, and secure your wedding with a retainer — all in one seamless step.</p>
-        <a href="wedding-book.html" class="cta-btn">View Packages &amp; Book</a>
+        <h2 class="serif" id="cta-heading">Ready to begin?</h2>
+        <p id="cta-text">Choose your package, pick your date, and secure your wedding with a retainer — all in one seamless step.</p>
+        <a href="wedding-book.html" class="cta-btn" id="cta-btn-text">View Packages &amp; Book</a>
     </div>
 </section>
 
@@ -188,31 +188,63 @@ img{display:block}
 <script>
 var API = 'https://liberty-booking-api.visualsliberty.workers.dev';
 
-/* ── Logo ── */
+/* ── Load settings — logo + all editable wedding content ── */
 fetch(API + '/api/settings').then(function(r){return r.json()}).then(function(d){
     var s = d.settings || {};
     var logo = document.getElementById('site-logo');
     if (s.logo_url && logo) { logo.src = API + s.logo_url; }
-}).catch(function(){});
 
-/* ── Hero background — uses first wedding portfolio image ── */
-fetch(API + '/api/portfolio').then(function(r){return r.json()}).then(function(d){
-    var items = (d.items || []).filter(function(i){ return i.category && i.category.toLowerCase() === 'weddings'; });
-    if (!items.length) items = (d.items || []).filter(function(i){ return i.category && i.category.toLowerCase() === 'wedding'; });
-    if (items.length) {
+    /* Hero content */
+    if (s.wedding_hero_headline) document.getElementById('hero-title').innerHTML = s.wedding_hero_headline;
+    if (s.wedding_hero_subtitle) document.getElementById('hero-sub').textContent = s.wedding_hero_subtitle;
+
+    /* Hero background — dedicated upload takes priority over portfolio */
+    if (s.wedding_hero_url) {
         var heroBg = document.getElementById('hero-bg');
-        heroBg.style.backgroundImage = 'url(' + API + items[0].imageUrl + ')';
+        heroBg.style.backgroundImage = 'url(' + API + s.wedding_hero_url + ')';
         var img = new Image();
         img.onload = function(){ heroBg.classList.add('loaded'); };
-        img.src = API + items[0].imageUrl;
+        img.src = API + s.wedding_hero_url;
+        window._weddingHeroFromSettings = true;
+    }
 
-        /* Approach photo — second image */
-        if (items.length > 1) {
+    /* Approach section */
+    if (s.wedding_approach_heading) document.getElementById('approach-heading').textContent = s.wedding_approach_heading;
+    if (s.wedding_approach_text) {
+        var paras = s.wedding_approach_text.split('\n\n').filter(function(p){return p.trim();});
+        if (paras.length >= 1) document.getElementById('approach-p1').textContent = paras[0];
+        if (paras.length >= 2) document.getElementById('approach-p2').textContent = paras[1];
+        else document.getElementById('approach-p2').textContent = '';
+    }
+    if (s.wedding_approach_photo_url) {
+        var ap = document.getElementById('approach-photo');
+        ap.innerHTML = '<img src="' + API + s.wedding_approach_photo_url + '" alt="Wedding photography" loading="lazy">';
+        window._weddingApproachFromSettings = true;
+    }
+
+    /* CTA section */
+    if (s.wedding_cta_heading) document.getElementById('cta-heading').textContent = s.wedding_cta_heading;
+    if (s.wedding_cta_text) document.getElementById('cta-text').textContent = s.wedding_cta_text;
+    if (s.wedding_cta_button) document.getElementById('cta-btn-text').textContent = s.wedding_cta_button;
+}).catch(function(){});
+
+/* ── Portfolio — hero bg, approach photo, gallery (settings override hero/approach) ── */
+fetch(API + '/api/portfolio').then(function(r){return r.json()}).then(function(d){
+    var items = (d.items || []).filter(function(i){ return i.category && (i.category.toLowerCase() === 'weddings' || i.category.toLowerCase() === 'wedding'); });
+    if (items.length) {
+        /* Hero bg — only from portfolio if not already set from settings */
+        if (!window._weddingHeroFromSettings) {
+            var heroBg = document.getElementById('hero-bg');
+            heroBg.style.backgroundImage = 'url(' + API + items[0].imageUrl + ')';
+            var img = new Image();
+            img.onload = function(){ heroBg.classList.add('loaded'); };
+            img.src = API + items[0].imageUrl;
+        }
+        /* Approach photo — only from portfolio if not already set from settings */
+        if (!window._weddingApproachFromSettings && items.length > 1) {
             var ap = document.getElementById('approach-photo');
             ap.innerHTML = '<img src="' + API + items[1].imageUrl + '" alt="Wedding photography by Libertypictures" loading="lazy">';
         }
-
-        /* Gallery grid */
         renderGallery(items);
     } else {
         document.getElementById('gallery-grid').innerHTML = '<div class="gallery-empty">Wedding photos coming soon — check back shortly.</div>';
