@@ -448,37 +448,949 @@
         </div>
     </section>
 
-    <!-- BOOK SESSION — the final step -->
-    <!-- TWO PATHS — Portraits & Studio / Weddings -->
-    <section class="section-block async-reveal" style="padding:0;">
-        <div style="background:#0f0c09;padding:100px 20px;">
-            <div style="max-width:720px;margin:0 auto;display:flex;gap:24px;flex-wrap:wrap;justify-content:center;">
+    <!-- TWO PATHS -->
+    <section class="section-block" style="padding:0;">
+        <div style="padding:80px 20px;text-align:center;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:20px;">
+                <a href="book.html" class="btn-dark" style="min-width:260px;text-align:center;">Portraits + Studio</a>
+                <a href="wedding.html" class="btn-dark" style="min-width:260px;text-align:center;">Weddings</a>
+            </div>
+            <div style="margin-top:24px;"><a href="portfolio.html" class="btn-link-secondary">View Full Portfolio</a></div>
+        </div>
+    </section>
 
-                <!-- PORTRAITS & STUDIO -->
-                <a href="book.html" style="flex:1;min-width:280px;max-width:340px;padding:48px 32px;text-align:center;text-decoration:none;background:rgba(246,241,231,0.04);border:1px solid rgba(246,241,231,0.1);transition:all 0.35s ease;">
-                    <span style="font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);font-weight:600;display:block;margin-bottom:16px;">Libertypictures</span>
-                    <span class="serif" style="font-weight:400;font-size:24px;color:#f6f1e7;display:block;margin-bottom:12px;">Portraits & Studio</span>
-                    <span style="font-size:13px;color:rgba(246,241,231,0.6);line-height:1.7;display:block;margin-bottom:24px;">Headshots, maternity, family, couples, corporate — book your studio session.</span>
-                    <span style="display:inline-block;padding:12px 28px;font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:600;color:#f6f1e7;background:rgba(246,241,231,0.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:30px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.18);">Book Now</span>
-                </a>
+    <footer class="brand-footer">
+        <span class="serif footer-mark">Libertypictures © 2026</span>
+        <div class="footer-contact">
+            <a href="https://wa.me/2349075170240" target="_blank" rel="noopener">WhatsApp</a>
+            <span class="footer-contact-divider">·</span>
+            <a href="mailto:visualsliberty@gmail.com">Email</a>
+        </div>
+    </footer>
 
-                <!-- WEDDINGS -->
-                <a href="wedding.html" style="flex:1;min-width:280px;max-width:340px;padding:48px 32px;text-align:center;text-decoration:none;background:rgba(246,241,231,0.04);border:1px solid rgba(246,241,231,0.1);transition:all 0.35s ease;">
-                    <span style="font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent);font-weight:600;display:block;margin-bottom:16px;">Beloved Imprint</span>
-                    <span class="serif" style="font-weight:400;font-size:24px;color:#f6f1e7;display:block;margin-bottom:12px;">Weddings</span>
-                    <span style="font-size:13px;color:rgba(246,241,231,0.6);line-height:1.7;display:block;margin-bottom:24px;">Editorial, cinematic wedding photography — your love story, told with art.</span>
-                    <span style="display:inline-block;padding:12px 28px;font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:600;color:#f6f1e7;background:rgba(246,241,231,0.12);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:30px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.18);">Explore</span>
-                </a>
+<script>
+    var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
 
+    // Fetched once, shared by every section that needs Settings data
+    // (Hero, Logo, About, Experience) — previously each fetched
+    // /api/settings independently, doubling that request for no
+    // reason since it's the exact same data every time.
+    var settingsPromise = fetch(API_BASE + '/api/settings').then(function (res) { return res.json(); });
+
+    function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.textContent = String(str == null ? '' : str);
+        return div.innerHTML;
+    }
+    
+    // Reveals an `.async-reveal` element with a GPU-only fade (opacity +
+    // transform via a CSS keyframe animation, triggered by the display
+    // switch) instead of animating a layout property like max-height —
+    // layout properties force a reflow on every frame of the animation,
+    // which stutters if it happens to run while the visitor is actively
+    // scrolling. Used for sections whose content only exists after an
+    // API fetch resolves (About, Voices).
+    function lpRevealSmoothly(el) {
+        if (!el) return;
+        el.classList.add('is-visible');
+    }
+
+    // Simple one-time scroll reveal — fades/slides each element in the
+    // moment it scrolls into view, staggered by index for a gentle
+    // cascade. `.lp-reveal` alone (before this runs) is a no-op, so
+    // content stays visible if JS fails.
+    function lpRevealOnScroll(elements, minGap) {
+        if (!('IntersectionObserver' in window)) return;
+        var els = Array.prototype.slice.call(elements);
+        if (!els.length) return;
+        els.forEach(function (el) { el.classList.add('lp-reveal'); });
+
+        var pendingHides = new WeakMap();
+        // Tracks the earliest time the NEXT reveal is allowed to start.
+        // A reveal triggered well after this (normal/slow scrolling)
+        // gets zero delay — instant, tied directly to scroll position,
+        // not to a timer. Only when a reveal is triggered before this
+        // (several elements crossing into view within the same instant,
+        // i.e. a fast scroll) does it get pushed out by minGap from the
+        // previous one, so it still reads as sequential instead of all
+        // popping in together.
+        var nextRevealNotBefore = 0;
+
+        // No "already visible, skip the animation" shortcut here.
+        // IntersectionObserver always fires immediately upon observe()
+        // with whatever's currently true, so anything on-screen the
+        // moment observation starts still gets a real, correct entrance
+        // through the exact same path below — never a silent skip.
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                var el = entry.target;
+                if (entry.isIntersecting) {
+                    var pendingHide = pendingHides.get(el);
+                    if (pendingHide) { clearTimeout(pendingHide); pendingHides.delete(el); }
+                    if (el.classList.contains('is-in')) return;
+
+                    var now = Date.now();
+                    var delay = Math.max(0, nextRevealNotBefore - now);
+                    nextRevealNotBefore = now + delay + (minGap || 0);
+                    el.style.transitionDelay = delay + 'ms';
+                    el.classList.add('is-in');
+                } else {
+                    if (!el.classList.contains('is-in') || pendingHides.has(el)) return;
+                    var hideTimer = setTimeout(function () {
+                        pendingHides.delete(el);
+                        el.style.transitionDelay = '0ms';
+                        el.classList.remove('is-in');
+                    }, 400);
+                    pendingHides.set(el, hideTimer);
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -25% 0px' });
+        els.forEach(function (el) { observer.observe(el); });
+    }
+
+    // HERO — identical logic to the booking page: two separate render
+    // paths based on hero_mode, never mixing video and slideshow.
+    (function () {
+        function renderVideo(s) {
+            if (!s.hero_video_url) return;
+            var oldVideo = document.getElementById('lp-hero-video');
+            var newVideo = oldVideo.cloneNode(false);
+            newVideo.muted = true;
+            newVideo.innerHTML = '<source src="' + API_BASE + s.hero_video_url + '" type="video/mp4">';
+            oldVideo.parentNode.replaceChild(newVideo, oldVideo);
+            newVideo.play().catch(function (err) { console.error('Hero video could not autoplay:', err.message); });
+        }
+        function renderSlideshow() {
+            document.getElementById('lp-hero-video').style.display = 'none';
+            var container = document.getElementById('lp-hero-slideshow');
+            var flash = document.getElementById('lp-hero-flash');
+            fetch(API_BASE + '/api/hero-images')
+                .then(function (res) { return res.json(); })
+                .then(function (data) {
+                    var images = data.images || [];
+                    if (!images.length) return;
+                    container.style.display = 'block';
+                    container.innerHTML = images.map(function (img, i) {
+                        return '<div class="lp-hero-slide' + (i === 0 ? ' is-active' : '') + '" style="background-image:url(' + API_BASE + img.imageUrl + ')"></div>';
+                    }).join('');
+                    if (images.length < 2) return;
+                    var slides = container.querySelectorAll('.lp-hero-slide');
+                    var current = 0;
+                    setInterval(function () {
+                        var next = (current + 1) % slides.length;
+                        flash.classList.add('is-flashing');
+                        setTimeout(function () { flash.classList.remove('is-flashing'); }, 90);
+                        slides[current].classList.remove('is-active');
+                        slides[next].classList.add('is-active');
+                        current = next;
+                    }, 2000);
+                })
+                .catch(function (err) { console.error('Could not load hero slideshow:', err); });
+        }
+
+        settingsPromise
+            .then(function (data) {
+                var s = data.settings || {};
+                if (s.hero_mode === 'slideshow') { renderSlideshow(); } else { renderVideo(s); }
+
+                if (s.logo_url) {
+                    var siteLogo = document.getElementById('site-logo-img');
+                    siteLogo.src = API_BASE + s.logo_url;
+                    siteLogo.style.display = 'block';
+                }
+
+                // ABOUT — only shown once real content exists in Settings,
+                // never with placeholder/fabricated text. Smooth reveal
+                // (not an instant display swap) so a late-arriving fetch
+                // never causes a sudden layout jump if it resolves while
+                // the visitor is already scrolling past this point.
+                if (s.about_photo_url && s.about_bio) {
+                    document.getElementById('about-photo-img').src = API_BASE + s.about_photo_url;
+                    document.getElementById('about-bio-text').textContent = s.about_bio;
+                    lpRevealSmoothly(document.getElementById('about-section'));
+                }
+            })
+            .catch(function (err) { console.error('Could not load settings:', err); });
+    })();
+
+    // SCROLL INDICATOR — fades away the moment the visitor actually
+    // starts scrolling; its job is done at that point.
+    (function () {
+        var indicator = document.querySelector('.lp-scroll-indicator');
+        if (!indicator) return;
+        window.addEventListener('scroll', function () {
+            indicator.classList.toggle('is-hidden', window.scrollY > 12);
+        }, { passive: true });
+    })();
+
+    // FEATURED WORK — pulled from its own, separately-curated photo set
+    // (not Portfolio). Builds the main-photo + film-strip presentation
+    // used at every screen size.
+    (function () {
+        var mobileFeature = document.getElementById('work-mobile-feature');
+        if (!mobileFeature) return;
+
+        fetch(API_BASE + '/api/featured-work')
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                var items = data.items || [];
+                if (!items.length) {
+                    mobileFeature.classList.add('is-empty');
+                    mobileFeature.innerHTML = '<p class="work-empty">New work coming soon.</p>';
+                    return;
+                }
+                buildMobileFeature(items);
+            })
+            .catch(function () {
+                mobileFeature.classList.add('is-empty');
+                mobileFeature.innerHTML = '<p class="work-empty">Couldn\'t load work right now.</p>';
+            });
+
+        function buildMobileFeature(sample) {
+            // A single photo doesn't need a strip — just show it plainly
+            // rather than showing nothing (the old behavior here).
+            if (sample.length < 2) {
+                mobileFeature.innerHTML = '<div class="work-main-photo"><img src="' + API_BASE + sample[0].imageUrl + '" alt="Featured work" class="is-active" decoding="async"></div>';
+                return;
+            }
+
+            var thumbsHtml = sample.map(function (item, i) {
+                return '<button type="button" class="work-strip-thumb' + (i === 0 ? ' is-active' : '') + '" data-index="' + i + '" aria-label="View photo ' + (i + 1) + ' of ' + sample.length + '"><img src="' + API_BASE + item.imageUrl + '" alt="" loading="lazy" decoding="async"></button>';
+            }).join('');
+
+            mobileFeature.innerHTML =
+                '<div class="work-main-photo">' +
+                    sample.map(function (item, i) {
+                        return '<img src="' + API_BASE + item.imageUrl + '" alt="Featured work" class="' + (i === 0 ? 'is-active' : '') + '" data-index="' + i + '" decoding="async">';
+                    }).join('') +
+                '</div>' +
+                '<div class="work-strip-wrap" id="work-strip-wrap">' +
+                    '<div class="work-photo-counter" id="work-photo-counter">1 / ' + sample.length + '</div>' +
+                    '<div class="work-strip-track">' + thumbsHtml + '</div>' +
+                '</div>';
+
+            var mainImgs = mobileFeature.querySelectorAll('.work-main-photo img');
+            var stripWrap = document.getElementById('work-strip-wrap');
+            var thumbs = mobileFeature.querySelectorAll('.work-strip-thumb');
+            var photoCounter = document.getElementById('work-photo-counter');
+
+            thumbs.forEach(function (btn, i) {
+                btn.addEventListener('click', function () {
+                    var idx = btn.dataset.index;
+                    mainImgs.forEach(function (img) { img.classList.toggle('is-active', img.dataset.index === idx); });
+                    photoCounter.textContent = (parseInt(idx, 10) + 1) + ' / ' + sample.length;
+                    thumbs.forEach(function (t) { t.classList.toggle('is-active', t.dataset.index === idx); });
+
+                    // Keep the clicked thumbnail comfortably in view
+                    // within the strip's own scroll area, based on its
+                    // real position — not a guess at "near the end of
+                    // the whole list" (which breaks down for long lists,
+                    // since by the time you can click something near the
+                    // literal end you're usually already scrolled all
+                    // the way down with nothing left to reveal). This
+                    // works correctly no matter how many photos there
+                    // are or where in the list this one sits.
+                    var btnBottom = btn.offsetTop + btn.offsetHeight;
+                    var visibleBottom = stripWrap.scrollTop + stripWrap.clientHeight;
+                    if (btnBottom > visibleBottom - btn.offsetHeight) {
+                        stripWrap.scrollTo({ top: btnBottom - stripWrap.clientHeight + btn.offsetHeight, behavior: 'smooth' });
+                    }
+                });
+            });
+        }
+    })();
+
+    // VOICES — an editorial installation, not a testimonial carousel.
+    // A scattered field of atmosphere words sits in the background;
+    // real testimonials surface into focus one at a time — reveal,
+    // hold, dissolve — and the field softens while one is showing.
+    // Pauses entirely when off-screen or under prefers-reduced-motion.
+    (function () {
+        var stage = document.getElementById('voices-stage');
+        var section = document.getElementById('testimonials-section');
+        var items = [];
+        var lastIndex = -1;
+        var running = false;
+        var reducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        var timers = [];
+
+        // Purely decorative atmosphere — generic words evoking the
+        // feeling of a session, not quotes attributed to any specific
+        // client (real testimonials only ever come from the API below).
+        var ATMOSPHERE_WORDS = ['beautiful', 'effortless', 'authentic', 'unforgettable', 'comfortable', 'timeless', 'gorgeous', 'natural', 'confident', 'seen', 'gentle', 'genuine', 'warm', 'alive', 'graceful'];
+
+        // Hand-placed, deliberately not gridded — a curated scatter
+        // rather than a random one. Kept clear of the dead-center zone
+        // where the featured quote sits.
+        var SLOTS = [
+            { x: 5, y: 6 }, { x: 88, y: 4 }, { x: 12, y: 85 }, { x: 90, y: 88 },
+            { x: 2, y: 38 }, { x: 94, y: 35 }, { x: 20, y: 15 }, { x: 72, y: 92 },
+            { x: 6, y: 68 }, { x: 82, y: 18 }, { x: 38, y: 3 }, { x: 58, y: 96 },
+            { x: 25, y: 95 }, { x: 68, y: 6 },
+        ];
+
+        function buildWordField() {
+            var isMobile = window.innerWidth <= 700;
+            var MOBILE_POSITIONS = [
+                { x: 4, y: 5 }, { x: 82, y: 3 },
+                { x: 2, y: 82 }, { x: 85, y: 85 },
+                { x: 6, y: 40 }, { x: 88, y: 38 },
+                { x: 35, y: 2 },
+            ];
+            var MOBILE_SLOT_INDEXES = [0, 2, 4, 6, 8, 9, 12];
+            var html = SLOTS.map(function (slot, i) {
+                var word = ATMOSPHERE_WORDS[i % ATMOSPHERE_WORDS.length];
+                var size = 13 + (i % 4) * 3;
+                var delay = (i * 0.5).toFixed(2);
+                var rotation = ((i % 5) - 2) * 1.8;
+                var isMobileWord = MOBILE_SLOT_INDEXES.indexOf(i) !== -1;
+                var mobileClass = isMobileWord ? ' voices-word-mobile' : '';
+                var mobilePos = isMobileWord ? MOBILE_POSITIONS[MOBILE_SLOT_INDEXES.indexOf(i)] : null;
+                var useX = (isMobile && mobilePos) ? mobilePos.x : slot.x;
+                var useY = (isMobile && mobilePos) ? mobilePos.y : slot.y;
+                return '<span class="voices-word' + mobileClass + '" style="left:' + useX + '%; top:' + useY + '%; font-size:' + size + 'px; animation-delay:' + delay + 's; --word-rotation:' + rotation + 'deg;">' + word + '</span>';
+            }).join('');
+            stage.insertAdjacentHTML('afterbegin', html);
+        }
+
+        function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+        function after(ms, fn) { var t = setTimeout(fn, ms); timers.push(t); return t; }
+
+        var shuffledQueue = [];
+
+        function pickNext() {
+            if (!items.length) return 0;
+            if (!shuffledQueue.length) {
+                // Reshuffle all testimonials into a new queue
+                shuffledQueue = items.map(function (_, i) { return i; });
+                // Fisher-Yates shuffle
+                for (var i = shuffledQueue.length - 1; i > 0; i--) {
+                    var j = Math.floor(Math.random() * (i + 1));
+                    var temp = shuffledQueue[i];
+                    shuffledQueue[i] = shuffledQueue[j];
+                    shuffledQueue[j] = temp;
+                }
+                // If the first item in the new shuffle is the same as
+                // the last one shown, swap it further in so we never
+                // see the same testimonial twice in a row at the seam
+                if (shuffledQueue.length > 1 && shuffledQueue[0] === lastIndex) {
+                    var swapWith = 1 + Math.floor(Math.random() * (shuffledQueue.length - 1));
+                    shuffledQueue[0] = shuffledQueue[swapWith];
+                    shuffledQueue[swapWith] = lastIndex;
+                }
+            }
+            lastIndex = shuffledQueue.shift();
+            return lastIndex;
+        }
+
+        function starsHtml(rating) {
+            var filled = Math.max(0, Math.min(5, Math.round(rating || 0)));
+            var out = '';
+            for (var i = 1; i <= 5; i++) out += (i <= filled ? '\u2605' : '\u2606');
+            return out;
+        }
+
+        function runCycle() {
+            if (!running) return;
+            var t = items[pickNext()];
+
+            var quoteEl = document.getElementById('voices-quote');
+            var nameEl = document.getElementById('voices-name');
+            var starsEl = document.getElementById('voices-stars');
+            quoteEl.textContent = t.quote;
+            nameEl.textContent = t.clientName;
+            starsEl.textContent = starsHtml(t.rating);
+
+            stage.classList.add('is-focused');
+            // A frame of delay before adding is-visible so the browser
+            // registers the text change first — otherwise the reveal
+            // transition can be skipped entirely on some browsers.
+            after(reducedMotion ? 30 : 60, function () {
+                quoteEl.classList.add('is-visible');
+                nameEl.classList.add('is-visible');
+                starsEl.classList.add('is-visible');
+            });
+
+            var holdFor = reducedMotion ? 2000 : 3200;
+            var revealTime = reducedMotion ? 400 : 1300;
+            var dissolveTime = reducedMotion ? 400 : 1200;
+
+            after(revealTime + holdFor, function () {
+                quoteEl.classList.remove('is-visible');
+                nameEl.classList.remove('is-visible');
+                starsEl.classList.remove('is-visible');
+                stage.classList.remove('is-focused');
+            });
+
+            after(revealTime + holdFor + dissolveTime + 900, runCycle);
+        }
+
+        function start() {
+            if (running) return;
+            running = true;
+            runCycle();
+        }
+        function stop() {
+            running = false;
+            clearTimers();
+        }
+
+        fetch(API_BASE + '/api/testimonials?publishedOnly=true')
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                items = data.testimonials || [];
+                if (!items.length) return;
+
+                buildWordField();
+                stage.insertAdjacentHTML('beforeend',
+                    '<div class="voices-quote-wrap">' +
+                        '<p class="voices-quote" id="voices-quote"></p>' +
+                        '<div class="voices-name" id="voices-name"></div>' +
+                        '<div class="voices-stars" id="voices-stars" aria-hidden="true"></div>' +
+                    '</div>'
+                );
+
+                lpRevealSmoothly(section);
+
+                if ('IntersectionObserver' in window) {
+                    var observer = new IntersectionObserver(function (entries) {
+                        entries.forEach(function (entry) {
+                            if (entry.isIntersecting) start(); else stop();
+                        });
+                    }, { threshold: 0.2 });
+                    observer.observe(section);
+                } else {
+                    start();
+                }
+            })
+            .catch(function (err) { console.error('Could not load Voices content:', err); });
+    })();
+
+    // THE EXPERIENCE — a quiet, editorial sequence of reassuring
+    // statements, pulled entirely from Settings (dashboard-editable).
+    // Stays hidden if nothing's been saved yet, same honesty rule as
+    // About and Testimonials — never shows placeholder text. Staggered
+    // reveal (not simultaneous) so it always reads as one statement
+    // delivered at a time, even on a fast scroll that brings several
+    // into view within the same instant — lpRevealOnScroll assigns
+    // each element's delay by its fixed position in the sequence, so
+    // they stay visually sequential regardless of how quickly they're
+    // all technically "in view" together.
+    (function () {
+        var sequenceEl = document.getElementById('experience-sequence');
+
+        settingsPromise
+            .then(function (data) {
+                var s = data.settings || {};
+                if (!s.experience_statements_json) return;
+
+                var statements;
+                try { statements = JSON.parse(s.experience_statements_json); } catch (e) { return; }
+                if (!Array.isArray(statements) || !statements.length) return;
+
+                sequenceEl.innerHTML = statements.map(function (item) {
+                    if (!item || !item.text) return '';
+                    var supportHtml = item.supporting ? '<p class="statement-support">' + escapeHtml(item.supporting) + '</p>' : '';
+                    return '<div class="experience-statement"><p class="statement-text serif">' + escapeHtml(item.text) + '</p>' + supportHtml + '</div>';
+                }).join('');
+
+                lpRevealOnScroll(sequenceEl.querySelectorAll('.experience-statement'), 180);
+            })
+            .catch(function (err) { console.error('Could not load Experience content:', err); });
+    })();
+
+    // SECTION REVEAL — as each section scrolls into view, its title
+    // writes itself in (left-to-right clip reveal). Content is always
+    // visible — no fade, no ease-in, no delay.
+    (function () {
+        if (!('IntersectionObserver' in window)) {
+            document.querySelectorAll('.section-heading, .testimonials-label').forEach(function (el) { el.classList.add('is-revealed'); });
+            return;
+        }
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                var section = entry.target;
+                var heading = section.querySelector('.section-heading, .testimonials-label');
+                if (heading && !heading.classList.contains('is-revealed')) {
+                    heading.classList.add('is-revealed');
+                }
+                observer.unobserve(section);
+            });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.section-block').forEach(function (s) { observer.observe(s); });
+    })();
+
+    // HERO VIDEO — resume on visibility change, same pattern as book.html.
+    (function () {
+        function resume() {
+            var video = document.getElementById('lp-hero-video');
+            if (video && video.paused) video.play().catch(function () {});
+        }
+        document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'visible') resume(); });
+        window.addEventListener('pageshow', resume);
+        ['touchstart', 'click'].forEach(function (evt) { document.addEventListener(evt, resume, { passive: true }); });
+    })();
+</script>
+
+</body></html><!DOCTYPE html>
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Libertypictures — Intimate Visual Stories</title>
+    <meta name="description" content="Libertypictures — portrait, maternity, couple, family, and corporate photography. Intimate visual stories, beautifully told.">
+    <meta name="theme-color" content="#8a7355">
+    <meta property="og:title" content="Libertypictures — Intimate Visual Stories">
+    <meta property="og:description" content="Portrait, maternity, couple, family, and corporate photography.">
+    <meta property="og:type" content="website">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000000'/%3E%3Ctext x='50' y='68' font-size='52' font-family='Georgia, serif' fill='%23c4a67e' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "ProfessionalService",
+      "name": "Libertypictures",
+      "description": "Photography studio offering portrait, maternity, corporate headshot, couple, and family photo sessions.",
+      "priceRange": "₦₦",
+      "areaServed": "NG"
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com/">
+    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-body: #faf8f4;
+            --bg-container: #ffffff;
+            --bg-card: #fefdfb;
+            --text-primary: #1a1815;
+            --text-secondary: #6b6459;
+            --accent: #8a7355;
+            --accent-deep: #6e5c44;
+            --border-color: #e8e3d9;
+            --border-dashed: #d8d1c2;
+            --btn-primary-bg: #1a1815;
+            --btn-primary-text: #ffffff;
+            --highlight-bg: #f8f4ec;
+            --shadow-subtle: rgba(26,24,21,0.04);
+            --shadow-hover: rgba(26,24,21,0.10);
+            --shadow-lift: rgba(26,24,21,0.16);
+            --logo-filter: invert(0);
+            --hero-scrim-rgb: 20,18,16;
+            --radius-lg: 18px;
+            --radius-md: 12px;
+            --radius-sm: 6px;
+        }
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-body: #161513;
+                --bg-container: #1f1e1b;
+                --bg-card: #262521;
+                --text-primary: #f3f0ea;
+                --text-secondary: #a8a196;
+                --accent: #c4a67e;
+                --accent-deep: #d9bf98;
+                --border-color: #35332d;
+                --border-dashed: #423f37;
+                --btn-primary-bg: #c4a67e;
+                --btn-primary-text: #161513;
+                --highlight-bg: #24221d;
+                --shadow-subtle: rgba(0,0,0,0.24);
+                --shadow-hover: rgba(0,0,0,0.42);
+                --shadow-lift: rgba(0,0,0,0.55);
+                --logo-filter: invert(1);
+                --hero-scrim-rgb: 6,6,7;
+            }
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        a:focus-visible, button:focus-visible, [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-primary);
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+        }
+        .serif { font-family: 'Fraunces', serif; }
+        img { max-width: 100%; display: block; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+        .container { max-width: 1140px; margin: 0 auto; padding: 0 40px; }
+        .section-block { padding: 0; min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; }
+
+        /* SECTION REVEAL — titles write themselves in from left to
+           right (clip-path reveal). Content is always visible, never
+           fades — no ease-in effect at all. */
+        .section-heading {
+            font-family: 'Fraunces', serif; font-weight: 500; font-size: 18px;
+            letter-spacing: -0.2px; text-align: center; margin-bottom: 28px;
+            clip-path: inset(0 100% 0 0);
+            transition: clip-path 2.8s cubic-bezier(0.16,1,0.3,1);
+        }
+        .section-heading.is-revealed { clip-path: inset(0 0% 0 0); }
+
+        @media (prefers-reduced-motion: reduce) {
+            .section-heading { clip-path: none; transition: none; }
+        }
+        .async-reveal { display: none; }
+        .async-reveal.is-visible { display: block; animation: lp-fade-in-up 0.6s cubic-bezier(0.16,1,0.3,1); }
+        @keyframes lp-fade-in-up { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @media (prefers-reduced-motion: reduce) {
+            .async-reveal.is-visible { animation: lp-fade-in-simple 0.4s ease; }
+        }
+        @keyframes lp-fade-in-simple { from { opacity: 0; } to { opacity: 1; } }
+        .section-meta { font-size: 14.5px; color: var(--text-secondary); text-align: center; max-width: 460px; margin: 0 auto 32px; line-height: 1.75; }
+
+        /* GLASS BUTTONS, light-background variant — same frosted
+           language as the hero buttons, tuned for legibility over a
+           flat cream/dark surface instead of a photograph. No borders
+           on either variant, by design. */
+        .btn-dark { display: inline-block; background: rgba(26,24,21,0.05); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); color: var(--text-primary); padding: 19px 46px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2.4px; text-decoration: none; transition: background 0.4s cubic-bezier(0.16,1,0.3,1), color 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s cubic-bezier(0.16,1,0.3,1); border: none; cursor: pointer; box-shadow: 0 4px 20px var(--shadow-subtle), inset 0 1px 0 rgba(255,255,255,0.5); }
+        /* Secondary action — a plain text link, deliberately with no
+           button chrome at all, so "Book a Session" reads as the one
+           clear action and this stays visually subordinate to it. */
+        .btn-link-secondary { display: inline-block; margin-top: 22px; color: var(--text-secondary); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.4px; text-decoration: none; border-bottom: 1px solid var(--border-color); padding-bottom: 3px; transition: color 0.3s ease, border-color 0.3s ease; }
+        .btn-link-secondary:hover { color: var(--accent); border-color: var(--accent); }
+        .btn-dark:hover { background: rgba(138,115,85,0.16); color: var(--accent-deep); transform: translateY(-2px); box-shadow: 0 14px 32px var(--shadow-hover), inset 0 1px 0 rgba(255,255,255,0.6); }
+        @media (prefers-color-scheme: dark) {
+            .btn-dark { background: rgba(255,255,255,0.06); box-shadow: 0 4px 20px var(--shadow-subtle), inset 0 1px 0 rgba(255,255,255,0.08); }
+            .btn-dark:hover { background: rgba(196,166,126,0.18); }
+        }
+
+        /* PAGE ENTRANCE — a graceful fade-in rather than an abrupt pop,
+           on first load and whenever arriving from another page. */
+        body { opacity: 0; animation: lp-page-in 0.7s ease 0.05s forwards; }
+        @keyframes lp-page-in { to { opacity: 1; } }
+
+        /* SITE HEADER — sits over the hero and scrolls away naturally
+           with it, like ordinary page content, rather than staying
+           pinned to the viewport. */
+        .site-header { position: absolute; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 14px 0; }
+        .site-logo-link { display: block; }
+        .site-logo { height: 38px; width: auto; filter: brightness(0) invert(1) drop-shadow(0 2px 8px rgba(0,0,0,0.25)); }
+
+        /* HERO — identical mechanics to the booking page: video or
+           slideshow, controlled entirely from Settings. */
+        .lp-hero { position: relative; height: 92vh; height: 92svh; min-height: 560px; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #141210; }
+        .lp-hero-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 35%; }
+        .lp-hero-slideshow { position: absolute; inset: 0; }
+        .lp-hero-slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity 0.9s ease; }
+        .lp-hero-slide.is-active { opacity: 1; }
+        .lp-hero-flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 3; transition: opacity 0.1s ease; }
+        .lp-hero-flash.is-flashing { opacity: 0.32; transition: opacity 0.06s ease; }
+        .lp-hero-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(var(--hero-scrim-rgb),0.7), rgba(var(--hero-scrim-rgb),0.15) 55%); }
+        .lp-hero-content { position: relative; padding: 0 6vw; color: #fff; max-width: 700px; text-align: center; }
+        .lp-hero-title { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(30px, 5.5vw, 58px); line-height: 1.2; margin-bottom: 20px; color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+        .lp-hero-sub { font-size: 14px; color: rgba(255,255,255,0.82); max-width: 380px; margin: 0 auto; line-height: 1.7; }
+
+        /* SCROLL INDICATOR — a full-width frosted glass strip embedded
+           into the hero's own bottom edge, as if that edge of the page
+           itself were made of glass, rather than a floating element on
+           top of it. It sits straddling the boundary; the hero's
+           existing overflow:hidden naturally clips its lower half, so
+           only the upper sliver (with the chevron) is ever visible. A
+           slow breathing opacity pulse keeps it alive without drawing
+           attention; it fades away entirely once scrolling begins —
+           animation is explicitly cleared when hidden, since a running
+           keyframe animation would otherwise keep fighting the fade. */
+        .lp-scroll-indicator {
+            position: absolute; left: 0; right: 0; bottom: -14px;
+            height: 56px;
+            background: rgba(255,255,255,0.14);
+            backdrop-filter: blur(18px) saturate(180%);
+            -webkit-backdrop-filter: blur(18px) saturate(180%);
+            display: flex; align-items: flex-start; justify-content: center;
+            padding-top: 14px;
+            color: #fff;
+            box-shadow: 0 -4px 24px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.22);
+            animation: lp-breathe 4s ease-in-out infinite;
+            transition: opacity 0.6s ease;
+            pointer-events: none;
+        }
+        .lp-scroll-indicator.is-hidden { opacity: 0; animation: none; }
+        @keyframes lp-breathe {
+            0%, 100% { opacity: 0.75; }
+            50% { opacity: 1; }
+        }
+
+        /* FEATURED WORK */
+        .work-empty { text-align: center; color: var(--text-secondary); font-size: 13.5px; padding: 40px 0; }
+        .work-section { padding-top: 100px; padding-bottom: 0; }
+
+
+        /* ABOUT — centered vertical composition: photo, bio, signature.
+           No title, no eyebrow, no grid. The signature (Fraunces italic
+           at display size) carries the identity instead of a label. */
+        .about-wrap { max-width: 520px; margin: 0 auto; text-align: center; }
+        .about-photo { width: 240px; margin: 0 auto 24px; overflow: hidden; aspect-ratio: 4/5; background: var(--bg-card); }
+        .about-photo img { width: 100%; height: 100%; object-fit: cover; }
+        .about-bio { font-size: 13.5px; color: var(--text-secondary); line-height: 1.85; margin-bottom: 20px; max-width: 320px; margin-left: auto; margin-right: auto; text-wrap: balance; white-space: pre-line; }
+
+
+        /* TESTIMONIALS — a full-page editorial installation. The stage
+           fills the entire section so background words spread across
+           the full viewport, not crammed into a tiny box. The featured
+           quote sits dead center at a prominent size. */
+        .voices-stage { position: relative; width: 100%; flex: 1; min-height: 0; }
+        .voices-section { min-height: 100vh; min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 60px 0; }
+        .voices-section .testimonials-label { font-family: 'Fraunces', serif; font-weight: 500; font-size: 18px; letter-spacing: -0.2px; text-align: center; margin-bottom: 0; clip-path: inset(0 100% 0 0); transition: clip-path 2.8s cubic-bezier(0.16,1,0.3,1); }
+        .voices-section .testimonials-label.is-revealed { clip-path: inset(0 0% 0 0); }
+
+        /* Background word field — words now spread across the full
+           stage (which is the full section height), creating a genuine
+           atmosphere rather than a cramped cluster. Each word breathes
+           on its own rhythm and has a subtle rotation for organic feel. */
+        .voices-word {
+            position: absolute; font-family: 'Fraunces', serif; font-style: italic;
+            color: var(--text-secondary); opacity: 0.12; white-space: nowrap;
+            animation: voices-breathe 8s ease-in-out infinite;
+            transition: opacity 1.2s ease;
+            transform: rotate(var(--word-rotation, 0deg));
+        }
+        .voices-stage.is-focused .voices-word { opacity: 0.05; }
+        @keyframes voices-breathe {
+            0%, 100% { transform: translate(0, 0) rotate(var(--word-rotation, 0deg)); }
+            50% { transform: translate(2px, -3px) rotate(var(--word-rotation, 0deg)); }
+        }
+
+        /* The featured quote — dead center of the full stage at a
+           prominent size that befits a full-page presentation. */
+        .voices-quote-wrap {
+            position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
+            width: min(680px, 88%); text-align: center; pointer-events: none;
+        }
+        .voices-quote {
+            font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
+            font-size: clamp(19px, 2.8vw, 28px); line-height: 1.7; color: var(--text-primary);
+            opacity: 0; filter: blur(6px); transform: translateY(8px);
+            transition: opacity 1.3s cubic-bezier(0.22,1,0.36,1), filter 1.3s cubic-bezier(0.22,1,0.36,1), transform 1.3s cubic-bezier(0.22,1,0.36,1);
+        }
+        .voices-quote.is-visible { opacity: 1; filter: blur(0); transform: translateY(0); }
+        .voices-name {
+            margin-top: 24px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+            color: var(--accent); font-weight: 600;
+            opacity: 0; filter: blur(4px); transform: translateY(6px);
+            transition: opacity 1s cubic-bezier(0.22,1,0.36,1) 0.4s, filter 1s cubic-bezier(0.22,1,0.36,1) 0.4s, transform 1s cubic-bezier(0.22,1,0.36,1) 0.4s;
+        }
+        .voices-name.is-visible { opacity: 1; filter: blur(0); transform: translateY(0); }
+        .voices-stars {
+            display: inline-flex; align-items: center; gap: 1px;
+            margin-top: 14px; padding: 6px 14px;
+            background: rgba(26,24,21,0.05);
+            backdrop-filter: blur(12px) saturate(160%);
+            -webkit-backdrop-filter: blur(12px) saturate(160%);
+            border-radius: 20px;
+            box-shadow: 0 2px 10px var(--shadow-subtle), inset 0 1px 0 rgba(255,255,255,0.4);
+            font-size: 9px; letter-spacing: 2px; color: var(--text-primary);
+            opacity: 0; filter: blur(4px); transform: translateY(6px);
+            transition: opacity 1s cubic-bezier(0.22,1,0.36,1) 0.55s, filter 1s cubic-bezier(0.22,1,0.36,1) 0.55s, transform 1s cubic-bezier(0.22,1,0.36,1) 0.55s;
+        }
+        .voices-stars.is-visible { opacity: 1; filter: blur(0); transform: translateY(0); }
+        @media (prefers-color-scheme: dark) {
+            .voices-stars { background: rgba(255,255,255,0.06); box-shadow: 0 2px 10px var(--shadow-subtle), inset 0 1px 0 rgba(255,255,255,0.08); }
+        }
+
+        @media (max-width: 700px) {
+            .voices-stage { flex: none; height: 380px; margin: 0 auto; }
+            .voices-section { padding: 40px 0; }
+            .voices-quote-wrap { width: 90%; }
+            .voices-quote { font-size: clamp(16px, 4.5vw, 20px); }
+            .voices-word { display: none; }
+            .voices-word.voices-word-mobile { display: block; font-size: 12px !important; }
+        }
+
+        /* Reduced motion — the installation becomes a simple, calm
+           crossfade; no blur, no drift, no upward settle. */
+        @media (prefers-reduced-motion: reduce) {
+            .voices-word { animation: none !important; transition: opacity 0.6s ease !important; }
+            .voices-quote, .voices-name, .voices-stars { filter: none !important; transform: none !important; transition: opacity 0.6s ease !important; }
+        }
+
+        /* THE EXPERIENCE — a quiet, editorial sequence of reassuring
+           statements (not a process/steps grid): the emotional bridge
+           between Portfolio and Book. No cards, no numbers, no icons —
+           generous whitespace between each line lets it read almost
+           like a short poem. Each statement fades in independently as
+           it's scrolled to, via the same lpRevealOnScroll used
+           elsewhere on the page. All text is dashboard-editable. */
+        .experience-sequence { max-width: 640px; margin: 0 auto; display: flex; flex-direction: column; gap: 80px; }
+        .experience-statement { text-align: center; padding: 0 12px; }
+        .experience-statement .statement-text { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(21px, 3vw, 29px); line-height: 1.55; color: var(--text-primary); }
+        .experience-statement .statement-support { margin-top: 14px; font-size: 13.5px; color: var(--text-secondary); line-height: 1.8; }
+        .experience-statement.lp-reveal { opacity: 0; transform: translateY(16px); transition: opacity 1.3s cubic-bezier(0.16,1,0.3,1), transform 1.3s cubic-bezier(0.16,1,0.3,1); }
+        .experience-statement.lp-reveal.is-in { opacity: 1; transform: translateY(0); }
+
+        .book-cta-section { }
+
+        .brand-footer { padding: 60px 0; text-align: center; border-top: 1px solid var(--border-color); }
+        .footer-mark { font-size: 15px; font-weight: 500; letter-spacing: 0.3px; }
+        .footer-contact { margin-top: 14px; font-size: 12.5px; color: var(--text-secondary); }
+        .footer-contact a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; }
+        .footer-contact a:hover { color: var(--accent); }
+        .footer-contact-divider { margin: 0 10px; opacity: 0.5; }
+
+        /* FEATURED WORK PRESENTATION — one large main photo with a
+           perforated film-strip of thumbnails along the edge, at every
+           screen size. Tapping a thumbnail crossfades the main photo
+           to it. Previously desktop showed a separate editorial grid;
+           that's retired in favor of one consistent presentation. */
+        .work-mobile-feature {
+            display: flex; gap: 3px; aspect-ratio: 2.5/3.3; overflow: hidden; position: relative;
+            margin-bottom: 28px; background: #141210;
+            box-shadow: 0 24px 60px var(--shadow-hover);
+        }
+
+        .work-mobile-feature.is-empty { aspect-ratio: auto; display: block; overflow: visible; background: none; }
+
+        .work-main-photo { flex: 1; position: relative; overflow: hidden; min-width: 0; }
+        .work-photo-counter {
+            text-align: center; padding: 6px 0 2px; z-index: 3; position: relative;
+            color: rgba(255,255,255,0.5); font-size: 9px; font-weight: 500; letter-spacing: 1.2px;
+        }
+        .work-main-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
+        .work-main-photo img.is-active { opacity: 1; animation: lp-ken-burns 16s ease-out forwards; }
+        @keyframes lp-ken-burns { from { transform: scale(1); } to { transform: scale(1.02); } }
+        @media (prefers-reduced-motion: reduce) {
+            .work-main-photo img.is-active { animation: none; }
+        }
+        .work-strip-wrap {
+            width: 26%; position: relative; overflow-y: auto; overflow-x: hidden;
+            scroll-behavior: smooth; scrollbar-width: none; min-height: 0;
+            overscroll-behavior-y: contain;
+        }
+        .work-strip-wrap::-webkit-scrollbar { display: none; }
+
+        /* Film perforations — the strip background is permanently dark
+           (#141210), so perforations are always the light-on-dark
+           variant. No theme switching needed here because film is
+           always dark regardless of the page's light/dark mode. */
+        .work-strip-track::before,
+        .work-strip-track::after {
+            content: ""; position: absolute; top: 0; bottom: 0; width: 12px; z-index: 2;
+            background: rgba(255,255,255,0.35);
+            -webkit-mask-image: radial-gradient(circle at center, transparent 0, transparent 2.6px, rgba(0,0,0,0.5) 3px, #000 3.8px);
+            mask-image: radial-gradient(circle at center, transparent 0, transparent 2.6px, rgba(0,0,0,0.5) 3px, #000 3.8px);
+            -webkit-mask-size: 100% 18px; mask-size: 100% 18px;
+            -webkit-mask-repeat: repeat-y; mask-repeat: repeat-y;
+            -webkit-mask-position: center top; mask-position: center top;
+        }
+        .work-strip-track::before { left: 0; }
+        .work-strip-track::after { right: 0; }
+        .work-strip-track { display: flex; flex-direction: column; padding: 0 13px; position: relative; }
+        .work-strip-thumb { position: relative; width: 100%; aspect-ratio: 1/1; border: none; padding: 4px; background: none; cursor: pointer; display: block; }
+        /* Active state — a slightly frosted photographic viewer
+           rather than a border: everything not currently selected
+           sits back with a soft blur and a touch less brightness;
+           the active frame alone is fully clear and sharp. No
+           bright outlines, nothing loud. */
+        .work-strip-thumb img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+            filter: blur(1.3px) brightness(0.7); opacity: 0.6;
+            transition: filter 0.4s ease, opacity 0.4s ease, transform 0.4s ease;
+        }
+        .work-strip-thumb.is-active img { filter: blur(0) brightness(1); opacity: 1; }
+
+        /* Wider screens get a shorter, more landscape main photo (the
+           mobile portrait ratio would otherwise stretch absurdly tall
+           across a ~1000px container) and a narrower strip, so more
+           thumbnails are visible at once without excess scrolling. */
+        @media (min-width: 900px) {
+            .work-mobile-feature { aspect-ratio: 16/9; }
+            .work-strip-wrap { width: 14%; }
+        }
+
+
+        @media (max-width: 900px) {
+            .about-wrap { max-width: 360px; }
+            .about-photo { width: 200px; }
+            .about-bio { max-width: 280px; }
+            .experience-sequence { gap: 56px; }
+        }
+        @media (max-width: 600px) {
+            .container { padding: 0 22px; }
+            .section-block { padding: 70px 0; }
+            .work-section { padding-top: 70px; padding-bottom: 0; }
+            .lp-hero { height: 100vh; height: 100svh; }
+            .section-heading { font-size: 16px; }
+            .lp-hero-title { font-size: clamp(26px, 8vw, 34px); }
+            .lp-hero-sub { font-size: clamp(9.5px, 3.1vw, 12px); white-space: nowrap; max-width: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header" id="site-header">
+        <a href="./" class="site-logo-link"><img src="" alt="Libertypictures" class="site-logo" id="site-logo-img" style="display:none;"></a>
+    </header>
+
+    <section class="lp-hero">
+        <video class="lp-hero-video" id="lp-hero-video" autoplay muted loop playsinline poster="">
+            <!-- <source src="studio-reel.mp4" type="video/mp4"> -->
+        </video>
+        <div class="lp-hero-slideshow" id="lp-hero-slideshow" style="display:none;"></div>
+        <div class="lp-hero-flash" id="lp-hero-flash"></div>
+        <div class="lp-hero-scrim"></div>
+        <div class="lp-hero-content">
+            <h1 class="lp-hero-title">Intimate visual stories</h1>
+            <p class="lp-hero-sub">Portraits that feel personal and beautifully authentic.</p>
+        </div>
+        <div class="lp-scroll-indicator" aria-hidden="true">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </div>
+    </section>
+
+    <!-- FEATURED WORK -->
+    <section class="section-block work-section">
+        <div class="container">
+            <h2 class="section-heading serif">Featured Works</h2>
+            <div class="work-mobile-feature" id="work-mobile-feature"></div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS — now its own section with proper space,
+         so longer quotes don't feel crammed into a corner of the
+         Featured Works area. -->
+    <section class="section-block voices-section async-reveal" id="testimonials-section">
+        <div class="container">
+            <h2 class="testimonials-label" style="text-align:center;">Testimonials</h2>
+            <div class="voices-stage" id="voices-stage"></div>
+        </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="section-block async-reveal" id="about-section">
+        <div class="container">
+            <div class="about-wrap">
+                <div class="about-photo"><img id="about-photo-img" src="" alt="The photographer" loading="lazy" decoding="async"></div>
+                <p class="about-bio" id="about-bio-text"></p>
             </div>
         </div>
     </section>
 
-    <section class="section-block book-cta-section">
-        <div class="container" style="text-align:center;">
-            <h2 class="section-heading serif">Ready?</h2>
-            <a href="book.html" class="btn-dark">Book Now</a>
-            <div><a href="portfolio.html" class="btn-link-secondary">View Full Portfolio</a></div>
+    <!-- THE EXPERIENCE — a quiet, editorial sequence of reassuring
+         statements, the emotional bridge between Portfolio and Book.
+         Deliberately no session names, descriptions, or prices —
+         those live on Book. No overarching visible heading either
+         (the sequence itself carries the section); an sr-only heading
+         preserves a heading landmark for screen-reader navigation
+         without adding any visible chrome. All text is
+         dashboard-editable. -->
+    <section class="section-block experience-section">
+        <div class="container">
+            <h2 class="section-heading serif">The Experience</h2>
+            <div class="experience-sequence" id="experience-sequence"></div>
+        </div>
+    </section>
+
+    <!-- TWO PATHS -->
+    <section class="section-block" style="padding:0;">
+        <div style="padding:80px 20px;text-align:center;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:20px;">
+                <a href="book.html" class="btn-dark" style="min-width:260px;text-align:center;">Portraits + Studio</a>
+                <a href="wedding.html" class="btn-dark" style="min-width:260px;text-align:center;">Weddings</a>
+            </div>
+            <div style="margin-top:24px;"><a href="portfolio.html" class="btn-link-secondary">View Full Portfolio</a></div>
         </div>
     </section>
 
