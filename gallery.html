@@ -36,10 +36,7 @@ a{color:inherit}
 
 /* ── LOCKED WALL — soft, warm, conversion-forward ── */
 .lock-wrap{position:relative;min-height:100vh;min-height:100dvh;width:100%;display:flex;align-items:center;justify-content:center;padding:48px 20px;overflow:hidden}
-.lock-bg{position:absolute;inset:0;background:linear-gradient(160deg,#2a2419,#0f0c09);background-size:cover;background-position:center;filter:brightness(0.35);transform:scale(1.05);transition:filter .6s ease,transform .6s ease}
-.lock-bg.is-portrait{filter:brightness(.32) blur(34px);transform:scale(1.1)}
-.lock-photo{position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;object-fit:contain;opacity:0;transition:opacity .6s ease;z-index:1;pointer-events:none}
-.lock-photo.is-visible{opacity:1}
+.lock-bg{position:absolute;inset:0;background:linear-gradient(160deg,#2a2419,#0f0c09);background-size:cover;background-position:center;filter:brightness(0.35);transform:scale(1.05)}
 .lock-scrim{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,12,9,0.72),rgba(15,12,9,0.88))}
 .state-screen .lock-card{position:relative;z-index:2;max-width:460px;width:100%;text-align:center;background:rgba(26,23,20,0.6);border:1px solid var(--border);border-radius:18px;padding:44px 34px 36px;backdrop-filter:blur(24px) saturate(140%);-webkit-backdrop-filter:blur(24px) saturate(140%);box-shadow:0 30px 80px rgba(0,0,0,0.5);animation:coverIn .7s ease both}
 .state-screen .lock-card h1{font-family:'Fraunces',serif;font-weight:400;font-style:normal;font-size:24px;line-height:1.4;margin-bottom:16px}
@@ -75,11 +72,10 @@ a{color:inherit}
 
 /* ── COVER — continuous scroll, not a separate screen ── */
 .cover{position:relative;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;overflow:hidden}
-.cover-bg{position:absolute;inset:0;background:linear-gradient(160deg,#2a2419,#0f0c09);background-size:cover;background-position:center;opacity:1;transition:opacity .3s ease,filter .6s ease,transform .6s ease}
+.cover-bg{position:absolute;inset:0;background:linear-gradient(160deg,#2a2419,#0f0c09);background-size:cover;background-position:center;opacity:1;transition:opacity .3s ease}
 .cover-bg.loaded{opacity:1}
 .cover-bg.no-photo{background:linear-gradient(160deg,#1a1714,#0f0c09);opacity:1}
-.cover-bg.is-portrait{filter:blur(38px) brightness(.42) saturate(1.15);transform:scale(1.12)}
-.cover-photo{position:absolute;inset:0;margin:auto;max-width:100%;max-height:100%;object-fit:contain;opacity:0;transition:opacity .6s ease;z-index:1;pointer-events:none}
+.cover-photo{display:none;opacity:0;transition:opacity .6s ease;pointer-events:none}
 .cover-photo.is-visible{opacity:1}
 .cover-scrim{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,12,9,0.15) 0%,transparent 30%,rgba(15,12,9,0.55) 100%)}
 .cover-logo{position:absolute;top:28px;left:50%;transform:translateX(-50%);z-index:3;height:34px;width:auto;filter:invert(1);opacity:0;animation:coverIn 1s ease .2s forwards}
@@ -92,6 +88,18 @@ a{color:inherit}
 @keyframes scrollPulse{0%,100%{opacity:0.3}50%{opacity:0.8}}
 .cover-expiry{position:absolute;bottom:20px;left:0;right:0;z-index:2;text-align:center;font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:400;color:var(--cream-faint);opacity:0;animation:coverIn .9s ease 1s forwards}
 @keyframes coverIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── DESKTOP COVER — minimal split: text left, photo right ── */
+@media(min-width:1100px){
+  .cover{align-items:flex-start;justify-content:center}
+  .cover-logo{left:7vw;top:36px;transform:none;height:40px}
+  .cover-photo{display:block;position:absolute;top:0;right:0;bottom:0;height:100%;width:auto;max-width:none;object-fit:contain;z-index:1}
+  .cover:not(.portrait) .cover-photo{width:min(62%,calc(100vw - 700px));max-width:none;object-fit:cover;object-position:center}
+  .cover-scrim{background:linear-gradient(to right,rgba(13,10,7,.85) 0%,rgba(13,10,7,.5) 34%,rgba(13,10,7,0) 54%)}
+  .cover-content{text-align:left;padding:0;margin:0 0 0 7vw;max-width:560px;transform:translateY(-3vh)}
+  .cover-name{white-space:normal}
+  .cover-expiry{position:absolute;bottom:44px;left:7vw;right:auto;text-align:left}
+}
 
 /* ── GALLERY HEADER ── */
 .gallery-header{position:sticky;top:0;z-index:40;background:rgba(15,12,9,0.88);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-bottom:1px solid var(--border);padding:16px 24px}
@@ -171,6 +179,12 @@ a{color:inherit}
 .lb-nav-next{right:14px}
 .lb-nav:disabled{opacity:0;pointer-events:none}
 @media(max-width:820px){.lb-nav{display:none}}
+/* Quieter viewer arrows on desktop — slim, translucent */
+@media(min-width:1100px){
+  .lb-nav{width:38px;height:38px;border-color:rgba(255,255,255,.14);background:rgba(8,6,4,.28);backdrop-filter:blur(8px) saturate(140%);-webkit-backdrop-filter:blur(8px) saturate(140%)}
+  .lb-nav svg{width:15px;height:15px;opacity:.7}
+  .lb-nav:hover{background:rgba(255,255,255,.1);color:var(--cream)}
+}
 
 /* FILM RAIL — vertical perforated contact sheet along the stage's
    right edge, the same design language as the homepage viewer.
@@ -831,15 +845,17 @@ function renderOpenGallery() {
     }
     var bg = $('cover-bg');
     bg.classList.remove('loaded', 'no-photo', 'is-portrait');
+    var coverEl = $('cover');
     var coverPhoto = $('cover-photo');
     if (coverPhoto) { coverPhoto.removeAttribute('src'); coverPhoto.classList.remove('is-visible'); }
+    if (coverEl) coverEl.classList.remove('portrait');
     if (gallery.coverUrl) {
         var img = new Image();
         img.onload = function () {
             bg.style.backgroundImage = 'url(' + API + gallery.coverUrl + ')'; bg.classList.add('loaded');
             if (coverPhoto && img.naturalHeight > img.naturalWidth) {
                 coverPhoto.src = img.src;
-                bg.classList.add('is-portrait');
+                if (coverEl) coverEl.classList.add('portrait');
                 coverPhoto.classList.add('is-visible');
             }
         };
@@ -1825,7 +1841,7 @@ function renderLockWall(info) {
     scr.classList.add('lock-mode');
     scr.style.display = 'flex';
     scr.innerHTML =            '<div class="lock-wrap">' +
-            '<div class="lock-bg" id="lock-bg"></div><img class="lock-photo" id="lock-photo" alt="" aria-hidden="true"><div class="lock-scrim"></div>' +
+            '<div class="lock-bg" id="lock-bg"></div><div class="lock-scrim"></div>' +
             '<div class="lock-card">' +
                 '<div class="lock-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>' +
                 '<h1>' + nameBit + ' ' + (isProof ? 'gallery\u2019s viewing window' : 'gallery\u2019s download window') + ' has ended.</h1>' +
@@ -1840,16 +1856,8 @@ function renderLockWall(info) {
         '</div>';
     if (info.coverUrl) {
         var bg = $('lock-bg');
-        var lockPhoto = $('lock-photo');
         var img = new Image();
-        img.onload = function () {
-            bg.style.backgroundImage = 'url(' + API + info.coverUrl + ')';
-            if (lockPhoto && img.naturalHeight > img.naturalWidth) {
-                lockPhoto.src = img.src;
-                bg.classList.add('is-portrait');
-                lockPhoto.classList.add('is-visible');
-            }
-        };
+        img.onload = function () { bg.style.backgroundImage = 'url(' + API + info.coverUrl + ')'; };
         img.src = API + info.coverUrl;
     }
     var wa = $('lock-wa');
