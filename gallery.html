@@ -681,6 +681,7 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
    One URL per gallery (?t=<token>). The worker decides the phase and state:
      - proof, active, not finalised  → browse + star picks, Finalise locks them
      - proof, finalised              → “picks locked in” screen
+     - delivery, pending             → “finals pending delivery” screen
      - delivery, unpublished         → “finals being edited” screen
      - delivery, published           → view finals, keep + download
      - locked (409)                  → pay-to-reopen wall (secure pay page)
@@ -703,7 +704,7 @@ var view = 'proof';      // 'proof' | 'delivery' — set from server phase
 var starred = {};        // photoId -> true/false (picks in proof, keeps in delivery)
 var currentLbIdx = 0;
 var showingFavs = false;
-var gate = '';           // current rendered screen ('open'|'finalised'|'notready'|'lock')
+var gate = '';           // current rendered screen ('open'|'finalised'|'pending'|'notready'|'lock')
 var lockedInfo = null;   // 409 payload when locked
 
 var LS_GUIDE_PROOF = 'lp-guide-proof';
@@ -840,6 +841,7 @@ function renderNow() {
 
     if (gate === 'lock') { renderLockWall(lockedInfo); return; }
     if (view === 'delivery') {
+        if (gallery.pendingDelivery) { gate = 'pending'; renderPending(); return; }
         if (!gallery.deliveredAt || !photos.length) { gate = 'notready'; renderNotReady(); return; }
         gate = 'open'; renderOpenGallery();
         return;
@@ -1822,6 +1824,19 @@ function renderFinalised() {
     wireWa('fin-wa', 'Hi ' + G.studio + '! I just finalised my gallery picks and have a question.');
 }
 
+/* ---------- pending screen (finals link created, not yet delivered) ---------- */
+function renderPending() {
+    var state = $('state-screen');
+    state.style.display = 'flex';
+    state.innerHTML = '<div style="max-width:420px;text-align:center;padding:10px">' +
+        '<div class="pay-spinner"></div>' +
+        '<h1 class="serif" style="font-size:24px;line-height:1.4;margin:14px 0 10px">Your finals are pending</h1>' +
+        '<p style="font-size:13px;color:var(--cream-soft);line-height:1.8">Liberty has your pick list, and this link is reserved for your edited finals \u2014 they\u2019ll appear here as soon as they\u2019re delivered. Questions? ' +
+        '<a href="#" id="pn-wa" style="color:var(--accent)">Message us on WhatsApp</a>.</p>' +
+        '</div>';
+    wireWa('pn-wa', 'Hi ' + G.studio + '! When will my edited finals be ready?');
+}
+
 /* ---------- not-ready screen (delivery published later) ---------- */
 function renderNotReady() {
     var state = $('state-screen');
@@ -1916,11 +1931,20 @@ function paintExpiry() {
     var left = daysUntil(gallery.expiresAt);
     var ce = $('cover-expiry'), he = $('header-expiry');
     if (left === null) { ce.textContent = ''; he.textContent = ''; return; }
-    var actionWord = isDeliv() ? 'Download window' : 'Pick deadline';
-    if (left <= 0) { ce.textContent = actionWord + ' ended'; he.textContent = 'Locked'; }
-    else {
-        ce.textContent = actionWord + ' \u00b7 ' + left + ' day' + (left === 1 ? '' : 's') + ' left';
-        he.textContent = left + ' day' + (left === 1 ? '' : 's') + ' remaining' + ' \u00b7 ' + ((photos ? photos.length : 0) + (isDeliv() ? (extras ? extras.length : 0) : 0)) + ' photo' + (((photos ? photos.length : 0) + (isDeliv() ? (extras ? extras.length : 0) : 0)) === 1 ? '' : 's');
+    var n = (photos ? photos.length : 0) + (isDeliv() ? (extras ? extras.length : 0) : 0);
+    if (isDeliv()) {
+        // Delivered finals: surface the Delivered status with the download countdown.
+        if (left <= 0) { ce.textContent = 'Delivered \u00b7 window ended'; he.textContent = 'Delivered \u00b7 window ended'; }
+        else {
+            ce.textContent = 'Delivered \u00b7 ' + left + ' day' + (left === 1 ? '' : 's') + ' left';
+            he.textContent = 'Delivered \u00b7 ' + left + ' day' + (left === 1 ? '' : 's') + ' remaining \u00b7 ' + n + ' photo' + (n === 1 ? '' : 's');
+        }
+    } else {
+        if (left <= 0) { ce.textContent = 'Pick deadline ended'; he.textContent = 'Locked'; }
+        else {
+            ce.textContent = 'Pick deadline \u00b7 ' + left + ' day' + (left === 1 ? '' : 's') + ' left';
+            he.textContent = left + ' day' + (left === 1 ? '' : 's') + ' remaining \u00b7 ' + n + ' photo' + (n === 1 ? '' : 's');
+        }
     }
     var banner = $('expiry-banner');
     var dismissed = false;
