@@ -194,30 +194,61 @@
             50% { opacity: 1; }
         }
 
-        /* FLOATING BOOK CTA — appears from the lower-left after the
-           visitor scrolls past Featured Work, so the hero stays clean;
-           links straight to the packages on the booking page. */
+        /* FLOATING BOOK CTA — a flush, edge-to-edge strip of frosted
+           glass pinned to the very bottom of the viewport, built with
+           the same glass system as the hero's bottom edge (same
+           blur/saturate recipe, hairline top highlight, no rounded
+           chrome, no side margins): it runs end to end and sits flush
+           against the bottom with no gap. A small white chevron arrow
+           sits tucked beneath the label, and the whole strip
+           highlights when hovered or pressed, so it clearly feels
+           tappable. It appears shortly after the visitor scrolls past
+           the hero (well before the reviews) and then stays pinned;
+           only returning to the very top hides it again. */
         .lp-float-book {
-            position: fixed; left: 22px; bottom: 24px; z-index: 90;
-            display: inline-flex; align-items: center; gap: 9px;
-            padding: 14px 28px; font-size: 11px; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 2.2px; text-decoration: none;
-            color: var(--text-primary);
-            background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.04) 100%);
-            backdrop-filter: blur(18px) saturate(160%);
-            -webkit-backdrop-filter: blur(18px) saturate(160%);
-            border: 1px solid rgba(196,166,126,0.45); border-radius: 999px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12);
-            opacity: 0; transform: translateX(-26px) translateY(10px); pointer-events: none;
-            transition: opacity 0.55s cubic-bezier(0.16,1,0.3,1), transform 0.55s cubic-bezier(0.16,1,0.3,1);
+            position: fixed; left: 0; right: 0; bottom: 0; z-index: 90;
+            display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 3px;
+            padding: 9px 24px calc(9px + env(safe-area-inset-bottom, 0px));
+            font-size: 10px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 2.4px; text-decoration: none;
+            color: #1a1815;
+            background: rgba(255,252,248,0.72);
+            backdrop-filter: blur(18px) saturate(180%);
+            -webkit-backdrop-filter: blur(18px) saturate(180%);
+            border: none; border-top: 1px solid rgba(26,24,21,0.08); border-radius: 0;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 -12px 32px rgba(26,24,21,0.06);
+            opacity: 0; transform: translateY(100%); pointer-events: none;
+            transition: opacity 0.4s ease, transform 0.55s cubic-bezier(0.16,1,0.3,1), background-color 0.3s ease;
+            will-change: transform;
         }
-        .lp-float-book.is-visible { opacity: 1; transform: translateX(0) translateY(0); pointer-events: auto; }
-        .lp-float-book:hover { background: linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0.08) 100%); }
-        .lp-float-book::before {
-            content: ""; width: 6px; height: 6px; border-radius: 50%;
-            background: var(--accent); box-shadow: 0 0 10px rgba(196,166,126,0.6);
+        .lp-float-book-label { line-height: 1.1; }
+        .lp-float-book-arrow {
+            flex: none; color: #fff;
+            filter: drop-shadow(0 1px 1px rgba(26,24,21,0.35));
+            transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
         }
-        @media (max-width: 600px) { .lp-float-book { left: 14px; bottom: 14px; padding: 12px 22px; font-size: 10px; letter-spacing: 1.8px; } }
+        .lp-float-book.is-visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+        .lp-float-book:hover { background: rgba(255,255,255,0.92); }
+        .lp-float-book:hover .lp-float-book-arrow { transform: translateY(-2px); }
+        .lp-float-book:active { background: rgba(196,166,126,0.16); }
+        @media (prefers-color-scheme: dark) {
+            .lp-float-book {
+                color: #f3f0ea;
+                background: rgba(24,22,20,0.76);
+                border-top-color: rgba(255,255,255,0.1);
+                box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 -12px 32px rgba(0,0,0,0.35);
+            }
+            .lp-float-book:hover { background: rgba(42,38,34,0.86); }
+        }
+        @media (max-width: 600px) {
+            .lp-float-book { padding: 9px 20px calc(9px + env(safe-area-inset-bottom, 0px)); font-size: 9px; letter-spacing: 1.8px; gap: 3px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .lp-float-book { transition: opacity 0.3s ease; }
+            .lp-float-book.is-visible { transform: none; }
+            .lp-float-book-arrow { transition: none; }
+        }
 
         /* FEATURED WORK */
         .work-empty { text-align: center; color: var(--text-secondary); font-size: 13.5px; padding: 40px 0; }
@@ -387,7 +418,9 @@
         .cta-primary-btn:active { transform: translateY(0); }
         .book-cta-section a[href="wedding.html"]:hover { color: var(--accent); border-color: var(--accent); }
 
-        .brand-footer { padding: 60px 0; text-align: center; border-top: 1px solid var(--border-color); }
+        /* Extra bottom padding clears the flush book CTA bar when the
+           page is scrolled fully to the end. */
+        .brand-footer { padding: 60px 0 calc(92px + env(safe-area-inset-bottom, 0px)); text-align: center; border-top: 1px solid var(--border-color); }
         .footer-mark { font-size: 15px; font-weight: 500; letter-spacing: 0.3px; }
         .footer-contact { margin-top: 14px; font-size: 12.5px; color: var(--text-secondary); }
         .footer-contact a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; }
@@ -712,7 +745,10 @@
         </div>
     </footer>
 
-    <a class="lp-float-book" id="lp-float-book" href="book.html#packages">Book a Session</a>
+    <a class="lp-float-book" id="lp-float-book" href="book.html#packages">
+        <span class="lp-float-book-label">Book a Session</span>
+        <svg class="lp-float-book-arrow" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="18 15 12 9 6 15"></polyline></svg>
+    </a>
 
 <script>
     var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
@@ -1428,19 +1464,47 @@
         ['touchstart', 'click'].forEach(function (evt) { document.addEventListener(evt, resume, { passive: true }); });
     })();
 
-    // FLOATING BOOK CTA — the hero stays clean; a "Book a Session" pill
-    // slides in from the lower-left once the visitor has scrolled past
-    // Featured Work, and leads straight to the packages on book.html.
+    // FLOATING BOOK CTA — shown as soon as the visitor scrolls past
+    // the hero (well before the reviews section) and then kept pinned
+    // to the bottom of the viewport; it only sinks away again when
+    // they scroll back to the very top, so it reads as one constant,
+    // sticky action.
     (function () {
         var btn = document.getElementById('lp-float-book');
-        var work = document.querySelector('.work-section');
-        if (!btn || !work) return;
+        var hero = document.querySelector('.lp-hero');
+        if (!btn || !hero) return;
+        var shown = false;
         var ticking = false;
+        var meetSince = 0;
+        var meetTimer = 0;
+        function setVis(v) {
+            if (shown === v) return;
+            shown = v;
+            btn.classList.toggle('is-visible', v);
+        }
         function update() {
             ticking = false;
-            var r = work.getBoundingClientRect();
+            var r = hero.getBoundingClientRect();
             var vh = window.innerHeight || document.documentElement.clientHeight;
-            btn.classList.toggle('is-visible', r.bottom < vh * 0.25);
+            // The bar starts once the hero's bottom edge has cleared
+            // roughly the lower half of the viewport (never over the hero
+            // photograph, still well before the reviews) — and even then
+            // it waits a short beat so it doesn't pop up the instant the
+            // scroll crosses the line; only a sustained state triggers it.
+            var meet = r.bottom < vh * 0.45;
+            var now = Date.now();
+            if (meet) {
+                if (!meetSince) {
+                    meetSince = now;
+                    clearTimeout(meetTimer);
+                    meetTimer = setTimeout(update, 350);
+                }
+                if (!shown && now - meetSince >= 350) setVis(true);
+            } else {
+                meetSince = 0;
+                clearTimeout(meetTimer);
+                if (shown) setVis(false);
+            }
         }
         window.addEventListener('scroll', function () {
             if (!ticking) { ticking = true; requestAnimationFrame(update); }
@@ -1448,6 +1512,7 @@
         window.addEventListener('resize', function () {
             if (!ticking) { ticking = true; requestAnimationFrame(update); }
         }, { passive: true });
+        // Deep-link / mid-page refresh: start in the correct state.
         update();
     })();
 </script>
