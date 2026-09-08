@@ -17,18 +17,24 @@
 
     <style>
         :root {
-            --bg-body: #faf8f4; --bg-container: #ffffff; --bg-card: #fefdfb; --bg-booking: #f7f4ee;
-            --text-primary: #1a1815; --text-secondary: #6b6459; --accent: #8a7355; --accent-deep: #6e5c44;
+            --bg-body: #f5f2ec; --bg-container: #ffffff; --bg-card: #fdfcf9; --bg-booking: #f7f4ee;
+            --text-primary: #1a1815; --text-secondary: #6b6459; --text-faint: #9a9285;
+            --accent: #8a7355; --accent-deep: #6e5c44; --accent-soft: rgba(138,115,85,0.12);
+            --green: #4a7a4a; --green-soft: rgba(90,140,90,0.13);
+            --red: #a8453a; --red-soft: rgba(180,80,70,0.11);
             --border-color: #e8e3d9; --border-dashed: #d8d1c2;
-            --shadow-subtle: rgba(26,24,21,0.04); --shadow-hover: rgba(26,24,21,0.10);
-            --radius-lg: 18px; --radius-md: 12px; --radius-sm: 6px; --logo-filter: invert(0);
+            --shadow-card: 0 2px 6px rgba(26,24,21,0.04), 0 24px 56px rgba(26,24,21,0.07);
+            --radius-lg: 20px; --radius-md: 12px; --radius-sm: 8px; --logo-filter: invert(0);
         }
         @media (prefers-color-scheme: dark) {
             :root {
-                --bg-body: #161513; --bg-container: #1f1e1b; --bg-card: #262521; --bg-booking: #1c1b18;
-                --text-primary: #f3f0ea; --text-secondary: #a8a196; --accent: #c4a67e; --accent-deep: #d9bf98;
+                --bg-body: #141310; --bg-container: #1f1e1b; --bg-card: #232220; --bg-booking: #1c1b18;
+                --text-primary: #f3f0ea; --text-secondary: #a8a196; --text-faint: #7d776c;
+                --accent: #c4a67e; --accent-deep: #d9bf98; --accent-soft: rgba(196,166,126,0.14);
+                --green: #7fb37f; --green-soft: rgba(110,160,110,0.16);
+                --red: #d47a6e; --red-soft: rgba(200,110,100,0.14);
                 --border-color: #35332d; --border-dashed: #423f37;
-                --shadow-subtle: rgba(0,0,0,0.24); --shadow-hover: rgba(0,0,0,0.42);
+                --shadow-card: 0 2px 6px rgba(0,0,0,0.2), 0 24px 56px rgba(0,0,0,0.28);
                 --logo-filter: invert(1);
             }
         }
@@ -36,84 +42,109 @@
         a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
         body {
             font-family: 'Poppins', sans-serif; background: var(--bg-body); color: var(--text-primary);
-            line-height: 1.65; -webkit-font-smoothing: antialiased; padding: 110px 20px 60px;
+            line-height: 1.6; -webkit-font-smoothing: antialiased; padding: 64px 20px 48px;
             opacity: 0; animation: lp-page-in 0.6s ease 0.05s forwards;
         }
         @keyframes lp-page-in { to { opacity: 1; } }
         .serif { font-family: 'Fraunces', serif; }
 
-        .site-header { position: absolute; top: 0; left: 0; right: 0; z-index: 50; display: flex; align-items: center; justify-content: center; padding: 26px 0; }
+        .site-header { display: flex; align-items: center; justify-content: center; padding: 0 0 30px; }
         .site-logo-link { display: block; }
-        .site-logo { height: 36px; width: auto; filter: var(--logo-filter, none); }
+        .site-logo { height: 34px; width: auto; filter: var(--logo-filter, none); }
 
-        .container { max-width: 640px; margin: 0 auto; }
+        .container { max-width: 660px; margin: 0 auto; }
 
         .state-message { text-align: center; padding: 80px 20px; color: var(--text-secondary); font-size: 14px; }
 
         .invoice-card {
             background: var(--bg-container); border: 1px solid var(--border-color); border-radius: var(--radius-lg);
-            box-shadow: 0 16px 40px var(--shadow-subtle); padding: 48px 40px; display: none;
+            box-shadow: var(--shadow-card); padding: 40px 44px 36px; display: none; overflow: hidden;
         }
         .invoice-card.is-visible { display: block; }
 
-        .invoice-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; border-bottom: 1px solid var(--border-color); padding-bottom: 24px; margin-bottom: 28px; flex-wrap: wrap; }
-        .invoice-brand { font-size: 19px; font-weight: 500; }
-        .invoice-number { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
-        .status-pill { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; padding: 7px 16px; border-radius: 30px; }
+        /* Hairline top band — Apple-style quiet separation */
+        .invoice-top { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding-bottom: 20px; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; }
+        .invoice-brand { font-size: 18px; font-weight: 500; letter-spacing: 0.2px; }
+        .status-pill { display: inline-flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.1px; padding: 6px 14px; border-radius: 30px; border: 1px solid transparent; }
         .status-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-        .status-pill.is-paid { background: rgba(90,140,90,0.14); color: #4a7a4a; }
-        .status-pill.is-unpaid { background: rgba(138,115,85,0.14); color: var(--accent-deep); }
-        .status-pill.is-overdue { background: rgba(180,80,70,0.14); color: #a8453a; }
-        @media (prefers-color-scheme: dark) {
-            .status-pill.is-paid { color: #7fb37f; }
-            .status-pill.is-overdue { color: #d47a6e; }
-        }
+        .status-pill.is-paid { background: var(--green-soft); color: var(--green); }
+        .status-pill.is-unpaid { background: var(--accent-soft); color: var(--accent-deep); }
+        .status-pill.is-overdue { background: var(--red-soft); color: var(--red); }
 
-        .invoice-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 24px; margin-bottom: 30px; }
-        .invoice-meta div span { display: block; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 5px; }
-        .invoice-meta div strong { font-size: 14px; font-weight: 500; word-break: break-word; }
+        /* Hero — the single most important thing on the page */
+        .invoice-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 30px; flex-wrap: wrap; }
+        .hero-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.6px; color: var(--text-faint); font-weight: 600; margin-bottom: 6px; }
+        .hero-amount { font-family: 'Fraunces', serif; font-weight: 600; font-size: 44px; letter-spacing: -0.5px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+        .hero-due { font-size: 12.5px; color: var(--text-secondary); margin-top: 8px; }
+        .hero-due strong { color: var(--text-primary); font-weight: 600; }
+        .hero-number { text-align: right; font-size: 11px; color: var(--text-faint); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: 0.5px; text-transform: uppercase; }
+        .hero-number span { display: block; margin-top: 6px; color: var(--text-faint); font-family: 'Poppins', sans-serif; letter-spacing: 0; text-transform: none; }
 
-        .invoice-items { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
-        .invoice-items th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); padding-bottom: 10px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
-        .invoice-items td { padding: 13px 0; border-bottom: 1px dashed var(--border-dashed); font-size: 14px; }
-        .invoice-items td:last-child, .invoice-items th:last-child { text-align: right; }
-        .invoice-items .item-qty { color: var(--text-secondary); font-size: 12.5px; }
-        .invoice-items .item-details { margin-top: 6px; font-size: 12px; color: var(--text-secondary); line-height: 1.7; }
+        /* From / Bill to — FreshBooks document blocks */
+        .invoice-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 30px; margin-bottom: 30px; }
+        .party-block { min-width: 0; }
+        .party-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.6px; color: var(--text-faint); font-weight: 600; margin-bottom: 10px; }
+        .party-name { font-size: 14.5px; font-weight: 600; margin-bottom: 3px; }
+        .party-line { font-size: 12.5px; color: var(--text-secondary); line-height: 1.7; word-break: break-word; }
+        .party-line a { color: var(--text-secondary); text-decoration: none; }
+        .party-line a:hover { color: var(--accent); }
 
-        .invoice-totals { max-width: 280px; margin-left: auto; margin-bottom: 8px; }
-        .invoice-totals .total-row { display: flex; justify-content: space-between; font-size: 13.5px; padding: 6px 0; color: var(--text-secondary); }
-        .invoice-totals .total-row.grand { border-top: 1px solid var(--border-color); margin-top: 6px; padding-top: 12px; font-weight: 600; font-size: 16px; color: var(--text-primary); }
+        .invoice-items { width: 100%; border-collapse: collapse; margin-bottom: 26px; }
+        .invoice-items th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px; color: var(--text-faint); padding-bottom: 10px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
+        .invoice-items td { padding: 14px 0; border-bottom: 1px solid var(--border-dashed); font-size: 13.5px; vertical-align: top; }
+        .invoice-items td:last-child, .invoice-items th:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .invoice-items tr:last-child td { border-bottom: none; }
+        .item-name { font-weight: 500; }
+        .item-qty { color: var(--text-faint); font-size: 12px; margin-left: 6px; font-variant-numeric: tabular-nums; }
+        .item-details { margin-top: 4px; font-size: 12px; color: var(--text-secondary); line-height: 1.65; }
 
-        .invoice-notes { margin-top: 24px; padding: 16px 18px; background: var(--bg-booking); border-radius: var(--radius-sm); font-size: 13px; color: var(--text-secondary); line-height: 1.75; }
+        .invoice-totals { max-width: 300px; margin-left: auto; margin-bottom: 6px; }
+        .invoice-totals .total-row { display: flex; justify-content: space-between; gap: 18px; font-size: 13px; padding: 7px 0; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+        .invoice-totals .total-row.is-paid-so-far { color: var(--green); font-weight: 500; }
+        .invoice-totals .total-row.grand { border-top: 1px solid var(--border-color); margin-top: 8px; padding-top: 14px; font-weight: 600; font-size: 17px; color: var(--text-primary); }
+        .invoice-totals .total-row.grand span:last-child { font-family: 'Fraunces', serif; font-weight: 600; }
 
-        .invoice-actions { margin-top: 34px; display: flex; flex-direction: column; gap: 12px; }
+        .invoice-notes { margin-top: 24px; padding: 14px 18px; background: var(--bg-booking); border-radius: var(--radius-sm); font-size: 12.5px; color: var(--text-secondary); line-height: 1.7; }
+
+        /* Payment block */
+        .invoice-actions { margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 26px; display: flex; flex-direction: column; gap: 10px; }
         .btn-pay {
-            display: block; width: 100%; text-align: center; background-color: rgba(26,24,21,0.88);
-            backdrop-filter: blur(16px) saturate(160%); -webkit-backdrop-filter: blur(16px) saturate(160%);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); color: #fff; padding: 18px 40px; font-size: 13px;
-            font-weight: 600; text-transform: uppercase; letter-spacing: 1.6px; border: none; border-radius: 30px;
-            cursor: pointer; transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+            display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%;
+            background-color: rgba(26,24,21,0.92); color: #fff; padding: 16px 24px; font-size: 12.5px;
+            font-weight: 600; text-transform: uppercase; letter-spacing: 1.4px; border: none; border-radius: 14px;
+            cursor: pointer; transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+            box-shadow: 0 10px 24px rgba(26,24,21,0.18);
         }
-        .btn-pay:hover { background-color: rgba(138,115,85,0.92); transform: translateY(-2px); box-shadow: 0 16px 32px rgba(138,115,85,0.28); }
+        .btn-pay .btn-pay-amount { font-size: 15px; letter-spacing: 0.3px; font-variant-numeric: tabular-nums; }
+        .btn-pay:hover { background-color: rgba(138,115,85,0.95); transform: translateY(-1px); box-shadow: 0 16px 32px rgba(138,115,85,0.28); }
         .btn-pay:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; transform: none; box-shadow: none; }
+        .pay-or { text-align: center; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.6px; color: var(--text-faint); padding: 4px 0; }
         .btn-secondary {
-            display: block; width: 100%; text-align: center; background: rgba(26,24,21,0.05); border: 1px solid var(--border-color);
-            color: var(--text-primary); padding: 14px 30px; font-size: 11.5px; font-weight: 600; text-transform: uppercase;
-            letter-spacing: 1.2px; border-radius: 30px; cursor: pointer; transition: all 0.3s ease;
+            display: block; width: 100%; text-align: center; background: transparent; border: 1px solid var(--border-color);
+            color: var(--text-primary); padding: 13px 24px; font-size: 11px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: 1.2px; border-radius: 12px; cursor: pointer; transition: all 0.25s ease;
         }
-        .btn-secondary:hover { background: rgba(138,115,85,0.12); border-color: var(--accent); color: var(--accent-deep); }
-        @media (prefers-color-scheme: dark) { .btn-secondary { background: rgba(255,255,255,0.05); } }
+        .btn-secondary:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-deep); }
+        @media (prefers-color-scheme: dark) { .btn-secondary { background: rgba(255,255,255,0.04); } }
 
-        .paid-banner { display: flex; align-items: center; gap: 14px; background: rgba(90,140,90,0.10); border: 1px solid rgba(90,140,90,0.3); border-radius: var(--radius-sm); padding: 18px 20px; margin-top: 34px; }
-        .paid-banner .check-circle { width: 32px; height: 32px; border-radius: 50%; background: #4a7a4a; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .paid-banner p { font-size: 13px; color: var(--text-secondary); margin: 0; }
-        .paid-banner strong { display: block; font-size: 14.5px; color: var(--text-primary); margin-bottom: 3px; }
+        .pay-trust { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 14px; font-size: 11px; color: var(--text-faint); }
+        .pay-trust svg { opacity: 0.7; }
 
-        .partial-banner { background: rgba(138,115,85,0.10); border: 1px solid rgba(138,115,85,0.3); border-radius: var(--radius-sm); padding: 16px 18px; font-size: 13px; color: var(--text-secondary); line-height: 1.7; margin-bottom: 4px; }
-        .partial-banner strong { color: var(--text-primary); }
+        .doc-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+        .doc-actions button { flex: 1; min-width: 140px; background: transparent; border: none; color: var(--text-secondary); font-size: 11px; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 6px 8px; border-radius: 8px; transition: color 0.15s ease, background 0.15s ease; }
+        .doc-actions button:hover { color: var(--accent); background: var(--accent-soft); }
 
-        .brand-footer { max-width: 640px; margin: 60px auto 0; padding-top: 30px; border-top: 1px solid var(--border-color); text-align: center; }
-        .footer-contact { margin-top: 12px; font-size: 12px; color: var(--text-secondary); }
+        /* Paid state */
+        .paid-banner { display: flex; align-items: center; gap: 16px; background: var(--green-soft); border: 1px solid rgba(90,140,90,0.25); border-radius: 14px; padding: 20px 22px; }
+        .paid-banner .check-circle { width: 40px; height: 40px; border-radius: 50%; background: var(--green); display: flex; align-items: center; justify-content: center; flex-shrink: 0; box-shadow: 0 8px 20px rgba(90,140,90,0.25); }
+        .paid-banner p { font-size: 12.5px; color: var(--text-secondary); margin: 0; }
+        .paid-banner strong { display: block; font-size: 15px; color: var(--text-primary); margin-bottom: 2px; font-weight: 600; }
+
+        .partial-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--accent-soft); border: 1px solid rgba(138,115,85,0.25); border-radius: 12px; padding: 14px 18px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; flex-wrap: wrap; }
+        .partial-banner strong { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+
+        .brand-footer { max-width: 660px; margin: 44px auto 0; padding-top: 24px; border-top: 1px solid var(--border-color); text-align: center; }
+        .footer-contact { margin-top: 10px; font-size: 12px; color: var(--text-secondary); }
         .footer-contact a { color: var(--text-secondary); text-decoration: none; }
         .footer-contact a:hover { color: var(--accent); }
         .footer-contact-divider { margin: 0 10px; opacity: 0.5; }
@@ -145,10 +176,27 @@
         .invoice-capture .cap-totals .grand { border-top: 1px solid #1a1815; margin-top: 6px; padding-top: 12px !important; font-weight: 600; color: #1a1815 !important; font-size: 14.5px !important; }
         .invoice-capture .cap-footer { margin-top: 40px; text-align: center; font-size: 12px; color: #6b6459; font-style: italic; }
 
+        /* Print: a clean document PDF via the browser's save dialog */
+        @media print {
+            body { padding: 0; background: #fff; opacity: 1; animation: none; }
+            .site-header, .brand-footer, .state-message, .invoice-actions { display: none !important; }
+            .container { max-width: 100%; }
+            .invoice-card { border: none; box-shadow: none; border-radius: 0; padding: 0; }
+            .invoice-hero { margin-bottom: 24px; }
+            .invoice-parties { margin-bottom: 24px; }
+        }
+
         @media (max-width: 600px) {
-            body { padding: 96px 16px 50px; }
-            .invoice-card { padding: 32px 22px; }
-            .invoice-meta { grid-template-columns: 1fr; }
+            body { padding: 40px 14px 40px; }
+            .site-header { padding-bottom: 22px; }
+            .invoice-card { padding: 26px 20px 24px; border-radius: 16px; }
+            .invoice-hero { align-items: flex-start; flex-direction: column; gap: 14px; }
+            .hero-amount { font-size: 38px; }
+            .hero-number { text-align: left; }
+            .invoice-parties { grid-template-columns: 1fr; gap: 20px; }
+            .invoice-items th:nth-child(2), .invoice-items td:nth-child(2) { text-align: right; }
+            .invoice-totals { max-width: 100%; }
+            .btn-pay { padding: 15px 18px; }
         }
     </style>
 </head>
@@ -163,18 +211,30 @@
 
         <div class="invoice-card" id="invoice-card">
             <div class="invoice-top">
-                <div>
-                    <div class="invoice-brand serif">Libertypictures</div>
-                    <div class="invoice-number" id="inv-number"></div>
-                </div>
+                <div class="invoice-brand serif">Libertypictures</div>
                 <span class="status-pill" id="inv-status-pill"></span>
             </div>
 
-            <div class="invoice-meta">
-                <div><span>Billed To</span><strong id="inv-client-name"></strong></div>
-                <div><span>Email</span><strong id="inv-client-email"></strong></div>
-                <div><span>Issued</span><strong id="inv-issued-date"></strong></div>
-                <div><span>Due</span><strong id="inv-due-date"></strong></div>
+            <div class="invoice-hero">
+                <div>
+                    <div class="hero-label" id="hero-label">Amount due</div>
+                    <div class="hero-amount" id="inv-amount"></div>
+                    <div class="hero-due" id="inv-due"></div>
+                </div>
+                <div class="hero-number" id="inv-number"></div>
+            </div>
+
+            <div class="invoice-parties">
+                <div class="party-block">
+                    <div class="party-label">From</div>
+                    <div class="party-name" id="inv-from-name">Libertypictures</div>
+                    <div class="party-line" id="inv-from-line"></div>
+                </div>
+                <div class="party-block">
+                    <div class="party-label">Bill to</div>
+                    <div class="party-name" id="inv-client-name"></div>
+                    <div class="party-line" id="inv-client-line"></div>
+                </div>
             </div>
 
             <table class="invoice-items">
@@ -187,11 +247,7 @@
             <div class="invoice-notes" id="inv-notes" style="display:none;"></div>
 
             <div class="invoice-actions" id="invoice-actions">
-                <!-- populated by renderPaymentActions() based on status:
-                     unpaid/overdue -> Pay Retainer + Pay in Full
-                     partial         -> Pay Remaining Balance
-                     paid            -> paid banner
-                     Save as JPEG is always present. -->
+                <!-- populated by renderPaymentActions() based on status -->
             </div>
         </div>
     </div>
@@ -231,6 +287,7 @@
     var PAYSTACK_PUBLIC_KEY = 'pk_live_05373c45337d6a937f51d9c3045c7839369d503d';
     var token = new URLSearchParams(window.location.search).get('t');
     var currentInvoice = null;
+    var studioInfo = null;
 
     function escapeHtml(str) {
         var div = document.createElement('div');
@@ -244,17 +301,24 @@
         catch (e) { return iso; }
     }
 
-    // LOGO — same Settings source as every other page.
+    // SETTINGS — logo, studio address and contacts for the From block,
+    // same source as every other page.
     (function () {
         fetch(API_BASE + '/api/settings')
             .then(function (res) { return res.json(); })
             .then(function (data) {
                 var s = data.settings || {};
+                studioInfo = s;
                 if (s.logo_url) {
                     var logo = document.getElementById('site-logo-img');
                     logo.src = API_BASE + s.logo_url;
                     logo.style.display = 'block';
                 }
+                var fromLine = [];
+                if (s.studio_address) fromLine.push(escapeHtml(s.studio_address));
+                if (s.whatsapp_number) fromLine.push('<a href="https://wa.me/' + encodeURIComponent(String(s.whatsapp_number).replace(/\D/g, '')) + '" target="_blank" rel="noopener">WhatsApp</a>');
+                if (s.instagram_handle) fromLine.push('<a href="https://instagram.com/' + encodeURIComponent(String(s.instagram_handle).replace(/^@/, '')) + '" target="_blank" rel="noopener">' + escapeHtml(s.instagram_handle) + '</a>');
+                if (fromLine.length) document.getElementById('inv-from-line').innerHTML = fromLine.join('<br>');
             })
             .catch(function () {});
     })();
@@ -268,23 +332,37 @@
     }
 
     function renderInvoice(inv) {
-        document.getElementById('inv-number').textContent = inv.invoiceNumber;
+        document.getElementById('inv-number').innerHTML = escapeHtml(inv.invoiceNumber) + '<span>Issued ' + formatDate(inv.createdAt) + '</span>';
         applyStatusPill(inv.status);
-        document.getElementById('inv-client-name').textContent = inv.clientName;
-        document.getElementById('inv-client-email').textContent = inv.clientEmail;
-        document.getElementById('inv-issued-date').textContent = formatDate(inv.createdAt);
-        document.getElementById('inv-due-date').textContent = inv.dueDate ? formatDate(inv.dueDate) : 'On receipt';
+
+        var remaining = inv.balanceRemaining != null ? inv.balanceRemaining : Math.max(0, (inv.totalAmount || 0) - (inv.amountPaid || 0));
+        document.getElementById('hero-label').textContent = inv.status === 'paid' ? 'Total paid' : (inv.status === 'partial' ? 'Balance due' : 'Amount due');
+        document.getElementById('inv-amount').textContent = formatNaira(inv.status === 'paid' ? inv.totalAmount : (inv.status === 'partial' ? remaining : inv.totalAmount));
+        document.getElementById('inv-due').innerHTML = inv.status === 'paid'
+            ? (inv.paidAt ? 'Received ' + formatDate(inv.paidAt) : 'Received in full')
+            : (inv.dueDate ? 'Due <strong>' + formatDate(inv.dueDate) + '</strong>' : 'Due <strong>on receipt</strong>');
+
+        document.getElementById('inv-client-name').textContent = inv.clientName || '—';
+        var clientLine = [];
+        if (inv.clientEmail) clientLine.push(escapeHtml(inv.clientEmail));
+        if (inv.clientPhone) clientLine.push(escapeHtml(inv.clientPhone));
+        document.getElementById('inv-client-line').textContent = clientLine.join(' \u00b7 ');
 
         var rows = inv.lineItems.map(function (item) {
             var qtyText = item.quantity > 1 ? ' <span class="item-qty">&times; ' + item.quantity + '</span>' : '';
             var detailsHtml = item.details ? '<div class="item-details">' + escapeHtml(item.details).replace(/\n/g, '<br>') + '</div>' : '';
-            return '<tr><td>' + escapeHtml(item.description) + qtyText + detailsHtml + '</td><td>' + formatNaira(item.unitPrice * item.quantity) + '</td></tr>';
+            return '<tr><td><span class="item-name">' + escapeHtml(item.description) + '</span>' + qtyText + detailsHtml + '</td><td>' + formatNaira(item.unitPrice * item.quantity) + '</td></tr>';
         }).join('');
         document.getElementById('inv-items-body').innerHTML = rows;
 
         var totalsHtml = '<div class="total-row"><span>Subtotal</span><span>' + formatNaira(inv.subtotal) + '</span></div>';
         if (inv.discountAmount) totalsHtml += '<div class="total-row"><span>Discount</span><span>-' + formatNaira(inv.discountAmount) + '</span></div>';
-        totalsHtml += '<div class="total-row grand"><span>Total Due</span><span>' + formatNaira(inv.totalAmount) + '</span></div>';
+        if (inv.status === 'partial') {
+            totalsHtml += '<div class="total-row is-paid-so-far"><span>Paid so far</span><span>' + formatNaira(inv.amountPaid) + '</span></div>';
+            totalsHtml += '<div class="total-row grand"><span>Balance due</span><span>' + formatNaira(remaining) + '</span></div>';
+        } else {
+            totalsHtml += '<div class="total-row grand"><span>' + (inv.status === 'paid' ? 'Total paid' : 'Total due') + '</span><span>' + formatNaira(inv.totalAmount) + '</span></div>';
+        }
         document.getElementById('inv-totals').innerHTML = totalsHtml;
 
         if (inv.notes) {
@@ -299,33 +377,45 @@
     }
 
     // Builds the payment actions for whatever state the invoice is
-    // actually in — a retainer/full choice, a single "pay remaining
-    // balance" button, or a paid confirmation. Save as JPEG is always
-    // available regardless of payment state.
+    // actually in — a full/retainer choice, a single "pay remaining
+    // balance" button, or a paid confirmation. Download PDF and
+    // Save as image are always available.
     function renderPaymentActions(inv) {
         var actionsEl = document.getElementById('invoice-actions');
         var html = '';
+        var remaining = inv.balanceRemaining != null ? inv.balanceRemaining : Math.max(0, (inv.totalAmount || 0) - (inv.amountPaid || 0));
 
         if (inv.status === 'paid') {
             html += '<div class="paid-banner">' +
-                '<div class="check-circle"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>' +
-                '<p><strong>Paid in full</strong><span>' + (inv.paidAt ? 'Received ' + formatDate(inv.paidAt) : 'Received') + '</span></p>' +
+                '<div class="check-circle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>' +
+                '<p><strong>Paid in full</strong><span>' + (inv.paidAt ? 'Received ' + formatDate(inv.paidAt) : 'Received') + ' \u2014 thank you for your business.</span></p>' +
             '</div>';
         } else if (inv.status === 'partial') {
-            html += '<div class="partial-banner">Retainer received \u2014 <strong>' + formatNaira(inv.amountPaid) + '</strong> paid, <strong>' + formatNaira(inv.balanceRemaining) + '</strong> remaining.</div>';
-            html += '<button type="button" class="btn-pay" data-pay-amount="' + inv.balanceRemaining + '" data-pay-label="Pay Remaining Balance">Pay Remaining Balance \u2014 ' + formatNaira(inv.balanceRemaining) + '</button>';
+            html += '<div class="partial-banner"><span>Retainer received \u2014 <strong>' + formatNaira(inv.amountPaid) + '</strong> paid, <strong>' + formatNaira(remaining) + '</strong> remaining.</span></div>';
+            html += '<button type="button" class="btn-pay" data-pay-amount="' + remaining + '" data-pay-label="Pay Remaining Balance">' +
+                '<span>Pay remaining balance</span><span class="btn-pay-amount">' + formatNaira(remaining) + '</span></button>';
         } else {
-            html += '<button type="button" class="btn-pay" data-pay-amount="' + inv.retainerAmount + '" data-pay-label="Pay Retainer">Pay Retainer (70%) \u2014 ' + formatNaira(inv.retainerAmount) + '</button>';
-            html += '<button type="button" class="btn-secondary" data-pay-amount="' + inv.totalAmount + '" data-pay-label="Pay in Full">Pay in Full \u2014 ' + formatNaira(inv.totalAmount) + '</button>';
+            html += '<button type="button" class="btn-pay" data-pay-amount="' + inv.totalAmount + '" data-pay-label="Pay in Full">' +
+                '<span>Pay in full</span><span class="btn-pay-amount">' + formatNaira(inv.totalAmount) + '</span></button>';
+            html += '<div class="pay-or">or</div>';
+            html += '<button type="button" class="btn-secondary" data-pay-amount="' + inv.retainerAmount + '" data-pay-label="Pay Retainer">Pay 70% retainer \u2014 ' + formatNaira(inv.retainerAmount) + '</button>';
         }
 
-        html += '<button type="button" class="btn-secondary" id="save-invoice-btn">Save as JPEG</button>';
+        html += '<div class="pay-trust">' +
+            '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' +
+            '<span>Payments secured by Paystack \u2014 instant confirmation</span></div>';
+
+        html += '<div class="doc-actions">' +
+            '<button type="button" id="download-pdf-btn">Download PDF</button>' +
+            '<button type="button" id="save-invoice-btn">Save as image</button>' +
+        '</div>';
         actionsEl.innerHTML = html;
 
         actionsEl.querySelectorAll('[data-pay-amount]').forEach(function (btn) {
             btn.addEventListener('click', function () { payInvoice(parseFloat(btn.dataset.payAmount), btn); });
         });
         document.getElementById('save-invoice-btn').addEventListener('click', saveInvoiceAsJpeg);
+        document.getElementById('download-pdf-btn').addEventListener('click', function () { window.print(); });
     }
 
     function loadInvoice() {
@@ -349,7 +439,7 @@
     loadInvoice();
 
     // PAYMENT — mirrors the Book page's Paystack flow, but the amount
-    // charged depends on which button was clicked (retainer, full, or
+    // charged depends on which button was clicked (full, retainer, or
     // remaining balance) rather than always being the invoice total.
     function payInvoice(amount, btn) {
         if (!currentInvoice || !amount) return;
@@ -407,7 +497,7 @@
         }
     }
 
-    // SAVE AS JPEG — same technique as the Book page receipt: populate
+    // SAVE AS IMAGE — same technique as the Book page receipt: populate
     // a plain, theme-independent capture target, rasterize it, download.
     // A named function (not an inline listener) since the button it's
     // attached to is recreated by renderPaymentActions() on every render.
