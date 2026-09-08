@@ -138,6 +138,24 @@
     .amount-display .label { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
     .amount-display .value { font-size: 24px; font-weight: 700; color: var(--gold); letter-spacing: -0.4px; }
 
+    /* ---------- Exact balance lookup (Balance Due flow) ---------- */
+    .balance-lookup-row { display: flex; gap: 8px; }
+    .balance-lookup-row input { flex: 1; min-width: 0; }
+    .balance-check-btn {
+        flex-shrink: 0; background: var(--forest); color: #fff; border: none; border-radius: var(--radius-sm);
+        padding: 0 18px; font-size: 12.5px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: background 0.18s ease;
+    }
+    .balance-check-btn:hover:not(:disabled) { background: var(--forest-light); }
+    .balance-check-btn:disabled { opacity: 0.5; cursor: default; }
+    .balance-result { display: none; border-radius: var(--radius-sm); padding: 12px 14px; margin-bottom: 14px; font-size: 12.5px; line-height: 1.6; }
+    .balance-result.is-show { display: block; animation: fadeUp 0.25s ease; }
+    .balance-result.is-ok { background: var(--gold-soft); border: 1px solid var(--border); color: var(--ink); }
+    .balance-result.is-ok strong { color: var(--forest); }
+    .balance-result .br-total { font-size: 15px; font-weight: 700; color: var(--gold); }
+    .balance-result .br-line { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; margin-top: 6px; color: var(--ink-soft); }
+    .balance-result.is-empty { background: var(--bg); border: 1px dashed var(--border); color: var(--ink-soft); }
+    .balance-result.is-err { background: #FDECEA; border: 1px solid #F2C4C0; color: var(--error); }
+
     .pay-btn {
         width: 100%; padding: 16px; background: var(--forest); color: #fff; border: none; border-radius: var(--radius-sm);
         font-family: 'Inter', sans-serif; font-size: 14.5px; font-weight: 600; letter-spacing: 0.1px;
@@ -208,14 +226,25 @@
         <!-- BALANCE DUE -->
         <div class="form-section" id="balance-section">
             <div class="field-group">
-                <label for="package-select">Which Package Did You Book?</label>
-                <select id="package-select">
-                    <option value="">Loading packages…</option>
-                </select>
-                <p class="field-hint">This isn't a new booking — we just use it to calculate your exact remaining balance.</p>
+                <label for="balance-email">Your Email (the one you booked with)</label>
+                <div class="balance-lookup-row">
+                    <input type="email" id="balance-email" placeholder="you@example.com" autocomplete="email">
+                    <button type="button" class="balance-check-btn" id="balance-check-btn">Check</button>
+                </div>
+                <p class="field-hint">We'll look up your exact outstanding balance — the same amount shown on your session.</p>
+            </div>
+            <div class="balance-result" id="balance-lookup-result"></div>
+            <div id="balance-fallback" style="display:none;">
+                <div class="field-group">
+                    <label for="package-select">Or select your package (standard 30% estimate)</label>
+                    <select id="package-select">
+                        <option value="">Loading packages…</option>
+                    </select>
+                    <p class="field-hint">Only needed if your booking isn't found — the lookup above gives your exact balance.</p>
+                </div>
             </div>
             <div class="amount-display" id="balance-amount-display" style="display:none;">
-                <span class="label">Balance Due (30%)</span>
+                <span class="label" id="balance-amount-label">Balance Due (30%)</span>
                 <span class="value" id="balance-amount-value">₦0</span>
             </div>
         </div>
@@ -291,7 +320,7 @@
         return '\u20a6' + Math.round(n).toLocaleString();
     }
 
-    var state = { type: null, packages: [], selectedPackage: null };
+    var state = { type: null, packages: [], selectedPackage: null, lookupAmount: null, lookupLabel: null, lookupBookings: [] };
 
     // Gallery-extension mode — opened from a locked gallery page with
     // the fee, the gallery's private token and a return URL pre-filled.
@@ -313,6 +342,11 @@
     var packageSelect = document.getElementById('package-select');
     var balanceAmountDisplay = document.getElementById('balance-amount-display');
     var balanceAmountValue = document.getElementById('balance-amount-value');
+    var balanceAmountLabel = document.getElementById('balance-amount-label');
+    var balanceEmail = document.getElementById('balance-email');
+    var balanceCheckBtn = document.getElementById('balance-check-btn');
+    var balanceLookupResult = document.getElementById('balance-lookup-result');
+    var balanceFallback = document.getElementById('balance-fallback');
     var otherAmountInput = document.getElementById('other-amount');
     var otherDescriptionInput = document.getElementById('other-description');
     var payBtn = document.getElementById('pay-btn');
@@ -367,12 +401,85 @@
         updatePayButton();
     }
 
+    // Exact balance lookup — the pay page and the admin's Session
+    // Balances view read from the same rule on the worker, so the
+    // amount a client sees here is the amount the admin sees as owed.
+    function showLookupResult(cls, html) {
+        balanceLookupResult.className = 'balance-result is-show ' + cls;
+        balanceLookupResult.innerHTML = html;
+    }
+
+    function checkBalance() {
+        var email = balanceEmail.value.trim();
+        var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+            showLookupResult('is-err', 'Please enter a valid email to look up your balance.');
+            return;
+        }
+        balanceCheckBtn.disabled = true;
+        balanceCheckBtn.textContent = 'Checking…';
+        fetch(API_BASE + '/api/pay/balance-lookup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email }),
+        })
+            .then(function (res) { return res.json(); })
+            .then(function (data) {
+                if (!data || data.status !== 'ok') throw new Error(data.message || 'Lookup failed');
+                if (data.total > 0) {
+                    state.lookupAmount = data.total;
+                    state.lookupBookings = data.bookings || [];
+                    var names = [];
+                    state.lookupBookings.forEach(function (b) {
+                        if (names.indexOf(b.packageName) === -1) names.push(b.packageName);
+                    });
+                    state.lookupLabel = names.join(' + ');
+                    balanceAmountValue.textContent = formatNaira(data.total);
+                    balanceAmountLabel.textContent = 'Exact Balance Due';
+                    balanceAmountDisplay.style.display = 'flex';
+                    balanceFallback.style.display = 'none';
+                    var lines = state.lookupBookings.filter(function (b) { return !b.paid; }).map(function (b) {
+                        return '<div class="br-line"><span>' + escapeHtml(b.packageName) + (b.sessionDate ? ' \u00b7 ' + b.sessionDate : '') + '</span><span>' + formatNaira(b.balanceDue) + '</span></div>';
+                    }).join('');
+                    showLookupResult('is-ok',
+                        'Exact balance found \u2014 <span class="br-total">' + formatNaira(data.total) + '</span> outstanding.' + lines);
+                    // Pre-fill the contact email so it's typed only once.
+                    var contactEmail = document.getElementById('customer-email');
+                    if (!contactEmail.value.trim()) contactEmail.value = email;
+                } else {
+                    state.lookupAmount = null;
+                    state.lookupLabel = null;
+                    state.lookupBookings = [];
+                    balanceAmountDisplay.style.display = 'none';
+                    balanceFallback.style.display = 'block';
+                    showLookupResult('is-empty', 'No outstanding balance found for this email. If you know what you owe, select your package below to pay the standard 30%.');
+                }
+                updatePayButton();
+            })
+            .catch(function () {
+                showLookupResult('is-err', 'Couldn\u2019t check right now \u2014 please try again.');
+            })
+            .then(function () {
+                balanceCheckBtn.disabled = false;
+                balanceCheckBtn.textContent = 'Check';
+            });
+    }
+
+    balanceCheckBtn.addEventListener('click', checkBalance);
+    balanceEmail.addEventListener('keydown', function (e) { if (e.key === 'Enter') checkBalance(); });
+
     packageSelect.addEventListener('change', function () {
         var pkg = state.packages.find(function (p) { return String(p.id) === packageSelect.value; });
         state.selectedPackage = pkg || null;
+        // Choosing a package explicitly overrides an earlier lookup.
+        state.lookupAmount = null;
+        state.lookupLabel = null;
+        state.lookupBookings = [];
+        balanceLookupResult.className = 'balance-result';
         if (pkg) {
             var balance = pkg.price * 0.3;
             balanceAmountValue.textContent = formatNaira(balance);
+            balanceAmountLabel.textContent = 'Balance Due (30%)';
             balanceAmountDisplay.style.display = 'flex';
         } else {
             balanceAmountDisplay.style.display = 'none';
@@ -383,6 +490,7 @@
 
     function getCurrentAmount() {
         if (state.type === 'balance') {
+            if (state.lookupAmount) return state.lookupAmount;
             return state.selectedPackage ? Math.round(state.selectedPackage.price * 0.3) : 0;
         }
         if (state.type === 'other') {
@@ -459,7 +567,7 @@
             reference: response.reference,
         };
         if (state.type === 'balance') {
-            payload.packageName = state.selectedPackage.name;
+            payload.packageName = state.lookupLabel || state.selectedPackage.name;
         } else if (state.type === 'gallery') {
             payload.galleryToken = galleryToken;
             payload.description = 'Gallery extension';
@@ -492,7 +600,7 @@
         document.getElementById('success-view').classList.add('is-visible');
         document.getElementById('success-reference').textContent = reference;
 
-        var purpose = state.type === 'balance' ? state.selectedPackage.name + ' balance' : (state.type === 'gallery' ? 'my gallery extension' : otherDescriptionInput.value.trim());
+        var purpose = state.type === 'balance' ? (state.lookupLabel || state.selectedPackage.name) + ' balance' : (state.type === 'gallery' ? 'my gallery extension' : otherDescriptionInput.value.trim());
         var waMessage = "Hello there! I've just paid " + formatNaira(details.amount) + " for " + purpose + " (Reference: " + reference + ").";
         var waLink = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(waMessage);
         document.getElementById('whatsapp-link').href = waLink;
@@ -511,7 +619,7 @@
         // Full reset — same starting state as a fresh page load, so a
         // second payment can't accidentally reuse stale details from
         // the one that just succeeded.
-        state = { type: null, packages: state.packages, selectedPackage: null };
+        state = { type: null, packages: state.packages, selectedPackage: null, lookupAmount: null, lookupLabel: null, lookupBookings: [] };
         typeBalanceBtn.classList.remove('is-selected');
         typeOtherBtn.classList.remove('is-selected');
         balanceSection.classList.remove('is-visible');
@@ -519,6 +627,9 @@
         contactFields.style.display = 'none';
         packageSelect.value = '';
         balanceAmountDisplay.style.display = 'none';
+        balanceFallback.style.display = 'none';
+        balanceLookupResult.className = 'balance-result';
+        balanceEmail.value = '';
         otherAmountInput.value = '';
         otherDescriptionInput.value = '';
         document.getElementById('customer-name').value = '';
