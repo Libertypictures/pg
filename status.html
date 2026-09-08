@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Libertypictures — System Status</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000000'/%3E%3Ctext x='50' y='68' font-size='52' font-family='Georgia, serif' fill='%23c4a67e' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
+<style>
+    :root {
+        --bg: #0a0805;
+        --card: #14110b;
+        --card-border: #2a2113;
+        --ink: #e8e0d3;
+        --ink-soft: #a89a85;
+        --ink-faint: #6e6353;
+        --gold: #c4a67e;
+        --green: #3fae6a;
+        --red: #d4574a;
+        --amber: #e0a13c;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        padding: 28px 20px 60px;
+        min-height: 100vh;
+    }
+    .wrap { max-width: 760px; margin: 0 auto; }
+    header { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+    .logo {
+        width: 34px; height: 34px; border-radius: 50%;
+        background: #000; border: 1px solid var(--gold);
+        display: flex; align-items: center; justify-content: center;
+        font-family: Georgia, serif; font-size: 19px; color: var(--gold);
+    }
+    h1 { font-size: 17px; font-weight: 600; letter-spacing: 0.2px; }
+    h1 small { display: block; font-size: 11px; font-weight: 400; color: var(--ink-faint); letter-spacing: 1.2px; text-transform: uppercase; margin-top: 2px; }
+    .sub { font-size: 12px; color: var(--ink-soft); margin: 4px 0 22px; }
+
+    .banner {
+        border-radius: 14px; padding: 20px 22px; border: 1px solid var(--card-border);
+        display: flex; align-items: center; gap: 16px; margin-bottom: 22px;
+        background: var(--card);
+    }
+    .banner .big-dot { width: 13px; height: 13px; border-radius: 50%; flex-shrink: 0; }
+    .banner h2 { font-size: 15px; font-weight: 600; }
+    .banner p { font-size: 12px; color: var(--ink-soft); margin-top: 3px; }
+    .banner.up .big-dot { background: var(--green); box-shadow: 0 0 0 5px rgba(63,174,106,.14); }
+    .banner.up h2 { color: var(--green); }
+    .banner.partial .big-dot { background: var(--amber); box-shadow: 0 0 0 5px rgba(224,161,60,.14); }
+    .banner.partial h2 { color: var(--amber); }
+    .banner.down .big-dot { background: var(--red); box-shadow: 0 0 0 5px rgba(212,87,74,.14); }
+    .banner.down h2 { color: var(--red); }
+
+    .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .controls .spacer { flex: 1; }
+    .label { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 1px; }
+    .seg { display: flex; background: var(--card); border: 1px solid var(--card-border); border-radius: 9px; overflow: hidden; }
+    .seg button {
+        background: none; border: none; color: var(--ink-soft); font: inherit;
+        font-size: 12px; padding: 8px 13px; cursor: pointer; transition: background .15s, color .15s;
+    }
+    .seg button:hover { color: var(--ink); }
+    .seg button.active { background: rgba(196,166,126,.14); color: var(--gold); }
+    .btn {
+        background: var(--card); border: 1px solid var(--card-border); color: var(--ink);
+        font: inherit; font-size: 12px; padding: 8px 14px; border-radius: 9px; cursor: pointer;
+        transition: border-color .15s, color .15s;
+    }
+    .btn:hover { border-color: var(--gold); color: var(--gold); }
+    .btn:disabled { opacity: .5; cursor: default; }
+
+    .card {
+        background: var(--card); border: 1px solid var(--card-border); border-radius: 14px;
+        padding: 16px 18px; margin-bottom: 12px;
+    }
+    .card .row { display: flex; align-items: center; gap: 12px; }
+    .card .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .card .name { font-size: 13px; font-weight: 600; }
+    .card .url { font-size: 11px; color: var(--ink-faint); margin-top: 2px; word-break: break-all; }
+    .card .meta { margin-left: auto; text-align: right; flex-shrink: 0; }
+    .card .status-text { font-size: 12px; font-weight: 600; }
+    .card .ms { font-size: 11px; color: var(--ink-faint); margin-top: 2px; }
+    .dot.ok { background: var(--green); }
+    .dot.bad { background: var(--red); }
+    .dot.checking { background: var(--ink-faint); animation: pulse 1s infinite; }
+    @keyframes pulse { 50% { opacity: .3; } }
+    .status-text.ok { color: var(--green); }
+    .status-text.bad { color: var(--red); }
+    .status-text.checking { color: var(--ink-faint); }
+
+    .chips { display: flex; gap: 5px; margin-top: 13px; align-items: center; }
+    .chips .cap { font-size: 10px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: .8px; margin-right: 4px; }
+    .chip { width: 18px; height: 10px; border-radius: 3px; }
+    .chip.ok { background: var(--green); opacity: .85; }
+    .chip.bad { background: var(--red); opacity: .85; }
+    .chip.none { background: #241d12; }
+
+    .log-head { display: flex; align-items: center; gap: 10px; margin: 26px 0 10px; }
+    .log-head h3 { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; color: var(--ink-soft); }
+    .log-head .spacer { flex: 1; }
+    .log { list-style: none; }
+    .log li {
+        display: flex; align-items: baseline; gap: 12px;
+        padding: 9px 2px; border-bottom: 1px solid #1e180d;
+        font-size: 12px; color: var(--ink-soft);
+    }
+    .log li .t { color: var(--ink-faint); font-variant-numeric: tabular-nums; flex-shrink: 0; font-size: 11px; width: 74px; }
+    .log li .nm { flex: 1; word-break: break-word; }
+    .log li .st { font-weight: 600; flex-shrink: 0; }
+    .st.up { color: var(--green); }
+    .st.down { color: var(--red); }
+    .empty { font-size: 12px; color: var(--ink-faint); padding: 12px 2px; }
+    footer { font-size: 11px; color: var(--ink-faint); margin-top: 26px; line-height: 1.7; }
+    .toggle { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--ink-soft); cursor: pointer; user-select: none; }
+    .toggle input { accent-color: var(--gold); }
+    .checking-note { display: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <header>
+        <div class="logo">L</div>
+        <h1>Libertypictures<small>System Status</small></h1>
+    </header>
+    <p class="sub">Live checks of the booking API and your public pages — refreshes itself while this tab is open.</p>
+
+    <div class="banner up" id="banner">
+        <div class="big-dot"></div>
+        <div>
+            <h2 id="banner-title">Checking…</h2>
+            <p id="banner-sub">Running the first check now.</p>
+        </div>
+    </div>
+
+    <div class="controls">
+        <span class="label">Check every</span>
+        <div class="seg" id="interval-seg">
+            <button data-sec="30">30s</button>
+            <button data-sec="60" class="active">1 min</button>
+            <button data-sec="300">5 min</button>
+        </div>
+        <div class="spacer"></div>
+        <button class="btn" id="check-now">Check now</button>
+    </div>
+
+    <div id="cards"></div>
+
+    <div class="log-head">
+        <h3>Event log</h3>
+        <div class="spacer"></div>
+        <label class="toggle"><input type="checkbox" id="notif-toggle"> Notify on change</label>
+    </div>
+    <ul class="log" id="log"></ul>
+    <p class="empty" id="log-empty">No state changes yet — everything has been steady since this page opened.</p>
+
+    <footer>
+        This page only checks while it is open in a browser — close it and the checks pause.
+        "Down" means the URL failed to respond, returned an error, or timed out (15s).
+        Payments are recorded only after a Paystack charge; this page checks availability, not bank settlement.
+    </footer>
+</div>
+
+<script>
+(function () {
+    'use strict';
+    var API = 'https://liberty-booking-api.visualsliberty.workers.dev';
+    var PAGES = 'https://libertypictures.github.io/pg';
+    var TIMEOUT_MS = 15000;
+
+    var CHECKS = [
+        { id: 'api-settings', name: 'Booking API', url: API + '/api/settings', kind: 'json', tip: 'Backend + database' },
+        { id: 'api-packages', name: 'Booking API — packages', url: API + '/api/packages?activeOnly=true&category=Studio', kind: 'json', tip: 'Package catalogue' },
+        { id: 'pg-book', name: 'Book page', url: PAGES + '/book.html', kind: 'page', tip: 'Booking form' },
+        { id: 'pg-pay', name: 'Pay page', url: PAGES + '/pay/index.html', kind: 'page', tip: 'Balance payments' },
+        { id: 'pg-gallery', name: 'Gallery view', url: PAGES + '/gallery.html', kind: 'page', tip: 'Client proof gallery' },
+        { id: 'pg-home', name: 'Main site', url: PAGES + '/', kind: 'page', tip: 'Portfolio homepage' }
+    ];
+
+    var state = {};          // id -> { ok, code, ms, at, error, prev }
+    var history = {};        // id -> array of 'ok'/'bad' chips (newest last)
+    var log = [];            // events: { t, name, id, state }
+    var intervalSec = 60;
+    var checking = false;
+
+    var els = {
+        banner: document.getElementById('banner'),
+        bannerTitle: document.getElementById('banner-title'),
+        bannerSub: document.getElementById('banner-sub'),
+        cards: document.getElementById('cards'),
+        log: document.getElementById('log'),
+        logEmpty: document.getElementById('log-empty'),
+        checkNow: document.getElementById('check-now'),
+        notif: document.getElementById('notif-toggle'),
+        seg: document.getElementById('interval-seg')
+    };
+
+    function esc(s) {
+        var d = document.createElement('div');
+        d.textContent = String(s == null ? '' : s);
+        return d.innerHTML;
+    }
+    function timeStr(ts) {
+        var d = new Date(ts);
+        function p(n) { return (n < 10 ? '0' : '') + n; }
+        return p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+    }
+    function fmtMs(ms) { return ms < 1000 ? Math.round(ms) + ' ms' : (ms / 1000).toFixed(2) + ' s'; }
+
+    function overall() {
+        var anyOk = false, anyBad = false;
+        CHECKS.forEach(function (c) {
+            var s = state[c.id];
+            if (!s || s.checking) return;
+            if (s.ok) anyOk = true; else anyBad = true;
+        });
+        if (anyBad && anyOk) return 'partial';
+        if (anyBad) return 'down';
+        if (anyOk) return 'up';
+        return 'checking';
+    }
+
+    function renderBanner() {
+        var o = overall();
+        els.banner.className = 'banner ' + o;
+        if (o === 'up') {
+            els.bannerTitle.textContent = 'All systems operational';
+            els.bannerSub.textContent = 'API and every public page responded successfully on the last check.';
+        } else if (o === 'partial') {
+            els.bannerTitle.textContent = 'Partial issue detected';
+            els.bannerSub.textContent = 'One or more services failed the last check — see the cards below.';
+        } else if (o === 'down') {
+            els.bannerTitle.textContent = 'System down';
+            els.bannerSub.textContent = 'Nothing responded on the last check. This may be an internet problem on this device — hit "Check now" to retry.';
+        } else {
+            els.bannerTitle.textContent = 'Checking…';
+            els.bannerSub.textContent = 'Running the first check now.';
+        }
+    }
+
+    function renderCards() {
+        els.cards.innerHTML = CHECKS.map(function (c) {
+            var s = state[c.id];
+            var cls = 'checking', label = 'Checking…', meta = '';
+            if (s) {
+                if (s.checking) { cls = 'checking'; label = 'Checking…'; }
+                else if (s.ok) { cls = 'ok'; label = s.code ? 'Up · HTTP ' + s.code : 'Up'; }
+                else { cls = 'bad'; label = s.error ? s.error : 'Down'; }
+                meta = (s.ms != null ? fmtMs(s.ms) + ' · ' : '') + (s.at ? timeStr(s.at) : '');
+            }
+            var chips = (history[c.id] || []).slice(-24).map(function (h) {
+                return '<span class="chip ' + h + '"></span>';
+            }).join('');
+            return '<div class="card">' +
+                '<div class="row">' +
+                    '<span class="dot ' + cls + '"></span>' +
+                    '<div><div class="name">' + esc(c.name) + '</div>' +
+                    '<div class="url">' + esc(c.url) + (c.tip ? ' · ' + esc(c.tip) : '') + '</div></div>' +
+                    '<div class="meta"><div class="status-text ' + cls + '">' + esc(label) + '</div>' +
+                    '<div class="ms">' + esc(meta) + '</div></div>' +
+                '</div>' +
+                (chips ? '<div class="chips"><span class="cap">Recent</span>' + chips + '</div>' : '') +
+            '</div>';
+        }).join('');
+    }
+
+    function renderLog() {
+        els.logEmpty.style.display = log.length ? 'none' : 'block';
+        els.log.innerHTML = log.slice().reverse().slice(0, 60).map(function (e) {
+            return '<li><span class="t">' + timeStr(e.t) + '</span>' +
+                '<span class="nm">' + esc(e.name) + '</span>' +
+                '<span class="st ' + (e.state === 'up' ? 'up' : 'down') + '">' + (e.state === 'up' ? 'UP' : 'DOWN') + '</span></li>';
+        }).join('');
+    }
+
+    function pushLog(id, name, up) {
+        log.push({ t: Date.now(), id: id, name: name, state: up ? 'up' : 'down' });
+        if (log.length > 200) log.splice(0, log.length - 200);
+        renderLog();
+        if (els.notif.checked && typeof Notification !== 'undefined' && Notification.permission === 'granted') {
+            try {
+                new Notification('Libertypictures status', { body: name + (up ? ' is back UP.' : ' is DOWN.') });
+            } catch (e) {}
+        }
+    }
+
+    function checkOne(c) {
+        var prev = state[c.id];
+        if (prev && prev.checking) return Promise.resolve();
+        state[c.id] = { checking: true };
+        renderCards();
+
+        var started = performance.now();
+        var ctrl = new AbortController();
+        var timer = setTimeout(function () { ctrl.abort(); }, TIMEOUT_MS);
+
+        return fetch(c.url, { method: 'GET', cache: 'no-store', signal: ctrl.signal })
+            .then(function (res) {
+                if (c.kind === 'json') {
+                    return res.json().then(function () {
+                        if (!res.ok) throw new Error('HTTP ' + res.status);
+                    });
+                }
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+            })
+            .then(function () {
+                var ok = true, code = 200;
+                var ms = Math.round(performance.now() - started);
+                return { ok: ok, code: code, ms: ms, at: Date.now(), error: null };
+            })
+            .catch(function (err) {
+                var ms = Math.round(performance.now() - started);
+                var msg = err && err.name === 'AbortError' ? 'Timeout' : String((err && err.message) || err || 'Failed');
+                if (/failed to fetch/i.test(msg) || /networkerror/i.test(msg)) msg = 'Unreachable';
+                return { ok: false, code: null, ms: ms, at: Date.now(), error: msg };
+            })
+            .finally(function () {
+                clearTimeout(timer);
+            })
+            .then(function (res) {
+                state[c.id] = res;
+                var prevOk = prev ? prev.ok : null;
+                (history[c.id] = history[c.id] || []).push(res.ok ? 'ok' : 'bad');
+                if (history[c.id].length > 100) history[c.id].shift();
+                if (prevOk !== null && prevOk !== res.ok) {
+                    pushLog(c.id, c.name, res.ok);
+                }
+                renderCards();
+                renderBanner();
+                return res;
+            });
+    }
+
+    function runChecks() {
+        if (checking) return;
+        checking = true;
+        els.checkNow.disabled = true;
+        var all = CHECKS.map(function (c) { return checkOne(c); });
+        Promise.all(all).then(function () {
+            checking = false;
+            els.checkNow.disabled = false;
+            renderBanner();
+        });
+    }
+
+    // Interval selector
+    els.seg.addEventListener('click', function (e) {
+        var btn = e.target.closest('button');
+        if (!btn || !btn.dataset.sec) return;
+        intervalSec = parseInt(btn.dataset.sec, 10);
+        els.seg.querySelectorAll('button').forEach(function (b) { b.classList.toggle('active', b === btn); });
+        resetTimer();
+    });
+    els.checkNow.addEventListener('click', function () { runChecks(); });
+    els.notif.addEventListener('change', function () {
+        if (!els.notif.checked) return;
+        if (typeof Notification === 'undefined') { els.notif.checked = false; return; }
+        if (Notification.permission === 'granted') return;
+        if (Notification.permission === 'denied') { els.notif.checked = false; return; }
+        Notification.requestPermission().then(function (p) {
+            if (p !== 'granted') els.notif.checked = false;
+        });
+    });
+
+    var timer = null;
+    function resetTimer() {
+        if (timer) clearInterval(timer);
+        timer = setInterval(runChecks, intervalSec * 1000);
+    }
+
+    renderBanner();
+    renderCards();
+    renderLog();
+    runChecks();
+    resetTimer();
+})();
+</script>
+</body>
+</html>
