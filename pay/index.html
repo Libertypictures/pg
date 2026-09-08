@@ -629,13 +629,22 @@
         }
 
         try {
-            var res = await fetch(API_BASE + '/confirm-payment-request', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            var result = await res.json();
-            if (!res.ok || !result.success) throw new Error('Save failed');
+            // Retry transient failures — the server is idempotent per
+            // reference, so a retry can never double-record a payment.
+            var result = null;
+            for (var attempt = 0; attempt < 3; attempt++) {
+                if (attempt > 0) await new Promise(function (r) { setTimeout(r, 1500 * attempt); });
+                try {
+                    var res = await fetch(API_BASE + '/confirm-payment-request', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload),
+                    });
+                    result = await res.json();
+                    if (res.ok && result.success) break;
+                } catch (err2) { /* transient — try again */ }
+            }
+            if (!result || !result.success) throw new Error('Save failed');
             showSuccess(response.reference, details);
         } catch (err) {
             // Payment genuinely succeeded on Paystack's side even if this

@@ -1379,21 +1379,32 @@
             payBtn.textContent = 'Confirming your booking…';
 
             try {
-                const confirmRes = await fetch(LPB_WORKER_URL + '/confirm-payment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        bookingId: window.lpbBookingData.id,
-                        reference: response.reference,
-                        packageName: cart.baseName,
-                        packagePrice: cart.basePrice,
-                        addons: cart.addons,
-                        totalAmount: cart.subtotal,
-                        retainerAmount: cart.retainer
-                    })
-                });
-                const confirmResult = await confirmRes.json();
-                if (!confirmRes.ok || !confirmResult.success) {
+                // Retry transient failures a few times before alarming the
+                // client — a real payment must never strand in "pending"
+                // because of a one-off network blip. The server is
+                // idempotent, so a retry can never double-record.
+                let confirmResult = null;
+                for (let attempt = 0; attempt < 3; attempt++) {
+                    if (attempt > 0) await new Promise(function (r) { setTimeout(r, 1500 * attempt); });
+                    try {
+                        const confirmRes = await fetch(LPB_WORKER_URL + '/confirm-payment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                bookingId: window.lpbBookingData.id,
+                                reference: response.reference,
+                                packageName: cart.baseName,
+                                packagePrice: cart.basePrice,
+                                addons: cart.addons,
+                                totalAmount: cart.subtotal,
+                                retainerAmount: cart.retainer
+                            })
+                        });
+                        confirmResult = await confirmRes.json();
+                        if (confirmRes.ok && confirmResult.success) break;
+                    } catch (err) { /* transient — try again */ }
+                }
+                if (!confirmResult || !confirmResult.success) {
                     throw new Error('Payment succeeded, but saving the booking failed.');
                 }
 

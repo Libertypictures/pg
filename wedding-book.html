@@ -536,9 +536,16 @@
         async function handlePaymentSuccess(response) {
             var payBtn = document.getElementById('pay-btn'); payBtn.disabled = true; payBtn.textContent = 'Confirming your booking\u2026';
             try {
-                var res = await fetch(API_BASE + '/confirm-payment', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookingId: window.lpbBookingData.id, reference: response.reference, packageName: cart.baseName, packagePrice: cart.basePrice, addons: cart.addons, totalAmount: cart.subtotal, retainerAmount: cart.retainer }) });
-                var result = await res.json();
-                if (!res.ok || !result.success) throw new Error('Save failed');
+                var result = null;
+                for (var attempt = 0; attempt < 3; attempt++) {
+                    if (attempt > 0) await new Promise(function (r) { setTimeout(r, 1500 * attempt); });
+                    try {
+                        var res = await fetch(API_BASE + '/confirm-payment', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookingId: window.lpbBookingData.id, reference: response.reference, packageName: cart.baseName, packagePrice: cart.basePrice, addons: cart.addons, totalAmount: cart.subtotal, retainerAmount: cart.retainer }) });
+                        result = await res.json();
+                        if (res.ok && result.success) break;
+                    } catch (e) { /* transient — try again */ }
+                }
+                if (!result || !result.success) throw new Error('Save failed');
                 updateStep(3);
                 document.getElementById('client-email').style.display = 'none';
                 document.getElementById('policy-ack').closest('label').style.display = 'none';

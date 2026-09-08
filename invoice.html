@@ -378,13 +378,22 @@
             btn.disabled = true;
             btn.textContent = 'Confirming payment\u2026';
             try {
-                var res = await fetch(API_BASE + '/api/invoices/public/' + encodeURIComponent(token) + '/confirm-payment', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ reference: reference, amount: paidAmount }),
-                });
-                var updated = await res.json();
-                if (!res.ok) throw new Error(updated.message || 'Could not confirm the payment.');
+                // Retry transient failures — the server is idempotent per
+                // reference, so a retry can never double-apply a payment.
+                var updated = null, ok = false;
+                for (var attempt = 0; attempt < 3; attempt++) {
+                    if (attempt > 0) await new Promise(function (r) { setTimeout(r, 1500 * attempt); });
+                    try {
+                        var res = await fetch(API_BASE + '/api/invoices/public/' + encodeURIComponent(token) + '/confirm-payment', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ reference: reference, amount: paidAmount }),
+                        });
+                        updated = await res.json();
+                        if (res.ok) { ok = true; break; }
+                    } catch (err2) { /* transient — try again */ }
+                }
+                if (!ok) throw new Error((updated && updated.message) || 'Could not confirm the payment.');
                 currentInvoice = updated;
                 renderInvoice(updated);
             } catch (err) {
