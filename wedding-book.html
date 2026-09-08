@@ -22,8 +22,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com/">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
-    <script src="https://js.paystack.co/v1/inline.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script defer src="https://js.paystack.co/v1/inline.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         :root {
@@ -342,6 +342,43 @@
     <script>
         var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
 
+        /* ── Reusable premium scroll reveal ──
+           Defined at PARSE TIME (not inside DOMContentLoaded) on
+           purpose: renderPackages() wires the reveal onto freshly
+           rendered tier cards as soon as the wedding-config fetch
+           resolves, and DOMContentLoaded can be delayed by the
+           deferred Paystack / html2canvas CDN scripts — which
+           previously let the fetch win the race and left the page
+           with no animations at all. */
+        function lpInitScrollReveal(elements, stagger) {
+            if (!('IntersectionObserver' in window)) return;
+            var els = Array.prototype.slice.call(elements); if (!els.length) return;
+            els.forEach(function (el) { el.classList.add('lp-reveal'); });
+            var pendingHides = new WeakMap();
+            var obs = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    var el = entry.target; var idx = els.indexOf(el);
+                    if (entry.isIntersecting) {
+                        var ph = pendingHides.get(el); if (ph) { clearTimeout(ph); pendingHides.delete(el); }
+                        if (el.classList.contains('is-in')) return;
+                        el.style.transitionDelay = (idx * (stagger || 0)) + 'ms'; el.classList.add('is-in');
+                    } else {
+                        if (!el.classList.contains('is-in') || pendingHides.has(el)) return;
+                        var ht = setTimeout(function () { pendingHides.delete(el); el.style.transitionDelay = '0ms'; el.classList.remove('is-in'); }, 400);
+                        pendingHides.set(el, ht);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: window.innerWidth <= 700 ? '-5% 0px -5% 0px' : '-15% 0px -15% 0px' });
+            els.forEach(function (el) { obs.observe(el); });
+        }
+        window.lpInitScrollReveal = lpInitScrollReveal;
+
+        // Static sections sit above this script — wire the reveal
+        // immediately, no DOMContentLoaded dependency.
+        lpInitScrollReveal(document.querySelectorAll('#lpb-form-card'), 0);
+        lpInitScrollReveal(document.querySelectorAll('#addons-box'), 0);
+        lpInitScrollReveal(document.querySelectorAll('.payment-wrapper'), 0);
+
         /* ── Default data (used when /api/wedding-config has no overrides yet) ── */
         var DEFAULT_PACKAGES = [
             { name: "The Vintage", price: 300000, badge: "", description: "300 soft-copy photographs\n20 retouched portraits of client\u2019s choice\nDelivered on a branded flash drive" },
@@ -442,38 +479,13 @@
             });
         })();
 
-        /* ── DOMContentLoaded: scrollspy, reveal, policy link ── */
+        /* ── DOMContentLoaded: scrollspy + policy link only ── */
         document.addEventListener('DOMContentLoaded', function () {
             var spySections = [{ el: document.getElementById('packages'), step: 1 }, { el: document.getElementById('lp-booking'), step: 2 }, { el: document.getElementById('booking'), step: 3 }].filter(function (s) { return s.el; });
             if (spySections.length && 'IntersectionObserver' in window) {
                 var spy = new IntersectionObserver(function (entries) { entries.forEach(function (e) { if (!e.isIntersecting) return; var m = spySections.find(function (s) { return s.el === e.target; }); if (m) updateStep(m.step); }); }, { rootMargin: '-25% 0px -45% 0px', threshold: 0 });
                 spySections.forEach(function (s) { spy.observe(s.el); });
             }
-            function lpInitScrollReveal(elements, stagger) {
-                if (!('IntersectionObserver' in window)) return;
-                var els = Array.prototype.slice.call(elements); if (!els.length) return;
-                els.forEach(function (el) { el.classList.add('lp-reveal'); });
-                var pendingHides = new WeakMap();
-                var obs = new IntersectionObserver(function (entries) {
-                    entries.forEach(function (entry) {
-                        var el = entry.target; var idx = els.indexOf(el);
-                        if (entry.isIntersecting) {
-                            var ph = pendingHides.get(el); if (ph) { clearTimeout(ph); pendingHides.delete(el); }
-                            if (el.classList.contains('is-in')) return;
-                            el.style.transitionDelay = (idx * (stagger || 0)) + 'ms'; el.classList.add('is-in');
-                        } else {
-                            if (!el.classList.contains('is-in') || pendingHides.has(el)) return;
-                            var ht = setTimeout(function () { pendingHides.delete(el); el.style.transitionDelay = '0ms'; el.classList.remove('is-in'); }, 400);
-                            pendingHides.set(el, ht);
-                        }
-                    });
-                }, { threshold: 0.1, rootMargin: window.innerWidth <= 700 ? '-5% 0px -5% 0px' : '-15% 0px -15% 0px' });
-                els.forEach(function (el) { obs.observe(el); });
-            }
-            window.lpInitScrollReveal = lpInitScrollReveal;
-            lpInitScrollReveal(document.querySelectorAll('#lpb-form-card'), 0);
-            lpInitScrollReveal(document.querySelectorAll('#addons-box'), 0);
-            lpInitScrollReveal(document.querySelectorAll('.payment-wrapper'), 0);
             var policyLink = document.getElementById('policy-link');
             if (policyLink) { policyLink.addEventListener('click', function (e) { e.preventDefault(); var t = document.getElementById('terms-conditions'); if (t) lpSmoothScrollTo(t, { duration: 700, offset: -(lpStickyBarHeight() + 20) }); }); }
         });

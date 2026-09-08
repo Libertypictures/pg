@@ -37,7 +37,7 @@
          time, html2canvas only when the receipt image is exported), and
          both blocked first paint before. -->
     <script defer src="https://js.paystack.co/v1/inline.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <style>
         /* Color Variables for Light & Dark Mode — same brand accent
@@ -917,6 +917,88 @@
 
     <!-- JAVASCRIPT FOR CART & PAYSTACK INTEGRATION -->
     <script>
+        // Reusable premium scroll reveal. `stagger` (ms) offsets
+        // each subsequent element for a gentle cascade; omit/0 for
+        // a single element. Reversible: scrolling an element out of
+        // view resets it so scrolling back plays the reveal again.
+        // A single class toggle driving a plain CSS transition.
+        //
+        // Defined at PARSE TIME (not inside DOMContentLoaded) on
+        // purpose: the packages fetch below resolves asynchronously
+        // and must be able to wire up the reveal for freshly rendered
+        // cards the moment they appear. DOMContentLoaded can be
+        // delayed by the deferred Paystack / html2canvas CDN scripts,
+        // which previously let the fetch win the race — the guard
+        // failed, the observer was never created, and the whole page
+        // loaded with no animations at all.
+        function lpInitScrollReveal(elements, stagger) {
+            if (!('IntersectionObserver' in window)) return;
+            var els = Array.prototype.slice.call(elements);
+            if (!els.length) return;
+            els.forEach(function (el) { el.classList.add('lp-reveal'); });
+
+            var pendingHides = new WeakMap();
+
+            // No "already visible, skip the animation" shortcut here.
+            // IntersectionObserver always fires immediately upon
+            // observe() with whatever's currently true, so anything
+            // on-screen the moment observation starts still gets a
+            // real, single, correct entrance through the exact same
+            // path below — never a silent skip.
+            var observer = new IntersectionObserver(function (entries) {
+                entries.forEach(function (entry) {
+                    var el = entry.target;
+                    var idx = els.indexOf(el);
+                    if (entry.isIntersecting) {
+                        var pendingHide = pendingHides.get(el);
+                        if (pendingHide) { clearTimeout(pendingHide); pendingHides.delete(el); }
+                        if (el.classList.contains('is-in')) return;
+                        el.style.transitionDelay = (idx * (stagger || 0)) + 'ms';
+                        el.classList.add('is-in');
+                    } else {
+                        if (!el.classList.contains('is-in') || pendingHides.has(el)) return;
+                        // Debounced: a brief wait confirms this is a
+                        // real scroll-away, not a sub-pixel flicker
+                        // right at the trigger boundary.
+                        var hideTimer = setTimeout(function () {
+                            pendingHides.delete(el);
+                            el.style.transitionDelay = '0ms';
+                            el.classList.remove('is-in');
+                        }, 400);
+                        pendingHides.set(el, hideTimer);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: window.innerWidth <= 700 ? '-5% 0px -5% 0px' : '-15% 0px -15% 0px' });
+
+            els.forEach(function (el) { observer.observe(el); });
+
+            // Safety nets: if the observer is late, throttled or fails
+            // on an odd device, content must still become visible.
+            // 1) Anything already inside the viewport gets revealed
+            //    after a short grace period.
+            // 2) After 8s everything left hidden is revealed outright
+            //    — a booking page's packages must never be invisible.
+            setTimeout(function () {
+                var vh = window.innerHeight || document.documentElement.clientHeight;
+                els.forEach(function (el) {
+                    if (el.classList.contains('is-in')) return;
+                    var r = el.getBoundingClientRect();
+                    if (r.top < vh && r.bottom > 0) el.classList.add('is-in');
+                });
+            }, 2500);
+            setTimeout(function () {
+                els.forEach(function (el) { el.classList.add('is-in'); });
+            }, 8000);
+        }
+        window.lpInitScrollReveal = lpInitScrollReveal;
+
+        // Static sections are all above this script, so the reveal can
+        // be wired immediately — no DOMContentLoaded dependency.
+        lpInitScrollReveal(document.querySelectorAll('#lpb-form-card'), 0);
+        lpInitScrollReveal(document.querySelectorAll('#payment-recap-package'), 0);
+        lpInitScrollReveal(document.querySelectorAll('#addons-box'), 0);
+        lpInitScrollReveal(document.querySelectorAll('.payment-wrapper'), 0);
+
         // HERO VIDEO + LOGO — loaded from Settings. This page deliberately
         // only ever shows video (no slideshow) — the slideshow lives on
         // the Home page, which is where the storytelling happens; this
@@ -1083,80 +1165,6 @@
                 spySections.forEach(function (s) { spyObserver.observe(s.el); });
             }
 
-            // Reusable premium scroll reveal. `stagger` (ms) offsets
-            // each subsequent element for a gentle cascade; omit/0 for
-            // a single element. Reversible: scrolling an element out of
-            // view resets it so scrolling back plays the reveal again.
-            // A single class toggle driving a plain CSS transition —
-            // deliberately simpler than an animationend-listener-based
-            // version, which had edge cases where a listener could get
-            // dropped mid-flight across repeated cycles and silently
-            // stop working after the first time.
-            function lpInitScrollReveal(elements, stagger) {
-                if (!('IntersectionObserver' in window)) return;
-                var els = Array.prototype.slice.call(elements);
-                if (!els.length) return;
-                els.forEach(function (el) { el.classList.add('lp-reveal'); });
-
-                var pendingHides = new WeakMap();
-
-                // No "already visible, skip the animation" shortcut here.
-                // IntersectionObserver always fires immediately upon
-                // observe() with whatever's currently true, so anything
-                // on-screen the moment observation starts still gets a
-                // real, single, correct entrance through the exact same
-                // path below — never a silent skip.
-                var observer = new IntersectionObserver(function (entries) {
-                    entries.forEach(function (entry) {
-                        var el = entry.target;
-                        var idx = els.indexOf(el);
-                        if (entry.isIntersecting) {
-                            var pendingHide = pendingHides.get(el);
-                            if (pendingHide) { clearTimeout(pendingHide); pendingHides.delete(el); }
-                            if (el.classList.contains('is-in')) return;
-                            el.style.transitionDelay = (idx * (stagger || 0)) + 'ms';
-                            el.classList.add('is-in');
-                        } else {
-                            if (!el.classList.contains('is-in') || pendingHides.has(el)) return;
-                            // Debounced: a brief wait confirms this is a
-                            // real scroll-away, not a sub-pixel flicker
-                            // right at the trigger boundary.
-                            var hideTimer = setTimeout(function () {
-                                pendingHides.delete(el);
-                                el.style.transitionDelay = '0ms';
-                                el.classList.remove('is-in');
-                            }, 400);
-                            pendingHides.set(el, hideTimer);
-                        }
-                    });
-                }, { threshold: 0.1, rootMargin: window.innerWidth <= 700 ? '-5% 0px -5% 0px' : '-15% 0px -15% 0px' });
-
-                els.forEach(function (el) { observer.observe(el); });
-
-                // Safety nets: if the observer is late, throttled or fails
-                // on an odd device, content must still become visible.
-                // 1) Anything already inside the viewport gets revealed
-                //    after a short grace period.
-                // 2) After 8s everything left hidden is revealed outright
-                //    — a booking page's packages must never be invisible.
-                setTimeout(function () {
-                    var vh = window.innerHeight || document.documentElement.clientHeight;
-                    els.forEach(function (el) {
-                        if (el.classList.contains('is-in')) return;
-                        var r = el.getBoundingClientRect();
-                        if (r.top < vh && r.bottom > 0) el.classList.add('is-in');
-                    });
-                }, 2500);
-                setTimeout(function () {
-                    els.forEach(function (el) { el.classList.add('is-in'); });
-                }, 8000);
-            }
-            window.lpInitScrollReveal = lpInitScrollReveal;
-
-            lpInitScrollReveal(document.querySelectorAll('#lpb-form-card'), 0);
-            lpInitScrollReveal(document.querySelectorAll('#payment-recap-package'), 0);
-            lpInitScrollReveal(document.querySelectorAll('#addons-box'), 0);
-            lpInitScrollReveal(document.querySelectorAll('.payment-wrapper'), 0);
 
             // "Studio Policies" link in the payment acknowledgment — smooth
             // scroll matching the rest of the site, cleared of the sticky bar.
