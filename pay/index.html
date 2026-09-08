@@ -479,7 +479,13 @@
                     state.lookupBookingId = null;
                     balanceAmountDisplay.style.display = 'none';
                     balanceFallback.style.display = 'block';
-                    showLookupResult('is-empty', 'No outstanding balance found for this email. If you know what you owe, select your package below to pay the standard 30%.');
+                    // An overpayment with nothing left to cover shows as
+                    // a credit instead of a plain "nothing owed" — the
+                    // client should never be nudged to pay more.
+                    var credit = data.overpaid > 0
+                        ? 'Good news \u2014 you\u2019re all settled, with <strong>' + formatNaira(data.overpaid) + '</strong> credit on file that will go toward your next session. No payment needed right now.'
+                        : 'No outstanding balance found for this email. If you know what you owe, select your package below to pay the standard 30%.';
+                    showLookupResult('is-empty', credit);
                 }
                 updatePayButton();
             })
