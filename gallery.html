@@ -282,12 +282,47 @@ a{color:inherit}
 .selection-bar-clear{background:none;border:none;color:var(--cream-faint);font-size:11.5px;letter-spacing:0.4px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:8px 2px;white-space:nowrap;transition:color .2s}
 .selection-bar-clear:hover{color:var(--accent)}
 .selection-bar-clear:disabled{opacity:.5;cursor:wait}
+
+/* ── WHO'S PICKING — email gate (proof, first star) ── */
+.ident-sheet{position:fixed;inset:0;background:rgba(6,5,4,0.94);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px}
+.ident-card{width:100%;max-width:380px;background:#14110d;border:1px solid var(--border);border-radius:18px;padding:28px 24px;text-align:center;position:relative}
+.ident-card h3{font-family:'Outfit',sans-serif;font-size:17px;font-weight:600;color:var(--cream);margin:0 0 8px}
+.ident-sub{font-size:12.5px;color:var(--cream-soft);line-height:1.6;margin:0 0 20px}
+.ident-field{width:100%;box-sizing:border-box;background:rgba(246,241,231,0.05);border:1px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--cream);font-size:14px;margin-bottom:12px;outline:none;transition:border-color .2s}
+.ident-field:focus{border-color:var(--accent)}
+.ident-field::placeholder{color:rgba(246,241,231,0.35)}
+.ident-cta{width:100%;padding:14px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:#0f0c09;background:var(--accent);border:none;border-radius:24px;cursor:pointer;margin-top:4px;transition:background .25s}
+.ident-cta:hover{background:var(--accent-deep)}
+.ident-cta:disabled{opacity:.55;cursor:wait}
+.ident-switch{display:block;margin:14px auto 0;background:none;border:none;color:var(--accent);font-size:12px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.ident-skip{display:block;margin:12px auto 0;background:none;border:none;color:var(--cream-faint);font-size:11.5px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.ident-note{font-size:11px;color:var(--cream-faint);line-height:1.6;margin:16px 0 0}
+.ident-note strong{color:var(--cream-soft)}
+
+/* ── ASK A FRIEND — share sheet ── */
+.share-sheet{position:fixed;inset:0;background:rgba(6,5,4,0.94);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px}
+.share-card{width:100%;max-width:380px;background:#14110d;border:1px solid var(--border);border-radius:18px;padding:28px 24px;text-align:center}
+.share-card h3{font-family:'Outfit',sans-serif;font-size:17px;font-weight:600;color:var(--cream);margin:0 0 8px}
+.share-sub{font-size:12.5px;color:var(--cream-soft);line-height:1.6;margin:0 0 20px}
+.share-link-wrap{display:flex;gap:8px;margin-bottom:12px}
+.share-link-input{flex:1;min-width:0;background:rgba(246,241,231,0.05);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--cream);font-size:12px;outline:none}
+.share-btn{flex-shrink:0;padding:12px 18px;font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;font-weight:600;color:#0f0c09;background:var(--accent);border:none;border-radius:24px;cursor:pointer}
+.share-wa{width:100%;padding:13px;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;font-weight:600;color:var(--cream);background:rgba(37,211,102,0.15);border:1px solid rgba(37,211,102,0.4);border-radius:24px;cursor:pointer;margin-bottom:10px}
+.share-native{width:100%;padding:13px;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;font-weight:600;color:var(--cream);background:rgba(246,241,231,0.06);border:1px solid var(--border);border-radius:24px;cursor:pointer}
+.share-close{display:block;margin:14px auto 0;background:none;border:none;color:var(--cream-faint);font-size:11.5px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+
+/* ── collaboration bits in the selection bar / header ── */
+.selection-bar-left{display:flex;flex-direction:column;gap:3px;min-width:0}
+.selection-bar-people{font-size:10.5px;color:var(--accent);letter-spacing:0.3px}
+.ask-friend-btn{background:none;border:1px dashed rgba(196,166,126,0.4);color:var(--accent);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:600;border-radius:20px;padding:10px 14px;cursor:pointer;white-space:nowrap;transition:all .25s}
+.ask-friend-btn:hover{background:rgba(196,166,126,0.12);border-style:solid}
 @media (max-width:480px){
     .selection-bar{padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px))}
     .selection-bar-inner{gap:10px}
     .selection-bar-actions{gap:10px}
     .selection-bar-btn{padding:11px 16px;font-size:10px;letter-spacing:1px}
     .selection-bar-clear{font-size:11px}
+    .ask-friend-btn{padding:9px 11px;font-size:9.5px;letter-spacing:0.5px}
 }
 
 /* ── DOWNLOAD MODAL ── */
@@ -519,6 +554,40 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
     </div>
 </div>
 
+<!-- WHO'S PICKING — email gate (proof, first star) -->
+<div class="ident-sheet" id="ident-sheet" style="display:none;">
+    <div class="ident-card">
+        <h3 id="ident-title">Who's picking?</h3>
+        <p class="ident-sub" id="ident-sub">Tell us who you are so we can save your picks to your email — a friend can join too, and their favourites merge with yours.</p>
+        <div id="ident-quick" style="display:none;">
+            <button class="ident-cta" id="ident-quick-btn">Continue as <span id="ident-quick-email"></span></button>
+            <button class="ident-switch" id="ident-switch-btn">Not you — use a different email</button>
+        </div>
+        <div id="ident-form">
+            <input class="ident-field" id="ident-email" type="email" inputmode="email" autocomplete="email" placeholder="Your email address" required>
+            <input class="ident-field" id="ident-name" type="text" autocomplete="name" placeholder="Your name (optional)">
+            <button class="ident-cta" id="ident-continue">Continue</button>
+        </div>
+        <p class="ident-note" id="ident-note">Helping a friend? Enter <strong>your own</strong> email — your picks merge with theirs.</p>
+        <button class="ident-skip" id="ident-skip">Not now — just browsing</button>
+    </div>
+</div>
+
+<!-- ASK A FRIEND — share sheet -->
+<div class="share-sheet" id="share-sheet" style="display:none;">
+    <div class="share-card">
+        <h3>Ask a friend to help</h3>
+        <p class="share-sub">Share this link — they can star their favourite photos too, and your picks merge into one list.</p>
+        <div class="share-link-wrap">
+            <input class="share-link-input" id="share-link" type="text" readonly onclick="this.select()">
+            <button class="share-btn" id="share-copy-btn">Copy</button>
+        </div>
+        <button class="share-wa" id="share-wa-btn">WhatsApp</button>
+        <button class="share-native" id="share-native-btn" style="display:none;">Share&hellip;</button>
+        <button class="share-close" id="share-close-btn">Close</button>
+    </div>
+</div>
+
 <!-- PAGE: COVER + GALLERY as one continuous scroll -->
 <div id="page-wrap" style="display:none;">
 
@@ -545,6 +614,7 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
                 <div class="gallery-header-meta" id="header-expiry"></div>
             </div>
             <button id="favs-toggle-btn" style="display:none;padding:8px 16px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:var(--accent);background:rgba(196,166,126,0.12);border:1px solid rgba(196,166,126,0.25);border-radius:20px;white-space:nowrap;cursor:pointer;transition:all .25s ease;">★ My Favourites</button>
+            <button id="friend-picks-btn" style="display:none;padding:8px 16px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:var(--cream);background:rgba(196,166,126,0.25);border:1px solid rgba(196,166,126,0.45);border-radius:20px;white-space:nowrap;cursor:pointer;transition:all .25s ease;"></button>
         </div>
     </div>
 
@@ -601,8 +671,12 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
 <!-- SELECTION BAR -->
 <div class="selection-bar" id="selection-bar">
     <div class="selection-bar-inner">
-        <div class="selection-bar-count" id="selection-count"><strong>0</strong> selected</div>
+        <div class="selection-bar-left">
+            <div class="selection-bar-count" id="selection-count"><strong>0</strong> selected</div>
+            <div class="selection-bar-people" id="selection-people"></div>
+        </div>
         <div class="selection-bar-actions">
+            <button class="ask-friend-btn" id="ask-friend-btn" style="display:none;">Ask a friend</button>
             <button class="selection-bar-clear" id="clear-selection-btn">Clear selection</button>
             <button class="selection-bar-btn" id="save-selected-btn">Save to Photos</button>
         </div>
@@ -706,6 +780,11 @@ var currentLbIdx = 0;
 var showingFavs = false;
 var gate = '';           // current rendered screen ('open'|'finalised'|'pending'|'notready'|'lock')
 var lockedInfo = null;   // 409 payload when locked
+var whoami = null;       // {email, name, role} after email sign-in (remembered per gallery)
+var participants = [];   // everyone who identified on this gallery (client + friends)
+var starredBy = {};      // photoId -> email of whoever starred it last
+var showingFriends = false;
+var identCb = null;      // pending action once the email gate succeeds
 
 var LS_GUIDE_PROOF = 'lp-guide-proof';
 var LS_GUIDE_DELIV = 'lp-guide-deliv';
@@ -737,6 +816,17 @@ function pickedPhotos() { return photos.filter(function (p) { return starred[p.i
 function isDeliv() { return view === 'delivery'; }
 function verb() { return isDeliv() ? 'kept' : 'picked'; }
 function noun() { return isDeliv() ? 'keeps' : 'picks'; }
+function isClientRole() { return !(whoami && whoami.role === 'friend'); }
+function friendEmails() {
+    return participants.filter(function (p) { return p.role === 'friend'; }).map(function (p) { return String(p.email).trim().toLowerCase(); });
+}
+function friendPicksCount() {
+    var f = friendEmails();
+    if (!f.length) return 0;
+    var n = 0, k;
+    for (k in starred) if (starred[k] && f.indexOf(String(starredBy[k] || '').toLowerCase()) !== -1) n++;
+    return n;
+}
 
 function daysUntil(ts) {
     var end = new Date(String(ts).replace(' ', 'T'));
@@ -748,6 +838,110 @@ function daysUntil(ts) {
 (function () {
     if ($('toast')) return;
     var t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t);
+})();
+
+/* ===================== WHO'S PICKING (email gate) ===================== */
+function openIdentSheet(afterFn) {
+    identCb = afterFn || null;
+    var quick = $('ident-quick'), form = $('ident-form');
+    var ce = gallery && gallery.clientEmail ? String(gallery.clientEmail).toLowerCase() : '';
+    if (ce) {
+        // The studio pre-set the client's email — offer a one-tap confirm.
+        $('ident-quick-email').textContent = ce;
+        $('ident-email').value = ce;
+        quick.style.display = 'block';
+        form.style.display = 'none';
+    } else {
+        quick.style.display = 'none';
+        form.style.display = 'block';
+        setTimeout(function () { $('ident-email').focus(); }, 60);
+    }
+    $('ident-sheet').style.display = 'flex';
+}
+function closeIdentSheet() { $('ident-sheet').style.display = 'none'; }
+function doIdentify(email, name, btn) {
+    var e = String(email || '').trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) { toast('Please enter a valid email address'); return; }
+    var orig = '';
+    if (btn) { btn.disabled = true; orig = btn.innerHTML; btn.innerHTML = 'Saving\u2026'; }
+    fetch(API + '/api/gallery/' + encodeURIComponent(token) + '/identify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: e, name: String(name || '').trim() })
+    }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+    .then(function (res) {
+        if (!res.ok || !res.d || res.d.status !== 'ok') throw new Error((res.d && res.d.message) || 'Could not sign you in');
+        whoami = { email: res.d.email, name: res.d.name, role: res.d.role };
+        participants = res.d.participants || [];
+        try { localStorage.setItem('lp-ident-' + token, JSON.stringify(whoami)); } catch (err) {}
+        if (gallery && !gallery.clientEmail && res.d.role === 'client') gallery.clientEmail = res.d.email;
+        closeIdentSheet();
+        toast('You\u2019re in' + (whoami.name ? ', ' + whoami.name : '') + ' \u2014 happy picking!');
+        updateBarAndPrompt();
+        if (identCb) { var cb = identCb; identCb = null; cb(); }
+    })
+    .catch(function (err) {
+        if (btn) { btn.disabled = false; btn.innerHTML = orig; }
+        window.alert(err.message || 'Could not sign you in \u2014 check your connection.');
+    });
+}
+(function () {
+    var sheet = $('ident-sheet');
+    if (!sheet) return;
+    $('ident-quick-btn').addEventListener('click', function () {
+        doIdentify($('ident-email').value, $('ident-name').value, this);
+    });
+    $('ident-switch-btn').addEventListener('click', function () {
+        $('ident-quick').style.display = 'none';
+        $('ident-form').style.display = 'block';
+        $('ident-email').value = '';
+        $('ident-email').focus();
+    });
+    $('ident-continue').addEventListener('click', function () {
+        doIdentify($('ident-email').value, $('ident-name').value, this);
+    });
+    $('ident-skip').addEventListener('click', closeIdentSheet);
+    ['ident-email', 'ident-name'].forEach(function (id) {
+        document.getElementById(id).addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') doIdentify($('ident-email').value, $('ident-name').value, $('ident-continue'));
+        });
+    });
+})();
+
+/* ===================== ASK A FRIEND (share sheet) ===================== */
+function openShareSheet() {
+    $('share-link').value = window.location.href;
+    $('share-sheet').style.display = 'flex';
+}
+(function () {
+    var sheet = $('share-sheet');
+    if (!sheet) return;
+    $('share-copy-btn').addEventListener('click', function () {
+        var input = $('share-link');
+        input.select();
+        var done = function () {
+            var b = $('share-copy-btn'), orig = b.textContent;
+            b.textContent = 'Copied!';
+            setTimeout(function () { b.textContent = orig; }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(input.value).then(done, done); else done();
+    });
+    $('share-wa-btn').addEventListener('click', function () {
+        var msg = 'Help me pick my favourite photos' + (gallery && gallery.eventTitle ? ' from ' + gallery.eventTitle : '') + ' \u2014 add your picks to mine: ' + window.location.href;
+        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+    });
+    var native = $('share-native-btn');
+    if (navigator.share) {
+        native.style.display = 'block';
+        native.addEventListener('click', function () {
+            var title = (gallery && gallery.eventTitle) || 'My photo gallery';
+            navigator.share({ title: title, text: 'Help me pick my favourites from ' + title + ' \u2014 add your picks to mine!', url: window.location.href }).catch(function () {});
+        });
+    }
+    $('share-close-btn').addEventListener('click', function () { sheet.style.display = 'none'; });
+    sheet.addEventListener('click', function (e) { if (e.target === sheet) sheet.style.display = 'none'; });
+    var ask = $('ask-friend-btn');
+    if (ask) ask.addEventListener('click', openShareSheet);
 })();
 
 /* ===================== LOAD ===================== */
@@ -773,8 +967,19 @@ function loadGallery() {
             allPhotos = photos.concat(extras);
             extraIds = {};
             starred = {};
-            photos.forEach(function (p) { starred[p.id] = !!p.isStarred; });
-            extras.forEach(function (p) { starred[p.id] = !!p.isStarred; extraIds[p.id] = true; });
+            starredBy = {};
+            photos.forEach(function (p) { starred[p.id] = !!p.isStarred; starredBy[p.id] = p.starredBy || null; });
+            extras.forEach(function (p) { starred[p.id] = !!p.isStarred; extraIds[p.id] = true; starredBy[p.id] = p.starredBy || null; });
+            participants = data.participants || [];
+            // Restore the remembered identity for this gallery link.
+            try {
+                var saved = JSON.parse(localStorage.getItem('lp-ident-' + token) || 'null');
+                if (saved && saved.email) whoami = saved;
+            } catch (e) {}
+            if (whoami && !participants.length && gallery.clientEmail &&
+                String(gallery.clientEmail).toLowerCase() === String(whoami.email).toLowerCase()) {
+                whoami.role = 'client';
+            }
             // Surface the extension fee for banners (proof/delivery settings may lag behind
             // the locked payload; the locked wall always uses the authoritative 409 values).
             fetchSettings();
@@ -924,22 +1129,21 @@ function renderOpenGallery() {
         showingFavs = !showingFavs;
         favs.textContent = showingFavs ? 'Show All' : (isDeliv ? '\u2605 My Keeps' : '\u2605 My Picks');
         favs.style.background = showingFavs ? 'rgba(196,166,126,0.3)' : 'rgba(196,166,126,0.12)';
-        document.querySelectorAll('.g-tile').forEach(function (tile) {
-            var id = Number(tile.dataset.id);
-            tile.style.display = (showingFavs && !starred[id]) ? 'none' : '';
-        });
+        applyGridFilter();
         if (showingFavs) window.scrollTo({ top: $('gallery-header').offsetTop, behavior: 'smooth' });
     };
 
-    // finished prompt — proof only, once they have picks (tap = finalise)
-    var fp = $('finished-prompt');
-    fp.style.display = (!isDeliv && pickCount() > 0) ? 'block' : 'none';
-    fp.querySelector('p').textContent = 'Happy with your picks?';
-    var fb = $('finished-btn');
-    fb.textContent = 'Finalise my selection';
-    fb.style.display = '';
-    fb.disabled = false;
-    fb.onclick = function () { startFinalise(); };
+    // friend's picks chip — "check your friend's favourites" (client only)
+    var friendBtn = $('friend-picks-btn');
+    friendBtn.style.display = 'none';
+    showingFriends = false;
+    friendBtn.onclick = function () {
+        showingFriends = !showingFriends;
+        friendBtn.style.background = showingFriends ? 'rgba(196,166,126,0.45)' : 'rgba(196,166,126,0.25)';
+        applyGridFilter();
+        if (showingFriends) window.scrollTo({ top: $('gallery-header').offsetTop, behavior: 'smooth' });
+    };
+
     $('finished-done').style.display = 'none';
 
     // review only on delivery
@@ -991,24 +1195,77 @@ function openFromTile(tile) {
         if (tile) openFromTile(tile);
     });
 })();
+function renderFriendChip() {
+    var btn = $('friend-picks-btn');
+    if (!btn) return;
+    var n = friendPicksCount();
+    if (!isDeliv() && whoami && whoami.role !== 'friend' && n > 0) {
+        var names = participants.filter(function (p) { return p.role === 'friend'; }).map(function (p) { return p.name || String(p.email).split('@')[0]; });
+        btn.textContent = '\ud83d\udc65 ' + (names[0] || 'A friend') + "'s picks (" + n + ')';
+        btn.style.display = 'inline-block';
+    } else {
+        btn.style.display = 'none';
+        showingFriends = false;
+    }
+}
+function applyGridFilter() {
+    var f = friendEmails();
+    document.querySelectorAll('.g-tile').forEach(function (tile) {
+        var id = Number(tile.dataset.id);
+        var visible = true;
+        if (showingFavs && !starred[id]) visible = false;
+        if (showingFriends && !(starred[id] && f.indexOf(String(starredBy[id] || '').toLowerCase()) !== -1)) visible = false;
+        tile.style.display = visible ? '' : 'none';
+    });
+}
 function updateBarAndPrompt() {
     var count = pickCount();
     var bar = $('selection-bar');
     if (count > 0) bar.classList.add('visible'); else bar.classList.remove('visible');
     $('selection-count').innerHTML = '<strong>' + count + '</strong> ' + verb();
+    var isFriend = !!(whoami && whoami.role === 'friend');
     var saveBtn = $('save-selected-btn');
-    saveBtn.textContent = isDeliv() ? 'Download my picks' : 'Finalise my selection';
+    if (isDeliv()) {
+        saveBtn.textContent = 'Download my picks';
+        saveBtn.onclick = saveSelectedClick;
+    } else if (isFriend) {
+        saveBtn.textContent = 'Send my picks';
+        saveBtn.onclick = function () { toast('Your picks are saved \u2014 ' + (gallery.clientName || 'your friend') + ' will see them when they refresh'); };
+    } else {
+        saveBtn.textContent = 'Finalise my selection';
+        saveBtn.onclick = startFinalise;
+    }
     saveBtn.style.display = '';
     saveBtn.disabled = false;
-    saveBtn.onclick = isDeliv() ? saveSelectedClick : startFinalise;
     var clearBtn = $('clear-selection-btn');
     clearBtn.style.display = 'inline-block';
     clearBtn.disabled = false;
     clearBtn.onclick = function () { clearSelection(); };
     var favs = $('favs-toggle-btn');
     favs.style.display = count > 0 ? 'block' : 'none';
+    // collaboration bits (proof only)
+    var ask = $('ask-friend-btn');
+    if (ask) ask.style.display = (!isDeliv() && whoami && !isFriend) ? 'inline-block' : 'none';
+    var people = $('selection-people');
+    if (people) people.textContent = participants.length > 1 ? participants.length + ' people are picking' : '';
+    renderFriendChip();
+    // finished prompt — proof only, once they have picks; friend copy
+    // when a collaborator is signed in (they can't finalise)
     var fp = $('finished-prompt');
     fp.style.display = (!isDeliv() && count > 0) ? 'block' : 'none';
+    var fpP = fp.querySelector('p');
+    var fb = $('finished-btn');
+    if (isFriend) {
+        if (fpP) fpP.textContent = 'Done adding your picks?';
+        fb.textContent = 'Send my picks';
+        fb.onclick = function () { toast('Your picks are saved \u2014 ' + (gallery.clientName || 'your friend') + ' will see them when they refresh'); };
+    } else {
+        if (fpP) fpP.textContent = 'Happy with your picks?';
+        fb.textContent = 'Finalise my selection';
+        fb.onclick = startFinalise;
+    }
+    fb.style.display = '';
+    fb.disabled = false;
 }
 function clearSelection() {
     var ids = Object.keys(starred).filter(function (k) { return starred[k]; });
@@ -1025,6 +1282,7 @@ function clearSelection() {
             photos.forEach(function (p) { refreshTile(p.id); });
             extras.forEach(function (p) { refreshTile(p.id); });
             showingFavs = false;
+            showingFriends = false;
             var favs = $('favs-toggle-btn');
             if (favs) { favs.textContent = isDeliv() ? '\u2605 My Keeps' : '\u2605 My Picks'; favs.style.background = 'rgba(196,166,126,0.12)'; }
             updateBarAndPrompt();
@@ -1044,6 +1302,13 @@ function refreshTile(photoId) {
     updateLbUi();
 }
 function toggleStar(photoId) {
+    // Email gate: browsing stays free, but the first star requires the
+    // picker to sign in with their email (friends too — their picks
+    // merge with the client's list).
+    if (!isDeliv() && !whoami) { openIdentSheet(function () { doToggleStar(photoId); }); return; }
+    doToggleStar(photoId);
+}
+function doToggleStar(photoId) {
     var on = !starred[photoId];
     starred[photoId] = on;
     // optimistically update the UI, then tell the server; revert on failure
@@ -1061,7 +1326,7 @@ function toggleStar(photoId) {
     fetch(API + '/api/gallery/' + encodeURIComponent(token) + '/photos/' + photoId + '/select', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isStarred: on })
+        body: JSON.stringify({ isStarred: on, by: (whoami && whoami.email) || '' })
     }).then(function (r) {
         if (r.status === 423 || r.status === 409 || r.status === 410) {
             starred[photoId] = !on;
@@ -1284,7 +1549,7 @@ function syncLbChrome() {
     var sb = $('lb-save-btn'), sa = $('lb-save-all-btn'), fin = $('lb-finalise-btn');
     var showSb = d;
     var showSa = d && c > 0;
-    var showFin = !d && c > 0;
+    var showFin = !d && c > 0 && !(whoami && whoami.role === 'friend');
     if (sb) sb.style.display = showSb ? 'inline-flex' : 'none';
     if (sa) sa.style.display = showSa ? 'inline-flex' : 'none';
     if (fin) fin.style.display = showFin ? 'inline-flex' : 'none';
@@ -1769,6 +2034,7 @@ function hideMo() { var m = $('mo'); if (m) m.classList.remove('show'); }
 
 function startFinalise() {
     if (view !== 'proof' || (gallery && gallery.finalisedAt)) return;
+    if (whoami && whoami.role === 'friend') { toast('Only ' + (gallery.clientName || 'the client') + ' can lock in the selection'); return; }
     if (pickCount() === 0) { toast('Star at least one photo to finalise your selection'); return; }
     var n = pickCount();
     var thumbs = pickedPhotos().slice(0, 12).map(function (p) {
@@ -1783,7 +2049,11 @@ function doFinalise(btn) {
     btn.disabled = true;
     var orig = btn.innerHTML;
     btn.innerHTML = '<span class="pay-spinner"></span>Sending\u2026';
-    fetch(API + '/api/gallery/' + encodeURIComponent(token) + '/finalise', { method: 'POST' })
+    fetch(API + '/api/gallery/' + encodeURIComponent(token) + '/finalise', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ by: (whoami && whoami.email) || '' })
+    })
         .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
         .then(function (res) {
             if (!res.ok && res.d && res.d.message && String(res.d.message).indexOf('already') !== -1) {
