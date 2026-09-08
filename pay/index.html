@@ -135,7 +135,7 @@
         background: var(--gold-soft); border: 1px solid var(--border); border-radius: var(--radius-sm);
         padding: 16px 18px; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center;
     }
-    .amount-display .label { font-size: 12px; color: var(--ink-soft); font-weight: 500; }
+    .amount-display .label { font-size: 12px; color: var(--ink-soft); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .amount-display .value { font-size: 24px; font-weight: 700; color: var(--gold); letter-spacing: -0.4px; }
 
     /* ---------- Exact balance lookup (Balance Due flow) ---------- */
@@ -153,6 +153,20 @@
     .balance-result.is-ok strong { color: var(--forest); }
     .balance-result .br-total { font-size: 15px; font-weight: 700; color: var(--gold); }
     .balance-result .br-line { display: flex; justify-content: space-between; gap: 10px; font-size: 12px; margin-top: 6px; color: var(--ink-soft); }
+
+    /* ---------- Per-session balance picker — choose which booking to pay now ---------- */
+    .br-pick { margin-top: 9px; border-top: 1px solid var(--border); padding-top: 9px; display: flex; flex-direction: column; gap: 6px; }
+    .br-pick-row { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); cursor: pointer; transition: border-color 0.18s ease, background 0.18s ease; }
+    .br-pick-row:hover { border-color: var(--ink-faint); }
+    .br-pick-row.is-selected { border-color: var(--forest); background: var(--forest-soft); }
+    .br-pick-dot { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid var(--ink-faint); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: border-color 0.18s ease, background 0.18s ease; }
+    .br-pick-row.is-selected .br-pick-dot { border-color: var(--forest); background: var(--forest); }
+    .br-pick-row.is-selected .br-pick-dot::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #fff; }
+    .br-pick-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+    .br-pick-name { font-size: 12.5px; font-weight: 600; color: var(--ink); }
+    .br-pick-date { font-size: 11px; color: var(--ink-soft); }
+    .br-pick-amt { font-weight: 700; font-size: 12.5px; color: var(--gold); }
+    .br-multi-hint { font-size: 11.5px; line-height: 1.5; color: var(--ink-soft); margin-top: 7px; }
     .balance-result.is-empty { background: var(--bg); border: 1px dashed var(--border); color: var(--ink-soft); }
     .balance-result.is-err { background: #FDECEA; border: 1px solid #F2C4C0; color: var(--error); }
 
@@ -320,7 +334,13 @@
         return '\u20a6' + Math.round(n).toLocaleString();
     }
 
-    var state = { type: null, packages: [], selectedPackage: null, lookupAmount: null, lookupLabel: null, lookupBookings: [] };
+    var state = { type: null, packages: [], selectedPackage: null, lookupBookings: [], lookupBookingId: null };
+
+    // The booking currently picked for payment from the lookup result.
+    function selectedLookupBooking() {
+        if (!state.lookupBookingId || !state.lookupBookings.length) return null;
+        return state.lookupBookings.filter(function (b) { return String(b.id) === String(state.lookupBookingId); })[0] || null;
+    }
 
     // Gallery-extension mode — opened from a locked gallery page with
     // the fee, the gallery's private token and a return URL pre-filled.
@@ -427,29 +447,36 @@
             .then(function (data) {
                 if (!data || data.status !== 'ok') throw new Error(data.message || 'Lookup failed');
                 if (data.total > 0) {
-                    state.lookupAmount = data.total;
-                    state.lookupBookings = data.bookings || [];
-                    var names = [];
-                    state.lookupBookings.forEach(function (b) {
-                        if (names.indexOf(b.packageName) === -1) names.push(b.packageName);
-                    });
-                    state.lookupLabel = names.join(' + ');
-                    balanceAmountValue.textContent = formatNaira(data.total);
-                    balanceAmountLabel.textContent = 'Exact Balance Due';
-                    balanceAmountDisplay.style.display = 'flex';
+                    state.lookupBookings = (data.bookings || []).filter(function (b) { return !b.paid; });
+                    state.lookupBookingId = state.lookupBookings.length ? state.lookupBookings[0].id : null;
                     balanceFallback.style.display = 'none';
-                    var lines = state.lookupBookings.filter(function (b) { return !b.paid; }).map(function (b) {
-                        return '<div class="br-line"><span>' + escapeHtml(b.packageName) + (b.sessionDate ? ' \u00b7 ' + b.sessionDate : '') + '</span><span>' + formatNaira(b.balanceDue) + '</span></div>';
+                    var picked = selectedLookupBooking();
+                    if (picked) {
+                        balanceAmountValue.textContent = formatNaira(picked.balanceDue);
+                        balanceAmountLabel.textContent = 'Exact Balance Due \u2014 ' + picked.packageName;
+                        balanceAmountDisplay.style.display = 'flex';
+                    }
+                    var count = state.lookupBookings.length;
+                    var header = count === 1
+                        ? 'Exact balance found \u2014 <span class="br-total">' + formatNaira(picked ? picked.balanceDue : data.total) + '</span> outstanding.'
+                        : 'Exact balance found \u2014 <span class="br-total">' + count + ' sessions</span> with outstanding balances.';
+                    var rowsHtml = state.lookupBookings.map(function (b) {
+                        return '<div class="br-pick-row' + (String(b.id) === String(state.lookupBookingId) ? ' is-selected' : '') + '" data-booking-id="' + b.id + '">' +
+                            '<span class="br-pick-dot"></span>' +
+                            '<span class="br-pick-info"><span class="br-pick-name">' + escapeHtml(b.packageName) + '</span>' +
+                            (b.sessionDate ? '<span class="br-pick-date">' + escapeHtml(b.sessionDate) + '</span>' : '') + '</span>' +
+                            '<span class="br-pick-amt">' + formatNaira(b.balanceDue) + '</span></div>';
                     }).join('');
                     showLookupResult('is-ok',
-                        'Exact balance found \u2014 <span class="br-total">' + formatNaira(data.total) + '</span> outstanding.' + lines);
+                        header +
+                        (count > 1 ? '<div class="br-multi-hint">You can pay each session separately \u2014 pick the one you\u2019re paying now.</div>' : '') +
+                        '<div class="br-pick">' + rowsHtml + '</div>');
                     // Pre-fill the contact email so it's typed only once.
                     var contactEmail = document.getElementById('customer-email');
                     if (!contactEmail.value.trim()) contactEmail.value = email;
                 } else {
-                    state.lookupAmount = null;
-                    state.lookupLabel = null;
                     state.lookupBookings = [];
+                    state.lookupBookingId = null;
                     balanceAmountDisplay.style.display = 'none';
                     balanceFallback.style.display = 'block';
                     showLookupResult('is-empty', 'No outstanding balance found for this email. If you know what you owe, select your package below to pay the standard 30%.');
@@ -468,13 +495,30 @@
     balanceCheckBtn.addEventListener('click', checkBalance);
     balanceEmail.addEventListener('keydown', function (e) { if (e.key === 'Enter') checkBalance(); });
 
+    // Clicking a session row picks which booking this payment settles.
+    balanceLookupResult.addEventListener('click', function (e) {
+        var row = e.target.closest('.br-pick-row');
+        if (!row) return;
+        var id = parseInt(row.dataset.bookingId, 10);
+        if (!Number.isInteger(id)) return;
+        state.lookupBookingId = id;
+        var picked = selectedLookupBooking();
+        if (!picked) return;
+        balanceAmountValue.textContent = formatNaira(picked.balanceDue);
+        balanceAmountLabel.textContent = 'Exact Balance Due \u2014 ' + picked.packageName;
+        balanceAmountDisplay.style.display = 'flex';
+        balanceLookupResult.querySelectorAll('.br-pick-row').forEach(function (r) {
+            r.classList.toggle('is-selected', parseInt(r.dataset.bookingId, 10) === id);
+        });
+        updatePayButton();
+    });
+
     packageSelect.addEventListener('change', function () {
         var pkg = state.packages.find(function (p) { return String(p.id) === packageSelect.value; });
         state.selectedPackage = pkg || null;
         // Choosing a package explicitly overrides an earlier lookup.
-        state.lookupAmount = null;
-        state.lookupLabel = null;
         state.lookupBookings = [];
+        state.lookupBookingId = null;
         balanceLookupResult.className = 'balance-result';
         if (pkg) {
             var balance = pkg.price * 0.3;
@@ -490,7 +534,8 @@
 
     function getCurrentAmount() {
         if (state.type === 'balance') {
-            if (state.lookupAmount) return state.lookupAmount;
+            var picked = selectedLookupBooking();
+            if (picked) return picked.balanceDue;
             return state.selectedPackage ? Math.round(state.selectedPackage.price * 0.3) : 0;
         }
         if (state.type === 'other') {
@@ -567,7 +612,9 @@
             reference: response.reference,
         };
         if (state.type === 'balance') {
-            payload.packageName = state.lookupLabel || state.selectedPackage.name;
+            var picked = selectedLookupBooking();
+            payload.packageName = picked ? picked.packageName : state.selectedPackage.name;
+            if (picked) payload.bookingId = picked.id;
         } else if (state.type === 'gallery') {
             payload.galleryToken = galleryToken;
             payload.description = 'Gallery extension';
@@ -600,7 +647,8 @@
         document.getElementById('success-view').classList.add('is-visible');
         document.getElementById('success-reference').textContent = reference;
 
-        var purpose = state.type === 'balance' ? (state.lookupLabel || state.selectedPackage.name) + ' balance' : (state.type === 'gallery' ? 'my gallery extension' : otherDescriptionInput.value.trim());
+        var picked = selectedLookupBooking();
+        var purpose = state.type === 'balance' ? ((picked ? picked.packageName : (state.selectedPackage ? state.selectedPackage.name : 'Session')) + ' balance') : (state.type === 'gallery' ? 'my gallery extension' : otherDescriptionInput.value.trim());
         var waMessage = "Hello there! I've just paid " + formatNaira(details.amount) + " for " + purpose + " (Reference: " + reference + ").";
         var waLink = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(waMessage);
         document.getElementById('whatsapp-link').href = waLink;
@@ -619,7 +667,7 @@
         // Full reset — same starting state as a fresh page load, so a
         // second payment can't accidentally reuse stale details from
         // the one that just succeeded.
-        state = { type: null, packages: state.packages, selectedPackage: null, lookupAmount: null, lookupLabel: null, lookupBookings: [] };
+        state = { type: null, packages: state.packages, selectedPackage: null, lookupBookings: [], lookupBookingId: null };
         typeBalanceBtn.classList.remove('is-selected');
         typeOtherBtn.classList.remove('is-selected');
         balanceSection.classList.remove('is-visible');
