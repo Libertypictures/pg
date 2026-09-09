@@ -7,12 +7,8 @@
 <meta name="theme-color" content="#0f0c09">
 <link rel="preconnect" href="https://fonts.googleapis.com/">
 <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://liberty-booking-api.visualsliberty.workers.dev" crossorigin>
-<link rel="dns-prefetch" href="https://liberty-booking-api.visualsliberty.workers.dev">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Outfit:wght@200;300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&family=Outfit:wght@200;300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <style>
 :root{--bg:#0f0c09;--surface:#1a1714;--surface2:#232019;--cream:#f6f1e7;--cream-soft:rgba(246,241,231,0.7);--cream-faint:rgba(246,241,231,0.4);--accent:#c4a67e;--accent-deep:#a3835c;--border:rgba(246,241,231,0.12);--gold-glow:rgba(196,166,126,0.25);--strip-surface:#38322b}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -75,8 +71,6 @@ a{color:inherit}
 .cover-bg{position:absolute;inset:0;background:linear-gradient(160deg,#2a2419,#0f0c09);background-size:cover;background-position:center;opacity:1;transition:opacity .3s ease}
 .cover-bg.loaded{opacity:1}
 .cover-bg.no-photo{background:linear-gradient(160deg,#1a1714,#0f0c09);opacity:1}
-.cover-photo{display:none;opacity:0;transition:opacity .6s ease;pointer-events:none}
-.cover-photo.is-visible{opacity:1}
 .cover-scrim{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,12,9,0.15) 0%,transparent 30%,rgba(15,12,9,0.55) 100%)}
 .cover-logo{position:absolute;top:28px;left:50%;transform:translateX(-50%);z-index:3;height:34px;width:auto;filter:invert(1);opacity:0;animation:coverIn 1s ease .2s forwards}
 .cover-content{position:relative;z-index:2;text-align:center;padding:40px 24px 80px;max-width:600px}
@@ -89,53 +83,20 @@ a{color:inherit}
 .cover-expiry{position:absolute;bottom:20px;left:0;right:0;z-index:2;text-align:center;font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:400;color:var(--cream-faint);opacity:0;animation:coverIn .9s ease 1s forwards}
 @keyframes coverIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── DESKTOP COVER — minimal split: text left, photo right ── */
-@media(min-width:1100px){
-  .cover{align-items:flex-start;justify-content:center}
-  .cover-logo{left:7vw;top:36px;transform:none;height:40px}
-  .cover-photo{display:block;position:absolute;top:0;right:0;bottom:0;height:100%;width:auto;max-width:none;object-fit:contain;z-index:1}
-  .cover:not(.portrait) .cover-photo{width:min(62%,calc(100vw - 700px));max-width:none;object-fit:cover;object-position:center}
-  .cover-scrim{background:linear-gradient(to right,rgba(13,10,7,.85) 0%,rgba(13,10,7,.5) 34%,rgba(13,10,7,0) 54%)}
-  .cover-content{text-align:left;padding:0;margin:0 0 0 7vw;max-width:560px;transform:translateY(-3vh)}
-  .cover-name{white-space:normal}
-  .cover-expiry{position:absolute;bottom:44px;left:7vw;right:auto;text-align:left}
-}
-
 /* ── GALLERY HEADER ── */
-.gallery-header{position:sticky;top:0;z-index:40;background:rgba(15,12,9,0.88);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-bottom:1px solid var(--border);padding:16px 24px}
-.gallery-header-inner{display:flex;align-items:center;justify-content:space-between;max-width:min(1400px,94vw);margin:0 auto;gap:14px}
-.gallery-header-name{font-family:'Cormorant Garamond','Fraunces',serif;font-size:21px;font-weight:400;letter-spacing:1px;color:rgba(255,255,255,.92)}
-.gallery-header-meta{font-size:11px;color:var(--cream-faint);letter-spacing:.6px;margin-top:3px}
-@media(max-width:820px){
-  .gallery-header{padding:13px 16px}
-  .gallery-header-name{font-size:14px;letter-spacing:1.5px}
-  .gallery-header-meta{font-size:10px}
-}
+.gallery-header{position:sticky;top:0;z-index:40;background:rgba(15,12,9,0.88);backdrop-filter:blur(20px) saturate(160%);-webkit-backdrop-filter:blur(20px) saturate(160%);border-bottom:1px solid var(--border);padding:14px 20px}
+.gallery-header-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;gap:12px}
+.gallery-header-name{font-family:'Outfit',sans-serif;font-size:13px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.7)}
+.gallery-header-meta{font-size:10px;color:var(--cream-faint);letter-spacing:0.5px;margin-top:2px}
 
 /* ── GALLERY GRID — respects orientation, centered ── */
-.gallery-grid{max-width:min(1800px,96vw);margin:0 auto;padding:36px 20px 48px;display:grid;grid-template-columns:repeat(12,1fr);gap:16px;grid-auto-flow:dense;justify-items:center}
-.g-tile{position:relative;overflow:hidden;background:var(--surface);cursor:pointer;width:100%;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.3);transition:box-shadow .35s ease,transform .35s cubic-bezier(0.16,1,0.3,1)}
-.g-tile:hover{box-shadow:0 18px 40px rgba(0,0,0,.55);transform:translateY(-3px)}
-.g-tile.landscape{grid-column:span 4;aspect-ratio:3/2}
+.gallery-grid{max-width:1100px;margin:0 auto;padding:32px 16px 40px;display:grid;grid-template-columns:repeat(6,1fr);gap:8px;grid-auto-flow:dense;justify-items:center}
+.g-tile{position:relative;overflow:hidden;background:var(--surface);cursor:pointer;width:100%}
+.g-tile.landscape{grid-column:span 6;aspect-ratio:3/2}
 .g-tile.portrait{grid-column:span 3;aspect-ratio:2/3}
 .g-tile.square{grid-column:span 2;aspect-ratio:1/1}
-/* Small laptops / narrow desktop windows — keep tiles generous */
-@media(min-width:821px) and (max-width:1099px){
-  .g-tile.landscape{grid-column:span 6}
-  .g-tile.portrait{grid-column:span 4}
-  .g-tile.square{grid-column:span 3}
-}
-/* Very wide screens — a denser contact-sheet layout */
-@media(min-width:1800px){
-  .gallery-grid{max-width:min(2100px,98vw)}
-  .g-tile.landscape{grid-column:span 3}
-  .g-tile.portrait{grid-column:span 2}
-}
-.g-tile img{width:100%;height:100%;object-fit:cover;transition:transform 6s cubic-bezier(0.25,0.46,0.45,0.94)}
+.g-tile img{width:100%;height:100%;object-fit:cover;transition:transform 5s cubic-bezier(0.25,0.46,0.45,0.94)}
 .g-tile:hover img{transform:scale(1.03)}
-/* Frame number — quiet gold index in the corner of every tile */
-.g-tile-num{position:absolute;left:10px;bottom:9px;z-index:2;font-family:'Share Tech Mono','Courier New',monospace;font-size:9.5px;letter-spacing:1px;color:rgba(246,241,231,.72);text-shadow:0 1px 3px rgba(0,0,0,.8);pointer-events:none;opacity:.85;transition:opacity .25s ease}
-.g-tile:hover .g-tile-num{opacity:1}
 .g-tile-star{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:50%;background:rgba(15,12,9,0.5);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .25s ease;border:none;color:var(--cream);cursor:pointer;z-index:2}
 .g-tile:hover .g-tile-star,.g-tile.is-starred .g-tile-star{opacity:1}
 .g-tile.is-starred .g-tile-star{background:rgba(196,166,126,0.4)}
@@ -147,22 +108,7 @@ a{color:inherit}
 .g-tile.portrait{grid-column:span 2}
 .g-tile.landscape{grid-column:span 4}
 .g-tile.square{grid-column:span 2}
-.g-tile{border-radius:0;box-shadow:none}
-.g-tile:hover{transform:none}
-.g-tile-num{font-size:8px;left:6px;bottom:6px}
-}
-
-/* ── EXTRA tiles — bonus photos the studio added beyond the client's finals.
-   They share the main grid with the numbered finals and carry a gold EXTRA
-   chip + hairline ring so the client's paid picks stay unmistakable. ── */
-.g-tile.is-extra::after{content:'';position:absolute;inset:0;border:1px solid rgba(217,167,63,.32);border-radius:inherit;pointer-events:none}
-.g-chip-extra{position:absolute;top:10px;left:10px;z-index:2;font-family:'Outfit',sans-serif;font-size:8px;font-weight:700;letter-spacing:2.2px;padding:4px 9px 4px 10px;border-radius:2px;color:#171208;background:linear-gradient(135deg,#efcf85,#d9a73f);box-shadow:0 2px 8px rgba(0,0,0,.35);pointer-events:none}
-/* Gold EXTRA chip inside the cinematic viewer, beside the frame counter */
-.lb-mid{display:inline-flex;align-items:center;gap:12px;min-width:0}
-.lb-extra-chip{display:none;font-family:'Outfit',sans-serif;font-size:8px;font-weight:700;letter-spacing:2px;padding:3px 8px 3px 9px;border-radius:2px;color:#171208;background:linear-gradient(135deg,#efcf85,#d9a73f)}
-@media(max-width:820px){
-  .g-chip-extra{top:5px;left:5px;font-size:7px;padding:3px 6px;letter-spacing:1.4px}
-  .lb-extra-chip{font-size:7px;letter-spacing:1.4px;padding:2px 6px 2px 7px}
+.gallery-header-name{font-size:13px}
 }
 
 /* ── CINEMATIC VIEWER — the Featured Work film presentation fused
@@ -179,34 +125,17 @@ a{color:inherit}
 .lb-star-btn svg{width:18px;height:18px;stroke:var(--cream);fill:none;transition:all .2s ease}
 .lb-star-btn.is-active{background:rgba(196,166,126,0.25)}
 .lb-star-btn.is-active svg{fill:var(--accent);stroke:var(--accent)}
-.lb-main{flex:1;display:flex;min-height:0;position:relative;justify-content:center;gap:24px}
-.lb-stage{flex:0 1 auto;width:100%;min-width:0;max-width:calc(100% - min(150px,15vw) - 24px);display:flex;align-items:center;justify-content:center;position:relative;padding:0 10px;min-height:0;touch-action:pan-x;overflow:hidden}
-.lb-img-wrap{width:calc(100% + 20px);height:100%;margin:0 -10px;display:flex;align-items:center;justify-content:center}
+.lb-main{flex:1;display:flex;min-height:0;position:relative}
+.lb-stage{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;position:relative;padding:0 6px;min-height:0;touch-action:pan-x;overflow:hidden}
+.lb-img-wrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
 .lb-img-wrap img{max-width:100%;max-height:100%;object-fit:contain}
-/* Prev/next arrows — glass discs that appear on hover, for mouse users */
-.lb-nav{position:absolute;top:50%;transform:translateY(-50%);z-index:6;width:46px;height:46px;border-radius:50%;border:1px solid rgba(212,160,48,.28);background:rgba(15,12,9,.55);backdrop-filter:blur(12px) saturate(160%);-webkit-backdrop-filter:blur(12px) saturate(160%);color:var(--cream);display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity .25s ease,background .2s ease,transform .2s ease;pointer-events:none}
-.lightbox.active:hover .lb-nav{opacity:1;pointer-events:auto}
-.lb-nav:hover{background:rgba(196,166,126,.22);color:#e3b64e}
-.lb-nav svg{width:19px;height:19px}
-.lb-nav-prev{left:14px}
-.lb-nav-next{right:14px}
-.lb-nav:disabled{opacity:0;pointer-events:none}
-@media(max-width:820px){.lb-nav{display:none}}
-/* Quieter viewer arrows on desktop — slim, translucent */
-@media(min-width:1100px){
-  .lb-nav{width:38px;height:38px;border-color:rgba(255,255,255,.14);background:rgba(8,6,4,.28);backdrop-filter:blur(8px) saturate(140%);-webkit-backdrop-filter:blur(8px) saturate(140%)}
-  .lb-nav svg{width:15px;height:15px;opacity:.7}
-  .lb-nav:hover{background:rgba(255,255,255,.1);color:var(--cream)}
-}
 
 /* FILM RAIL — vertical perforated contact sheet along the stage's
-   right edge, the same design language as the homepage viewer.
-   Wider with larger frames on desktop; compact on mobile. */
-.lb-film{width:min(150px,15vw);flex-shrink:0;position:relative;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;scrollbar-width:none;overscroll-behavior-y:contain;background:var(--strip-surface);filter:drop-shadow(0 4px 10px rgba(0,0,0,0.4));-webkit-mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,0.08) 0.4%,rgba(0,0,0,0.25) 0.9%,rgba(0,0,0,0.5) 1.4%,rgba(0,0,0,0.78) 1.9%,black 2.5%,black 97.5%,rgba(0,0,0,0.78) 98.1%,rgba(0,0,0,0.5) 98.6%,rgba(0,0,0,0.25) 99.1%,rgba(0,0,0,0.08) 99.6%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,0.08) 0.4%,rgba(0,0,0,0.25) 0.9%,rgba(0,0,0,0.5) 1.4%,rgba(0,0,0,0.78) 1.9%,black 2.5%,black 97.5%,rgba(0,0,0,0.78) 98.1%,rgba(0,0,0,0.5) 98.6%,rgba(0,0,0,0.25) 99.1%,rgba(0,0,0,0.08) 99.6%,transparent 100%)}
-@media(max-width:820px){.lb-film{width:min(150px,23vw)}}
+   right edge, the same design language as the homepage viewer. */
+.lb-film{width:min(150px,23vw);flex-shrink:0;position:relative;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;scrollbar-width:none;overscroll-behavior-y:contain;background:var(--strip-surface);filter:drop-shadow(0 4px 10px rgba(0,0,0,0.4));-webkit-mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,0.08) 0.4%,rgba(0,0,0,0.25) 0.9%,rgba(0,0,0,0.5) 1.4%,rgba(0,0,0,0.78) 1.9%,black 2.5%,black 97.5%,rgba(0,0,0,0.78) 98.1%,rgba(0,0,0,0.5) 98.6%,rgba(0,0,0,0.25) 99.1%,rgba(0,0,0,0.08) 99.6%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,0.08) 0.4%,rgba(0,0,0,0.25) 0.9%,rgba(0,0,0,0.5) 1.4%,rgba(0,0,0,0.78) 1.9%,black 2.5%,black 97.5%,rgba(0,0,0,0.78) 98.1%,rgba(0,0,0,0.5) 98.6%,rgba(0,0,0,0.25) 99.1%,rgba(0,0,0,0.08) 99.6%,transparent 100%)}
 .lb-film::-webkit-scrollbar{display:none}
 .film-track{display:flex;flex-direction:column;position:relative;gap:0;background:none}
-.film-thumb{position:relative;width:100%;aspect-ratio:400/450;border:none;padding:0;cursor:pointer;display:block;flex-shrink:0;background-color:transparent;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 450' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='fb' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%230a0805'/%3E%3Cstop offset='0.5' stop-color='%2316100a'/%3E%3Cstop offset='1' stop-color='%230a0805'/%3E%3C/linearGradient%3E%3ClinearGradient id='fw' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23050403'/%3E%3Cstop offset='1' stop-color='%23070604'/%3E%3C/linearGradient%3E%3Cmask id='m'%3E%3Crect x='0' y='0' width='400' height='450' fill='white'/%3E%3Crect x='16' y='32' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='96' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='160' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='224' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='288' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='352' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='416' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='32' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='96' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='160' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='224' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='288' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='352' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='416' width='22' height='16' rx='2' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0' y='0' width='400' height='450' fill='url(%23fb)' mask='url(%23m)'/%3E%3Crect x='70' y='12' width='260' height='426' fill='url(%23fw)'/%3E%3C/svg%3E");background-size:100% 100%;background-repeat:no-repeat}
+.film-thumb{position:relative;width:100%;aspect-ratio:400/560;border:none;padding:0;cursor:pointer;display:block;flex-shrink:0;background-color:transparent;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 560' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='fb' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%230a0805'/%3E%3Cstop offset='0.5' stop-color='%2316100a'/%3E%3Cstop offset='1' stop-color='%230a0805'/%3E%3C/linearGradient%3E%3ClinearGradient id='fw' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23050403'/%3E%3Cstop offset='1' stop-color='%23070604'/%3E%3C/linearGradient%3E%3Cmask id='m'%3E%3Crect x='0' y='0' width='400' height='560' fill='white'/%3E%3Crect x='16' y='40' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='120' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='200' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='280' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='360' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='440' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='520' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='40' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='120' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='200' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='280' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='360' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='440' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='520' width='22' height='16' rx='2' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0' y='0' width='400' height='560' fill='url(%23fb)' mask='url(%23m)'/%3E%3Crect x='70' y='15' width='260' height='530' fill='url(%23fw)'/%3E%3C/svg%3E");background-size:100% 100%;background-repeat:no-repeat}
 .film-thumb + .film-thumb{margin-top:-3px}
 .film-thumb img{position:absolute;left:17.5%;top:2.68%;width:65%;height:94.64%;object-fit:cover;opacity:0.92;transition:filter 0.3s ease,opacity 0.25s ease}
 .film-thumb.is-neg img{filter:invert(1) sepia(0.45) hue-rotate(-25deg) saturate(0.42) brightness(0.88) contrast(0.95);opacity:0.5}
@@ -215,10 +144,9 @@ a{color:inherit}
 .film-thumb.is-landscape img{left:-16.25%;top:26.79%;width:132.5%;height:46.43%;max-width:none;transform:rotate(90deg)}
 .film-thumb.is-active::after{content:'';position:absolute;pointer-events:none;left:17.5%;top:2.68%;width:65%;height:94.64%;box-shadow:inset 0 0 0 1.5px #d4a030;z-index:4}
 .film-thumb .frame-num,.film-thumb .brand-text{position:absolute;top:50%;font-family:'Share Tech Mono','Courier New',monospace;font-weight:700;color:#d4a030;text-shadow:0 1px 2px rgba(0,0,0,0.85);pointer-events:none;line-height:1;z-index:3;white-space:nowrap}
-.film-thumb .frame-num{right:11%;transform:translate(50%,-50%) rotate(-90deg);transform-origin:center;font-size:7px;letter-spacing:0.5px}
+.film-thumb .frame-num{right:11%;transform:translate(50%,-50%) rotate(-90deg);transform-origin:center;font-size:5.5px;letter-spacing:0.3px}
 .film-thumb .frame-num::before{content:'\25B6 ';opacity:0.9}
-.film-thumb .brand-text{left:13%;transform:translate(-50%,-50%) rotate(-90deg);transform-origin:center;font-size:5px;letter-spacing:1.6px;text-transform:uppercase}
-@media(max-width:820px){.film-thumb .frame-num{font-size:5.5px;letter-spacing:0.3px}.film-thumb .brand-text{font-size:4px;letter-spacing:1.2px}}
+.film-thumb .brand-text{left:13%;transform:translate(-50%,-50%) rotate(-90deg);transform-origin:center;font-size:4px;letter-spacing:1.2px;text-transform:uppercase}
 /* Gold keep-mark star on starred frames — the favourites system
    lives right on the film. */
 .film-star{position:absolute;top:4.5%;right:18.5%;width:11%;height:11%;display:none;align-items:center;justify-content:center;z-index:5;pointer-events:none;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.9))}
@@ -259,7 +187,6 @@ a{color:inherit}
   .lb-actionbar{padding:5px}
   .lb-state{height:34px;padding:0 12px 0 11px;font-size:10.5px;gap:7px}
   .lb-action-btn{height:34px;padding:0 12px;font-size:9.5px;letter-spacing:1px;gap:5px}
-  .film-thumb{aspect-ratio:400/560;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 560' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='fb' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%230a0805'/%3E%3Cstop offset='0.5' stop-color='%2316100a'/%3E%3Cstop offset='1' stop-color='%230a0805'/%3E%3C/linearGradient%3E%3ClinearGradient id='fw' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23050403'/%3E%3Cstop offset='1' stop-color='%23070604'/%3E%3C/linearGradient%3E%3Cmask id='m'%3E%3Crect x='0' y='0' width='400' height='560' fill='white'/%3E%3Crect x='16' y='40' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='120' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='200' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='280' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='360' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='440' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='520' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='40' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='120' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='200' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='280' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='360' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='440' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='520' width='22' height='16' rx='2' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0' y='0' width='400' height='560' fill='url(%23fb)' mask='url(%23m)'/%3E%3Crect x='70' y='15' width='260' height='530' fill='url(%23fw)'/%3E%3C/svg%3E")}
   .lb-action-btn.is-primary{padding:0 14px}
   .lb-actionbar-sep{margin:0 3px}
 }
@@ -282,47 +209,12 @@ a{color:inherit}
 .selection-bar-clear{background:none;border:none;color:var(--cream-faint);font-size:11.5px;letter-spacing:0.4px;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:8px 2px;white-space:nowrap;transition:color .2s}
 .selection-bar-clear:hover{color:var(--accent)}
 .selection-bar-clear:disabled{opacity:.5;cursor:wait}
-
-/* ── WHO'S PICKING — email gate (proof, first star) ── */
-.ident-sheet{position:fixed;inset:0;background:rgba(6,5,4,0.94);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px}
-.ident-card{width:100%;max-width:380px;background:#14110d;border:1px solid var(--border);border-radius:18px;padding:28px 24px;text-align:center;position:relative}
-.ident-card h3{font-family:'Outfit',sans-serif;font-size:17px;font-weight:600;color:var(--cream);margin:0 0 8px}
-.ident-sub{font-size:12.5px;color:var(--cream-soft);line-height:1.6;margin:0 0 20px}
-.ident-field{width:100%;box-sizing:border-box;background:rgba(246,241,231,0.05);border:1px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--cream);font-size:14px;margin-bottom:12px;outline:none;transition:border-color .2s}
-.ident-field:focus{border-color:var(--accent)}
-.ident-field::placeholder{color:rgba(246,241,231,0.35)}
-.ident-cta{width:100%;padding:14px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:#0f0c09;background:var(--accent);border:none;border-radius:24px;cursor:pointer;margin-top:4px;transition:background .25s}
-.ident-cta:hover{background:var(--accent-deep)}
-.ident-cta:disabled{opacity:.55;cursor:wait}
-.ident-switch{display:block;margin:14px auto 0;background:none;border:none;color:var(--accent);font-size:12px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-.ident-skip{display:block;margin:12px auto 0;background:none;border:none;color:var(--cream-faint);font-size:11.5px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-.ident-note{font-size:11px;color:var(--cream-faint);line-height:1.6;margin:16px 0 0}
-.ident-note strong{color:var(--cream-soft)}
-
-/* ── ASK A FRIEND — share sheet ── */
-.share-sheet{position:fixed;inset:0;background:rgba(6,5,4,0.94);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px}
-.share-card{width:100%;max-width:380px;background:#14110d;border:1px solid var(--border);border-radius:18px;padding:28px 24px;text-align:center}
-.share-card h3{font-family:'Outfit',sans-serif;font-size:17px;font-weight:600;color:var(--cream);margin:0 0 8px}
-.share-sub{font-size:12.5px;color:var(--cream-soft);line-height:1.6;margin:0 0 20px}
-.share-link-wrap{display:flex;gap:8px;margin-bottom:12px}
-.share-link-input{flex:1;min-width:0;background:rgba(246,241,231,0.05);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--cream);font-size:12px;outline:none}
-.share-btn{flex-shrink:0;padding:12px 18px;font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;font-weight:600;color:#0f0c09;background:var(--accent);border:none;border-radius:24px;cursor:pointer}
-.share-wa{width:100%;padding:13px;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;font-weight:600;color:var(--cream);background:rgba(37,211,102,0.15);border:1px solid rgba(37,211,102,0.4);border-radius:24px;cursor:pointer;margin-bottom:10px}
-.share-native{width:100%;padding:13px;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;font-weight:600;color:var(--cream);background:rgba(246,241,231,0.06);border:1px solid var(--border);border-radius:24px;cursor:pointer}
-.share-close{display:block;margin:14px auto 0;background:none;border:none;color:var(--cream-faint);font-size:11.5px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
-
-/* ── collaboration bits in the selection bar / header ── */
-.selection-bar-left{display:flex;flex-direction:column;gap:3px;min-width:0}
-.selection-bar-people{font-size:10.5px;color:var(--accent);letter-spacing:0.3px}
-.ask-friend-btn{background:none;border:1px dashed rgba(196,166,126,0.4);color:var(--accent);font-size:10.5px;letter-spacing:1px;text-transform:uppercase;font-weight:600;border-radius:20px;padding:10px 14px;cursor:pointer;white-space:nowrap;transition:all .25s}
-.ask-friend-btn:hover{background:rgba(196,166,126,0.12);border-style:solid}
 @media (max-width:480px){
     .selection-bar{padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px))}
     .selection-bar-inner{gap:10px}
     .selection-bar-actions{gap:10px}
     .selection-bar-btn{padding:11px 16px;font-size:10px;letter-spacing:1px}
     .selection-bar-clear{font-size:11px}
-    .ask-friend-btn{padding:9px 11px;font-size:9.5px;letter-spacing:0.5px}
 }
 
 /* ── DOWNLOAD MODAL ── */
@@ -554,40 +446,6 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
     </div>
 </div>
 
-<!-- WHO'S PICKING — email gate (proof, first star) -->
-<div class="ident-sheet" id="ident-sheet" style="display:none;">
-    <div class="ident-card">
-        <h3 id="ident-title">Who's picking?</h3>
-        <p class="ident-sub" id="ident-sub">Tell us who you are so we can save your picks to your email — a friend can join too, and their favourites merge with yours.</p>
-        <div id="ident-quick" style="display:none;">
-            <button class="ident-cta" id="ident-quick-btn">Continue as <span id="ident-quick-email"></span></button>
-            <button class="ident-switch" id="ident-switch-btn">Not you — use a different email</button>
-        </div>
-        <div id="ident-form">
-            <input class="ident-field" id="ident-email" type="email" inputmode="email" autocomplete="email" placeholder="Your email address" required>
-            <input class="ident-field" id="ident-name" type="text" autocomplete="name" placeholder="Your name (optional)">
-            <button class="ident-cta" id="ident-continue">Continue</button>
-        </div>
-        <p class="ident-note" id="ident-note">Helping a friend? Enter <strong>your own</strong> email — your picks merge with theirs.</p>
-        <button class="ident-skip" id="ident-skip">Not now — just browsing</button>
-    </div>
-</div>
-
-<!-- ASK A FRIEND — share sheet -->
-<div class="share-sheet" id="share-sheet" style="display:none;">
-    <div class="share-card">
-        <h3>Ask a friend to help</h3>
-        <p class="share-sub">Share this link — they can star their favourite photos too, and your picks merge into one list.</p>
-        <div class="share-link-wrap">
-            <input class="share-link-input" id="share-link" type="text" readonly onclick="this.select()">
-            <button class="share-btn" id="share-copy-btn">Copy</button>
-        </div>
-        <button class="share-wa" id="share-wa-btn">WhatsApp</button>
-        <button class="share-native" id="share-native-btn" style="display:none;">Share&hellip;</button>
-        <button class="share-close" id="share-close-btn">Close</button>
-    </div>
-</div>
-
 <!-- PAGE: COVER + GALLERY as one continuous scroll -->
 <div id="page-wrap" style="display:none;">
 
@@ -595,7 +453,6 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
     <section class="cover" id="cover">
         <img src="" alt="Libertypictures" class="cover-logo" id="cover-logo" style="display:none;">
         <div class="cover-bg" id="cover-bg"></div>
-        <img class="cover-photo" id="cover-photo" alt="" aria-hidden="true">
         <div class="cover-scrim"></div>
         <div class="cover-content" style="max-width:500px;">
             <div class="cover-eyebrow" id="cover-eyebrow">&nbsp;</div>
@@ -614,7 +471,6 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
                 <div class="gallery-header-meta" id="header-expiry"></div>
             </div>
             <button id="favs-toggle-btn" style="display:none;padding:8px 16px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:var(--accent);background:rgba(196,166,126,0.12);border:1px solid rgba(196,166,126,0.25);border-radius:20px;white-space:nowrap;cursor:pointer;transition:all .25s ease;">★ My Favourites</button>
-            <button id="friend-picks-btn" style="display:none;padding:8px 16px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:var(--cream);background:rgba(196,166,126,0.25);border:1px solid rgba(196,166,126,0.45);border-radius:20px;white-space:nowrap;cursor:pointer;transition:all .25s ease;"></button>
         </div>
     </div>
 
@@ -671,12 +527,8 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
 <!-- SELECTION BAR -->
 <div class="selection-bar" id="selection-bar">
     <div class="selection-bar-inner">
-        <div class="selection-bar-left">
-            <div class="selection-bar-count" id="selection-count"><strong>0</strong> selected</div>
-            <div class="selection-bar-people" id="selection-people"></div>
-        </div>
+        <div class="selection-bar-count" id="selection-count"><strong>0</strong> selected</div>
         <div class="selection-bar-actions">
-            <button class="ask-friend-btn" id="ask-friend-btn" style="display:none;">Ask a friend</button>
             <button class="selection-bar-clear" id="clear-selection-btn">Clear selection</button>
             <button class="selection-bar-btn" id="save-selected-btn">Save to Photos</button>
         </div>
@@ -687,7 +539,7 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
 <div class="lightbox" id="lightbox">
     <div class="lb-top">
         <button class="lb-close" id="lb-close-btn" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-        <span class="lb-mid"><span class="lb-counter" id="lb-counter"></span><span class="lb-extra-chip" id="lb-extra-chip">EXTRA</span></span>
+        <span class="lb-counter" id="lb-counter"></span>
         <span style="display:inline-flex;align-items:center">
             <button class="lb-help-btn" id="lb-help-btn" aria-label="How this gallery works" title="How this gallery works">?</button>
             <button class="lb-star-btn" id="lb-star-btn" aria-label="Star this photo"><svg viewBox="0 0 24 24" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></button>
@@ -695,8 +547,6 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
     </div>
     <div class="lb-main">
         <div class="lb-stage" id="lb-stage">
-            <button class="lb-nav lb-nav-prev" id="lb-prev-btn" aria-label="Previous photo" title="Previous (\u2190)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-            <button class="lb-nav lb-nav-next" id="lb-next-btn" aria-label="Next photo" title="Next (\u2192)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
             <div class="lb-img-wrap"><img src="" id="lb-img" alt=""></div>
             <div class="lb-burst" id="lb-burst"></div>
             <div class="lb-feedback" id="lb-feedback"></div>
@@ -755,7 +605,6 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
    One URL per gallery (?t=<token>). The worker decides the phase and state:
      - proof, active, not finalised  → browse + star picks, Finalise locks them
      - proof, finalised              → “picks locked in” screen
-     - delivery, pending             → “finals pending delivery” screen
      - delivery, unpublished         → “finals being edited” screen
      - delivery, published           → view finals, keep + download
      - locked (409)                  → pay-to-reopen wall (secure pay page)
@@ -771,20 +620,12 @@ var token = params.get('t');
 
 var gallery = null;      // server row (phase, status, expiresAt, photos…)
 var photos = [];         // photos shown on the grid / in the viewer
-var extras = [];         // delivery-only: bonus photos the studio added beyond the client's picks
-var allPhotos = [];      // one ordered grid: numbered finals first, extras appended after (delivery)
-var extraIds = {};       // photoId -> true for bonus (EXTRA) photos
 var view = 'proof';      // 'proof' | 'delivery' — set from server phase
 var starred = {};        // photoId -> true/false (picks in proof, keeps in delivery)
 var currentLbIdx = 0;
 var showingFavs = false;
-var gate = '';           // current rendered screen ('open'|'finalised'|'pending'|'notready'|'lock')
+var gate = '';           // current rendered screen ('open'|'finalised'|'notready'|'lock')
 var lockedInfo = null;   // 409 payload when locked
-var whoami = null;       // {email, name, role} after email sign-in (remembered per gallery)
-var participants = [];   // everyone who identified on this gallery (client + friends)
-var starredBy = {};      // photoId -> email of whoever starred it last
-var showingFriends = false;
-var identCb = null;      // pending action once the email gate succeeds
 
 var LS_GUIDE_PROOF = 'lp-guide-proof';
 var LS_GUIDE_DELIV = 'lp-guide-deliv';
@@ -816,17 +657,6 @@ function pickedPhotos() { return photos.filter(function (p) { return starred[p.i
 function isDeliv() { return view === 'delivery'; }
 function verb() { return isDeliv() ? 'kept' : 'picked'; }
 function noun() { return isDeliv() ? 'keeps' : 'picks'; }
-function isClientRole() { return !(whoami && whoami.role === 'friend'); }
-function friendEmails() {
-    return participants.filter(function (p) { return p.role === 'friend'; }).map(function (p) { return String(p.email).trim().toLowerCase(); });
-}
-function friendPicksCount() {
-    var f = friendEmails();
-    if (!f.length) return 0;
-    var n = 0, k;
-    for (k in starred) if (starred[k] && f.indexOf(String(starredBy[k] || '').toLowerCase()) !== -1) n++;
-    return n;
-}
 
 function daysUntil(ts) {
     var end = new Date(String(ts).replace(' ', 'T'));
@@ -838,110 +668,6 @@ function daysUntil(ts) {
 (function () {
     if ($('toast')) return;
     var t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t);
-})();
-
-/* ===================== WHO'S PICKING (email gate) ===================== */
-function openIdentSheet(afterFn) {
-    identCb = afterFn || null;
-    var quick = $('ident-quick'), form = $('ident-form');
-    var ce = gallery && gallery.clientEmail ? String(gallery.clientEmail).toLowerCase() : '';
-    if (ce) {
-        // The studio pre-set the client's email — offer a one-tap confirm.
-        $('ident-quick-email').textContent = ce;
-        $('ident-email').value = ce;
-        quick.style.display = 'block';
-        form.style.display = 'none';
-    } else {
-        quick.style.display = 'none';
-        form.style.display = 'block';
-        setTimeout(function () { $('ident-email').focus(); }, 60);
-    }
-    $('ident-sheet').style.display = 'flex';
-}
-function closeIdentSheet() { $('ident-sheet').style.display = 'none'; }
-function doIdentify(email, name, btn) {
-    var e = String(email || '').trim().toLowerCase();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e)) { toast('Please enter a valid email address'); return; }
-    var orig = '';
-    if (btn) { btn.disabled = true; orig = btn.innerHTML; btn.innerHTML = 'Saving\u2026'; }
-    fetch(API + '/api/gallery/' + encodeURIComponent(token) + '/identify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: e, name: String(name || '').trim() })
-    }).then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
-    .then(function (res) {
-        if (!res.ok || !res.d || res.d.status !== 'ok') throw new Error((res.d && res.d.message) || 'Could not sign you in');
-        whoami = { email: res.d.email, name: res.d.name, role: res.d.role };
-        participants = res.d.participants || [];
-        try { localStorage.setItem('lp-ident-' + token, JSON.stringify(whoami)); } catch (err) {}
-        if (gallery && !gallery.clientEmail && res.d.role === 'client') gallery.clientEmail = res.d.email;
-        closeIdentSheet();
-        toast('You\u2019re in' + (whoami.name ? ', ' + whoami.name : '') + ' \u2014 happy picking!');
-        updateBarAndPrompt();
-        if (identCb) { var cb = identCb; identCb = null; cb(); }
-    })
-    .catch(function (err) {
-        if (btn) { btn.disabled = false; btn.innerHTML = orig; }
-        window.alert(err.message || 'Could not sign you in \u2014 check your connection.');
-    });
-}
-(function () {
-    var sheet = $('ident-sheet');
-    if (!sheet) return;
-    $('ident-quick-btn').addEventListener('click', function () {
-        doIdentify($('ident-email').value, $('ident-name').value, this);
-    });
-    $('ident-switch-btn').addEventListener('click', function () {
-        $('ident-quick').style.display = 'none';
-        $('ident-form').style.display = 'block';
-        $('ident-email').value = '';
-        $('ident-email').focus();
-    });
-    $('ident-continue').addEventListener('click', function () {
-        doIdentify($('ident-email').value, $('ident-name').value, this);
-    });
-    $('ident-skip').addEventListener('click', closeIdentSheet);
-    ['ident-email', 'ident-name'].forEach(function (id) {
-        document.getElementById(id).addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') doIdentify($('ident-email').value, $('ident-name').value, $('ident-continue'));
-        });
-    });
-})();
-
-/* ===================== ASK A FRIEND (share sheet) ===================== */
-function openShareSheet() {
-    $('share-link').value = window.location.href;
-    $('share-sheet').style.display = 'flex';
-}
-(function () {
-    var sheet = $('share-sheet');
-    if (!sheet) return;
-    $('share-copy-btn').addEventListener('click', function () {
-        var input = $('share-link');
-        input.select();
-        var done = function () {
-            var b = $('share-copy-btn'), orig = b.textContent;
-            b.textContent = 'Copied!';
-            setTimeout(function () { b.textContent = orig; }, 1600);
-        };
-        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(input.value).then(done, done); else done();
-    });
-    $('share-wa-btn').addEventListener('click', function () {
-        var msg = 'Help me pick my favourite photos' + (gallery && gallery.eventTitle ? ' from ' + gallery.eventTitle : '') + ' \u2014 add your picks to mine: ' + window.location.href;
-        window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
-    });
-    var native = $('share-native-btn');
-    if (navigator.share) {
-        native.style.display = 'block';
-        native.addEventListener('click', function () {
-            var title = (gallery && gallery.eventTitle) || 'My photo gallery';
-            navigator.share({ title: title, text: 'Help me pick my favourites from ' + title + ' \u2014 add your picks to mine!', url: window.location.href }).catch(function () {});
-        });
-    }
-    $('share-close-btn').addEventListener('click', function () { sheet.style.display = 'none'; });
-    sheet.addEventListener('click', function (e) { if (e.target === sheet) sheet.style.display = 'none'; });
-    var ask = $('ask-friend-btn');
-    if (ask) ask.addEventListener('click', openShareSheet);
 })();
 
 /* ===================== LOAD ===================== */
@@ -963,23 +689,8 @@ function loadGallery() {
             gallery = data;
             view = (data.phase === 'delivery') ? 'delivery' : 'proof';
             photos = data.photos || [];
-            extras = (view === 'delivery') ? (data.extraPhotos || []) : [];
-            allPhotos = photos.concat(extras);
-            extraIds = {};
             starred = {};
-            starredBy = {};
-            photos.forEach(function (p) { starred[p.id] = !!p.isStarred; starredBy[p.id] = p.starredBy || null; });
-            extras.forEach(function (p) { starred[p.id] = !!p.isStarred; extraIds[p.id] = true; starredBy[p.id] = p.starredBy || null; });
-            participants = data.participants || [];
-            // Restore the remembered identity for this gallery link.
-            try {
-                var saved = JSON.parse(localStorage.getItem('lp-ident-' + token) || 'null');
-                if (saved && saved.email) whoami = saved;
-            } catch (e) {}
-            if (whoami && !participants.length && gallery.clientEmail &&
-                String(gallery.clientEmail).toLowerCase() === String(whoami.email).toLowerCase()) {
-                whoami.role = 'client';
-            }
+            photos.forEach(function (p) { starred[p.id] = !!p.isStarred; });
             // Surface the extension fee for banners (proof/delivery settings may lag behind
             // the locked payload; the locked wall always uses the authoritative 409 values).
             fetchSettings();
@@ -1046,7 +757,6 @@ function renderNow() {
 
     if (gate === 'lock') { renderLockWall(lockedInfo); return; }
     if (view === 'delivery') {
-        if (gallery.pendingDelivery) { gate = 'pending'; renderPending(); return; }
         if (!gallery.deliveredAt || !photos.length) { gate = 'notready'; renderNotReady(); return; }
         gate = 'open'; renderOpenGallery();
         return;
@@ -1057,7 +767,7 @@ function renderNow() {
 
 /* ===================== OPEN GALLERY (proof browse or delivery finals) ===================== */
 function renderOpenGallery() {
-    var isDeliv = view === 'delivery';
+    var isDeliv = isDeliv();
     document.title = (gallery.eventTitle || gallery.clientName) + (isDeliv ? ' \u2014 Your Finals' : '') + ' | Libertypictures';
     var pw = $('page-wrap'); pw.style.display = 'block';
     window.scrollTo(0, 0);
@@ -1071,21 +781,10 @@ function renderOpenGallery() {
         }
     }
     var bg = $('cover-bg');
-    bg.classList.remove('loaded', 'no-photo', 'is-portrait');
-    var coverEl = $('cover');
-    var coverPhoto = $('cover-photo');
-    if (coverPhoto) { coverPhoto.removeAttribute('src'); coverPhoto.classList.remove('is-visible'); }
-    if (coverEl) coverEl.classList.remove('portrait');
+    bg.classList.remove('loaded');
     if (gallery.coverUrl) {
         var img = new Image();
-        img.onload = function () {
-            bg.style.backgroundImage = 'url(' + API + gallery.coverUrl + ')'; bg.classList.add('loaded');
-            if (coverPhoto && img.naturalHeight > img.naturalWidth) {
-                coverPhoto.src = img.src;
-                if (coverEl) coverEl.classList.add('portrait');
-                coverPhoto.classList.add('is-visible');
-            }
-        };
+        img.onload = function () { bg.style.backgroundImage = 'url(' + API + gallery.coverUrl + ')'; bg.classList.add('loaded'); };
         img.src = API + gallery.coverUrl;
     } else { bg.classList.add('no-photo'); }
     if (G.logoUrl) { var lg = $('cover-logo'); lg.src = API + G.logoUrl; lg.style.display = 'block'; }
@@ -1129,21 +828,22 @@ function renderOpenGallery() {
         showingFavs = !showingFavs;
         favs.textContent = showingFavs ? 'Show All' : (isDeliv ? '\u2605 My Keeps' : '\u2605 My Picks');
         favs.style.background = showingFavs ? 'rgba(196,166,126,0.3)' : 'rgba(196,166,126,0.12)';
-        applyGridFilter();
+        document.querySelectorAll('.g-tile').forEach(function (tile) {
+            var id = Number(tile.dataset.id);
+            tile.style.display = (showingFavs && !starred[id]) ? 'none' : '';
+        });
         if (showingFavs) window.scrollTo({ top: $('gallery-header').offsetTop, behavior: 'smooth' });
     };
 
-    // friend's picks chip — "check your friend's favourites" (client only)
-    var friendBtn = $('friend-picks-btn');
-    friendBtn.style.display = 'none';
-    showingFriends = false;
-    friendBtn.onclick = function () {
-        showingFriends = !showingFriends;
-        friendBtn.style.background = showingFriends ? 'rgba(196,166,126,0.45)' : 'rgba(196,166,126,0.25)';
-        applyGridFilter();
-        if (showingFriends) window.scrollTo({ top: $('gallery-header').offsetTop, behavior: 'smooth' });
-    };
-
+    // finished prompt — proof only, once they have picks (tap = finalise)
+    var fp = $('finished-prompt');
+    fp.style.display = (!isDeliv && pickCount() > 0) ? 'block' : 'none';
+    fp.querySelector('p').textContent = 'Happy with your picks?';
+    var fb = $('finished-btn');
+    fb.textContent = 'Finalise my selection';
+    fb.style.display = '';
+    fb.disabled = false;
+    fb.onclick = function () { startFinalise(); };
     $('finished-done').style.display = 'none';
 
     // review only on delivery
@@ -1161,111 +861,48 @@ function renderOpenGallery() {
 }
 
 /* ===================== GRID ===================== */
-function tileHtml(p, i, isExtra) {
-    var cls = 'g-tile ' + (p.orientation || 'portrait') + (isExtra ? ' is-extra' : '') + (starred[p.id] ? ' is-starred' : '');
-    return '<div class="' + cls + '" data-index="' + i + '" data-id="' + p.id + (isExtra ? '" data-extras="1" title="Bonus photo &mdash; beyond your selected finals"' : '"') + '>' +
-        '<img src="' + pThumb(p) + '" alt="" loading="lazy">' +
-        (isExtra ? '<span class="g-chip-extra">EXTRA</span>' : '') +
-        '<button class="g-tile-star" data-star-id="' + p.id + '" aria-label="Star">' + starSvg(!!starred[p.id]) + '</button>' +
-        '<span class="g-tile-num">' + String(i + 1).padStart(2, '0') + '</span>' +
-    '</div>';
-}
 function renderGrid() {
     var grid = $('gallery-grid');
-    if (!allPhotos.length) {
+    if (!photos.length) {
         grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--cream-faint);padding:60px 20px;font-size:13px;">No photos in this gallery yet.</p>';
-    } else {
-        // One continuous gallery: the numbered finals come first, then any
-        // EXTRA bonus photos (delivery) flow in the same grid, gold-chipped.
-        grid.innerHTML = allPhotos.map(function (p, i) { return tileHtml(p, i, i >= photos.length); }).join('');
+        return;
     }
+    grid.innerHTML = photos.map(function (p, i) {
+        var cls = 'g-tile ' + (p.orientation || 'portrait') + (starred[p.id] ? ' is-starred' : '');
+        return '<div class="' + cls + '" data-index="' + i + '" data-id="' + p.id + '">' +
+            '<img src="' + pThumb(p) + '" alt="" loading="lazy">' +
+            '<button class="g-tile-star" data-star-id="' + p.id + '" aria-label="Star">' + starSvg(!!starred[p.id]) + '</button>' +
+        '</div>';
+    }).join('');
     updateBarAndPrompt();
-}
-function openFromTile(tile) {
-    var i = Number(tile.dataset.index);
-    openLightbox(i, allPhotos);
 }
 (function () {
     var grid = $('gallery-grid');
-    if (!grid) return;
     grid.addEventListener('click', function (e) {
         var starBtn = e.target.closest('.g-tile-star');
         if (starBtn) { e.stopPropagation(); toggleStar(Number(starBtn.dataset.starId)); return; }
         var tile = e.target.closest('.g-tile');
-        if (tile) openFromTile(tile);
+        if (tile) openLightbox(Number(tile.dataset.index));
     });
 })();
-function renderFriendChip() {
-    var btn = $('friend-picks-btn');
-    if (!btn) return;
-    var n = friendPicksCount();
-    if (!isDeliv() && whoami && whoami.role !== 'friend' && n > 0) {
-        var names = participants.filter(function (p) { return p.role === 'friend'; }).map(function (p) { return p.name || String(p.email).split('@')[0]; });
-        btn.textContent = '\ud83d\udc65 ' + (names[0] || 'A friend') + "'s picks (" + n + ')';
-        btn.style.display = 'inline-block';
-    } else {
-        btn.style.display = 'none';
-        showingFriends = false;
-    }
-}
-function applyGridFilter() {
-    var f = friendEmails();
-    document.querySelectorAll('.g-tile').forEach(function (tile) {
-        var id = Number(tile.dataset.id);
-        var visible = true;
-        if (showingFavs && !starred[id]) visible = false;
-        if (showingFriends && !(starred[id] && f.indexOf(String(starredBy[id] || '').toLowerCase()) !== -1)) visible = false;
-        tile.style.display = visible ? '' : 'none';
-    });
-}
 function updateBarAndPrompt() {
     var count = pickCount();
     var bar = $('selection-bar');
     if (count > 0) bar.classList.add('visible'); else bar.classList.remove('visible');
     $('selection-count').innerHTML = '<strong>' + count + '</strong> ' + verb();
-    var isFriend = !!(whoami && whoami.role === 'friend');
     var saveBtn = $('save-selected-btn');
-    if (isDeliv()) {
-        saveBtn.textContent = 'Download my picks';
-        saveBtn.onclick = saveSelectedClick;
-    } else if (isFriend) {
-        saveBtn.textContent = 'Send my picks';
-        saveBtn.onclick = function () { toast('Your picks are saved \u2014 ' + (gallery.clientName || 'your friend') + ' will see them when they refresh'); };
-    } else {
-        saveBtn.textContent = 'Finalise my selection';
-        saveBtn.onclick = startFinalise;
-    }
+    saveBtn.textContent = isDeliv() ? 'Download my picks' : 'Finalise my selection';
     saveBtn.style.display = '';
     saveBtn.disabled = false;
+    saveBtn.onclick = isDeliv() ? saveSelectedClick : startFinalise;
     var clearBtn = $('clear-selection-btn');
     clearBtn.style.display = 'inline-block';
     clearBtn.disabled = false;
     clearBtn.onclick = function () { clearSelection(); };
     var favs = $('favs-toggle-btn');
     favs.style.display = count > 0 ? 'block' : 'none';
-    // collaboration bits (proof only)
-    var ask = $('ask-friend-btn');
-    if (ask) ask.style.display = (!isDeliv() && whoami && !isFriend) ? 'inline-block' : 'none';
-    var people = $('selection-people');
-    if (people) people.textContent = participants.length > 1 ? participants.length + ' people are picking' : '';
-    renderFriendChip();
-    // finished prompt — proof only, once they have picks; friend copy
-    // when a collaborator is signed in (they can't finalise)
     var fp = $('finished-prompt');
     fp.style.display = (!isDeliv() && count > 0) ? 'block' : 'none';
-    var fpP = fp.querySelector('p');
-    var fb = $('finished-btn');
-    if (isFriend) {
-        if (fpP) fpP.textContent = 'Done adding your picks?';
-        fb.textContent = 'Send my picks';
-        fb.onclick = function () { toast('Your picks are saved \u2014 ' + (gallery.clientName || 'your friend') + ' will see them when they refresh'); };
-    } else {
-        if (fpP) fpP.textContent = 'Happy with your picks?';
-        fb.textContent = 'Finalise my selection';
-        fb.onclick = startFinalise;
-    }
-    fb.style.display = '';
-    fb.disabled = false;
 }
 function clearSelection() {
     var ids = Object.keys(starred).filter(function (k) { return starred[k]; });
@@ -1280,9 +917,7 @@ function clearSelection() {
             if (!d || d.status !== 'ok') { window.alert('Could not clear your selection \u2014 please try again.'); return; }
             ids.forEach(function (k) { starred[k] = false; });
             photos.forEach(function (p) { refreshTile(p.id); });
-            extras.forEach(function (p) { refreshTile(p.id); });
             showingFavs = false;
-            showingFriends = false;
             var favs = $('favs-toggle-btn');
             if (favs) { favs.textContent = isDeliv() ? '\u2605 My Keeps' : '\u2605 My Picks'; favs.style.background = 'rgba(196,166,126,0.12)'; }
             updateBarAndPrompt();
@@ -1302,13 +937,6 @@ function refreshTile(photoId) {
     updateLbUi();
 }
 function toggleStar(photoId) {
-    // Email gate: browsing stays free, but the first star requires the
-    // picker to sign in with their email (friends too — their picks
-    // merge with the client's list).
-    if (!isDeliv() && !whoami) { openIdentSheet(function () { doToggleStar(photoId); }); return; }
-    doToggleStar(photoId);
-}
-function doToggleStar(photoId) {
     var on = !starred[photoId];
     starred[photoId] = on;
     // optimistically update the UI, then tell the server; revert on failure
@@ -1326,7 +954,7 @@ function doToggleStar(photoId) {
     fetch(API + '/api/gallery/' + encodeURIComponent(token) + '/photos/' + photoId + '/select', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isStarred: on, by: (whoami && whoami.email) || '' })
+        body: JSON.stringify({ isStarred: on })
     }).then(function (r) {
         if (r.status === 423 || r.status === 409 || r.status === 410) {
             starred[photoId] = !on;
@@ -1348,7 +976,6 @@ function starSemanticsTitle() { return isDeliv() ? 'Keep this final for download
 var savedScrollY = 0, filmThumbs = [], filmListKey = '', lastTapAt = 0;
 var lbPicksOnly = false;
 var lbOrder = [];
-var lbSet = [];        // the ordered set the viewer is currently showing (the full merged grid)
 
 function lbNoun() { return isDeliv() ? 'kept' : 'picked'; }
 function lbOnlyNoun() { return isDeliv() ? 'keeps' : 'picks'; }
@@ -1361,7 +988,7 @@ function orderIndexById(id) {
     return -1;
 }
 function photosIndexById(id) {
-    for (var i = 0; i < lbSet.length; i++) if (lbSet[i].id === id) return i;
+    for (var i = 0; i < photos.length; i++) if (photos[i].id === id) return i;
     return -1;
 }
 function lbPickedCount() { return pickCount(); }
@@ -1372,15 +999,15 @@ function lbStarTitle() {
 /* ---------- order + film DOM ---------- */
 function rebuildLbOrder() {
     lbOrder = [];
-    for (var i = 0; i < lbSet.length; i++) {
-        if (lbPicksOnly && !starred[lbSet[i].id]) continue;
-        lbOrder.push({ p: lbSet[i], pos: i });
+    for (var i = 0; i < photos.length; i++) {
+        if (lbPicksOnly && !starred[photos[i].id]) continue;
+        lbOrder.push({ p: photos[i], pos: i });
     }
 }
 function filmNeedsRebuild() {
     var cnt = 0, k;
     for (k in starred) if (starred[k]) cnt++;
-    var key = lbSet.length + ':' + (lbPicksOnly ? 'p' + cnt : 'a') + ':' + lbFilmNeg() + ':' + view;
+    var key = photos.length + ':' + (lbPicksOnly ? 'p' + cnt : 'a') + ':' + lbFilmNeg() + ':' + view;
     if (key === filmListKey) return false;
     filmListKey = key;
     return true;
@@ -1395,8 +1022,8 @@ function buildFilmDOM() {
         x = lbOrder[i]; p = x.p; orig = x.pos;
         thumbUrl = pThumb(p);
         brand = BRAND_PATTERN[orig % BRAND_PATTERN.length];
-        html.push('<button type="button" class="film-thumb' + (starred[p.id] ? ' is-starred' : '') + (p.orientation === 'landscape' ? ' is-landscape' : '') + (lbFilmNeg() ? ' is-neg' : '') + '" data-id="' + p.id + '" data-pos="' + orig + '" aria-label="View photo ' + (orig + 1) + ' of ' + lbSet.length + '">' +
-            '<img ' + (i < EAGER ? 'src="' + thumbUrl + '"' : 'data-src="' + thumbUrl + '"') + ' alt="" decoding="async">' +
+        html.push('<button type="button" class="film-thumb' + (starred[p.id] ? ' is-starred' : '') + (p.orientation === 'landscape' ? ' is-landscape' : '') + (lbFilmNeg() ? ' is-neg' : '') + '" data-id="' + p.id + '" data-pos="' + orig + '" aria-label="View photo ' + (orig + 1) + ' of ' + photos.length + '">' +
+            '<img ' + (i < EAGER ? 'src="' + thumbUrl + '"' : 'data-src="' + thumbUrl + '"') + ' alt="" decoding="async" loading="lazy">' +
             '<span class="film-star">' + starSvg(true) + '</span>' +
             '<span class="frame-num">' + (orig + 1) + '</span>' +
             (brand ? '<span class="brand-text">' + brand + '</span>' : '') +
@@ -1449,14 +1076,13 @@ function refreshFilmThumb(photoId) {
 }
 
 /* ---------- open / step / chrome ---------- */
-function openLightbox(idx, set) {
+function openLightbox(idx) {
     if ($('lightbox').classList.contains('active')) return;
-    lbSet = set || photos;
-    if (!lbSet.length) return;
+    if (!photos.length) return;
     lbPicksOnly = showingFavs;
     rebuildLbOrder();
     if (filmNeedsRebuild()) buildFilmDOM();
-    currentLbIdx = orderIndexById(lbSet[idx].id);
+    currentLbIdx = orderIndexById(photos[idx].id);
     if (currentLbIdx < 0) currentLbIdx = 0;
     savedScrollY = window.scrollY;
     document.body.style.position = 'fixed';
@@ -1467,32 +1093,8 @@ function openLightbox(idx, set) {
     syncLbChrome();
     preloadLbNeighbors();
     maybeShowLbGuide();
-    syncLbNav();
-}
-function syncLbNav() {
-    var prev = $('lb-prev-btn'), next = $('lb-next-btn');
-    if (!prev || !next) return;
-    prev.disabled = currentLbIdx <= 0;
-    next.disabled = !lbOrder.length || currentLbIdx >= lbOrder.length - 1;
-}
-/* Size the stage to the current photo's aspect ratio so the photo and
-   the film strip sit together as one centered cluster — no dead void
-   between the image and the rail on wide desktop screens. */
-function fitLbStage() {
-    var stage = $('lb-stage'), img = $('lb-img'), film = $('lb-film');
-    if (!stage || !img || !film) return;
-    var nw = img.naturalWidth, nh = img.naturalHeight;
-    if (!nw || !nh) return;
-    var sh = stage.clientHeight;
-    if (sh < 10) return;
-    var filmW = film.offsetWidth || 0;
-    var avail = stage.parentElement.clientWidth - filmW - 24;
-    var w = Math.min((nw / nh) * sh, avail);
-    if (w > 40) stage.style.width = Math.round(w) + 'px';
 }
 function closeLightbox() {
-    var stage = $('lb-stage');
-    if (stage) stage.style.width = '';
     $('lightbox').classList.remove('active');
     hideLbGuide();
     document.body.style.position = ''; document.body.style.top = ''; document.body.style.width = '';
@@ -1502,25 +1104,13 @@ function applyLb() {
     if (!lbOrder.length) { currentLbIdx = 0; return; }
     var x = lbOrder[currentLbIdx];
     if (!x) { currentLbIdx = 0; x = lbOrder[0]; }
-    var p = x.p, img = $('lb-img'), url = pUrl(p), thumb = pThumb(p);
-    img.alt = p.filename || 'Photo';
-    // Show the (usually cached) thumbnail instantly, then upgrade to the
-    // full-resolution original in the background so stepping never blanks.
+    var p = x.p, img = $('lb-img'), url = pUrl(p);
     if (img.getAttribute('src') !== url) {
-        if (img.getAttribute('src') !== thumb) { img.src = thumb; }
-        if (url !== thumb) {
-            var full = new Image();
-            full.onload = function () {
-                if (lbCur() && lbCur().id === p.id && img.getAttribute('src') !== url) img.src = url;
-            };
-            full.src = url;
-        }
+        img.classList.remove('lb-ready');
+        img.onload = function () { img.classList.add('lb-ready'); };
+        img.src = url;
+        img.alt = p.filename || 'Photo';
     }
-    img.onload = fitLbStage;
-    fitLbStage();
-    // Keep the gold EXTRA marker visible while browsing a bonus photo in the viewer
-    var chip = $('lb-extra-chip');
-    if (chip) chip.style.display = (isDeliv() && extraIds[p.id]) ? 'inline-block' : 'none';
     var totalStr = String(lbOrder.length);
     $('lb-counter').textContent = String(currentLbIdx + 1).padStart(totalStr.length, '0') + ' / ' + totalStr;
     if (lbPicksOnly) $('lb-counter').textContent += ' \u00b7 ' + lbOnlyNoun();
@@ -1530,7 +1120,6 @@ function applyLb() {
     starBtn.title = lbStarTitle();
     syncFilmActive();
     syncLbChrome();
-    syncLbNav();
 }
 function stepLb(dir) {
     var n = currentLbIdx + dir;
@@ -1538,10 +1127,8 @@ function stepLb(dir) {
     currentLbIdx = n; applyLb(); preloadLbNeighbors();
 }
 function preloadLbNeighbors() {
-    // Preload neighbours' thumbnails only (fast, usually already cached);
-    // the full-resolution original loads when the viewer shows that photo.
-    if (currentLbIdx > 0) { var a = new Image(); a.src = pThumb(lbOrder[currentLbIdx - 1].p); }
-    if (currentLbIdx < lbOrder.length - 1) { var b = new Image(); b.src = pThumb(lbOrder[currentLbIdx + 1].p); }
+    if (currentLbIdx > 0) { var a = new Image(); a.src = pUrl(lbOrder[currentLbIdx - 1].p); }
+    if (currentLbIdx < lbOrder.length - 1) { var b = new Image(); b.src = pUrl(lbOrder[currentLbIdx + 1].p); }
 }
 function syncLbChrome() {
     var c = lbPickedCount();
@@ -1549,7 +1136,7 @@ function syncLbChrome() {
     var sb = $('lb-save-btn'), sa = $('lb-save-all-btn'), fin = $('lb-finalise-btn');
     var showSb = d;
     var showSa = d && c > 0;
-    var showFin = !d && c > 0 && !(whoami && whoami.role === 'friend');
+    var showFin = !d && c > 0;
     if (sb) sb.style.display = showSb ? 'inline-flex' : 'none';
     if (sa) sa.style.display = showSa ? 'inline-flex' : 'none';
     if (fin) fin.style.display = showFin ? 'inline-flex' : 'none';
@@ -1689,10 +1276,12 @@ function tapStar(x, y) {
 
 /* ---------- pre-warm ---------- */
 function prewarmLb() {
-    // Only warm the first thumbnail — never download full-resolution
-    // originals until the client actually opens the viewer.
     if (!photos.length) return;
-    var im = new Image(); im.src = pThumb(photos[0]);
+    lbPicksOnly = false;
+    rebuildLbOrder();
+    if (filmNeedsRebuild()) buildFilmDOM();
+    var n = Math.min(2, lbOrder.length);
+    for (var i = 0; i < n; i++) { var im = new Image(); im.src = pUrl(lbOrder[i].p); }
 }
 
 /* ---------- in-viewer guide ---------- */
@@ -1794,11 +1383,6 @@ function maybeShowLbGuide() {
 
 /* ---------- viewer wiring (boot) ---------- */
 $('lb-close-btn').addEventListener('click', closeLightbox);
-(function () {
-    var pv = $('lb-prev-btn'), nx = $('lb-next-btn');
-    if (pv) pv.addEventListener('click', function () { stepLb(-1); });
-    if (nx) nx.addEventListener('click', function () { stepLb(1); });
-})();
 $('lb-star-btn').addEventListener('click', function () {
     var p = lbCur();
     if (!p) return;
@@ -1930,7 +1514,7 @@ async function downloadSingle(p) {
     } catch (e) { console.error('Save failed:', e); toast('Could not download that photo'); }
 }
 var saveSelectedClick = async function () {
-    var sel = photos.concat(extras).filter(function (p) { return starred[p.id]; });
+    var sel = photos.filter(function (p) { return starred[p.id]; });
     if (!sel.length) return;
     var btn = $('save-selected-btn'); btn.disabled = true; var orig = btn.textContent;
     btn.textContent = 'Preparing\u2026';
@@ -1948,19 +1532,8 @@ var saveSelectedClick = async function () {
     } catch (e) { if (e && e.name !== 'AbortError') { try { await zipDl(sel); } catch (e2) {} } }
     btn.disabled = false; btn.textContent = orig;
 };
-function ensureJszip() {
-    if (typeof JSZip !== 'undefined') return Promise.resolve(true);
-    return new Promise(function (res) {
-        var s = document.createElement('script');
-        s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
-        s.onload = function () { res(true); };
-        s.onerror = function () { res(false); };
-        document.head.appendChild(s);
-    });
-}
 async function zipDl(list) {
-    var loaded = await ensureJszip();
-    if (!loaded) { toast('Could not load the download tool \u2014 please retry'); return; }
+    if (typeof JSZip === 'undefined') { toast('Download tool not loaded \u2014 please refresh'); return; }
     var ov = $('dl-overlay'); ov.classList.add('active');
     $('dl-title').textContent = 'Preparing your finals';
     $('dl-message').textContent = 'Zipping ' + list.length + ' photo' + (list.length === 1 ? '' : 's') + '\u2026';
@@ -2034,7 +1607,6 @@ function hideMo() { var m = $('mo'); if (m) m.classList.remove('show'); }
 
 function startFinalise() {
     if (view !== 'proof' || (gallery && gallery.finalisedAt)) return;
-    if (whoami && whoami.role === 'friend') { toast('Only ' + (gallery.clientName || 'the client') + ' can lock in the selection'); return; }
     if (pickCount() === 0) { toast('Star at least one photo to finalise your selection'); return; }
     var n = pickCount();
     var thumbs = pickedPhotos().slice(0, 12).map(function (p) {
@@ -2049,11 +1621,7 @@ function doFinalise(btn) {
     btn.disabled = true;
     var orig = btn.innerHTML;
     btn.innerHTML = '<span class="pay-spinner"></span>Sending\u2026';
-    fetch(API + '/api/gallery/' + encodeURIComponent(token) + '/finalise', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ by: (whoami && whoami.email) || '' })
-    })
+    fetch(API + '/api/gallery/' + encodeURIComponent(token) + '/finalise', { method: 'POST' })
         .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
         .then(function (res) {
             if (!res.ok && res.d && res.d.message && String(res.d.message).indexOf('already') !== -1) {
@@ -2092,19 +1660,6 @@ function renderFinalised() {
             '<button class="act-gold" disabled style="opacity:.55">Liberty is editing your ' + n + ' photo' + (n === 1 ? '' : 's') + '\u2026</button>' +
         '</div></div>';
     wireWa('fin-wa', 'Hi ' + G.studio + '! I just finalised my gallery picks and have a question.');
-}
-
-/* ---------- pending screen (finals link created, not yet delivered) ---------- */
-function renderPending() {
-    var state = $('state-screen');
-    state.style.display = 'flex';
-    state.innerHTML = '<div style="max-width:420px;text-align:center;padding:10px">' +
-        '<div class="pay-spinner"></div>' +
-        '<h1 class="serif" style="font-size:24px;line-height:1.4;margin:14px 0 10px">Your finals are pending</h1>' +
-        '<p style="font-size:13px;color:var(--cream-soft);line-height:1.8">Liberty has your pick list, and this link is reserved for your edited finals \u2014 they\u2019ll appear here as soon as they\u2019re delivered. Questions? ' +
-        '<a href="#" id="pn-wa" style="color:var(--accent)">Message us on WhatsApp</a>.</p>' +
-        '</div>';
-    wireWa('pn-wa', 'Hi ' + G.studio + '! When will my edited finals be ready?');
 }
 
 /* ---------- not-ready screen (delivery published later) ---------- */
@@ -2160,7 +1715,8 @@ function renderLockWall(info) {
     var scr = $('state-screen');
     scr.classList.add('lock-mode');
     scr.style.display = 'flex';
-    scr.innerHTML =            '<div class="lock-wrap">' +
+    scr.innerHTML =
+        '<div class="lock-wrap">' +
             '<div class="lock-bg" id="lock-bg"></div><div class="lock-scrim"></div>' +
             '<div class="lock-card">' +
                 '<div class="lock-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>' +
@@ -2201,20 +1757,11 @@ function paintExpiry() {
     var left = daysUntil(gallery.expiresAt);
     var ce = $('cover-expiry'), he = $('header-expiry');
     if (left === null) { ce.textContent = ''; he.textContent = ''; return; }
-    var n = (photos ? photos.length : 0) + (isDeliv() ? (extras ? extras.length : 0) : 0);
-    if (isDeliv()) {
-        // Delivered finals: surface the Delivered status with the download countdown.
-        if (left <= 0) { ce.textContent = 'Delivered \u00b7 window ended'; he.textContent = 'Delivered \u00b7 window ended'; }
-        else {
-            ce.textContent = 'Delivered \u00b7 ' + left + ' day' + (left === 1 ? '' : 's') + ' left';
-            he.textContent = 'Delivered \u00b7 ' + left + ' day' + (left === 1 ? '' : 's') + ' remaining \u00b7 ' + n + ' photo' + (n === 1 ? '' : 's');
-        }
-    } else {
-        if (left <= 0) { ce.textContent = 'Pick deadline ended'; he.textContent = 'Locked'; }
-        else {
-            ce.textContent = 'Pick deadline \u00b7 ' + left + ' day' + (left === 1 ? '' : 's') + ' left';
-            he.textContent = left + ' day' + (left === 1 ? '' : 's') + ' remaining \u00b7 ' + n + ' photo' + (n === 1 ? '' : 's');
-        }
+    var actionWord = isDeliv() ? 'Download window' : 'Pick deadline';
+    if (left <= 0) { ce.textContent = actionWord + ' ended'; he.textContent = 'Locked'; }
+    else {
+        ce.textContent = actionWord + ' \u00b7 ' + left + ' day' + (left === 1 ? '' : 's') + ' left';
+        he.textContent = left + ' day' + (left === 1 ? '' : 's') + ' remaining';
     }
     var banner = $('expiry-banner');
     var dismissed = false;
@@ -2271,10 +1818,6 @@ setInterval(function () {
         }
     });
 })();
-
-/* Re-fit the viewer stage when the window resizes so the photo + film
-   cluster stays tight at any screen size. */
-window.addEventListener('resize', fitLbStage);
 
 </script>
 </body>
