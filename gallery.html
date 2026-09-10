@@ -767,7 +767,7 @@ function renderNow() {
 
 /* ===================== OPEN GALLERY (proof browse or delivery finals) ===================== */
 function renderOpenGallery() {
-    var isDeliv = isDeliv();
+    var isDeliv = view === 'delivery';
     document.title = (gallery.eventTitle || gallery.clientName) + (isDeliv ? ' \u2014 Your Finals' : '') + ' | Libertypictures';
     var pw = $('page-wrap'); pw.style.display = 'block';
     window.scrollTo(0, 0);
