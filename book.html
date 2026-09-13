@@ -223,10 +223,17 @@
         .lp-reveal { opacity: 0; transform: translateY(20px); transition: opacity 1.3s cubic-bezier(0.25,0.46,0.45,0.94), transform 1.3s cubic-bezier(0.25,0.46,0.45,0.94); will-change: opacity, transform; }
         .lp-reveal.is-in { opacity: 1; transform: translateY(0); }
 
-        /* Add-ons Box — border removed in favor of a soft shadow + tint,
-           reading as one calm surface rather than a bordered form panel. */
-        .addons-container { max-width: 600px; margin: 0 auto; border: 1px solid var(--border-color); padding: 36px 34px; background-color: var(--bg-card); border-radius: var(--radius-md); opacity: 0.45; pointer-events: none; transition: 0.35s ease; box-shadow: 0 4px 20px var(--shadow-subtle); }
-        .addons-container.active { opacity: 1; pointer-events: auto; border-color: var(--accent); }
+        /* Add-ons Box — no outline anywhere: the soft shadow and the tint alone
+           mark it as one calm surface rather than a bordered form panel.
+           The dimming lives on the ROWS, not on the container: the container
+           carries the scroll-reveal animation, and `.lp-reveal.is-in { opacity: 1 }`
+           outranks a container-level opacity, which silently defeated the old
+           cue so the box looked live before a session was chosen. Rows are not
+           animated, so their own opacity holds. */
+        .addons-container { max-width: 600px; margin: 0 auto; padding: 36px 34px; background-color: var(--bg-card); border-radius: var(--radius-md); pointer-events: none; transition: 0.35s ease; box-shadow: 0 4px 20px var(--shadow-subtle); }
+        .addons-container .addon-row { transition: opacity 0.35s ease; }
+        .addons-container:not(.active) .addon-row { opacity: 0.45; }
+        .addons-container.active { pointer-events: auto; }
         .addon-row { display: flex; justify-content: space-between; align-items: center; font-size: 14px; padding: 15px 0; border-bottom: 1px dashed var(--border-dashed); cursor: pointer; transition: 0.2s;}
         .addon-row:first-child { padding-top: 0; }
         .addon-row:last-child { padding-bottom: 0; border-bottom: none; }
@@ -243,6 +250,59 @@
         .invoice-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 13px; color: var(--text-secondary); }
         .invoice-total { border-top: 1px solid var(--border-color); margin-top: 16px; padding-top: 16px; font-weight: 600; color: var(--text-primary); font-size: 16px; display: flex; justify-content: space-between; }
         .invoice-retainer { background-color: var(--accent); color: #fff; padding: 17px 18px; margin-top: 22px; display: flex; justify-content: space-between; align-items: center; font-weight: 500; font-size: 16px; border-radius: var(--radius-sm); }
+        /* ============================================================
+           THERMAL TILL RECEIPT
+           Modelled on the paper a supermarket till prints: condensed
+           monospace, a centred shop name, dashed perforations, a
+           QTY / DESC / AMT item table, a right-aligned totals block,
+           *** THANK YOU *** and a barcode.
+
+           Built only from plain elements, borders and flat colours — no
+           CSS grid, no gradients, no masks — because the JPEG receipt is
+           rendered by html2canvas, which ignores all three. What you see
+           on screen is what comes out of the exporter.
+           ============================================================ */
+        .till {
+            --till-ink: #14110e;
+            --till-mute: #6f675c;
+            --till-rule: #b8b1a4;
+            --till-paper: #fdfcf9;
+            font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+            color: var(--till-ink);
+            background: var(--till-paper);
+            font-size: 12px;
+            line-height: 1.5;
+            letter-spacing: 0.02em;
+            font-variant-numeric: tabular-nums;
+            text-align: left;
+        }
+        .till-shop { text-align: center; font-weight: 700; font-size: 15px; letter-spacing: 0.18em; }
+        .till-sub { text-align: center; font-size: 10.5px; letter-spacing: 0.14em; color: var(--till-mute); margin-top: 4px; }
+        .till-perf { border-top: 1px dashed var(--till-rule); margin: 13px 0; height: 0; }
+        .till-row { display: flex; justify-content: space-between; gap: 10px; }
+        .till-row + .till-row { margin-top: 3px; }
+        .till-key { color: var(--till-mute); letter-spacing: 0.08em; white-space: nowrap; }
+        .till-val { text-align: right; overflow-wrap: anywhere; }
+        .till-table { width: 100%; border-collapse: collapse; }
+        .till-table th { font-size: 10px; font-weight: 400; letter-spacing: 0.12em; color: var(--till-mute); text-align: left; padding: 0 0 6px; border-bottom: 1px dashed var(--till-rule); }
+        .till-table td { padding: 5px 0; vertical-align: top; word-break: break-word; }
+        .till-qty { width: 34px; }
+        .till-amt { text-align: right; white-space: nowrap; padding-left: 10px; }
+        .till-total { display: flex; justify-content: space-between; gap: 10px; font-size: 11.5px; color: var(--till-mute); padding: 3px 0; }
+        .till-total span:last-child { color: var(--till-ink); }
+        .till-grand { display: flex; justify-content: space-between; gap: 10px; margin-top: 7px; padding-top: 8px; border-top: 1px solid var(--till-ink); font-size: 14px; font-weight: 700; letter-spacing: 0.06em; }
+        .till-thanks { text-align: center; font-size: 11px; letter-spacing: 0.2em; }
+        .till-barcode { display: flex; align-items: flex-end; justify-content: center; gap: 2px; height: 44px; margin: 10px 0 5px; }
+        .till-barcode span { display: block; height: 100%; background: var(--till-ink); }
+        .till-barcode span.short { height: 70%; }
+        .till-barcode-ref { text-align: center; font-size: 9.5px; letter-spacing: 0.24em; color: var(--till-mute); }
+        .till-foot { text-align: center; font-size: 9.5px; letter-spacing: 0.1em; color: var(--till-mute); margin-top: 9px; }
+        .till-paper {
+            width: 100%; max-width: 380px; margin: 0 auto;
+            background: var(--till-paper); padding: 26px 22px 22px;
+            box-shadow: 0 1px 2px rgba(20,17,14,0.10), 0 18px 40px -18px rgba(20,17,14,0.45);
+        }
+        .invoice-box.till { padding: 0; background: transparent; border: none; }
 
         /* Booking Section */
         .booking-section { margin-top: 100px; background-color: var(--bg-booking); padding: 72px 44px; border-radius: var(--radius-lg); border: none; box-shadow: 0 4px 24px var(--shadow-subtle); }
@@ -557,25 +617,14 @@
         .receipt-action-btn:hover { background: rgba(138,115,85,0.12); border-color: var(--accent); color: var(--accent-deep); }
         @media (prefers-color-scheme: dark) { .receipt-action-btn { background: rgba(255,255,255,0.05); } }
 
+        /* The exporter shows this overlay and captures the .till-paper inside
+           it, so the saved image is the receipt itself rather than a
+           full-screen white page with the receipt floating in the middle. */
         .receipt-doc { display: none; }
         .receipt-doc.is-active {
             display: block; position: fixed; inset: 0; z-index: 200; overflow-y: auto;
-            background: #ffffff; color: #1a1815; padding: 48px 40px; font-family: 'Poppins', sans-serif;
+            background: #ffffff; padding: 32px 16px 48px;
         }
-        .receipt-doc .receipt-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #1a1815; padding-bottom: 18px; margin-bottom: 28px; }
-        .receipt-doc .receipt-logo { font-size: 20px; font-weight: 500; }
-        .receipt-doc .receipt-title { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: #6b6459; }
-        .receipt-doc .receipt-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; margin-bottom: 28px; }
-        .receipt-doc .receipt-meta span { display: block; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: #6b6459; margin-bottom: 4px; }
-        .receipt-doc .receipt-meta strong { font-size: 13.5px; font-weight: 500; word-break: break-word; }
-        .receipt-doc .receipt-items { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
-        .receipt-doc .receipt-items th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: #6b6459; padding-bottom: 10px; border-bottom: 1px solid #e8e3d9; }
-        .receipt-doc .receipt-items td { padding: 12px 0; border-bottom: 1px dashed #e8e3d9; font-size: 13.5px; }
-        .receipt-doc .receipt-items td:last-child, .receipt-doc .receipt-items th:last-child { text-align: right; }
-        .receipt-doc .receipt-totals { max-width: 320px; margin-left: auto; }
-        .receipt-doc .receipt-totals > div { display: flex; justify-content: space-between; font-size: 13px; padding: 7px 0; color: #6b6459; }
-        .receipt-doc .receipt-paid-today { border-top: 1px solid #1a1815; margin-top: 6px; padding-top: 12px !important; font-weight: 600; color: #1a1815 !important; font-size: 14.5px !important; }
-        .receipt-doc .receipt-footer { margin-top: 40px; text-align: center; font-size: 12px; color: #6b6459; font-style: italic; }
 
         /* 📱 MOBILE OPTIMIZATION ENGINE */
         @media (max-width: 768px) {
@@ -662,56 +711,6 @@
         </section>
 
 
-        <!-- ADD-ONS SECTION -->
-        <section class="section-block" id="addons">
-            <h2 class="section-title serif">Custom Additions</h2>
-            <p class="section-meta">Entirely optional — studio sessions already include a backdrop. Add these only for off-studio shoots or faster delivery.</p>
-            <div class="addons-container" id="addons-box">
-                <label class="addon-row">
-                    <div class="addon-label">
-                        <input type="checkbox" class="addon-checkbox" value="50000" data-name="Off-Studio Shoot — No Backdrop">
-                        <span>Shoot at an Off-Studio Location — No Backdrop</span>
-                    </div>
-                    <span class="addon-price">₦50,000</span>
-                </label>
-                <label class="addon-row">
-                    <div class="addon-label">
-                        <input type="checkbox" class="addon-checkbox" value="70000" data-name="Off-Studio Shoot — With Backdrop">
-                        <span>Shoot at an Off-Studio Location — With Backdrop</span>
-                    </div>
-                    <span class="addon-price">₦70,000</span>
-                </label>
-                <label class="addon-row" style="margin-top: 6px; border-top: 1px dashed var(--accent); padding-top: 18px;">
-                    <div class="addon-label">
-                        <input type="checkbox" class="addon-checkbox" value="30000" data-name="Express 24Hr Delivery">
-                        <span>Express 24-Hour Digital Turnaround</span>
-                    </div>
-                    <span class="addon-price">+₦30,000</span>
-                </label>
-            </div>
-
-            <!-- LIVE INVOICE SUMMARY -->
-            <div class="invoice-box" id="invoice-ui">
-                <h3 class="serif" style="font-size: 17px; font-weight: 500; margin-bottom: 18px;">Booking Summary</h3>
-                <div class="invoice-row">
-                    <span id="inv-package-name">Package Name</span>
-                    <span id="inv-package-price">₦0</span>
-                </div>
-                <div id="inv-addons-list"></div>
-                <div class="invoice-total">
-                    <span>Subtotal</span>
-                    <span id="inv-subtotal">₦0</span>
-                </div>
-                <div class="invoice-row" style="margin-top: 12px; font-size: 12.5px;">
-                    <span>30% Balance (Due on session day)</span>
-                    <span id="inv-balance">₦0</span>
-                </div>
-                <div class="invoice-retainer">
-                    <span>70% Retainer Due Today:</span>
-                    <span id="inv-retainer">₦0</span>
-                </div>
-            </div>
-        </section>
 
         <!-- ================================================================
              LP BOOKING COMPONENT — native custom booking calendar
@@ -792,6 +791,62 @@
         </section>
         <!-- END LP BOOKING COMPONENT -->
 
+        <!-- ADD-ONS SECTION -->
+        <section class="section-block" id="addons">
+            <h2 class="section-title serif">Custom Additions</h2>
+            <p class="section-meta">Entirely optional — studio sessions already include a backdrop. Add these only for off-studio shoots or faster delivery.</p>
+            <div class="addons-container" id="addons-box">
+                <label class="addon-row">
+                    <div class="addon-label">
+                        <input type="checkbox" class="addon-checkbox" value="50000" data-name="Off-Studio Shoot — No Backdrop">
+                        <span>Shoot at an Off-Studio Location — No Backdrop</span>
+                    </div>
+                    <span class="addon-price">₦50,000</span>
+                </label>
+                <label class="addon-row">
+                    <div class="addon-label">
+                        <input type="checkbox" class="addon-checkbox" value="70000" data-name="Off-Studio Shoot — With Backdrop">
+                        <span>Shoot at an Off-Studio Location — With Backdrop</span>
+                    </div>
+                    <span class="addon-price">₦70,000</span>
+                </label>
+                <label class="addon-row">
+                    <div class="addon-label">
+                        <input type="checkbox" class="addon-checkbox" value="30000" data-name="Express 24Hr Delivery">
+                        <span>Express 24-Hour Digital Turnaround</span>
+                    </div>
+                    <span class="addon-price">+₦30,000</span>
+                </label>
+            </div>
+
+            <!-- LIVE INVOICE SUMMARY -->
+            <!-- The booking summary is a till receipt, not a price list. -->
+            <div class="invoice-box till" id="invoice-ui">
+                <div class="till-paper">
+                    <div class="till-shop">BOOKING SUMMARY</div>
+                    <div class="till-perf"></div>
+                    <div id="inv-meta">
+                        <div class="till-row"><span class="till-key">DATE</span><span class="till-val" id="inv-meta-issued">&mdash;</span></div>
+                        <div class="till-row"><span class="till-key">CLIENT</span><span class="till-val" id="inv-meta-client">&mdash;</span></div>
+                        <div class="till-row"><span class="till-key">SESSION</span><span class="till-val" id="inv-meta-session">&mdash;</span></div>
+                        <div class="till-row"><span class="till-key">REF</span><span class="till-val" id="inv-meta-reference">&mdash;</span></div>
+                    </div>
+                    <div class="till-perf"></div>
+                    <table class="till-table">
+                        <thead><tr><th class="till-qty">QTY</th><th>DESC</th><th class="till-amt">AMT</th></tr></thead>
+                        <tbody id="inv-items-body"></tbody>
+                    </table>
+                    <div class="till-perf"></div>
+                    <div class="till-total"><span>SUBTOTAL</span><span id="inv-subtotal">₦0</span></div>
+                    <div class="till-total"><span>BALANCE DUE</span><span id="inv-balance">₦0</span></div>
+                    <div class="till-grand"><span>RETAINER TODAY</span><span id="inv-retainer">₦0</span></div>
+                    <div class="till-perf"></div>
+                    <div class="till-thanks" id="inv-state">*** AWAITING RETAINER ***</div>
+                    <div class="till-barcode" id="inv-barcode" data-till-barcode aria-hidden="true"></div>
+                    <div class="till-barcode-ref" id="inv-barcode-ref"></div>
+                </div>
+            </div>
+        </section>
         <!-- BOOKING / PAYMENT SECTION -->
         <div id="booking" class="booking-section">
 
@@ -842,26 +897,30 @@
              totals, the reference text) — this reads that state rather
              than modifying any of those functions. -->
         <div id="receipt-template" class="receipt-doc">
-            <div class="receipt-header">
-                <div class="receipt-logo serif">Libertypictures</div>
-                <div class="receipt-title">Payment Receipt</div>
+            <div class="till-paper till">
+                <div class="till-shop">PAYMENT RECEIPT</div>
+                <div class="till-perf"></div>
+                <div>
+                    <div class="till-row"><span class="till-key">DATE</span><span class="till-val" id="receipt-date"></span></div>
+                    <div class="till-row"><span class="till-key">CLIENT</span><span class="till-val" id="receipt-client-name"></span></div>
+                    <div class="till-row"><span class="till-key">EMAIL</span><span class="till-val" id="receipt-client-email"></span></div>
+                    <div class="till-row"><span class="till-key">REF</span><span class="till-val" id="receipt-reference"></span></div>
+                </div>
+                <div class="till-perf"></div>
+                <table class="till-table">
+                    <thead><tr><th class="till-qty">QTY</th><th>DESC</th><th class="till-amt">AMT</th></tr></thead>
+                    <tbody id="receipt-items-body"></tbody>
+                </table>
+                <div class="till-perf"></div>
+                <div class="till-total"><span>SUBTOTAL</span><span id="receipt-subtotal"></span></div>
+                <div class="till-total"><span>BALANCE DUE</span><span id="receipt-balance"></span></div>
+                <div class="till-grand"><span>PAID TODAY</span><span id="receipt-retainer"></span></div>
+                <div class="till-perf"></div>
+                <div class="till-thanks">*** THANK YOU ***</div>
+                <div class="till-barcode" id="receipt-barcode" data-till-barcode aria-hidden="true"></div>
+                <div class="till-barcode-ref" id="receipt-barcode-ref"></div>
+                <div class="till-foot">libertypictures.github.io/pg/book</div>
             </div>
-            <div class="receipt-meta">
-                <div><span>Receipt for</span><strong id="receipt-client-name"></strong></div>
-                <div><span>Email</span><strong id="receipt-client-email"></strong></div>
-                <div><span>Date</span><strong id="receipt-date"></strong></div>
-                <div><span>Reference</span><strong id="receipt-reference"></strong></div>
-            </div>
-            <table class="receipt-items">
-                <thead><tr><th>Description</th><th>Amount</th></tr></thead>
-                <tbody id="receipt-items-body"></tbody>
-            </table>
-            <div class="receipt-totals">
-                <div><span>Subtotal</span><strong id="receipt-subtotal"></strong></div>
-                <div><span>Balance due on session day</span><strong id="receipt-balance"></strong></div>
-                <div class="receipt-paid-today"><span>Paid Today (Retainer)</span><strong id="receipt-retainer"></strong></div>
-            </div>
-            <div class="receipt-footer">Thank you for booking with Libertypictures.</div>
         </div>
 
         <section class="section-block" id="studio-policies" style="margin-top: 100px;">
@@ -1225,6 +1284,21 @@
             return h > 0 ? h : 90; // sensible fallback if it can't be measured
         }
 
+        /* Add-ons were gated by a CSS class (`pointer-events: none`), which
+           looks disabled but leaves every checkbox in the tab order and
+           reachable by a screen reader. A client could pick add-ons with no
+           session chosen and be offered a retainer on add-ons alone.
+           Disable them for real. */
+        function setAddonsEnabled(enabled) {
+            var box = document.getElementById('addons-box');
+            if (box) box.setAttribute('aria-disabled', enabled ? 'false' : 'true');
+            document.querySelectorAll('.addon-checkbox').forEach(function (cb) {
+                cb.disabled = !enabled;
+                if (!enabled) cb.checked = false;
+            });
+        }
+        setAddonsEnabled(false);
+
         // Package Selection
         function selectPackage(btn) {
             // Remove selection from all cards
@@ -1242,11 +1316,14 @@
 
             // Enable Addons & update UI
             document.getElementById('addons-box').classList.add('active');
+            setAddonsEnabled(true);
             document.getElementById('invoice-ui').classList.add('active');
             updateStep(2);
 
-            // Seamless scroll to addons
-            lpSmoothScrollTo(document.getElementById('addons'), {
+            // Seamless scroll to the date picker: choosing a session is step 1,
+            // and the next thing the client needs is a date. Custom Additions
+            // and the Booking Summary now sit below the calendar.
+            lpSmoothScrollTo(document.getElementById('lp-booking'), {
                 duration: 750,
                 offset: -(lpStickyBarHeight() + 20)
             });
@@ -1257,6 +1334,15 @@
         // Add-on Checkbox Listeners
         document.querySelectorAll('.addon-checkbox').forEach(checkbox => {
             checkbox.addEventListener('change', () => {
+                /* Belt and braces: the inputs are disabled until a session is
+                   chosen, but a change event that arrives anyway must not be
+                   able to put add-ons into a cart with no session behind them. */
+                if (!cart.baseName) {
+                    checkbox.checked = false;
+                    cart.addons = [];
+                    calculateTotals();
+                    return;
+                }
                 cart.addons = [];
                 document.querySelectorAll('.addon-checkbox:checked').forEach(checkedBox => {
                     cart.addons.push({
@@ -1269,6 +1355,92 @@
         });
 
         // Calculate and Update UI
+        /* Receipt meta — the "prepared for / session / reference" strip that makes
+           the summary read like a receipt instead of a price list. It only ever
+           reads state the flow already sets (window.lpbBookingData and the
+           payment reference) and never recalculates a total. */
+        function lpFormatSessionStamp(iso) {
+            if (!iso) return '';
+            try {
+                return new Intl.DateTimeFormat('en-NG', {
+                    weekday: 'short', day: 'numeric', month: 'short',
+                    hour: 'numeric', minute: '2-digit', hour12: true,
+                    timeZone: 'Africa/Lagos'
+                }).format(new Date(iso));
+            } catch (err) {
+                return String(iso).replace('T', ' ').slice(0, 16);
+            }
+        }
+        function lpRenderSummaryMeta() {
+            var meta = document.getElementById('inv-meta');
+            if (!meta) return;
+            var booking = window.lpbBookingData || {};
+            var refEl = document.getElementById('lpb-payment-reference');
+            var ref = refEl ? refEl.textContent.trim() : '';
+            /* A receipt must not print a row it cannot answer. Each row is
+               revealed by its own value, so CLIENT, SESSION and REF simply
+               aren't there until the flow has actually set them — instead of
+               four em-dashes that read like broken data. */
+            function put(id, value) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                var v = (value == null ? '' : String(value)).trim();
+                el.innerText = v;
+                var row = el.closest ? el.closest('.till-row') : null;
+                if (row) row.style.display = v ? '' : 'none';
+            }
+            put('inv-meta-client', booking.name);
+            put('inv-meta-session', lpFormatSessionStamp(booking.start));
+            put('inv-meta-reference', ref);
+            put('inv-meta-issued', new Date().toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' }));
+            // The receipt's footer line is a state, not decoration: a receipt
+            // must never say "thank you" for money that has not been taken.
+            var state = document.getElementById('inv-state');
+            if (state) state.innerText = ref ? '*** THANK YOU ***' : '*** AWAITING RETAINER ***';
+            tillBarcode(ref);
+        }
+
+        /** Escape for a till row — the same job escapeReceiptHtml does below, kept
+            here too because calculateTotals runs before that IIFE is defined. */
+        function tillEsc(str) {
+            var d = document.createElement('div');
+            d.textContent = String(str == null ? '' : str);
+            return d.innerHTML;
+        }
+
+        /**
+         * Draw the receipt barcode.
+         *
+         * Deterministic from the seed, so the same reference always produces the
+         * same bars for the same client. It is a visual marker for the document,
+         * NOT a scannable symbol — the reference itself is printed underneath in
+         * full, so nothing depends on reading the bars. Real spans rather than a
+         * gradient because html2canvas renders elements exactly as seen.
+         */
+        function tillBarcode(seed) {
+            /* One barcode, drawn into every [data-till-barcode] on the page —
+               the on-page booking summary and the JPEG export — so the two can
+               never disagree about the document they describe. An empty seed
+               clears the bars rather than inventing a reference. */
+            var s = String(seed == null ? '' : seed).trim();
+            var bars = '';
+            if (s) {
+                var h = 2166136261;
+                for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+                for (var n = 0; n < 44; n++) {
+                    h = (Math.imul(h, 1103515245) + 12345) >>> 0;
+                    var w = 1 + ((h >>> 16) % 4);
+                    bars += '<span class="' + (n % 5 === 2 ? 'short' : '') + '" style="width:' + w + 'px"></span>';
+                }
+            }
+            var targets = document.querySelectorAll('[data-till-barcode]');
+            for (var t = 0; t < targets.length; t++) {
+                targets[t].innerHTML = bars;
+                var ref = targets[t].parentNode ? targets[t].parentNode.querySelector('.till-barcode-ref') : null;
+                if (ref) ref.innerText = s ? s.toUpperCase() : '';
+            }
+        }
+
         function calculateTotals() {
             let addonTotal = cart.addons.reduce((sum, item) => sum + item.price, 0);
             
@@ -1276,19 +1448,23 @@
             cart.retainer = cart.subtotal * 0.70; 
             cart.balance = cart.subtotal * 0.30;
 
-            // Update DOM Invoice
-            document.getElementById('inv-package-name').innerText = cart.baseName;
-            document.getElementById('inv-package-price').innerText = formatNaira(cart.basePrice);
-            
-            const addonsListUI = document.getElementById('inv-addons-list');
-            addonsListUI.innerHTML = ""; 
-            cart.addons.forEach(addon => {
-                addonsListUI.innerHTML += `
-                    <div class="invoice-row">
-                        <span>+ ${addon.name}</span>
-                        <span>${formatNaira(addon.price)}</span>
-                    </div>`;
-            });
+            // Stamp the summary from the one place that already knows the
+            // booking state, so the receipt can never disagree with the prices
+            // printed beside it — and so DATE appears the moment a session is
+            // picked, not only once the reservation is saved.
+            lpRenderSummaryMeta();
+
+            // Items render straight into the receipt's QTY / DESC / AMT table.
+            const itemsBody = document.getElementById('inv-items-body');
+            if (itemsBody) {
+                let rows = '<tr><td class="till-qty">1</td><td>' + tillEsc(cart.baseName) +
+                    '</td><td class="till-amt">' + formatNaira(cart.basePrice) + '</td></tr>';
+                cart.addons.forEach(function (addon) {
+                    rows += '<tr><td class="till-qty">1</td><td>+ ' + tillEsc(addon.name) +
+                        '</td><td class="till-amt">' + formatNaira(addon.price) + '</td></tr>';
+                });
+                itemsBody.innerHTML = rows;
+            }
 
             document.getElementById('inv-subtotal').innerText = formatNaira(cart.subtotal);
             document.getElementById('inv-balance').innerText = formatNaira(cart.balance);
@@ -1302,10 +1478,35 @@
             document.getElementById('payment-recap-retainer-amount').innerText = formatNaira(cart.retainer);
             document.getElementById('payment-recap-package').style.display = 'block';
 
-            // Enable & Update Payment Button
-            const payBtn = document.getElementById('pay-btn');
-            payBtn.removeAttribute('disabled');
-            payBtn.innerText = `Pay Retainer (${formatNaira(cart.retainer)})`;
+            lpSyncPayCta();
+        }
+
+        /* The CTA must not invite payment for a booking that does not exist
+           yet, and it must point at the step that is actually missing. The
+           calendar sits ABOVE the payment section, so the earlier wording
+           ("pick a date below") sent clients the wrong way. */
+        function lpSyncPayCta() {
+            var payBtn = document.getElementById('pay-btn');
+            if (!payBtn) return;
+            if (window.lpbBookingConfirmed) {
+                payBtn.removeAttribute('disabled');
+                payBtn.setAttribute('aria-disabled', 'false');
+                payBtn.innerText = 'Pay Retainer (' + formatNaira(cart.retainer) + ')';
+                return;
+            }
+            payBtn.setAttribute('disabled', 'disabled');
+            payBtn.setAttribute('aria-disabled', 'true');
+            if (!cart.baseName) {
+                payBtn.innerText = 'Choose a session to continue';
+                return;
+            }
+            /* The booking form's own button enables itself only once a date,
+               a time, a name and an email are all present, so it is the honest
+               signal for which half of that step is still outstanding. */
+            var submitEl = document.getElementById('lpb-submit-btn');
+            payBtn.innerText = (submitEl && !submitEl.disabled)
+                ? 'Tap Book Appointment above'
+                : 'Pick a date above to continue';
         }
 
         // Paystack Integration
@@ -1318,15 +1519,30 @@
             // Enforce Book Appointment → Pay Retainer order: no retainer
             // charge without a real, saved booking behind it.
             if (!window.lpbBookingConfirmed) {
-                alert('Please pick a date, time, and enter your details in the booking form above — and press "Book Appointment" — before paying the retainer.');
-                var secureSessionEl = document.getElementById('secure-session');
-                if (typeof lpSmoothScrollTo === 'function') {
-                    lpSmoothScrollTo(secureSessionEl, {
+                /* Two mistakes lived here. The alert said the form was "above" and
+                   then scrolled to #secure-session — the payment heading itself,
+                   i.e. exactly where the client already was, so the page appeared
+                   not to move. The first attempt at a fix then scrolled to
+                   #booking, which is the PAYMENT section: the id is named
+                   "booking", but it is not the booking form.
+
+                   What needs filling in is the calendar card — #lpb-form-card,
+                   inside #lp-booking. Target that, and fall back to the submit
+                   button's own container rather than to another guess about a
+                   name. */
+                alert('Please pick a date and time, enter your details, and press "Book Appointment" first — then you can pay the retainer.');
+                var submitBtnEl = document.getElementById('lpb-submit-btn');
+                var bookingFormEl = document.getElementById('lpb-form-card') ||
+                    document.getElementById('lp-booking') ||
+                    (submitBtnEl && submitBtnEl.closest('.lpb-card')) ||
+                    submitBtnEl;
+                if (typeof lpSmoothScrollTo === 'function' && bookingFormEl) {
+                    lpSmoothScrollTo(bookingFormEl, {
                         duration: 700,
                         offset: -(lpStickyBarHeight() + 36)
                     });
-                } else {
-                    secureSessionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else if (bookingFormEl) {
+                    bookingFormEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
                 return;
             }
@@ -1417,6 +1633,7 @@
                 payBtn.style.display = 'none';
                 document.getElementById('payment-secure-note').style.display = 'none';
                 document.getElementById('lpb-payment-reference').textContent = response.reference;
+                lpRenderSummaryMeta();
                 document.getElementById('lpb-payment-success').style.display = 'block';
 
                 // Redirect to WhatsApp with the booking details pre-filled —
@@ -1459,11 +1676,14 @@
                 var refEl = document.getElementById('lpb-payment-reference');
                 document.getElementById('receipt-reference').textContent = refEl ? refEl.textContent : '';
 
-                var rows = '<tr><td>' + escapeReceiptHtml(cart.baseName || 'Session') + '</td><td>' + formatNaira(cart.basePrice) + '</td></tr>';
+                var rows = '<tr><td class="till-qty">1</td><td>' + escapeReceiptHtml(cart.baseName || 'Session') +
+                    '</td><td class="till-amt">' + formatNaira(cart.basePrice) + '</td></tr>';
                 cart.addons.forEach(function (a) {
-                    rows += '<tr><td>' + escapeReceiptHtml(a.name) + '</td><td>' + formatNaira(a.price) + '</td></tr>';
+                    rows += '<tr><td class="till-qty">1</td><td>+ ' + escapeReceiptHtml(a.name) +
+                        '</td><td class="till-amt">' + formatNaira(a.price) + '</td></tr>';
                 });
                 document.getElementById('receipt-items-body').innerHTML = rows;
+                tillBarcode(document.getElementById('receipt-reference').textContent);
 
                 document.getElementById('receipt-subtotal').textContent = formatNaira(cart.subtotal);
                 document.getElementById('receipt-balance').textContent = formatNaira(cart.balance);
@@ -1486,7 +1706,10 @@
                 var originalText = jpegBtn.textContent;
                 jpegBtn.textContent = 'Preparing…';
                 jpegBtn.disabled = true;
-                html2canvas(receiptEl, { backgroundColor: '#ffffff', scale: 2 }).then(function (canvas) {
+                // Capture the paper, not the overlay — otherwise the exported
+                // JPEG is a full-screen white page with a small receipt in it.
+                var captureEl = receiptEl.querySelector('.till-paper') || receiptEl;
+                html2canvas(captureEl, { backgroundColor: '#ffffff', scale: 2 }).then(function (canvas) {
                     var link = document.createElement('a');
                     var ref = document.getElementById('receipt-reference').textContent || 'receipt';
                     link.download = 'libertypictures-receipt-' + ref + '.jpg';
@@ -1760,6 +1983,9 @@
             var nameOk  = nameInput.value.trim().length > 1;
             var emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim());
             submitBtn.disabled = !(dateOk && timeOk && nameOk && emailOk);
+            // The pay button's wording turns on whether this form is complete,
+            // so re-sync it the moment that answer changes.
+            if (typeof lpSyncPayCta === 'function') lpSyncPayCta();
             if      (!dateOk)  submitHint.textContent = 'Select a date to continue';
             else if (!timeOk)  submitHint.textContent = 'Select an available time';
             else if (!nameOk)  submitHint.textContent = 'Enter your name to continue';
@@ -1791,11 +2017,29 @@
                 return;
             }
 
+            if (!cart.baseName) {
+                submitHint.textContent = 'Please choose a session above before booking.';
+                return;
+            }
+
+            /* The session travels WITH the reservation, not with the payment.
+               That single change is what lets the worker remember what was
+               chosen, show the real value at risk while it is unpaid, and send
+               a reminder naming the session and the retainer instead of
+               admitting it has no idea what was booked. */
+            var phoneEl = document.getElementById('client-phone');
             var booking = {
                 name:  nameInput.value.trim(),
                 email: emailInput.value.trim(),
                 start: selStartISO,
-                timeZone: LPB_TIMEZONE
+                timeZone: LPB_TIMEZONE,
+                requireSession: true,
+                packageName: cart.baseName,
+                packagePrice: cart.basePrice,
+                addons: cart.addons,
+                totalAmount: cart.subtotal,
+                retainerAmount: cart.retainer,
+                phone: phoneEl && phoneEl.value.trim() ? phoneEl.value.trim() : null
             };
 
             submitBtn.disabled = true;
@@ -1810,6 +2054,13 @@
                 // saved (holding the slot), matching the Book → Pay order.
                 window.lpbBookingConfirmed = true;
                 window.lpbBookingData = Object.assign({}, booking, { id: savedBooking.id });
+                // Now that the reservation exists, the summary can name who it is
+                // for and when the session is — the receipt framing.
+                lpRenderSummaryMeta();
+
+                // The CTA was disabled until a real booking existed; re-run the
+                // totals now so it becomes payable and shows the true retainer.
+                calculateTotals();
 
                 if (typeof updateStep === 'function') updateStep(3); // moving into Payment
 
