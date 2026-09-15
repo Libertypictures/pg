@@ -1,0 +1,20 @@
+# Libertypictures — https://libertymusa.com
+#
+# The private pages are disallowed twice over: here, and with a noindex meta
+# tag on the pages themselves. A robots rule alone is a request, not a
+# guarantee, so the meta tag is what actually keeps a client gallery out of
+# search results.
+#
+# The booking and pay pages are NOT disallowed: they are the front door for new
+# clients and should be findable. Anything carrying an access token is not.
+
+User-agent: *
+Allow: /
+
+Disallow: /gallery.html
+Disallow: /invoice.html
+Disallow: /review.html
+Disallow: /status.html
+Disallow: /pay/
+
+Sitemap: https://libertymusa.com/sitemap.xml

@@ -14,9 +14,15 @@
       "@context": "https://schema.org",
       "@type": "ProfessionalService",
       "name": "Libertypictures",
-      "description": "Photography studio offering portrait, maternity, corporate headshot, couple, and family photo sessions with online booking.",
+      "alternateName": "Liberty Musa",
+      "description": "Photography studio offering portrait, maternity, corporate headshot, couple, and family photo sessions.",
+      "url": "https://libertymusa.com/book",
+      "image": "https://libertymusa.com/og-image.jpg",
+      "logo": "https://libertymusa.com/apple-touch-icon.png",
+      "telephone": "+2349075170240",
       "priceRange": "₦₦",
-      "areaServed": "NG"
+      "areaServed": "NG",
+      "sameAs": ["https://instagram.com/Libertypicture"]
     }
     </script>
     
@@ -28,7 +34,7 @@
          (forms, buttons, dense UI) where it was already proven to work. -->
     <link rel="preconnect" href="https://fonts.googleapis.com/">
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
-    <link rel="preconnect" href="https://liberty-booking-api.visualsliberty.workers.dev" crossorigin="">
+    <link rel="preconnect" href="https://api.libertymusa.com" crossorigin="">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap" rel="stylesheet"></noscript>
     
@@ -658,6 +664,19 @@
             .lpb-time-btn { padding: 12px 6px; font-size: 12px; }
         }
     </style>
+    <link rel="canonical" href="https://libertymusa.com/book">
+    <meta property="og:site_name" content="Libertypictures">
+    <meta property="og:url" content="https://libertymusa.com/book">
+    <meta property="og:image" content="https://libertymusa.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Libertypictures — intimate visual stories">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Studio Booking Portal | Libertypictures">
+    <meta name="twitter:description" content="Choose a session package, pick a date, and secure your slot online with Libertypictures.">
+    <meta name="twitter:image" content="https://libertymusa.com/og-image.jpg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
 </head>
 <body>
 
@@ -919,7 +938,7 @@
                 <div class="till-thanks">*** THANK YOU ***</div>
                 <div class="till-barcode" id="receipt-barcode" data-till-barcode aria-hidden="true"></div>
                 <div class="till-barcode-ref" id="receipt-barcode-ref"></div>
-                <div class="till-foot">libertypictures.github.io/pg/book</div>
+                <div class="till-foot">libertymusa.com/book</div>
             </div>
         </div>
 
@@ -1063,7 +1082,7 @@
         // the Home page, which is where the storytelling happens; this
         // page's job is to get someone through booking quickly.
         (function () {
-            var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
+            var API_BASE = 'https://api.libertymusa.com';
 
             fetch(API_BASE + '/api/settings')
                 .then(function (res) { return res.json(); })
@@ -1086,7 +1105,7 @@
         // dashboard is exactly what shoppers see, no GitHub-hosted
         // files involved.
         (function () {
-            var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
+            var API_BASE = 'https://api.libertymusa.com';
             var grid = document.getElementById('packages-grid');
 
             function escapeHtmlLocal(str) {
@@ -1742,9 +1761,9 @@
         /* ------------------------------------------------------------------
            CONFIG — the single line you need to edit.
            Set this to your deployed Cloudflare Worker's base URL (no
-           trailing slash), e.g. 'https://liberty-booking.yoursubdomain.workers.dev'
+           trailing slash), e.g. 'https://api.libertymusa.com'
         ------------------------------------------------------------------ */
-        var LPB_WORKER_URL = 'https://liberty-booking-api.visualsliberty.workers.dev'; // real backend, own database — no Cal.com dependency
+        var LPB_WORKER_URL = 'https://api.libertymusa.com'; // real backend, own database — no Cal.com dependency
         var LPB_TIMEZONE   = 'Africa/Lagos';
 
         /* ------------------------------------------------------------------

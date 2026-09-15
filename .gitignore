@@ -1,0 +1,4 @@
+# Written by the Pages deploy gate (deploy-site.sh runs wrangler with this
+# directory as its cwd), so it reappears on every deploy. It holds an account id
+# and local logs — never part of the site, and never worth committing.
+.wrangler/

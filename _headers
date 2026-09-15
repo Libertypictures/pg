@@ -1,0 +1,19 @@
+# Cloudflare Pages response headers.
+#
+# GitHub Pages ignores this file (Jekyll skips underscore-prefixed paths), so it
+# is safe to keep in the repo alongside the pages it serves.
+#
+# There is deliberately NO Content-Security-Policy here. Every page carries
+# large inline <script> blocks and inline event handlers, and a CSP strict
+# enough to be worth having would break booking, the gallery and the pay page
+# all at once. It should ship as its own tested change, not as a side effect of
+# moving domains.
+#
+# Verified before adding: no page uses an iframe, getUserMedia, the camera, the
+# microphone or geolocation, so none of these restrictions can bite.
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: SAMEORIGIN
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains

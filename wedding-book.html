@@ -14,9 +14,15 @@
       "@context": "https://schema.org",
       "@type": "ProfessionalService",
       "name": "Libertypictures",
-      "description": "Wedding photography — ceremonies, celebrations, pre-wedding shoots, and complete coverage packages.",
-      "priceRange": "₦₦₦",
-      "areaServed": "NG"
+      "alternateName": "Liberty Musa",
+      "description": "Photography studio offering portrait, maternity, corporate headshot, couple, and family photo sessions.",
+      "url": "https://libertymusa.com/wedding-book",
+      "image": "https://libertymusa.com/og-image.jpg",
+      "logo": "https://libertymusa.com/apple-touch-icon.png",
+      "telephone": "+2349075170240",
+      "priceRange": "₦₦",
+      "areaServed": "NG",
+      "sameAs": ["https://instagram.com/Libertypicture"]
     }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com/">
@@ -277,6 +283,19 @@
             .lpb-time-btn { padding: 12px 6px; font-size: 12px; }
         }
     </style>
+    <link rel="canonical" href="https://libertymusa.com/wedding-book">
+    <meta property="og:site_name" content="Libertypictures">
+    <meta property="og:url" content="https://libertymusa.com/wedding-book">
+    <meta property="og:image" content="https://libertymusa.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Libertypictures — intimate visual stories">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Wedding Booking Portal | Libertypictures">
+    <meta name="twitter:description" content="Choose a wedding photography package, pick a date, and secure your slot online with Libertypictures.">
+    <meta name="twitter:image" content="https://libertymusa.com/og-image.jpg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
 </head>
 <body>
     <header class="site-header" id="site-header">
@@ -404,7 +423,7 @@
                 <div class="till-thanks">*** THANK YOU ***</div>
                 <div class="till-barcode" id="receipt-barcode" data-till-barcode aria-hidden="true"></div>
                 <div class="till-barcode-ref" id="receipt-barcode-ref"></div>
-                <div class="till-foot">libertypictures.github.io/pg/wedding-book</div>
+                <div class="till-foot">libertymusa.com/wedding-book</div>
             </div>
         </div>
         <section class="section-block" id="terms-conditions" style="margin-top:100px;">
@@ -422,7 +441,7 @@
         </footer>
     </div>
     <script>
-        var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
+        var API_BASE = 'https://api.libertymusa.com';
 
         /* ── Reusable premium scroll reveal ──
            Defined at PARSE TIME (not inside DOMContentLoaded) on
@@ -857,7 +876,7 @@
     <script>
     (function () {
         'use strict';
-        var LPB_WORKER_URL = 'https://liberty-booking-api.visualsliberty.workers.dev';
+        var LPB_WORKER_URL = 'https://api.libertymusa.com';
         var LPB_TIMEZONE   = 'Africa/Lagos';
 
         async function submitBooking(bookingData) {

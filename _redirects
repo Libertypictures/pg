@@ -1,0 +1,17 @@
+# Cloudflare Pages redirect rules.
+#
+# GitHub Pages ignores this file (Jekyll skips underscore-prefixed paths), so it
+# is safe to keep in the repo alongside the pages it serves.
+#
+# The site used to live at libertypictures.github.io/pg/, and the admin still
+# generates some /pg/-shaped links. Anything under /pg/ folds onto the matching
+# path at the site root, so no old link 404s — a 301 so search engines
+# consolidate on the branded domain too.
+/pg/*        /:splat        301
+
+# The pay page is a directory (/pay/), but one admin template linked pay.html.
+# Fold it so that link can never 404.
+/pay.html    /pay/          301
+
+# Bare /pay should land on the directory listing, not a 404.
+/pay         /pay/          301

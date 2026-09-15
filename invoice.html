@@ -199,6 +199,8 @@
             .btn-pay { padding: 15px 18px; }
         }
     </style>
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
 </head>
 <body>
 
@@ -283,7 +285,7 @@
     </div>
 
 <script>
-    var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
+    var API_BASE = 'https://api.libertymusa.com';
     var PAYSTACK_PUBLIC_KEY = 'pk_live_05373c45337d6a937f51d9c3045c7839369d503d';
     var token = new URLSearchParams(window.location.search).get('t');
     var currentInvoice = null;

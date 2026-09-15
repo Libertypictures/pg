@@ -10,11 +10,11 @@
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000000'/%3E%3Ctext x='50' y='68' font-size='52' font-family='Georgia, serif' fill='%23c4a67e' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com/">
 <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin>
-<link rel="preconnect" href="https://liberty-booking-api.visualsliberty.workers.dev" crossorigin>
+<link rel="preconnect" href="https://api.libertymusa.com" crossorigin>
 <!-- Kick the settings request off during HTML parsing, before the
      script tag near the bottom runs — knocks the biggest chunk off
      the logo's time-to-first-pixel on cold visits. -->
-<link rel="preload" href="https://liberty-booking-api.visualsliberty.workers.dev/api/settings" as="fetch" crossorigin>
+<link rel="preload" href="https://api.libertymusa.com/api/settings" as="fetch" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
 <style>
     :root {
@@ -94,6 +94,22 @@
         .link-card { transition: none; }
     }
 </style>
+    <link rel="canonical" href="https://libertymusa.com/links">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Libertypictures">
+    <meta property="og:title" content="Links | Libertypictures">
+    <meta property="og:description" content="Book a portrait or wedding session, chat on WhatsApp, or send an email.">
+    <meta property="og:url" content="https://libertymusa.com/links">
+    <meta property="og:image" content="https://libertymusa.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Libertypictures — intimate visual stories">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Links | Libertypictures">
+    <meta name="twitter:description" content="Book a portrait or wedding session, chat on WhatsApp, or send an email.">
+    <meta name="twitter:image" content="https://libertymusa.com/og-image.jpg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
 </head>
 <body>
 
@@ -105,7 +121,7 @@
 
     <!-- Flat link list — same style for all, ordered by intent -->
     <nav class="link-list" aria-label="Links">
-        <a href="https://libertypictures.github.io/pg/?utm_source=igbio&amp;utm_medium=links&amp;utm_campaign=portraits" class="link-card">
+        <a href="https://libertymusa.com/?utm_source=igbio&amp;utm_medium=links&amp;utm_campaign=portraits" class="link-card">
             <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
             <div class="link-text">
                 <div class="link-title">Portrait Sessions</div>
@@ -113,7 +129,7 @@
             </div>
             <span class="link-arrow">›</span>
         </a>
-        <a href="https://libertypictures.github.io/pg/wedding.html?utm_source=igbio&amp;utm_medium=links&amp;utm_campaign=weddings" class="link-card">
+        <a href="https://libertymusa.com/wedding.html?utm_source=igbio&amp;utm_medium=links&amp;utm_campaign=weddings" class="link-card">
             <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div>
             <div class="link-text">
                 <div class="link-title">Wedding Packages</div>
@@ -145,13 +161,13 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
             <span id="footer-ig-handle">@libertypictures</span>
         </a>
-        <a class="footer-review-link" href="https://libertypictures.github.io/pg/review.html?utm_source=igbio&amp;utm_medium=links">Past client? Leave a review →</a>
+        <a class="footer-review-link" href="https://libertymusa.com/review.html?utm_source=igbio&amp;utm_medium=links">Past client? Leave a review →</a>
         <div class="footer-copy">Libertypictures © 2026</div>
     </footer>
 </main>
 
 <script>
-    var API_BASE = 'https://liberty-booking-api.visualsliberty.workers.dev';
+    var API_BASE = 'https://api.libertymusa.com';
 
     // Settings fetch is now only for the Instagram handle in the
     // footer. High priority so the footer isn't blank for long.
