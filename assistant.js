@@ -127,7 +127,12 @@
         // The callback form: shown only when the assistant has handed a
         // question over. Two fields, both optional, and the client can ignore
         // the whole thing and use the WhatsApp button instead.
-        '.lpa-form{display:flex;flex-direction:column;gap:7px;padding:0 15px 12px}',
+        //
+        // It lives INSIDE the conversation log rather than under the panel,
+        // because that is where the visitor is looking when they are told the
+        // question is being passed on. Appended to the panel it appeared below
+        // the message box, detached from the sentence that asked for it.
+        '.lpa-form{display:flex;flex-direction:column;gap:7px;margin:2px 0 0}',
         '.lpa-field{padding:9px 11px;border-radius:3px;border:1px solid var(--border-color,#e8e3d9);',
         'background:transparent;color:inherit;font:inherit;font-size:13px}',
         '.lpa-form .lpa-send{align-self:flex-start;margin-top:2px}',
@@ -327,8 +332,8 @@
                 });
         });
 
-        panel.appendChild(form);
-        panel.scrollTop = panel.scrollHeight;
+        logEl.appendChild(form);
+        logEl.scrollTop = logEl.scrollHeight;
         contactInput.focus();
     }
 
