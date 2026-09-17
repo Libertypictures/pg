@@ -19,8 +19,15 @@
       this widget is written to obey it — including in the fallback, which sends
       people to WhatsApp rather than showing a number that does not exist.
 
-   4. Nothing is stored. The conversation lives in this page's memory, is never
-      written to localStorage, and is gone on reload.
+   4. The conversation is never stored, anywhere. It lives in this page's memory
+      and is gone on reload. The ONE thing kept is the email address or WhatsApp
+      number a visitor chooses to leave when the assistant hands their question
+      over — because a notification nobody can answer is not much use. That
+      detail goes to the studio's own database (table `assistant_contacts`, and
+      no conversation with it) and is remembered in this browser's localStorage
+      so a returning client is greeted rather than treated as a stranger. If a
+      future change wants to keep what people ASKED, that is a privacy decision
+      rather than a feature, and it needs the ADR changed first.
 
    The API base is hardcoded rather than read from the page, because each page
    defines its own constant in its own scope and this file cannot see them. The
@@ -52,6 +59,7 @@
     var busy = false;
     var greetingShown = false;
     var whatsapp = null;   // filled from /api/settings so the fallback is real
+    var savedContact = null;  // who this browser said it was, if anyone
 
     /* ------------------------------------------------------------------ */
     /* Styles — injected once, scoped by the lpa- prefix so nothing here
@@ -115,6 +123,14 @@
         '.lpa-send[disabled]{opacity:.55;cursor:default}',
         '.lpa-wa{display:inline-block;margin-top:8px;padding:9px 15px;border-radius:999px;text-decoration:none;',
         'font-size:12px;font-weight:600;background:var(--btn-primary-bg,#1a1815);color:var(--btn-primary-text,#fff)}',
+
+        // The callback form: shown only when the assistant has handed a
+        // question over. Two fields, both optional, and the client can ignore
+        // the whole thing and use the WhatsApp button instead.
+        '.lpa-form{display:flex;flex-direction:column;gap:7px;padding:0 15px 12px}',
+        '.lpa-field{padding:9px 11px;border-radius:3px;border:1px solid var(--border-color,#e8e3d9);',
+        'background:transparent;color:inherit;font:inherit;font-size:13px}',
+        '.lpa-form .lpa-send{align-self:flex-start;margin-top:2px}',
         '.lpa-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}',
         '@media (max-width:420px){.lpa-panel{right:10px;left:10px;bottom:10px;width:auto;max-height:82vh}}'
     ].join('');
@@ -176,6 +192,146 @@
         return 'https://wa.me/' + digits + '?text=' + encodeURIComponent(message || '');
     }
 
+    /* ------------------------------------------------------------------ */
+    /* Leaving a way to be answered.
+
+       The handover used to end in a promise nobody could keep: the assistant
+       said a person would come back to the visitor, the studio got a
+       notification carrying no name and no number, and there was no route back
+       to the person who asked. Now the visitor is offered somewhere to leave an
+       email or a WhatsApp number — optional, two fields, and they can ignore it
+       — and the notification stops being a dead end.
+       ------------------------------------------------------------------ */
+
+    /* localStorage, guarded: it throws in some private modes, and a visitor
+       whose browser refuses it simply gets asked again rather than seeing a
+       broken box. This is the ONLY thing this file keeps between visits. */
+    var STORE_KEY = 'lp_assistant_contact';
+
+    function loadSaved() {
+        try {
+            var raw = window.localStorage.getItem(STORE_KEY);
+            if (!raw) return null;
+            var parsed = JSON.parse(raw);
+            if (!parsed || (parsed.kind !== 'email' && parsed.kind !== 'phone')) return null;
+            if (typeof parsed.contact !== 'string' || !parsed.contact) return null;
+            return { kind: parsed.kind, contact: parsed.contact };
+        } catch (err) {
+            return null;
+        }
+    }
+
+    function saveContact(contact) {
+        savedContact = contact;
+        try { window.localStorage.setItem(STORE_KEY, JSON.stringify(contact)); } catch (err) {}
+    }
+
+    /** Attach details to the handover that just happened. */
+    function attachContact(token, payload) {
+        return fetch(API + '/api/assistant/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(Object.assign({ token: token }, payload))
+        });
+    }
+
+    /** A WhatsApp button carrying the visitor's own words, so nothing is lost. */
+    function whatsappButton(label, question) {
+        var href = whatsappLink(question
+            ? 'Hi — I asked on your website: ' + question
+            : 'Hi — I was on your website and had a question.');
+        if (!href) return;
+        var row = el('div', 'lpa-row lpa-note');
+        var bubble = el('div', 'lpa-bubble');
+        var a = el('a', 'lpa-wa', label);
+        a.href = href;
+        a.target = '_blank';
+        a.rel = 'noopener';
+        bubble.appendChild(a);
+        row.appendChild(bubble);
+        logEl.appendChild(row);
+        logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function offerCallback(token, question) {
+        whatsappButton('Continue on WhatsApp', question);
+        if (!token) return;
+
+        // If this browser has already told the studio who it is, there is
+        // nothing to ask: attach it to the new handover so the notification in
+        // the bell is answerable, and say so.
+        if (savedContact) {
+            attachContact(token, { kind: savedContact.kind, contact: savedContact.contact })
+                .then(function () {
+                    note('Liberty already has your details from before, so she can reply to you directly.');
+                })
+                .catch(function () {});
+            return;
+        }
+
+        note('If you leave an email or a WhatsApp number, Liberty can reply to you directly.');
+
+        var form = el('form', 'lpa-form');
+        var nameInput = el('input', 'lpa-field');
+        nameInput.type = 'text';
+        nameInput.name = 'name';
+        nameInput.placeholder = 'Your name (optional)';
+        nameInput.autocomplete = 'name';
+        nameInput.setAttribute('aria-label', 'Your name');
+        form.appendChild(nameInput);
+
+        var contactInput = el('input', 'lpa-field');
+        contactInput.type = 'text';
+        contactInput.name = 'contact';
+        contactInput.placeholder = 'Email or WhatsApp number';
+        // No `autocomplete=email`: the field takes either, and a phone keyboard
+        // for somebody typing an address is worse than a neutral one.
+        contactInput.setAttribute('aria-label', 'Your email address or WhatsApp number');
+        form.appendChild(contactInput);
+
+        var submit = el('button', 'lpa-send', 'Send to Liberty');
+        submit.type = 'submit';
+        form.appendChild(submit);
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var value = contactInput.value.trim();
+            if (!value) {
+                contactInput.focus();
+                return;
+            }
+            // One field, two kinds: an address contains @, everything else is
+            // treated as a number. The worker validates and normalises it, so a
+            // typo comes back as a plain "check that" rather than a bad row.
+            var payload = value.indexOf('@') !== -1 ? { email: value } : { phone: value };
+            if (nameInput.value.trim()) payload.name = nameInput.value.trim();
+
+            submit.disabled = true;
+            attachContact(token, payload)
+                .then(function (res) {
+                    return res.json().then(function (d) { return { ok: res.ok, data: d }; });
+                })
+                .then(function (out) {
+                    if (out.ok && out.data && out.data.stored) {
+                        saveContact({ kind: out.data.kind, contact: value });
+                        if (form.parentNode) form.parentNode.removeChild(form);
+                        note('Thank you — Liberty has that, and she will come back to you.');
+                        return;
+                    }
+                    submit.disabled = false;
+                    note((out.data && out.data.message) || 'That did not go through — please try again, or use WhatsApp.');
+                })
+                .catch(function () {
+                    submit.disabled = false;
+                    note('I could not send that just now — please try again, or use WhatsApp.');
+                });
+        });
+
+        panel.appendChild(form);
+        panel.scrollTop = panel.scrollHeight;
+        contactInput.focus();
+    }
+
     /** Every dead end ends the same way: WhatsApp, never a phone number. */
     function fallback(text) {
         note(text);
@@ -213,7 +369,10 @@
             var res = await fetch(ENDPOINT, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: question, history: history.slice(-MAX_HISTORY) })
+                // The saved contact is how a returning client is recognised. It
+                // is only ever looked up, never trusted as an identity, and an
+                // unrecognised one simply means a normal first-time answer.
+                body: JSON.stringify({ message: question, history: history.slice(-MAX_HISTORY), contact: savedContact })
             });
 
             if (res.status === 503) {   // not switched on, or a deploy without the model
@@ -242,6 +401,7 @@
             }
             if (data && data.handedOver) {
                 note('That one is beyond me, so Liberty has been told about it and will answer you herself.');
+                offerCallback(data.handoverToken, question);
             }
         } catch (err) {
             // A network failure is not a reason to leave a broken box on screen
@@ -359,6 +519,7 @@
         injectStyles();
         buildLauncher();
         loadContact();
+        savedContact = loadSaved();
     }
 
     if (document.readyState === 'loading') {
