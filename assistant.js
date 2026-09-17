@@ -171,7 +171,8 @@
         var digits = String(whatsapp).replace(/[^0-9]/g, '');
         if (!digits) return null;
         if (digits.charAt(0) === '0') digits = COUNTRY_CODE + digits.slice(1);
-        if (digits.length < 10) return null;
+        else if (digits.length === 10) digits = COUNTRY_CODE + digits;   // national form, no trunk zero
+        if (digits.length < 12) return null;
         return 'https://wa.me/' + digits + '?text=' + encodeURIComponent(message || '');
     }
 
