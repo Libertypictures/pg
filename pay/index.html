@@ -594,6 +594,20 @@
             email: email,
             amount: amount * 100,
             currency: 'NGN',
+            /* What this charge IS, carried on the charge itself — so Paystack's
+               webhook can still record it when this browser never comes back to
+               confirm. `flow` is the payment type the worker already knows
+               ('balance', 'other' or 'gallery'), and the booking id is only
+               meaningful for a balance, which is the one case that needs to
+               know WHICH session the money settles. */
+            metadata: {
+                flow: state.type,
+                bookingId: (state.type === 'balance' && selectedLookupBooking()) ? String(selectedLookupBooking().id) : '',
+                galleryToken: state.type === 'gallery' ? galleryToken : '',
+                packageName: state.selectedPackage ? state.selectedPackage.name : '',
+                name: name,
+                email: email
+            },
             callback: function (response) {
                 // Paystack requires a plain (non-async) callback — the
                 // actual async save happens in a separate function.

@@ -145,7 +145,7 @@
         // speaking. This one is a person, it names what it knows, and it sets up
         // the handover before the visitor needs it.
         greeting: "I\u2019m Liberty\u2019s assistant. Ask me about sessions, rates " +
-            "or open dates \u2014 and anything I can\u2019t answer, I\u2019ll pass straight to her.",
+            "or open dates \u2014 and anything I can\u2019t answer, I\u2019ll pass straight to the studio.",
         ask: 'Ask a question',
         placeholder: 'Ask a question\u2026',
         invites: [
@@ -155,7 +155,7 @@
             'I can answer for you'
         ],
         suggestions: null,   // null means "use this page's own three"
-        face: true
+        look: 'smile'        // smile | strokes | bubble — see applyLook/swaps
     };
 
     /* The speech-bubble glyph, used only when the studio turns the face off. */
@@ -222,7 +222,7 @@
            the glass IS rather than repeating every rule that uses it. */
         '.lpa-dock{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom,0px) + var(--lpa-lift,0px));z-index:88;',
         '--lpa-glass:rgba(255,252,248,.62);--lpa-ink:#1a1815;',
-        '--lpa-lip:inset 0 1px 0 rgba(255,255,255,.72),0 10px 30px rgba(26,24,21,.16);',
+        '--lpa-lip:inset 0 1px 0 rgba(255,255,255,.72),0 1px 2px rgba(26,24,21,.07),0 6px 14px rgba(26,24,21,.07);',
         'display:flex;align-items:center;justify-content:center;gap:0;border-radius:999px;',
         'background:var(--lpa-glass);',
         'backdrop-filter:blur(20px) saturate(190%);-webkit-backdrop-filter:blur(20px) saturate(190%);',
@@ -264,10 +264,28 @@
            small sign of life, and deliberately the only thing on this page that
            moves without being asked. Breathing, not waving. */
         '.lpa-face{overflow:visible}',
-        '.lpa-face .lpa-eye{transform-box:fill-box;transform-origin:center;animation:lpa-blink 6.4s infinite}',
+        '.lpa-face .lpa-eye{transform-box:fill-box;transform-origin:center;animation:lpa-blink 3.4s infinite}',
         '.lpa-face .lpa-mouth{transform-box:fill-box;transform-origin:center top;transition:transform .4s ' + SPRING + '}',
-        '@keyframes lpa-blink{0%,95.4%,100%{transform:scaleY(1)}96.6%,97.6%{transform:scaleY(.06)}',
-        '98.6%{transform:scaleY(1)}}',
+        /* Faster than it was. A blink that lands every 6.4s is a metronome — you
+           notice the interval rather than the face. At 3.4s it reads as
+           breathing, which is the whole point of it being the only thing on the
+           page that moves unasked. */
+        '@keyframes lpa-blink{0%,92%,100%{transform:scaleY(1)}94%,96%{transform:scaleY(.06)}',
+        '98%{transform:scaleY(1)}}',
+
+        /* ── the second look: two strokes, no head ───────────────────────── */
+
+        /* The smiley drawn again as pure line — the circle is gone, and what is
+           left is an upper bar that opens and closes like a blink and a lower
+           one that answers a beat behind it. Two bars in step is a progress
+           spinner; the same two bars half a beat apart is somebody listening to
+           you. That delay is the entire character of this look. */
+        '.lpa-strokes{overflow:visible;transition:transform .4s ' + SPRING + '}',
+        '.lpa-strokes .lpa-bar{transform-box:fill-box;transform-origin:center;animation:lpa-open 3.4s infinite}',
+        '.lpa-strokes .lpa-bar-mouth{animation-name:lpa-answer}',
+        '@keyframes lpa-open{0%,40%,100%{transform:scaleX(1)}48%,56%{transform:scaleX(.34)}64%{transform:scaleX(1)}}',
+        '@keyframes lpa-answer{0%,50%,100%{transform:scaleX(1)}58%,66%{transform:scaleX(.52)}74%{transform:scaleX(1)}}',
+        '.lpa-lobe-ask:hover .lpa-strokes,.lpa-dock.is-open .lpa-strokes{transform:scale(1.06)}',
         /* It notices a pointer, and it smiles a little wider when the chat is
            open — the one moment it is genuinely being spoken to. */
         '.lpa-lobe-ask:hover .lpa-face .lpa-mouth,.lpa-dock.is-open .lpa-face .lpa-mouth{transform:scale(1.14,1.28)}',
@@ -290,7 +308,7 @@
         '.lpa-dock.is-open .lpa-lobe-book{border-radius:999px;padding:0 16px}',
         '.lpa-dock.is-open .lpa-lobe-ask{border-radius:999px;padding:0 16px}',
         '.lpa-dock.is-open .lpa-lobe-ask{background:rgba(26,24,21,.9);color:#f7f4ef;',
-        'box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 12px 32px rgba(26,24,21,.28)}',
+        'box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 2px 6px rgba(26,24,21,.16)}',
 
         /* The bridge. It exists only while the two halves are coming apart or
            going back together, which is what makes the split read as liquid
@@ -499,7 +517,7 @@
 
         '@media (prefers-color-scheme:dark){',
         '.lpa-dock{--lpa-glass:rgba(38,36,32,.6);--lpa-ink:#f3f0ea;',
-        '--lpa-lip:inset 0 1px 0 rgba(255,255,255,.12),0 10px 30px rgba(0,0,0,.5)}',
+        '--lpa-lip:inset 0 1px 0 rgba(255,255,255,.12),0 1px 2px rgba(0,0,0,.22),0 7px 16px rgba(0,0,0,.22)}',
         '.lpa-dock.is-open .lpa-lobe-ask{background:rgba(243,240,234,.94);color:#1a1815}',
         '.lpa-scrim{background:rgba(0,0,0,.42)}}',
 
@@ -516,7 +534,8 @@
 
         '@media (prefers-reduced-motion:reduce){',
         '.lpa-dock,.lpa-sheet,.lpa-in,.lpa-neck,.lpa-lobe,.lpa-chip,.lpa-send,.lpa-btn,',
-        '.lpa-word,.lpa-face,.lpa-face .lpa-eye,.lpa-face .lpa-mouth{transition:none!important;animation:none!important}}'
+        '.lpa-word,.lpa-face,.lpa-face .lpa-eye,.lpa-face .lpa-mouth,',
+        '.lpa-strokes,.lpa-strokes .lpa-bar{transition:none!important;animation:none!important}}'
     ].join('');
 
     function injectStyles() {
@@ -585,6 +604,38 @@
         var mouth = document.createElementNS(SVG_NS, 'path');
         mouth.setAttribute('d', 'M8.5 13.2a4.3 4.3 0 0 0 7 0');
         mouth.setAttribute('class', 'lpa-mouth');
+        svg.appendChild(mouth);
+
+        return svg;
+    }
+
+    /* The third look: the same face with the circle taken away.
+
+       What is left is the two marks that were doing the expressing — an upper
+       bar that opens and closes like a blink, and a shorter one under it that
+       answers a beat later. Stroke for stroke it belongs to the same icon set as
+       every other glyph on the site, and the lower bar being late is what makes
+       it read as listening rather than as a loading indicator. See the lpa-open
+       and lpa-answer keyframes. */
+    function strokesIcon() {
+        var svg = document.createElementNS(SVG_NS, 'svg');
+        svg.setAttribute('viewBox', '0 0 24 24');
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', 'currentColor');
+        svg.setAttribute('stroke-width', '1.9');
+        svg.setAttribute('stroke-linecap', 'round');
+        svg.setAttribute('stroke-linejoin', 'round');
+        svg.setAttribute('aria-hidden', 'true');
+        svg.setAttribute('class', 'lpa-strokes');
+
+        var bar = document.createElementNS(SVG_NS, 'path');
+        bar.setAttribute('d', 'M6.6 9.9h10.8');
+        bar.setAttribute('class', 'lpa-bar');
+        svg.appendChild(bar);
+
+        var mouth = document.createElementNS(SVG_NS, 'path');
+        mouth.setAttribute('d', 'M8.6 14.9h6.8');
+        mouth.setAttribute('class', 'lpa-bar lpa-bar-mouth');
         svg.appendChild(mouth);
 
         return svg;
@@ -805,7 +856,7 @@
         if (savedContact) {
             attachContact(token, { kind: savedContact.kind, contact: savedContact.contact })
                 .then(function () {
-                    note('Liberty already has your details from before, so she can reply to you directly.');
+                    note('Liberty already has your details from before, so they can reply to you directly.');
                 })
                 .catch(function () {});
             return;
@@ -858,7 +909,7 @@
                     if (out.ok && out.data && out.data.stored) {
                         saveContact({ kind: out.data.kind, contact: value });
                         if (c.row.parentNode) c.row.parentNode.removeChild(c.row);
-                        note('Thank you — Liberty has that, and she will come back to you.');
+                        note('Thank you — Liberty has that, and they will come back to you.');
                         return;
                     }
                     submit.disabled = false;
@@ -960,10 +1011,10 @@
                 history.push({ role: 'assistant', content: data.reply });
                 history = history.slice(-MAX_HISTORY);
             } else {
-                note('Let me pass that to Liberty — she will come back to you personally.');
+                note('Let me pass that to the studio — they will come back to you personally.');
             }
             if (data && data.handedOver) {
-                note('That one is beyond me, so Liberty has been told about it and will answer you herself.');
+                note('That one is beyond me, so the studio has been told about it and will answer you personally.');
                 offerCallback(data.handoverToken, question);
             }
         } catch (err) {
@@ -1065,11 +1116,11 @@
         lobeAsk = el('button', 'lpa-lobe lpa-lobe-ask');
         lobeAsk.type = 'button';
         lobeAsk.setAttribute('aria-expanded', 'false');
-        // The face, when the studio has not turned it off. Without it the lobe
-        // is a word and nothing else, which is a smaller thing than this widget
-        // is trying to be.
-        if (SAY.face) lobeAsk.appendChild(faceIcon());
-        else lobeAsk.appendChild(icon(BUBBLE_PATH));
+        // The look the studio chose — the smiley unless they asked for the
+        // strokes or the plain bubble. Without an icon the lobe is a word and
+        // nothing else, which is a smaller thing than this widget is trying to
+        // be.
+        lobeAsk.appendChild(iconForLook(SAY.look));
         wordEl = el('span', 'lpa-word', SAY.ask);
         lobeAsk.appendChild(wordEl);
         // This used to call a bare `close` rather than closeSheet — and a bare
@@ -1138,7 +1189,10 @@
 
     function startInvites() {
         if (inviteTimer || reducedMotion() || invites.length < 2) return;
-        inviteTimer = window.setInterval(stepInvite, 5200);
+        /* Two seconds, not five. The invitations are three or four words each
+           and the old gap left the button sitting on one line long enough to
+           read as a label rather than as an offer. */
+        inviteTimer = window.setInterval(stepInvite, 2000);
     }
 
     /** Back to the plain label, and quiet. Called the first time the visitor
@@ -1392,10 +1446,35 @@
 
     /** Swap the lobe's glyph, if the studio turned the face on or off. Kept
         first-child so the label stays after it. */
+    /* Which look the studio asked for, or null when they have not said.
+
+       `assistant_mascot` is the named setting. `assistant_face` is what came
+       before it, and it is still honoured rather than migrated: "off" meant the
+       bubble and anything else meant the smiley, so an old value maps onto a
+       new name one-for-one and nothing already saved changes what a visitor
+       sees. Null means "leave the button as the file shipped it". */
+    function resolveLook(s) {
+        var named = str(s.assistant_mascot).toLowerCase();
+        if (named === 'smile' || named === 'strokes' || named === 'bubble') return named;
+        var legacy = str(s.assistant_face).toLowerCase();
+        if (!legacy) return null;
+        var on = legacy !== 'off' && legacy !== 'false' && legacy !== 'no' && legacy !== '0';
+        return on ? 'smile' : 'bubble';
+    }
+
+    /* The three looks, and the button drawn for each. Anything the assistant
+       cannot recognise in the setting falls back to the smiley, because a
+       half-read setting must never leave the button with no icon at all. */
+    function iconForLook(look) {
+        if (look === 'bubble') return icon(BUBBLE_PATH);
+        if (look === 'strokes') return strokesIcon();
+        return faceIcon();
+    }
+
     function swapFaceIcon() {
         if (!lobeAsk) return;
         var old = lobeAsk.querySelector('svg');
-        var next = SAY.face ? faceIcon() : icon(BUBBLE_PATH);
+        var next = iconForLook(SAY.look);
         if (old) lobeAsk.replaceChild(next, old);
         else lobeAsk.insertBefore(next, lobeAsk.firstChild);
     }
@@ -1408,7 +1487,14 @@
        no title and a dock with no words on it — a worse widget than the one
        nobody configured. So: empty means "use what this file already says". */
     function applyAssistantSettings(s) {
-        var title = str(s.assistant_title);
+        /* The heading, or the studio's own name for their assistant when they
+           have not written a heading. Naming it in Settings is then enough on
+           its own — there is no second field to remember to fill in, and no way
+           for the two to disagree.
+
+           A written heading still wins, because it is the more specific
+           instruction: somebody who typed both meant the heading. */
+        var title = str(s.assistant_title) || str(s.assistant_name);
         if (title) {
             SAY.title = title;
             var t = sheet && sheet.querySelector('.lpa-title');
@@ -1446,11 +1532,11 @@
             renderChips();
         }
 
-        var face = str(s.assistant_face).toLowerCase();
-        if (face) {
-            var on = face !== 'off' && face !== 'false' && face !== 'no' && face !== '0';
-            if (on !== SAY.face) { SAY.face = on; swapFaceIcon(); }
-        }
+        /* The look, named. The old on/off setting still works — "off" was the
+           bubble and anything else was the smiley, which is exactly what those
+           two names mean now, so nothing already saved changes meaning. */
+        var look = resolveLook(s);
+        if (look && look !== SAY.look) { SAY.look = look; swapFaceIcon(); }
     }
 
     function loadSettings() {

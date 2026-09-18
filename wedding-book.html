@@ -802,6 +802,16 @@
             if (cart.retainer === 0) { alert("Please select a package first."); return; }
             var handler = PaystackPop.setup({
                 key: 'pk_live_05373c45337d6a937f51d9c3045c7839369d503d', email: email, amount: cart.retainer * 100, currency: 'NGN',
+                /* Carried on the charge so Paystack can tell the worker what this
+                   money was for even if this browser never comes back to say so.
+                   See the note on the same block in book.html. */
+                metadata: {
+                    flow: 'retainer',
+                    bookingId: String((window.lpbBookingData || {}).id || ''),
+                    name: (window.lpbBookingData || {}).name || '',
+                    email: email,
+                    packageName: cart.baseName || ''
+                },
                 callback: function (r) { handlePaymentSuccess(r); },
                 onClose: function () { alert('Payment window closed.'); }
             });

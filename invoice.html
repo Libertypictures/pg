@@ -475,6 +475,19 @@
             email: currentInvoice.clientEmail,
             amount: Math.round(amount * 100),
             currency: 'NGN',
+            /* The invoice this charge belongs to, carried on the charge itself.
+               The client's browser normally confirms the payment itself straight
+               afterwards — but if it never gets the chance, Paystack's webhook
+               has only this metadata to know which invoice was paid. The token is
+               the same one already in this page's URL, so nothing new is being
+               exposed to whoever is paying. */
+            metadata: {
+                flow: 'invoice',
+                invoiceToken: token,
+                invoiceNumber: currentInvoice.invoiceNumber || '',
+                name: currentInvoice.clientName || '',
+                email: currentInvoice.clientEmail || ''
+            },
             callback: function (response) {
                 confirmInvoicePayment(response.reference, amount);
             },

@@ -1594,6 +1594,23 @@
                 email: emailInput,
                 amount: amountInKobo,
                 currency: 'NGN',
+                /* What this charge IS, carried on the charge itself.
+
+                   Everything below is already sent to the worker by the code in
+                   handlePaymentSuccess — but only if the browser is still there
+                   when the payment succeeds. If it closes, crashes or loses
+                   signal at that moment, this metadata is what lets Paystack
+                   tell the studio's worker what the money was for when it calls
+                   in directly. Without it a payment that arrives by webhook can
+                   only be filed as unattached, and the booking the client just
+                   paid for stays 'pending' until somebody notices. */
+                metadata: {
+                    flow: 'retainer',
+                    bookingId: String((window.lpbBookingData || {}).id || ''),
+                    name: (window.lpbBookingData || {}).name || '',
+                    email: emailInput,
+                    packageName: cart.baseName || ''
+                },
                 callback: function(response) {
                     // Paystack's own checkout script strictly checks that
                     // this callback is a plain function (not async) — so
