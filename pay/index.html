@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Make a Payment | Libertypictures</title>
 <meta name="description" content="Securely complete a payment to Libertyco — a remaining balance or any other request.">
 <meta name="theme-color" content="#8A7355">
@@ -122,7 +122,11 @@
     .field-group label { display: block; font-size: 11.5px; letter-spacing: 0.2px; color: var(--ink-soft); margin-bottom: 6px; font-weight: 500; }
     .field-group input, .field-group select, .field-group textarea {
         width: 100%; padding: 13px 14px; background: var(--bg); border: 1.5px solid var(--border);
-        border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: 15px; color: var(--ink);
+        /* 16px, not 15: iOS zooms the whole page when you focus a field under
+           16px, and this is the page a client types their name into on a
+           phone. Same rule as every other field on the site — see
+           docs/SKILLS.md, rule 1 in the platform repo. */
+        border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: 16px; color: var(--ink);
         outline: none; transition: border-color 0.18s ease, box-shadow 0.18s ease; -webkit-appearance: none;
     }
     .field-group input:focus, .field-group select:focus, .field-group textarea:focus {
