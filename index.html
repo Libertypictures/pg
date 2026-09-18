@@ -269,16 +269,56 @@
         /* FEATURED WORK */
         .work-empty { text-align: center; color: var(--text-secondary); font-size: 13.5px; padding: 40px 0; }
 
-        /* SOCIAL PROOF COUNTER — static, no scroll-driven scaling */
-        .social-proof { padding: 50px 0 20px; text-align: center; }
-        .social-proof-items { display: flex; justify-content: center; gap: 48px; flex-wrap: wrap; }
-        .social-proof-item { text-align: center; }
-        .social-proof-number {
-            font-family: 'Fraunces', serif; font-size: clamp(16px, 2.2vw, 24px); font-weight: 500; line-height: 1.1;
-            color: var(--text-primary);
+        /* SOCIAL PROOF — inside the hero, under the headline.
+
+           It used to be a band of its own between the hero and Featured Work,
+           and the band was the problem: a row of numbers alone in empty space,
+           with nothing on either side of it, reads as filler however good the
+           numbers are. The hero is the one moment where a visitor has decided
+           nothing yet, and one quiet line of evidence directly under the
+           sentence that describes the studio is where it lands hardest.
+
+           Built as a single hairline strip rather than a row of tiles: a thin
+           divider between items reads as one claim with parts, while a box
+           around each item reads as advertising. No card, no panel, nothing
+           with a background — it sits on the hero's own scrim, so the image is
+           never interrupted, only annotated.
+
+           It arrives a beat AFTER the headline rather than with it, which is
+           what makes it read as support for the claim above it instead of as
+           the first thing shouting for attention. */
+        .lp-hero-proof { display: none; margin-top: clamp(20px, 3.2vh, 36px); }
+        .lp-hero-proof.is-in { display: block; animation: lp-proof-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both; }
+        @keyframes lp-proof-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+        .lp-hero-proof-items { display: flex; justify-content: center; align-items: center; }
+        .lp-hero-proof-item { padding: 0 clamp(12px, 3vw, 26px); border-left: 1px solid rgba(255,255,255,0.22); }
+        .lp-hero-proof-item:first-child { border-left: 0; }
+        .lp-hero-proof-number { font-family: 'Fraunces', serif; font-size: clamp(17px, 4.2vw, 26px); font-weight: 500; line-height: 1; color: #fff; }
+        .lp-hero-proof-label { font-size: clamp(6.5px, 1.9vw, 8.5px); letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.62); margin-top: 7px; font-weight: 500; }
+        /* On a phone the row becomes a 2×2 block, and the hairlines become a
+           cross rather than a series of left edges.
+
+           Letting it wrap instead was the first attempt and it looked broken:
+           four items filled the first line and the fourth dropped onto a second
+           line of its own, still carrying a rule down its left side, so the
+           last credential read as a stray fragment rather than a fourth thing.
+           A deliberate two-by-two is what the same information looks like when
+           somebody arranged it on purpose.
+
+           Four items at 440px leave ~110px each, which is why the numbers come
+           down and the padding with them; an odd number of items centres its
+           last one across the full width instead of sitting alone in the left
+           column with a hole beside it. */
+        @media (max-width: 600px) {
+            .lp-hero-proof-items { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .lp-hero-proof-item { border-left: 0; padding: 0 10px; }
+            .lp-hero-proof-item:nth-child(even) { border-left: 1px solid rgba(255,255,255,0.22); }
+            .lp-hero-proof-item:nth-child(n+3) { border-top: 1px solid rgba(255,255,255,0.14); padding-top: 16px; margin-top: 16px; }
+            .lp-hero-proof-item:last-child:nth-child(odd) { grid-column: 1 / -1; border-left: 0; }
+            .lp-hero-proof-number { font-size: clamp(16px, 5.4vw, 22px); }
+            .lp-hero-proof-label { margin-top: 6px; }
         }
-        .social-proof-label { font-size: 8px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--text-secondary); margin-top: 8px; font-weight: 500; }
-        @media (max-width: 600px) { .social-proof-items { gap: 32px; } .social-proof { padding: 40px 0 14px; } }
+        @media (prefers-reduced-motion: reduce) { .lp-hero-proof.is-in { animation: none; } }
 
         /* FEATURED IN */
         .featured-in { padding: 60px 0; text-align: center; }
@@ -686,20 +726,15 @@
         <div class="lp-hero-content">
             <h1 class="lp-hero-title">Intimate visual stories</h1>
             <p class="lp-hero-sub">Portraits that feel personal and beautifully authentic.</p>
+            <!-- Filled from Settings. Stays hidden — and so takes up no space
+                 and holds no gap — until the studio has actually typed a number
+                 AND a label for it. No placeholder numbers, ever. -->
+            <div class="lp-hero-proof" id="lp-hero-proof">
+                <div class="lp-hero-proof-items" id="lp-hero-proof-items"></div>
+            </div>
         </div>
         <div class="lp-scroll-indicator" aria-hidden="true">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
-        </div>
-    </section>
-
-    <!-- SOCIAL PROOF — stats between hero and portfolio, editable from
-         admin Settings. Hidden by default; the section only appears if
-         the backend actually returns proof_* values, otherwise the
-         page collapses over it like it wasn't there. No placeholder /
-         mockup numbers, ever. -->
-    <section class="section-block social-proof" id="social-proof-section" style="display:none;">
-        <div class="container">
-            <div class="social-proof-items" id="social-proof-items"></div>
         </div>
     </section>
 
@@ -942,11 +977,15 @@
             if (s.proof_clients && s.proof_clients_label) proofItems.push({ number: s.proof_clients, label: s.proof_clients_label });
 
             if (proofItems.length) {
-                var el = document.getElementById('social-proof-items');
+                var el = document.getElementById('lp-hero-proof-items');
                 el.innerHTML = proofItems.map(function (item) {
-                    return '<div class="social-proof-item"><div class="social-proof-number">' + escapeHtml(item.number) + '</div><div class="social-proof-label">' + escapeHtml(item.label) + '</div></div>';
+                    return '<div class="lp-hero-proof-item"><div class="lp-hero-proof-number">' + escapeHtml(item.number) + '</div><div class="lp-hero-proof-label">' + escapeHtml(item.label) + '</div></div>';
                 }).join('');
-                document.getElementById('social-proof-section').style.display = '';
+                // The class is what reveals it, and the stylesheet's transition
+                // delay is what makes it arrive after the headline rather than
+                // with it. Nothing here sets display directly — the reveal has
+                // to be one thing, in one place, or the two drift apart.
+                document.getElementById('lp-hero-proof').classList.add('is-in');
             }
 
 
