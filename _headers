@@ -11,7 +11,32 @@
 #
 # Verified before adding: no page uses an iframe, getUserMedia, the camera, the
 # microphone or geolocation, so none of these restrictions can bite.
+#
+# ── Cache-Control, and why it is here at all ───────────────────────────────────
+#
+# Cloudflare Pages was serving this site's assets with `max-age=14400` — four
+# hours — from URLs that never change. That is fine for a file whose bytes never
+# change, and wrong for every file on a site that gets edited: after a deploy, a
+# visitor's browser kept its copy of assistant.js WITHOUT ASKING, while the HTML
+# beside it (already `max-age=0, must-revalidate`) refetched and updated. The
+# result was a page from today running yesterday's widget, and it looked like a
+# refresh bug: one browser showed the change and another did not, because the
+# difference was never the browser — it was whether that browser happened to have
+# the old file cached. `must-revalidate` alone does not save you: it only binds
+# AFTER the copy goes stale, and it is not stale for four hours.
+#
+# So the rule is stated once, for the whole site, rather than asset by asset: a
+# list is a list somebody forgets to add to, and the day they forget is the day a
+# client sees a half-updated page. Every response here revalidates. The cost is
+# one conditional request per file per visit, answered as a 304 when nothing has
+# changed — cheap, parallel, and always correct.
+#
+# It is deliberately in THIS block rather than a more specific one: Cloudflare
+# merges the values of a header set by two rules that both match a path, so a
+# `/*` rule and an `/asset.js` rule both setting Cache-Control produce one header
+# with both values in it, and the first `max-age` wins. One rule, one value.
 /*
+  Cache-Control: public, max-age=0, must-revalidate
   X-Content-Type-Options: nosniff
   X-Frame-Options: SAMEORIGIN
   Referrer-Policy: strict-origin-when-cross-origin

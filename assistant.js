@@ -258,14 +258,17 @@
 
         /* ── the face ─────────────────────────────────────────────────────── */
 
-        /* A smiley that blinks, drawn in the same 1.9px stroke as every other
-           glyph in the site's icon set so it belongs to the family rather than
-           looking like a mascot bolted on. It blinks every few seconds — a
-           small sign of life, and deliberately the only thing on this page that
-           moves without being asked. Breathing, not waving. */
-        '.lpa-face{overflow:visible}',
+        /* One face, drawn in the same 1.9px stroke as every other glyph in the
+           site's icon set so it belongs to the family rather than looking like a
+           mascot bolted on: two eyes and a mouth, and it blinks. A small sign of
+           life, and deliberately the only thing on this page that moves without
+           being asked. Breathing, not waving.
+
+           The eyes are short strokes because a blink is a compression: a dot eye
+           can only vanish, which reads as a glitch, while a stroke eye closes.
+           See the lpa-blink keyframes. */
+        '.lpa-face{overflow:visible;transition:transform .4s ' + SPRING + '}',
         '.lpa-face .lpa-eye{transform-box:fill-box;transform-origin:center;animation:lpa-blink 3.4s infinite}',
-        '.lpa-face .lpa-mouth{transform-box:fill-box;transform-origin:center top;transition:transform .4s ' + SPRING + '}',
         /* Faster than it was. A blink that lands every 6.4s is a metronome — you
            notice the interval rather than the face. At 3.4s it reads as
            breathing, which is the whole point of it being the only thing on the
@@ -273,24 +276,31 @@
         '@keyframes lpa-blink{0%,92%,100%{transform:scaleY(1)}94%,96%{transform:scaleY(.06)}',
         '98%{transform:scaleY(1)}}',
 
-        /* ── the second look: two strokes, no head ───────────────────────── */
+        /* ── the mouth, and the three things this face does ──────────────── */
 
-        /* The smiley drawn again as pure line — the circle is gone, and what is
-           left is an upper bar that opens and closes like a blink and a lower
-           one that answers a beat behind it. Two bars in step is a progress
-           spinner; the same two bars half a beat apart is somebody listening to
-           you. That delay is the entire character of this look. */
-        '.lpa-strokes{overflow:visible;transition:transform .4s ' + SPRING + '}',
-        '.lpa-strokes .lpa-bar{transform-box:fill-box;transform-origin:center;animation:lpa-open 3.4s infinite}',
-        '.lpa-strokes .lpa-bar-mouth{animation-name:lpa-answer}',
-        '@keyframes lpa-open{0%,40%,100%{transform:scaleX(1)}48%,56%{transform:scaleX(.34)}64%{transform:scaleX(1)}}',
-        '@keyframes lpa-answer{0%,50%,100%{transform:scaleX(1)}58%,66%{transform:scaleX(.52)}74%{transform:scaleX(1)}}',
-        '.lpa-lobe-ask:hover .lpa-strokes,.lpa-dock.is-open .lpa-strokes{transform:scale(1.06)}',
-        /* It notices a pointer, and it smiles a little wider when the chat is
-           open — the one moment it is genuinely being spoken to. */
-        '.lpa-lobe-ask:hover .lpa-face .lpa-mouth,.lpa-dock.is-open .lpa-face .lpa-mouth{transform:scale(1.14,1.28)}',
-        '.lpa-lobe-ask:hover .lpa-face{transform:scale(1.06)}',
-        '.lpa-face{transition:transform .4s ' + SPRING + '}',
+        /* Every mouth the face owns is drawn, stacked, and exactly one of them is
+           showing. Crossfading rather than interpolating the path: a shape that
+           has to morph between a straight line and an arc has to keep the same
+           SVG commands, and the moment it cannot, the mouth snaps between them.
+
+             straight   the resting face — nobody is talking to it
+             smile      a pointer is on it, or the chat is open
+             open       an answer is on its way
+
+           The last one wins over the other two, on purpose: a face that keeps
+           smiling through four seconds of thinking is a face that does not look
+           like it is listening, and being busy is the one moment the face has
+           something true to say. */
+        '.lpa-face .lpa-mouth{opacity:0;transition:opacity .26s ease}',
+        '.lpa-face .lpa-mouth.is-on{opacity:1}',
+        '.lpa-lobe-ask:hover .lpa-mouth.is-on,.lpa-dock.is-open .lpa-mouth.is-on{opacity:0}',
+        '.lpa-lobe-ask:hover .lpa-mouth.is-smile,.lpa-dock.is-open .lpa-mouth.is-smile{opacity:1}',
+        /* Written against the lobe inside the dock rather than the dock alone,
+           so it ties on specificity with the hover rule above and wins by being
+           later — otherwise a hovered face would smile while it was working. */
+        '.lpa-dock.is-busy .lpa-lobe-ask .lpa-mouth{opacity:0}',
+        '.lpa-dock.is-busy .lpa-lobe-ask .lpa-mouth.is-open{opacity:1}',
+        '.lpa-lobe-ask:hover .lpa-face,.lpa-dock.is-open .lpa-face,.lpa-dock.is-busy .lpa-face{transform:scale(1.06)}',
 
         /* ── the words it says instead of "ask a question" ─────────────────── */
 
@@ -535,7 +545,7 @@
         '@media (prefers-reduced-motion:reduce){',
         '.lpa-dock,.lpa-sheet,.lpa-in,.lpa-neck,.lpa-lobe,.lpa-chip,.lpa-send,.lpa-btn,',
         '.lpa-word,.lpa-face,.lpa-face .lpa-eye,.lpa-face .lpa-mouth,',
-        '.lpa-strokes,.lpa-strokes .lpa-bar{transition:none!important;animation:none!important}}'
+        '.lpa-bare{transition:none!important;animation:none!important}}'
     ].join('');
 
     function injectStyles() {
@@ -570,76 +580,111 @@
         return svg;
     }
 
-    /* The assistant's face: a smiley drawn in the same 1.9px stroke as every
-       other glyph on the site, so it reads as part of the icon family rather
-       than as a mascot someone pasted in. The eyes are short strokes because a
-       blink is a compression — a dot eye can only vanish, which looks like a
-       glitch, while a stroke eye closes. See the lpa-blink keyframes. */
-    var SVG_NS = 'http://www.w3.org/2000/svg';
+    /* The face's geometry, in the 24-box every other icon on this site is drawn
+       in. ONE definition for both looks — the circle is the only thing that
+       changes between them, because the bare look is this face with the head
+       taken off, not a second icon that has to be kept in step with the first.
 
-    function faceIcon() {
+       The gap between the eyes and the mouth is what makes a face read as a face
+       instead of a diagram, and it was got wrong the first time: the eyes ended
+       at 11.3 and the mouth began at 13.2, which with a 1.9px stroke means the
+       edges were TOUCHING — the smile appeared to sit on the eyes. The eyes now
+       end at 10.8 and every mouth is built around a line at 14.8, which leaves
+       about two stroke-widths of air between them.
+
+       The mouth that is `is-on` is the resting one; the CSS overrides it for
+       hover, for an open chat and for a request in flight. */
+    var SVG_NS = 'http://www.w3.org/2000/svg';
+    var EYE_TOP = 8.5, EYE_LEN = 2.3, EYE_LEFT = 9.3, EYE_RIGHT = 14.7;
+    var MOUTH_Y = 14.8, MOUTH_HALF = 3.3;
+    var FACE_MID = 12;
+
+    /* The bare look is drawn a little LARGER than the head look, and this is the
+       one place the two looks differ in more than their silhouette.
+
+       Taking the head away takes the ink with it: the circle reaches 9.1 units
+       from the centre while the bare face's own drawing only reaches 6.2, so at
+       the same size the bare face sits in its button looking 30% lighter and
+       smaller than the face it replaced — two looks that are meant to be the
+       same character reading as two different weights. Compensated optically,
+       not geometrically: the ink is scaled about the centre of the box, so the
+       face stays symmetrical and the eye/mouth spacing keeps its proportions
+       instead of needing a second set of numbers nobody would remember to
+       change together.
+
+       1.32 is the number the two looks were compared at, side by side, in the
+       sizes the dock uses: below about 1.25 the bare face still reads as the
+       smaller of the two, and by 1.4 the mouth has stretched long enough to be a
+       wider character rather than the same one. */
+    var BARE_SCALE = 1.32;
+
+    function faceSVG(bare) {
         var svg = document.createElementNS(SVG_NS, 'svg');
         svg.setAttribute('viewBox', '0 0 24 24');
+        /* Everything below is written in the head look's coordinates and passed
+           through this, so the bare look cannot drift from the face. */
+        var k = bare ? BARE_SCALE : 1;
+        function at(v) { return Math.round((FACE_MID + (v - FACE_MID) * k) * 100) / 100; }
+        function size(v) { return Math.round(v * k * 100) / 100; }
         svg.setAttribute('fill', 'none');
         svg.setAttribute('stroke', 'currentColor');
         svg.setAttribute('stroke-width', '1.9');
         svg.setAttribute('stroke-linecap', 'round');
         svg.setAttribute('stroke-linejoin', 'round');
         svg.setAttribute('aria-hidden', 'true');
-        svg.setAttribute('class', 'lpa-face');
+        svg.setAttribute('class', bare ? 'lpa-face lpa-bare' : 'lpa-face');
 
-        var head = document.createElementNS(SVG_NS, 'circle');
-        head.setAttribute('cx', '12');
-        head.setAttribute('cy', '12');
-        head.setAttribute('r', '9.1');
-        svg.appendChild(head);
+        if (!bare) {
+            var head = document.createElementNS(SVG_NS, 'circle');
+            head.setAttribute('cx', '12');
+            head.setAttribute('cy', '12');
+            head.setAttribute('r', '9.1');
+            svg.appendChild(head);
+        }
 
-        ['9.5', '14.5'].forEach(function (x) {
+        [EYE_LEFT, EYE_RIGHT].forEach(function (x) {
             var eye = document.createElementNS(SVG_NS, 'path');
-            eye.setAttribute('d', 'M' + x + ' 9v2.3');
+            eye.setAttribute('d', 'M' + at(x) + ' ' + at(EYE_TOP) + 'v' + size(EYE_LEN));
             eye.setAttribute('class', 'lpa-eye');
             svg.appendChild(eye);
         });
 
-        var mouth = document.createElementNS(SVG_NS, 'path');
-        mouth.setAttribute('d', 'M8.5 13.2a4.3 4.3 0 0 0 7 0');
-        mouth.setAttribute('class', 'lpa-mouth');
-        svg.appendChild(mouth);
+        var left = FACE_MID - MOUTH_HALF, width = MOUTH_HALF * 2;
+
+        /* Straight: the line every mouth is measured from. */
+        mouth('M' + at(left) + ' ' + at(MOUTH_Y) + 'h' + size(width), 'is-neutral', true);
+
+        /* A smile whose ends sit ON that line, so the face does not jump when
+           the mouth changes — the middle dips instead. The radii are chosen for
+           the dip, not for a circle: a semicircle here is a grin with nothing
+           behind it. */
+        mouth('M' + at(left) + ' ' + at(MOUTH_Y) + 'a' + size(3.8) + ' ' + size(3.4) +
+            ' 0 0 0 ' + size(width) + ' 0', 'is-smile');
+
+        /* Open, while an answer is being composed. Drawn rather than typed, and
+           it is the only mouth that is not a line. */
+        var open = document.createElementNS(SVG_NS, 'ellipse');
+        open.setAttribute('cx', String(FACE_MID));
+        open.setAttribute('cy', String(at(MOUTH_Y + 0.9)));
+        open.setAttribute('rx', String(size(1.3)));
+        open.setAttribute('ry', String(size(1.5)));
+        open.setAttribute('class', 'lpa-mouth is-open');
+        svg.appendChild(open);
 
         return svg;
+
+        function mouth(d, cls, on) {
+            var p = document.createElementNS(SVG_NS, 'path');
+            p.setAttribute('d', d);
+            p.setAttribute('class', 'lpa-mouth ' + cls + (on ? ' is-on' : ''));
+            svg.appendChild(p);
+        }
     }
 
-    /* The third look: the same face with the circle taken away.
-
-       What is left is the two marks that were doing the expressing — an upper
-       bar that opens and closes like a blink, and a shorter one under it that
-       answers a beat later. Stroke for stroke it belongs to the same icon set as
-       every other glyph on the site, and the lower bar being late is what makes
-       it read as listening rather than as a loading indicator. See the lpa-open
-       and lpa-answer keyframes. */
-    function strokesIcon() {
-        var svg = document.createElementNS(SVG_NS, 'svg');
-        svg.setAttribute('viewBox', '0 0 24 24');
-        svg.setAttribute('fill', 'none');
-        svg.setAttribute('stroke', 'currentColor');
-        svg.setAttribute('stroke-width', '1.9');
-        svg.setAttribute('stroke-linecap', 'round');
-        svg.setAttribute('stroke-linejoin', 'round');
-        svg.setAttribute('aria-hidden', 'true');
-        svg.setAttribute('class', 'lpa-strokes');
-
-        var bar = document.createElementNS(SVG_NS, 'path');
-        bar.setAttribute('d', 'M6.6 9.9h10.8');
-        bar.setAttribute('class', 'lpa-bar');
-        svg.appendChild(bar);
-
-        var mouth = document.createElementNS(SVG_NS, 'path');
-        mouth.setAttribute('d', 'M8.6 14.9h6.8');
-        mouth.setAttribute('class', 'lpa-bar lpa-bar-mouth');
-        svg.appendChild(mouth);
-
-        return svg;
-    }
+    /* The two looks this face has. The second is the same face with the head
+       taken off — the two eyes and the mouth, and nothing around them. */
+    function faceIcon() { return faceSVG(false); }
+    function strokesIcon() { return faceSVG(true); }
 
     /* ------------------------------------------------------------------ */
     /* A destination the assistant named, made tappable.
@@ -724,6 +769,12 @@
     }
 
     function typing(on) {
+        /* The face knows when it is working: `is-busy` on the dock is what the
+           CSS hangs the open mouth on. Toggled here rather than where the
+           request is made, because this function is the one place that already
+           knows whether a reply is still coming — including every path that ends
+           in an error or a timeout. */
+        if (dock) dock.classList.toggle('is-busy', !!on);
         if (on) {
             if (typingEl) return;
             var row = el('div', 'lpa-row');
