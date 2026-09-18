@@ -52,11 +52,82 @@
     var ENDPOINT = API + '/api/assistant/public';
     var MAX_HISTORY = 8;
 
-    var SUGGESTIONS = [
+    /* The questions offered depend on the page the visitor is standing on.
+
+       Somebody reading the portfolio wants to ask about the work they are
+       looking at; somebody on the booking page wants to ask about dates; and
+       somebody on the wedding page is asking about Beloved Imprint, not about
+       the price of a portrait session. One set of three questions for the whole
+       site made the widget look like it was bolted on rather than part of the
+       page.
+
+       Every question below is one the assistant has been *driven* with against
+       the live API and answered from the studio's own data — that is the bar,
+       because a suggestion is a promise. A tap on a question the assistant
+       cannot answer does not fail quietly: it creates a handover, and the studio
+       gets woken up for something nobody asked.
+
+       The keys are the last segment of the path, so `/book` and `/book.html`
+       are the same page and `/pay/` is the pay page. Anything not named here —
+       the home page, the links page, a 404, a page added next year — gets
+       DEFAULT_ASK, which is why that list is the safest one rather than the
+       shortest. */
+    var DEFAULT_ASK = [
         'How much is a portrait session?',
         'What do your packages include?',
         'Do you shoot weddings?'
     ];
+
+    var PAGE = {
+        portfolio: {
+            sub: 'Ask about any of the work you see.',
+            ask: [
+                'What kind of work do you shoot?',
+                'Can I book a session like these?',
+                'How much is a portrait session?'
+            ]
+        },
+        gallery: {
+            sub: 'Ask about the work, or about your own gallery.',
+            ask: [
+                'What kind of work do you shoot?',
+                'How do I get my own gallery?',
+                'How much is a portrait session?'
+            ]
+        },
+        book: {
+            sub: 'Real prices and real dates, straight from the studio.',
+            ask: [
+                'How far ahead should I book?',
+                'How much is a portrait session?',
+                'What do your packages include?'
+            ]
+        },
+        'wedding-book': {
+            sub: 'Real prices and real dates for Beloved Imprint.',
+            ask: [
+                "What's included in a wedding package?",
+                'How much do wedding packages cost?',
+                'Do you shoot pre-weddings?'
+            ]
+        },
+        wedding: {
+            sub: 'Beloved Imprint \u2014 the studio\u2019s wedding side.',
+            ask: [
+                "What's included in a wedding package?",
+                'How much do wedding packages cost?',
+                'Do you shoot pre-weddings?'
+            ]
+        },
+        review: {
+            sub: 'What clients have said, in their own words.',
+            ask: [
+                'What do clients say about the studio?',
+                'How much is a portrait session?',
+                'Can I book a session like these?'
+            ]
+        }
+    };
 
     // Do not run twice, and do not run inside someone else's preview harness.
     if (window.__lpAssistantLoaded) return;
@@ -709,11 +780,35 @@
         book.adopted = true;
     }
 
+    /* Which page of the site this widget is standing on: the last segment of the
+       path, without an extension. The site serves extensionless URLs, but a page
+       also opens as `/book.html` from a saved link or a preview, and both forms
+       have to resolve to the same page — a visitor is not on a different page
+       because of the way they arrived. `/pay/` therefore resolves to `pay`, not
+       to an empty key, and the home page resolves to an empty key on purpose. */
+    function pageKey() {
+        var path = (location.pathname || '').replace(/\/+$/, '');
+        var last = path.split('/').pop() || '';
+        return last.replace(/\.html$/i, '').toLowerCase();
+    }
+
+    /** The questions for this page, falling back to the ones that fit anywhere. */
+    function askForPage() {
+        var here = PAGE[pageKey()];
+        return (here && here.ask) || DEFAULT_ASK;
+    }
+
+    /** The line under the sheet's title, said in this page's terms. */
+    function subForPage() {
+        var here = PAGE[pageKey()];
+        return (here && here.sub) || 'Real prices and real dates, straight from the studio.';
+    }
+
     /* The booking pages ARE the booking, so a "book" half there is noise: the
        dock is a single pill, and the split has nothing to split from. */
     function onBookingPage() {
-        var path = (location.pathname || '').replace(/\/+$/, '');
-        return /(^|\/)(book|wedding-book)(\.html)?$/.test(path);
+        var here = pageKey();
+        return here === 'book' || here === 'wedding-book';
     }
 
     function buildDock() {
@@ -772,7 +867,7 @@
         head.appendChild(el('span', 'lpa-grab'));
         var titles = el('div');
         titles.appendChild(el('div', 'lpa-title', 'Ask about a session'));
-        titles.appendChild(el('div', 'lpa-sub', 'Real prices and real dates, straight from the studio.'));
+        titles.appendChild(el('div', 'lpa-sub', subForPage()));
         head.appendChild(titles);
 
         var close = el('button', 'lpa-close');
@@ -788,7 +883,7 @@
         sheet.appendChild(logEl);
 
         chipsEl = el('div', 'lpa-chips lpa-in');
-        SUGGESTIONS.forEach(function (q) {
+        askForPage().forEach(function (q) {
             var c = el('button', 'lpa-chip', q);
             c.type = 'button';
             c.addEventListener('click', function () { send(q); });
