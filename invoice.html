@@ -10,7 +10,8 @@
 
     <link rel="stylesheet" href="/vendor/fonts.css?v=2ca4e079b3">
 
-    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <script src="/vendor/money.js?v=76922a72c1"></script>
+    <script defer src="https://js.paystack.co/v1/inline.js"></script>
     <script src="/vendor/html2canvas-1.4.1.min.js?v=e87e550794"></script>
 
     <style>
@@ -354,7 +355,9 @@
         document.getElementById('inv-number').innerHTML = escapeHtml(inv.invoiceNumber) + '<span>Issued ' + formatDate(inv.createdAt) + '</span>';
         applyStatusPill(inv.status);
 
-        var remaining = inv.balanceRemaining != null ? inv.balanceRemaining : Math.max(0, (inv.totalAmount || 0) - (inv.amountPaid || 0));
+        /* One rule for the number on the page and the number charged: whole
+           naira, from the shared helper. See vendor/money.js. */
+        var remaining = LPMoney.wholeNaira(inv.balanceRemaining != null ? inv.balanceRemaining : Math.max(0, (inv.totalAmount || 0) - (inv.amountPaid || 0)));
         document.getElementById('hero-label').textContent = inv.status === 'paid' ? 'Total paid' : (inv.status === 'partial' ? 'Balance due' : 'Amount due');
         document.getElementById('inv-amount').textContent = formatNaira(inv.status === 'paid' ? inv.totalAmount : (inv.status === 'partial' ? remaining : inv.totalAmount));
         document.getElementById('inv-due').innerHTML = inv.status === 'paid'
@@ -414,10 +417,12 @@
             html += '<button type="button" class="btn-pay" data-pay-amount="' + remaining + '" data-pay-label="Pay Remaining Balance">' +
                 '<span>Pay remaining balance</span><span class="btn-pay-amount">' + formatNaira(remaining) + '</span></button>';
         } else {
-            html += '<button type="button" class="btn-pay" data-pay-amount="' + inv.totalAmount + '" data-pay-label="Pay in Full">' +
-                '<span>Pay in full</span><span class="btn-pay-amount">' + formatNaira(inv.totalAmount) + '</span></button>';
+            var full = LPMoney.wholeNaira(inv.totalAmount || 0);
+            var retainer = LPMoney.splitNaira(full).retainer;
+            html += '<button type="button" class="btn-pay" data-pay-amount="' + full + '" data-pay-label="Pay in Full">' +
+                '<span>Pay in full</span><span class="btn-pay-amount">' + formatNaira(full) + '</span></button>';
             html += '<div class="pay-or">or</div>';
-            html += '<button type="button" class="btn-secondary" data-pay-amount="' + inv.retainerAmount + '" data-pay-label="Pay Retainer">Pay 70% retainer \u2014 ' + formatNaira(inv.retainerAmount) + '</button>';
+            html += '<button type="button" class="btn-secondary" data-pay-amount="' + retainer + '" data-pay-label="Pay Retainer">Pay 70% retainer \u2014 ' + formatNaira(retainer) + '</button>';
         }
 
         html += '<div class="pay-trust">' +
@@ -462,16 +467,35 @@
     // remaining balance) rather than always being the invoice total.
     function payInvoice(amount, btn) {
         if (!currentInvoice || !amount) return;
-        if (typeof PaystackPop === 'undefined') {
-            alert('The payment module failed to load. Please check your connection or disable any ad blockers, then refresh the page.');
+        if (typeof PaystackPop === 'undefined' || typeof PaystackPop.setup !== 'function') {
+            alert('The secure payment window has not loaded yet. Please refresh the page, or message us on WhatsApp and we will take the payment with you.');
+            return;
+        }
+        /* The shared helper is checked here for the same reason as Paystack
+           itself: without it the very next line throws, this handler has no
+           caller above it to catch that, and the button reads as dead. */
+        if (typeof LPMoney === 'undefined') {
+            alert('The payment form has not finished loading. Please refresh the page, or message us on WhatsApp and we will take the payment with you.');
+            return;
+        }
+
+        /* The one number this page charges, rounded by the shared helper rather
+           than by a local `Math.round` — one rule for every screen that takes
+           money. See vendor/money.js. */
+        var kobo = LPMoney.toKobo(amount);
+        var moneyProblem = LPMoney.problemWith(kobo);
+        if (moneyProblem) {
+            alert(moneyProblem + ' Please message us on WhatsApp and we will take the payment directly.');
             return;
         }
 
         var originalLabel = btn.textContent;
-        var handler = PaystackPop.setup({
+        var handler;
+        try {
+        handler = PaystackPop.setup({
             key: PAYSTACK_PUBLIC_KEY,
             email: currentInvoice.clientEmail,
-            amount: Math.round(amount * 100),
+            amount: kobo,
             currency: 'NGN',
             /* The invoice this charge belongs to, carried on the charge itself.
                The client's browser normally confirms the payment itself straight
@@ -494,7 +518,22 @@
                 // just the client changing their mind mid-flow.
             }
         });
-        handler.openIframe();
+        } catch (err) {
+            /* A throw here used to be silent: no popup, no message. */
+            alert('We could not open the secure payment window' +
+                (err && err.message ? ' (' + err.message + ')' : '') +
+                '. Nothing has been charged \u2014 please message us on WhatsApp and we will take the payment with you.');
+            return;
+        }
+        if (!handler || typeof handler.openIframe !== 'function') {
+            alert('The secure payment window did not start. Nothing has been charged \u2014 please refresh the page.');
+            return;
+        }
+        try {
+            handler.openIframe();
+        } catch (err) {
+            alert('The secure payment window could not open. Nothing has been charged \u2014 please refresh the page.');
+        }
 
         async function confirmInvoicePayment(reference, paidAmount) {
             btn.disabled = true;

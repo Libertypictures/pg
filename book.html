@@ -41,6 +41,10 @@
          both blocked first paint before. -->
     <script defer src="https://js.paystack.co/v1/inline.js"></script>
     <script async src="/vendor/html2canvas-1.4.1.min.js?v=e87e550794"></script>
+    <!-- Money leaves this page through LPMoney only: 180000 * 0.70 is
+         125999.99999999999 in JavaScript, and Paystack refuses an amount that is
+         not a whole number of kobo by throwing. See vendor/money.js. -->
+    <script defer src="/vendor/money.js?v=76922a72c1"></script>
 
     <style>
         /* Color Variables for Light & Dark Mode — same brand accent
@@ -897,6 +901,12 @@
                     <div class="serif" style="font-size:19px; font-weight:500; margin-bottom:10px;">You're booked.</div>
                     <p style="font-size:13.5px; color:var(--text-secondary); line-height:1.8; margin-bottom:8px;">Your retainer has been received and your session is confirmed. A receipt is on its way to your email.</p>
                     <p style="font-size:11px; color:var(--text-secondary); margin-bottom:24px;">Reference: <span id="lpb-payment-reference"></span></p>
+                    <!-- The client's own balance link. Filled in from the worker's
+                         answer, so the address has one author, and shown here
+                         because this is the moment the balance becomes something
+                         they might want to settle later — rather than leaving
+                         them to find the pay page and retype an email. -->
+                    <p id="lpb-balance-line" style="display:none; font-size:12.5px; color:var(--text-secondary); line-height:1.9; max-width:400px; margin:0 auto 20px;"></p>
                     <a href="#" id="lpb-whatsapp-link" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:8px; padding:14px 28px; background:#25D366; color:#fff; text-decoration:none; font-size:12.5px; font-weight:600; letter-spacing:0.4px; border-radius:30px;">Message Us on WhatsApp</a>
                     <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px;">
                         <button type="button" id="receipt-jpeg-btn" class="receipt-action-btn">Save Receipt as JPEG</button>
@@ -1458,9 +1468,15 @@
         function calculateTotals() {
             let addonTotal = cart.addons.reduce((sum, item) => sum + item.price, 0);
             
-            cart.subtotal = cart.basePrice + addonTotal;
-            cart.retainer = cart.subtotal * 0.70; 
-            cart.balance = cart.subtotal * 0.30;
+            /* The split is worked out by the shared money helper, and the
+               BALANCE IS DERIVED BY SUBTRACTION rather than as a second
+               percentage — so the two halves always add back to the total on the
+               receipt, and neither carries kobo. `180000 * 0.70` was
+               125999.99999999999, which is what stopped the retainer button
+               working for Two Looks and left a client unable to pay her balance. */
+            cart.subtotal = LPMoney.wholeNaira(cart.basePrice + addonTotal);
+            cart.retainer = LPMoney.splitNaira(cart.subtotal).retainer;
+            cart.balance = cart.subtotal - cart.retainer;
 
             // Stamp the summary from the one place that already knows the
             // booking state, so the receipt can never disagree with the prices
@@ -1525,8 +1541,8 @@
 
         // Paystack Integration
         function payWithPaystack() {
-            if (typeof PaystackPop === 'undefined') {
-                alert("The payment module failed to load. Please check your connection or disable any ad blockers, then refresh the page. You can also reach out to us directly to complete your booking.");
+            if (typeof PaystackPop === 'undefined' || typeof PaystackPop.setup !== 'function' || typeof LPMoney === 'undefined') {
+                alert("The secure payment window has not loaded yet. Please refresh the page, or message us on WhatsApp and we will complete your booking with you.");
                 return;
             }
 
@@ -1582,9 +1598,14 @@
                 return;
             }
 
-            const amountInKobo = cart.retainer * 100;
+            const amountInKobo = LPMoney.toKobo(cart.retainer);
 
-            let handler = PaystackPop.setup({
+            /* Every way this can fail is said out loud. Without the try, the
+               throw Paystack makes for an amount it cannot accept went
+               nowhere — no popup, no message, a button that did nothing. */
+            let handler;
+            try {
+                handler = PaystackPop.setup({
                 key: 'pk_live_05373c45337d6a937f51d9c3045c7839369d503d',
                 email: emailInput,
                 amount: amountInKobo,
@@ -1616,8 +1637,22 @@
                 onClose: function() {
                     alert('Payment window closed.');
                 }
-            });
-            handler.openIframe();
+                });
+            } catch (err) {
+                alert('We could not open the secure payment window' +
+                    (err && err.message ? ' (' + err.message + ')' : '') +
+                    '. Nothing has been charged — message us on WhatsApp and we will complete your booking with you.');
+                return;
+            }
+            if (!handler || typeof handler.openIframe !== 'function') {
+                alert('The secure payment window did not start. Nothing has been charged — please refresh the page, or message us on WhatsApp.');
+                return;
+            }
+            try {
+                handler.openIframe();
+            } catch (err) {
+                alert('The secure payment window could not open. Nothing has been charged — please refresh the page, or message us on WhatsApp.');
+            }
         }
 
         async function handlePaymentSuccess(response) {
@@ -1666,6 +1701,18 @@
                 document.getElementById('lpb-payment-reference').textContent = response.reference;
                 lpRenderSummaryMeta();
                 document.getElementById('lpb-payment-success').style.display = 'block';
+
+                /* The balance, and the one link that settles it. Nothing to look
+                   up later and nothing to retype: the link opens with this
+                   booking's amount already on it. The same link is in the emailed
+                   receipt, and the client is told to keep it. */
+                var balLine = document.getElementById('lpb-balance-line');
+                if (balLine && confirmResult && confirmResult.balanceDue > 0 && confirmResult.payLink) {
+                    balLine.innerHTML = 'Your remaining balance is <strong>' + formatNaira(confirmResult.balanceDue) +
+                        '</strong>. Pay it any time with this link \u2014 it is also in your emailed receipt, and it opens with your balance already filled in:<br>' +
+                        '<a href="' + confirmResult.payLink + '" style="color:var(--accent); word-break:break-all;">' + confirmResult.payLink + '</a>';
+                    balLine.style.display = 'block';
+                }
 
                 // Redirect to WhatsApp with the booking details pre-filled —
                 // opened in a new tab (some browsers block an automatic

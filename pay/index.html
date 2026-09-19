@@ -8,7 +8,16 @@
 <meta name="theme-color" content="#8A7355">
 <meta name="robots" content="noindex">
 <link rel="stylesheet" href="/vendor/fonts.css?v=2ca4e079b3">
-<script src="https://js.paystack.co/v1/inline.js"></script>
+<!-- Money leaves this page through LPMoney only. Why, in full, in the file: a
+     percentage of a price is a float, Paystack rejects a non-integer amount by
+     throwing, and an uncaught throw on this page used to mean a button that did
+     nothing at all with no message — which is exactly what a client reported. -->
+<!-- Ours, and not deferred: it is 2 KB from this same origin, and every money
+     path on the page depends on it. Paystack's library is deferred instead — it
+     is only needed once a button is pressed, and until now this page made the
+     first paint wait on js.paystack.co. -->
+<script src="/vendor/money.js?v=76922a72c1"></script>
+<script defer src="https://js.paystack.co/v1/inline.js"></script>
 <style>
     :root {
         /* Brand bronze gold — dominant primary */
@@ -183,6 +192,16 @@
     .pay-btn:disabled { background: var(--ink-faint); cursor: not-allowed; box-shadow: none; }
     .pay-btn .spinner { display: none; width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.35); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
     .pay-btn.is-loading .spinner { display: inline-block; }
+
+    /* This client's own balance, opened from their link. One heading, one
+       figure, one button — and the alternatives kept quiet underneath, the way
+       a payment link from the studio should read. */
+    .link-hello { font-family: 'Cormorant Garamond', serif; font-size: 21px; line-height: 1.35; color: var(--ink); margin-bottom: 16px; }
+    .link-detail { font-size: 13px; color: var(--ink-soft); line-height: 1.75; margin: 14px 0 0; }
+    .link-alt-btn { width: 100%; margin-top: 14px; background: none; border: 1px solid var(--gold); color: var(--gold-deep, #6f5c43); border-radius: 10px; padding: 13px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; }
+    @media (hover: hover) { .link-alt-btn:hover { background: rgba(138,115,85,0.08); } }
+    .link-settled { font-size: 13px; color: var(--ink-soft); line-height: 1.75; margin-top: 12px; }
+    .link-else { display: block; margin: 24px auto 0; background: none; border: none; color: var(--ink-soft); font-size: 12.5px; text-decoration: underline; cursor: pointer; font-family: 'Inter', sans-serif; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .secure-note { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: var(--ink-faint); margin-top: 14px; }
@@ -230,6 +249,27 @@
                 <div class="type-btn-label">Other Payments</div>
                 <div class="type-btn-desc">A discount, add-on, or anything else agreed with us</div>
             </button>
+        </div>
+
+        <!-- THIS CLIENT'S OWN BALANCE — the whole page, when the link they were
+             given carries their booking. Nothing to choose, nothing to type:
+             their session, what it costs and one button. The alternative that
+             matters (their other sessions, or paying the lot) is a real option
+             rather than a hidden one, and everything else stays behind the
+             quiet link at the bottom, exactly as a link that arrives from the
+             studio should behave. -->
+        <div class="form-section" id="link-section" style="display:none;">
+            <p class="link-hello" id="link-hello"></p>
+            <div class="amount-display" id="link-amount-display" style="display:none;">
+                <span class="label" id="link-amount-label">Balance due</span>
+                <span class="value" id="link-amount-value">₦0</span>
+            </div>
+            <p class="link-detail" id="link-detail"></p>
+            <div id="link-alt" style="display:none;">
+                <button type="button" class="link-alt-btn" id="link-alt-btn"></button>
+            </div>
+            <p class="link-settled" id="link-settled" style="display:none;"></p>
+            <button type="button" class="link-else" id="link-else-btn">Pay something else instead</button>
         </div>
 
         <!-- GALLERY EXTENSION -->
@@ -318,7 +358,8 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.87 9.87 0 0 0 12.04 2m0 1.67a8.2 8.2 0 0 1 5.83 2.42 8.19 8.19 0 0 1 2.42 5.83c0 4.54-3.7 8.23-8.24 8.23a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.18 8.18 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.23-8.24m-4.53 4.72c-.15 0-.4.06-.61.29-.21.24-.8.78-.8 1.9s.82 2.2.93 2.36c.12.15 1.6 2.44 3.87 3.42.55.24.97.38 1.31.48.55.17 1.04.15 1.44.09.44-.06 1.34-.55 1.53-1.08.19-.53.19-.98.13-1.08-.06-.09-.21-.15-.44-.26-.23-.12-1.34-.66-1.55-.74-.21-.07-.36-.11-.51.12-.15.23-.59.73-.72.88-.13.15-.27.17-.5.06-.23-.12-.96-.35-1.83-1.13-.68-.6-1.13-1.35-1.27-1.58-.13-.23-.01-.35.1-.47.11-.11.23-.27.35-.4.12-.15.15-.24.23-.4.08-.15.04-.29-.02-.41-.06-.11-.51-1.25-.72-1.7-.19-.44-.38-.38-.51-.39z"></path></svg>
             Message Us on WhatsApp
         </a>
-        <p style="font-size:11px; color:var(--ink-faint); margin-top:12px;">If WhatsApp didn't open automatically, tap the button above.</p>
+        <p style="font-size:11px; color:var(--ink-faint); margin-top:12px;">Tap the button above if you would like to tell us about this payment.</p>
+        <p style="font-size:12px; color:var(--ink-soft); margin-top:14px; line-height:1.7;">Keep this reference in case you need to quote it: your payment is recorded against it, and a receipt is on its way to your email.</p>
         <button type="button" id="gallery-return-btn" style="display:none; margin-top:14px; background:var(--gold); color:#1c1917; border:none; border-radius:10px; padding:13px 26px; font-size:13px; font-weight:600; cursor:pointer; font-family:'Inter',sans-serif;">Back to my gallery</button>
         <button type="button" id="success-reset-btn" style="margin-top:18px; background:none; border:none; color:var(--ink-soft); font-size:12.5px; text-decoration:underline; cursor:pointer; font-family:'Inter',sans-serif;">Make Another Payment</button>
     </div>
@@ -338,7 +379,19 @@
         return '\u20a6' + Math.round(n).toLocaleString();
     }
 
-    var state = { type: null, packages: [], selectedPackage: null, lookupBookings: [], lookupBookingId: null };
+    var state = {
+        type: null,
+        packages: [],
+        selectedPackage: null,
+        lookupBookings: [],
+        lookupBookingId: null,
+        /* Opened from this client's own link (`?b=<token>`): their booking, the
+           sessions they still owe on, and whether they chose to pay the lot. */
+        linkBooking: null,
+        linkOutstanding: [],
+        linkTotalOutstanding: 0,
+        linkPayAll: false
+    };
 
     // The booking currently picked for payment from the lookup result.
     function selectedLookupBooking() {
@@ -376,6 +429,21 @@
     var payBtn = document.getElementById('pay-btn');
     var payBtnText = payBtn.querySelector('.pay-btn-text');
     var formError = document.getElementById('form-error');
+    var linkSection = document.getElementById('link-section');
+    var linkHello = document.getElementById('link-hello');
+    var linkAmountDisplay = document.getElementById('link-amount-display');
+    var linkAmountLabel = document.getElementById('link-amount-label');
+    var linkAmountValue = document.getElementById('link-amount-value');
+    var linkDetail = document.getElementById('link-detail');
+    var linkAlt = document.getElementById('link-alt');
+    var linkAltBtn = document.getElementById('link-alt-btn');
+    var linkSettled = document.getElementById('link-settled');
+    var linkElseBtn = document.getElementById('link-else-btn');
+
+    /* Every amount this page is willing to charge, in whole naira. The helper
+       does the rounding; this is the only reason a payment button here can be
+       trusted to open. See vendor/money.js for the client it was written for. */
+    function whole(n) { return LPMoney.wholeNaira(n); }
 
     // Packages load once, immediately — real data, same source as the
     // storefront's own price cards, so it can never fall out of sync.
@@ -424,6 +492,138 @@
         document.querySelector('.sub').textContent = 'Reopen your gallery in one quick payment';
         updatePayButton();
     }
+
+    /* THE CLIENT'S OWN LINK — `?b=<token>`, the one this studio now sends.
+
+       Printed on their receipt, on the screen straight after booking and in
+       every reminder, because the bare /pay address knew nothing about whoever
+       opened it: the client had to retype the email they booked with, press a
+       separate Check button, pick a session from a list and then type their
+       name. This mode is the answer to that — their name, their session, their
+       exact balance, and one button, with nothing to type.
+
+       If the link cannot be opened the chooser below is left exactly as it was,
+       so a bad link is a worse experience, never a dead page. */
+    var linkToken = galleryParams.get('b') || null;
+    var linkOtherSessions = 0;
+    var linkAltAllLabel = '';
+    var linkAltOneLabel = '';
+
+    function humanDate(iso) {
+        var d = new Date(String(iso || '') + 'T00:00:00');
+        if (isNaN(d.getTime())) return '';
+        try {
+            return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+        } catch (e) { return String(iso || ''); }
+    }
+
+    function refreshLinkAmount() {
+        linkAmountLabel.textContent = state.linkPayAll
+            ? 'All outstanding sessions'
+            : ('Balance due \u2014 ' + (state.linkBooking.packageName || 'your session'));
+        linkAmountValue.textContent = formatNaira(getCurrentAmount());
+        linkAltBtn.textContent = state.linkPayAll ? linkAltOneLabel : linkAltAllLabel;
+        updatePayButton();
+    }
+
+    function enterLinkMode(data) {
+        var b = data.booking || {};
+        var when = humanDate(b.sessionDate);
+        var balance = whole(b.balanceDue);
+        var others = (data.outstanding || []).filter(function (x) { return Number(x.id) !== Number(b.id); });
+        var first = String(b.name || '').trim().split(/\s+/)[0];
+
+        state.type = 'balance';
+        state.linkBooking = b;
+        state.linkOutstanding = data.outstanding || [];
+        state.linkTotalOutstanding = whole(data.totalOutstanding || 0);
+        state.linkPayAll = false;
+        linkOtherSessions = others.length;
+        linkAltAllLabel = 'Pay everything instead \u2014 ' + formatNaira(state.linkTotalOutstanding) + ' (' + (others.length + 1) + ' sessions)';
+        linkAltOneLabel = 'Just this session instead \u2014 ' + formatNaira(balance);
+
+        var typeGrid = document.querySelector('.type-grid');
+        if (typeGrid) typeGrid.style.display = 'none';
+        balanceSection.classList.remove('is-visible');
+        otherSection.classList.remove('is-visible');
+        gallerySection.classList.remove('is-visible');
+        linkSection.style.display = 'block';
+        contactFields.style.display = 'block';
+        document.querySelector('h1').textContent = 'Your Balance';
+        document.querySelector('.sub').textContent = 'Everything is filled in for you';
+
+        linkHello.textContent = 'Hello' + (first ? ' ' + first : '') + ' \u2014';
+
+        if (data.state === 'retainer_pending') {
+            linkAmountDisplay.style.display = 'none';
+            linkSettled.style.display = 'block';
+            linkSettled.innerHTML = 'Your session' + (when ? ' on ' + escapeHtml(when) : '') +
+                ' is reserved, but the retainer has not been paid yet \u2014 so there is no balance to settle at this moment. ' +
+                'Open the receipt in your email to pay the retainer, or message us and we will send it again.';
+        } else if (data.state === 'settled' || balance <= 0) {
+            linkAmountDisplay.style.display = 'none';
+            linkSettled.style.display = 'block';
+            linkSettled.innerHTML = whole(b.credit) > 0
+                ? 'You are all settled, with ' + formatNaira(whole(b.credit)) + ' credit on file that will go toward your next session. Nothing to pay today.'
+                : 'You are all settled \u2014 nothing outstanding. Thank you.';
+            linkSettled.style.marginTop = '0';
+        } else {
+            linkHello.textContent += ' here is your balance.';
+            linkAmountDisplay.style.display = 'flex';
+            linkAmountLabel.textContent = 'Balance due \u2014 ' + (b.packageName || 'your session');
+            linkAmountValue.textContent = formatNaira(balance);
+            linkDetail.innerHTML = '<strong>' + escapeHtml(b.packageName || 'Session') + '</strong>' +
+                (when ? ' \u00b7 ' + escapeHtml(when) : '') +
+                (whole(b.retainerAmount) > 0 ? '<br>Retainer of ' + formatNaira(whole(b.retainerAmount)) + ' already received.' : '');
+            if (others.length) {
+                linkAlt.style.display = 'block';
+                linkAltBtn.textContent = linkAltAllLabel;
+            }
+        }
+
+        // Filled in from the booking, so nothing has to be typed.
+        if (b.name) document.getElementById('customer-name').value = b.name;
+        if (b.email) document.getElementById('customer-email').value = b.email;
+
+        updatePayButton();
+    }
+
+    if (linkToken) {
+        fetch(API_BASE + '/api/pay/booking/' + encodeURIComponent(linkToken))
+            .then(function (r) { return r.json(); })
+            .then(function (data) {
+                if (!data || data.status !== 'ok') throw new Error((data && data.message) || 'This link could not be opened.');
+                enterLinkMode(data);
+            })
+            .catch(function (err) {
+                /* A link that fails is a worse page, never a dead end: the
+                   chooser is untouched and still works, and the client is told
+                   what happened rather than left on a blank form. */
+                linkSection.style.display = 'block';
+                linkHello.textContent = 'We could not open your link.';
+                linkSettled.style.display = 'block';
+                linkSettled.textContent = ((err && err.message) ? err.message + ' ' : '') +
+                    'You can still pay below \u2014 or message us on WhatsApp and we will take it from here.';
+                linkElseBtn.style.display = 'none';
+            });
+    }
+
+    linkAltBtn.addEventListener('click', function () {
+        state.linkPayAll = !state.linkPayAll;
+        refreshLinkAmount();
+    });
+
+    linkElseBtn.addEventListener('click', function () {
+        // Back to the chooser, with the client's details still filled in.
+        state.linkBooking = null;
+        state.linkPayAll = false;
+        linkSection.style.display = 'none';
+        var typeGrid = document.querySelector('.type-grid');
+        if (typeGrid) typeGrid.style.display = 'grid';
+        document.querySelector('h1').textContent = 'Make a Payment';
+        document.querySelector('.sub').textContent = 'Pay your balance or any other amount';
+        selectType('balance');
+    });
 
     // Exact balance lookup — the pay page and the admin's Session
     // Balances view read from the same rule on the worker, so the
@@ -531,7 +731,7 @@
         state.lookupBookingId = null;
         balanceLookupResult.className = 'balance-result';
         if (pkg) {
-            var balance = pkg.price * 0.3;
+            var balance = LPMoney.splitNaira(pkg.price).balance;
             balanceAmountValue.textContent = formatNaira(balance);
             balanceAmountLabel.textContent = 'Balance Due (30%)';
             balanceAmountDisplay.style.display = 'flex';
@@ -544,15 +744,23 @@
 
     function getCurrentAmount() {
         if (state.type === 'balance') {
+            // Opened from their own link: the amount is already known, so
+            // nothing here depends on a lookup having been run.
+            if (state.linkBooking) {
+                return state.linkPayAll ? whole(state.linkTotalOutstanding) : whole(state.linkBooking.balanceDue);
+            }
             var picked = selectedLookupBooking();
-            if (picked) return picked.balanceDue;
-            return state.selectedPackage ? Math.round(state.selectedPackage.price * 0.3) : 0;
+            if (picked) return whole(picked.balanceDue);
+            /* The package estimate is the BALANCE side of the 70/30 split, not
+               a second percentage of the price — see LPMoney.splitNaira, which
+               is the same rule the booking page charges by. */
+            return state.selectedPackage ? LPMoney.splitNaira(state.selectedPackage.price).balance : 0;
         }
         if (state.type === 'other') {
             return parseInt(otherAmountInput.value, 10) || 0;
         }
         if (state.type === 'gallery') {
-            return galleryAmount;
+            return whole(galleryAmount);
         }
         return 0;
     }
@@ -561,23 +769,44 @@
         var amount = getCurrentAmount();
         if (amount > 0) {
             payBtn.disabled = false;
-            payBtnText.textContent = 'Pay ' + formatNaira(amount);
+            payBtnText.textContent = 'Pay ' + formatNaira(amount) + (state.linkPayAll ? ' \u2014 all sessions' : '');
         } else {
             payBtn.disabled = true;
-            payBtnText.textContent = 'Select an amount to pay';
+            payBtnText.textContent = state.linkBooking
+                ? (state.linkBooking.balanceDue > 0 ? 'Select an amount to pay' : 'Nothing to pay right now')
+                : 'Select an amount to pay';
         }
     }
 
     payBtn.addEventListener('click', function () {
         formError.textContent = '';
 
-        if (typeof PaystackPop === 'undefined') {
-            formError.textContent = 'The payment module failed to load. Please check your connection or disable any ad blockers, then refresh the page.';
+        var amount = getCurrentAmount();
+        if (amount <= 0) { formError.textContent = 'Please select a valid amount.'; return; }
+
+        /* Every way this button can fail, said out loud. Before this, the only
+           guard was a check that Paystack's library had loaded at all: a client
+           whose amount could not be charged got no popup, no message and no
+           console-visible clue — a button that did nothing. That is the fault
+           this page was reported for. */
+        if (typeof PaystackPop === 'undefined' || typeof PaystackPop.setup !== 'function') {
+            formError.textContent = 'The secure payment window has not loaded yet. Please refresh the page, or message us on WhatsApp and we will take the payment directly.';
             return;
         }
 
-        var amount = getCurrentAmount();
-        if (amount <= 0) { formError.textContent = 'Please select a valid amount.'; return; }
+        /* The one number this page is allowed to charge: whole kobo, rounded by
+           LPMoney. The check beside it is the belt to that braces — a future
+           edit that bypasses the helper fails loudly on screen instead of
+           throwing into silence. */
+        var kobo = LPMoney.toKobo(amount);
+        var moneyProblem = LPMoney.problemWith(kobo);
+        if (moneyProblem) {
+            formError.textContent = moneyProblem + ' Please message us on WhatsApp and we will take the payment directly.';
+            return;
+        }
+
+        var pickedBooking = state.linkBooking || selectedLookupBooking();
+        var attributeTo = (state.type === 'balance' && pickedBooking && !state.linkPayAll) ? String(pickedBooking.id) : '';
 
         var name = document.getElementById('customer-name').value.trim();
         var email = document.getElementById('customer-email').value.trim();
@@ -591,10 +820,12 @@
             return;
         }
 
-        var handler = PaystackPop.setup({
+        var handler;
+        try {
+            handler = PaystackPop.setup({
             key: 'pk_live_05373c45337d6a937f51d9c3045c7839369d503d',
             email: email,
-            amount: amount * 100,
+            amount: kobo,
             currency: 'NGN',
             /* What this charge IS, carried on the charge itself — so Paystack's
                webhook can still record it when this browser never comes back to
@@ -604,7 +835,7 @@
                know WHICH session the money settles. */
             metadata: {
                 flow: state.type,
-                bookingId: (state.type === 'balance' && selectedLookupBooking()) ? String(selectedLookupBooking().id) : '',
+                bookingId: attributeTo,
                 galleryToken: state.type === 'gallery' ? galleryToken : '',
                 packageName: state.selectedPackage ? state.selectedPackage.name : '',
                 name: name,
@@ -618,8 +849,24 @@
             onClose: function () {
                 formError.textContent = 'Payment window closed.';
             }
-        });
-        handler.openIframe();
+            });
+        } catch (err) {
+            /* The throw Paystack makes for an amount it will not accept used to
+               land here and go nowhere. Now it is the client's answer. */
+            formError.textContent = 'We could not open the secure payment window' +
+                (err && err.message ? ' (' + err.message + ')' : '') +
+                '. Nothing has been charged. Please message us on WhatsApp and we will take the payment directly.';
+            return;
+        }
+        if (!handler || typeof handler.openIframe !== 'function') {
+            formError.textContent = 'The secure payment window did not start. Nothing has been charged \u2014 please refresh the page, or message us on WhatsApp.';
+            return;
+        }
+        try {
+            handler.openIframe();
+        } catch (err) {
+            formError.textContent = 'The secure payment window could not open. Nothing has been charged \u2014 please refresh the page, or message us on WhatsApp.';
+        }
     });
 
     async function handlePaymentSuccess(response, details) {
@@ -629,16 +876,25 @@
 
         var payload = {
             type: state.type,
-            amount: details.amount,
+            /* Whole naira, so the amount recorded is the amount charged and a
+               balance settles exactly rather than by a few kobo. */
+            amount: whole(details.amount),
             customerName: details.name,
             customerEmail: details.email,
             customerPhone: details.phone || null,
             reference: response.reference,
         };
         if (state.type === 'balance') {
-            var picked = selectedLookupBooking();
-            payload.packageName = picked ? picked.packageName : state.selectedPackage.name;
-            if (picked) payload.bookingId = picked.id;
+            var picked = state.linkBooking || selectedLookupBooking();
+            payload.packageName = picked
+                ? picked.packageName
+                : (state.selectedPackage ? state.selectedPackage.name : 'Session');
+            if (picked && !state.linkPayAll) payload.bookingId = picked.id;
+            /* Paying everything is deliberately left unattributed: the money
+               covers several sessions, and the balance engine spreads an
+               untagged balance payment oldest-first, which is exactly right.
+               Tagging it to one session would settle that one twice. */
+            if (state.linkPayAll) payload.description = 'All outstanding sessions';
         } else if (state.type === 'gallery') {
             payload.galleryToken = galleryToken;
             payload.description = 'Gallery extension';
@@ -680,12 +936,20 @@
         document.getElementById('success-view').classList.add('is-visible');
         document.getElementById('success-reference').textContent = reference;
 
-        var picked = selectedLookupBooking();
-        var purpose = state.type === 'balance' ? ((picked ? picked.packageName : (state.selectedPackage ? state.selectedPackage.name : 'Session')) + ' balance') : (state.type === 'gallery' ? 'my gallery extension' : otherDescriptionInput.value.trim());
+        var picked = state.linkBooking || selectedLookupBooking();
+        var purpose = state.type === 'balance'
+            ? (state.linkPayAll
+                ? 'my outstanding balance'
+                : ((picked ? picked.packageName : (state.selectedPackage ? state.selectedPackage.name : 'Session')) + ' balance'))
+            : (state.type === 'gallery' ? 'my gallery extension' : otherDescriptionInput.value.trim());
         var waMessage = "Hello there! I've just paid " + formatNaira(details.amount) + " for " + purpose + " (Reference: " + reference + ").";
         var waLink = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(waMessage);
         document.getElementById('whatsapp-link').href = waLink;
-        window.open(waLink, '_blank');
+        /* Deliberately NOT opened for them. A phone blocks a popup it did not
+           ask for, so the old behaviour left the client looking at a tab that
+           never appeared while the copy told them it had opened. The button is
+           there, the reference is on screen, and the receipt is emailed — the
+           payment is not made to depend on a window. */
 
         // Gallery flow — take the client straight back to their photos.
         var returnBtn = document.getElementById('gallery-return-btn');

@@ -28,6 +28,10 @@
     <link rel="stylesheet" href="/vendor/fonts.css?v=2ca4e079b3">
     <script defer src="https://js.paystack.co/v1/inline.js"></script>
     <script defer src="/vendor/html2canvas-1.4.1.min.js?v=e87e550794"></script>
+    <!-- Money leaves this page through LPMoney only — see vendor/money.js for the
+         client whose pay button did nothing because a percentage of a price is
+         a float and Paystack refuses an amount that is not whole kobo. -->
+    <script defer src="/vendor/money.js?v=76922a72c1"></script>
 
     <style>
         :root {
@@ -717,7 +721,12 @@
 
         function calculateTotals() {
             var addonTotal = cart.addons.reduce(function (s, i) { return s + i.price; }, 0);
-            cart.subtotal = cart.basePrice + addonTotal; cart.retainer = cart.subtotal * 0.70; cart.balance = cart.subtotal * 0.30;
+            /* Whole naira, and the balance derived by subtraction rather than as
+               a second percentage, so the two halves always add back to the
+               total. Same rule and same helper as the studio booking page. */
+            cart.subtotal = LPMoney.wholeNaira(cart.basePrice + addonTotal);
+            cart.retainer = LPMoney.splitNaira(cart.subtotal).retainer;
+            cart.balance = cart.subtotal - cart.retainer;
             // Stamp the summary from the one place that already knows the
             // booking state, so the receipt cannot disagree with the prices
             // printed beside it — and so DATE appears the moment a package is
@@ -772,7 +781,7 @@
                 : 'Pick a date above to continue';
         }
         function payWithPaystack() {
-            if (typeof PaystackPop === 'undefined') { alert("The payment module failed to load. Please check your connection or disable any ad blockers, then refresh."); return; }
+            if (typeof PaystackPop === 'undefined' || typeof PaystackPop.setup !== 'function' || typeof LPMoney === 'undefined') { alert("The secure payment window has not loaded yet. Please refresh the page, or message us on WhatsApp and we will take the payment with you."); return; }
             if (!window.lpbBookingConfirmed) {
                 /* The old alert told the client to use a form "above" without
                    taking them there. Note the target: #booking is the PAYMENT
@@ -799,8 +808,12 @@
             var email = document.getElementById('client-email').value.trim();
             if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert("Please enter a valid email address."); document.getElementById('client-email').focus(); return; }
             if (cart.retainer === 0) { alert("Please select a package first."); return; }
-            var handler = PaystackPop.setup({
-                key: 'pk_live_05373c45337d6a937f51d9c3045c7839369d503d', email: email, amount: cart.retainer * 100, currency: 'NGN',
+            /* Every way this can fail is said out loud: without the try, the
+               throw Paystack makes for an amount it cannot accept went nowhere. */
+            var handler;
+            try {
+            handler = PaystackPop.setup({
+                key: 'pk_live_05373c45337d6a937f51d9c3045c7839369d503d', email: email, amount: LPMoney.toKobo(cart.retainer), currency: 'NGN',
                 /* Carried on the charge so Paystack can tell the worker what this
                    money was for even if this browser never comes back to say so.
                    See the note on the same block in book.html. */
@@ -814,7 +827,21 @@
                 callback: function (r) { handlePaymentSuccess(r); },
                 onClose: function () { alert('Payment window closed.'); }
             });
-            handler.openIframe();
+            } catch (err) {
+                alert('We could not open the secure payment window' +
+                    (err && err.message ? ' (' + err.message + ')' : '') +
+                    '. Nothing has been charged — message us on WhatsApp and we will take the payment with you.');
+                return;
+            }
+            if (!handler || typeof handler.openIframe !== 'function') {
+                alert('The secure payment window did not start. Nothing has been charged — please refresh the page.');
+                return;
+            }
+            try {
+                handler.openIframe();
+            } catch (err) {
+                alert('The secure payment window could not open. Nothing has been charged — please refresh the page.');
+            }
         }
         async function handlePaymentSuccess(response) {
             var payBtn = document.getElementById('pay-btn'); payBtn.disabled = true; payBtn.textContent = 'Confirming your booking\u2026';
