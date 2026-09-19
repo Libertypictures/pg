@@ -65,7 +65,7 @@
         transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
         box-shadow: 0 2px 8px var(--shadow);
     }
-    .link-card:hover { background: var(--card-hover); transform: translateY(-2px); box-shadow: 0 10px 26px var(--shadow-lift); border-color: var(--accent); }
+    @media (hover: hover) { .link-card:hover { background: var(--card-hover); transform: translateY(-2px); box-shadow: 0 10px 26px var(--shadow-lift); border-color: var(--accent); } }
     .link-card:active { transform: translateY(0); }
     .link-icon { flex-shrink: 0; width: 22px; height: 22px; color: var(--accent); display: flex; align-items: center; justify-content: center; }
     .link-icon svg { width: 100%; height: 100%; stroke-width: 1.6; }
@@ -81,10 +81,10 @@
     }
     .footer-ig { display: none; align-items: center; gap: 6px; color: var(--text-soft); text-decoration: none; font-size: 11.5px; letter-spacing: 0.4px; transition: color 0.2s ease; }
     .footer-ig.is-visible { display: inline-flex; }
-    .footer-ig:hover { color: var(--accent); }
+    @media (hover: hover) { .footer-ig:hover { color: var(--accent); } }
     .footer-ig svg { width: 14px; height: 14px; stroke-width: 1.8; }
     .footer-review-link { color: var(--text-soft); text-decoration: none; opacity: 0.7; font-size: 10.5px; letter-spacing: 0.3px; }
-    .footer-review-link:hover { color: var(--accent); opacity: 1; text-decoration: underline; }
+    @media (hover: hover) { .footer-review-link:hover { color: var(--accent); opacity: 1; text-decoration: underline; } }
     .footer-copy { opacity: 0.55; font-size: 10.5px; letter-spacing: 0.3px; margin-top: 2px; }
 
     @media (prefers-reduced-motion: reduce) {

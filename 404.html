@@ -102,9 +102,9 @@
             transition: opacity .18s ease, background .18s ease;
         }
         a.btn-primary { background: var(--btn-primary-bg); color: var(--btn-primary-text); }
-        a.btn-primary:hover { opacity: .88; }
+        @media (hover: hover) { a.btn-primary:hover { opacity: .88; } }
         a.btn-ghost { background: transparent; color: var(--text-primary); border: 1px solid var(--border-color); }
-        a.btn-ghost:hover { background: var(--bg-body); }
+        @media (hover: hover) { a.btn-ghost:hover { background: var(--bg-body); } }
         .links {
             border-top: 1px dashed var(--border-dashed);
             padding-top: 20px;
@@ -115,7 +115,7 @@
             font-size: 13px;
         }
         .links a { color: var(--text-secondary); text-decoration: none; }
-        .links a:hover { color: var(--accent); }
+        @media (hover: hover) { .links a:hover { color: var(--accent); } }
         .foot {
             font-family: 'Share Tech Mono', monospace;
             font-size: 11px;

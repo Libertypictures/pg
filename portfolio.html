@@ -64,7 +64,7 @@
         .photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
         .photo-item { overflow: hidden; aspect-ratio: 4/5; background: var(--bg-card); box-shadow: 0 6px 20px var(--shadow-subtle); cursor: pointer; border: none; padding: 0; }
         .photo-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .photo-item:hover img { transform: scale(1.05); }
+        @media (hover: hover) { .photo-item:hover img { transform: scale(1.05); } }
         /* Scroll-reveal for portfolio items — same lpRevealOnScroll
            pattern as the Home page's Experience section, applied here
            so photos don't just sit flat and static on load. */
@@ -81,7 +81,7 @@
         .lightbox img { max-width: 90vw; max-height: 88vh; transition: opacity 0.35s ease; }
         .lightbox-close { position: absolute; top: 24px; right: 30px; background: none; border: none; color: #fff; font-size: 32px; cursor: pointer; line-height: 1; z-index: 2; }
         .lightbox-nav { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: none; color: #fff; width: 48px; height: 48px; border-radius: 50%; font-size: 26px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.25s ease; z-index: 2; }
-        .lightbox-nav:hover { background: rgba(255,255,255,0.2); }
+        @media (hover: hover) { .lightbox-nav:hover { background: rgba(255,255,255,0.2); } }
         .lightbox-prev { left: 16px; }
         .lightbox-next { right: 16px; }
         .lightbox-counter {
@@ -99,18 +99,18 @@
         .cta-band { text-align: center; padding: 90px 0; background: var(--bg-container); border-top: 1px solid var(--border-color); }
         .cta-band h2 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 28px; margin-bottom: 16px; }
         .cta-band p { font-size: 14px; color: var(--text-secondary); margin-bottom: 30px; }
-        .btn-dark { display: inline-block; background: rgba(26,24,21,0.05); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); color: var(--text-primary); padding: 16px 36px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; border-radius: 100px; text-decoration: none; transition: all 0.4s cubic-bezier(0.16,1,0.3,1); border: none; cursor: pointer; box-shadow: 0 4px 20px var(--shadow-subtle), inset 0 1px 0 rgba(255,255,255,0.5); }
-        .btn-dark:hover { background: rgba(138,115,85,0.16); color: var(--accent-deep); transform: translateY(-2px); box-shadow: 0 14px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6); }
+        .btn-dark { display: inline-block; background: rgba(26,24,21,0.05); backdrop-filter: blur(14px) saturate(160%); -webkit-backdrop-filter: blur(14px) saturate(160%); color: var(--text-primary); padding: 16px 36px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; border-radius: 100px; text-decoration: none; transition: background-color 0.4s cubic-bezier(0.16,1,0.3,1), color 0.4s cubic-bezier(0.16,1,0.3,1), border-color 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1), filter 0.4s cubic-bezier(0.16,1,0.3,1); border: none; cursor: pointer; box-shadow: 0 4px 20px var(--shadow-subtle), inset 0 1px 0 rgba(255,255,255,0.5); }
+        @media (hover: hover) { .btn-dark:hover { background: rgba(138,115,85,0.16); color: var(--accent-deep); transform: translateY(-2px); box-shadow: 0 14px 32px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6); } }
         @media (prefers-color-scheme: dark) {
             .btn-dark { background: rgba(255,255,255,0.06); box-shadow: 0 4px 20px var(--shadow-subtle), inset 0 1px 0 rgba(255,255,255,0.08); }
-            .btn-dark:hover { background: rgba(196,166,126,0.18); }
+            @media (hover: hover) { .btn-dark:hover { background: rgba(196,166,126,0.18); } }
         }
 
         .brand-footer { padding: 50px 0; text-align: center; }
         .footer-mark { font-size: 15px; font-weight: 500; }
         .footer-contact { margin-top: 14px; font-size: 12.5px; color: var(--text-secondary); }
         .footer-contact a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; }
-        .footer-contact a:hover { color: var(--accent); }
+        @media (hover: hover) { .footer-contact a:hover { color: var(--accent); } }
         .footer-contact-divider { margin: 0 10px; opacity: 0.5; }
 
         @media (max-width: 700px) {

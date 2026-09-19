@@ -85,7 +85,7 @@
         .party-name { font-size: 14.5px; font-weight: 600; margin-bottom: 3px; }
         .party-line { font-size: 12.5px; color: var(--text-secondary); line-height: 1.7; word-break: break-word; }
         .party-line a { color: var(--text-secondary); text-decoration: none; }
-        .party-line a:hover { color: var(--accent); }
+        @media (hover: hover) { .party-line a:hover { color: var(--accent); } }
 
         .invoice-items { width: 100%; border-collapse: collapse; margin-bottom: 26px; }
         .invoice-items th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px; color: var(--text-faint); padding-bottom: 10px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
@@ -110,19 +110,19 @@
             display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%;
             background-color: rgba(26,24,21,0.92); color: #fff; padding: 16px 24px; font-size: 12.5px;
             font-weight: 600; text-transform: uppercase; letter-spacing: 1.4px; border: none; border-radius: 14px;
-            cursor: pointer; transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+            cursor: pointer; transition: background-color 0.3s cubic-bezier(0.16,1,0.3,1), color 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s cubic-bezier(0.16,1,0.3,1), opacity 0.3s cubic-bezier(0.16,1,0.3,1), transform 0.3s cubic-bezier(0.16,1,0.3,1), filter 0.3s cubic-bezier(0.16,1,0.3,1);
             box-shadow: 0 10px 24px rgba(26,24,21,0.18);
         }
         .btn-pay .btn-pay-amount { font-size: 15px; letter-spacing: 0.3px; font-variant-numeric: tabular-nums; }
-        .btn-pay:hover { background-color: rgba(138,115,85,0.95); transform: translateY(-1px); box-shadow: 0 16px 32px rgba(138,115,85,0.28); }
+        @media (hover: hover) { .btn-pay:hover { background-color: rgba(138,115,85,0.95); transform: translateY(-1px); box-shadow: 0 16px 32px rgba(138,115,85,0.28); } }
         .btn-pay:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; transform: none; box-shadow: none; }
         .pay-or { text-align: center; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.6px; color: var(--text-faint); padding: 4px 0; }
         .btn-secondary {
             display: block; width: 100%; text-align: center; background: transparent; border: 1px solid var(--border-color);
             color: var(--text-primary); padding: 13px 24px; font-size: 11px; font-weight: 600; text-transform: uppercase;
-            letter-spacing: 1.2px; border-radius: 12px; cursor: pointer; transition: all 0.25s ease;
+            letter-spacing: 1.2px; border-radius: 12px; cursor: pointer; transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease, transform 0.25s ease, filter 0.25s ease;
         }
-        .btn-secondary:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-deep); }
+        @media (hover: hover) { .btn-secondary:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-deep); } }
         @media (prefers-color-scheme: dark) { .btn-secondary { background: rgba(255,255,255,0.04); } }
 
         .pay-trust { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 14px; font-size: 11px; color: var(--text-faint); }
@@ -130,7 +130,7 @@
 
         .doc-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
         .doc-actions button { flex: 1; min-width: 140px; background: transparent; border: none; color: var(--text-secondary); font-size: 11px; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 6px 8px; border-radius: 8px; transition: color 0.15s ease, background 0.15s ease; }
-        .doc-actions button:hover { color: var(--accent); background: var(--accent-soft); }
+        @media (hover: hover) { .doc-actions button:hover { color: var(--accent); background: var(--accent-soft); } }
 
         /* Paid state */
         .paid-banner { display: flex; align-items: center; gap: 16px; background: var(--green-soft); border: 1px solid rgba(90,140,90,0.25); border-radius: 14px; padding: 20px 22px; }
@@ -144,7 +144,7 @@
         .brand-footer { max-width: 660px; margin: 44px auto 0; padding-top: 24px; border-top: 1px solid var(--border-color); text-align: center; }
         .footer-contact { margin-top: 10px; font-size: 12px; color: var(--text-secondary); }
         .footer-contact a { color: var(--text-secondary); text-decoration: none; }
-        .footer-contact a:hover { color: var(--accent); }
+        @media (hover: hover) { .footer-contact a:hover { color: var(--accent); } }
         .footer-contact-divider { margin: 0 10px; opacity: 0.5; }
 
         /* JPEG capture target — a plain, high-contrast rendering,

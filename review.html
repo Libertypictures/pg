@@ -84,9 +84,9 @@
             -webkit-backdrop-filter: blur(16px) saturate(160%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
             color: #fff; padding: 18px 40px; font-size: 13px; font-weight: 600; text-transform: uppercase;
             letter-spacing: 1.6px; border: none; border-radius: 30px; cursor: pointer; margin-top: 8px;
-            transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
+            transition: background-color 0.35s cubic-bezier(0.16,1,0.3,1), color 0.35s cubic-bezier(0.16,1,0.3,1), border-color 0.35s cubic-bezier(0.16,1,0.3,1), box-shadow 0.35s cubic-bezier(0.16,1,0.3,1), opacity 0.35s cubic-bezier(0.16,1,0.3,1), transform 0.35s cubic-bezier(0.16,1,0.3,1), filter 0.35s cubic-bezier(0.16,1,0.3,1);
         }
-        .review-submit-btn:hover { background-color: rgba(138,115,85,0.92); transform: translateY(-2px); box-shadow: 0 16px 32px rgba(138,115,85,0.28); }
+        @media (hover: hover) { .review-submit-btn:hover { background-color: rgba(138,115,85,0.92); transform: translateY(-2px); box-shadow: 0 16px 32px rgba(138,115,85,0.28); } }
         .review-submit-btn:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; transform: none; box-shadow: none; }
 
         .form-error { font-size: 12.5px; color: #a8453a; margin-top: -8px; margin-bottom: 16px; min-height: 1em; }

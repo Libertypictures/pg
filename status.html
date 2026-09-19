@@ -62,14 +62,14 @@
         background: none; border: none; color: var(--ink-soft); font: inherit;
         font-size: 12px; padding: 8px 13px; cursor: pointer; transition: background .15s, color .15s;
     }
-    .seg button:hover { color: var(--ink); }
+    @media (hover: hover) { .seg button:hover { color: var(--ink); } }
     .seg button.active { background: rgba(196,166,126,.14); color: var(--gold); }
     .btn {
         background: var(--card); border: 1px solid var(--card-border); color: var(--ink);
         font: inherit; font-size: 12px; padding: 8px 14px; border-radius: 9px; cursor: pointer;
         transition: border-color .15s, color .15s;
     }
-    .btn:hover { border-color: var(--gold); color: var(--gold); }
+    @media (hover: hover) { .btn:hover { border-color: var(--gold); color: var(--gold); } }
     .btn:disabled { opacity: .5; cursor: default; }
 
     .card {
