@@ -32,18 +32,15 @@
          activates it for the premium editorial hierarchy the brief
          calls for, while keeping Poppins for everything functional
          (forms, buttons, dense UI) where it was already proven to work. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com/">
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
+    <link rel="stylesheet" href="/vendor/fonts.css?v=2ca4e079b3">
     <link rel="preconnect" href="https://api.libertymusa.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Fraunces:ital,opsz,wght@1,9..144,400;1,9..144,500&display=swap" rel="stylesheet"></noscript>
     
     <!-- Paystack Inline API + receipt image export — deferred: neither
          is needed to render this page (Paystack only matters at checkout
          time, html2canvas only when the receipt image is exported), and
          both blocked first paint before. -->
     <script defer src="https://js.paystack.co/v1/inline.js"></script>
-    <script async src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script async src="/vendor/html2canvas-1.4.1.min.js?v=e87e550794"></script>
 
     <style>
         /* Color Variables for Light & Dark Mode — same brand accent
