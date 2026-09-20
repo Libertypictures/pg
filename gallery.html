@@ -71,9 +71,25 @@ a{color:inherit}
 .cover-bg.no-photo{background:linear-gradient(160deg,#1a1714,#0f0c09);opacity:1}
 .cover-scrim{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,12,9,0.15) 0%,transparent 30%,rgba(15,12,9,0.55) 100%)}
 .cover-logo{position:absolute;top:28px;left:50%;transform:translateX(-50%);z-index:3;height:34px;width:auto;filter:invert(1);opacity:0;animation:coverIn 1s ease .2s forwards}
-.cover-content{position:relative;z-index:2;text-align:center;padding:40px 24px 80px;max-width:600px}
+/* The box cannot be wider than the phone it is on: `max-width:min(600px,100%)`,
+   and the same on the cover's own inline cap of 500px. A block pinned at 500px
+   inside a 439px screen overhangs it by 30px on each side, which is how the
+   event title ended up with no guard at all (Liberty, 20 Sep 2026: "the title
+   goes end to end"). */
+.cover-content{position:relative;z-index:2;text-align:center;padding:40px 24px 80px;max-width:min(600px,100%)}
 .cover-eyebrow{display:block;font-family:'Outfit',sans-serif;font-size:10px;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,0.5);font-weight:400;margin-bottom:20px;opacity:0;animation:coverIn 1s ease .4s forwards}
-.cover-name{font-family:'Cormorant Garamond','Fraunces',serif;font-weight:300;font-size:clamp(28px,6vw,48px);line-height:1.15;letter-spacing:3px;text-transform:none;white-space:nowrap;margin-bottom:16px;color:rgba(255,255,255,0.95);opacity:0;animation:coverIn 1.1s ease .6s forwards}
+/* white-space:nowrap removed on 20 Sep 2026. It meant a long event title could
+   not wrap, so it drew off BOTH edges of the screen — measured on the served
+   page at 439 CSS px: the title box ran from -6 to 446. A short title is
+   unaffected; a long one now wraps inside the same 24px guard as every other
+   word on the page, instead of bleeding past it.
+
+   Size reduced the same day, at Liberty's request ("the title font needs to be
+   smaller"): clamp(28px,6vw,48px) -> clamp(20px,5vw,34px). On a 439px phone the
+   title is 22px instead of 28px; on a wide desktop it tops out at 34px instead
+   of 48px. It stays the largest word on the cover — the eyebrow above it is 10px
+   and the date below it is 11px — so the hierarchy is unchanged, only smaller. */
+.cover-name{font-family:'Cormorant Garamond','Fraunces',serif;font-weight:300;font-size:clamp(20px,5vw,34px);line-height:1.15;letter-spacing:3px;text-transform:none;margin-bottom:16px;color:rgba(255,255,255,0.95);opacity:0;animation:coverIn 1.1s ease .6s forwards}
 .cover-date{font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:300;color:rgba(255,255,255,0.35);margin-bottom:48px;opacity:0;animation:coverIn 1s ease .8s forwards}
 .cover-scroll-hint{display:inline-flex;flex-direction:column;align-items:center;gap:0;font-size:0;color:transparent;opacity:0;animation:coverIn 1s ease 1.2s forwards}
 .cover-scroll-hint span{display:block;width:1px;height:36px;background:linear-gradient(to bottom,var(--cream-faint),transparent);animation:scrollPulse 2s ease infinite}
@@ -84,7 +100,12 @@ a{color:inherit}
 /* ── GALLERY HEADER ── */
 .gallery-header{position:sticky;top:0;z-index:40;background:rgba(15,12,9,0.98);border-bottom:1px solid var(--border);padding:14px 20px}
 .gallery-header-inner{display:flex;align-items:center;justify-content:space-between;max-width:1100px;margin:0 auto;gap:12px}
-.gallery-header-name{font-family:'Outfit',sans-serif;font-size:13px;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.7)}
+/* One typeface for the bar: the gallery title used 'Outfit' at 13px while the
+   line under it — and every other word on the page — is Poppins at 10px, so the
+   title read as a second, larger font sitting on top of the header (Liberty,
+   20 Sep 2026). Same family as the page now, and a size that belongs beside the
+   line underneath instead of above it. */
+.gallery-header-name{font-family:'Poppins',sans-serif;font-size:11px;font-weight:400;letter-spacing:1.4px;text-transform:uppercase;color:rgba(255,255,255,0.7)}
 .gallery-header-meta{font-size:10px;color:var(--cream-faint);letter-spacing:0.5px;margin-top:2px}
 
 /* ── GALLERY GRID — respects orientation, centered ── */
@@ -107,7 +128,7 @@ a{color:inherit}
 .g-tile.portrait{grid-column:span 2}
 .g-tile.landscape{grid-column:span 4}
 .g-tile.square{grid-column:span 2}
-.gallery-header-name{font-size:13px}
+.gallery-header-name{font-size:11px}
 }
 
 /* ── CINEMATIC VIEWER — the Featured Work film presentation fused
@@ -127,7 +148,7 @@ a{color:inherit}
 .lb-main{flex:1;display:flex;min-height:0;position:relative}
 .lb-stage{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;position:relative;padding:0 6px;min-height:0;touch-action:pan-x;overflow:hidden}
 .lb-img-wrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
-.lb-img-wrap img{max-width:100%;max-height:100%;object-fit:contain}
+.lb-img-wrap img{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain}
 
 /* FILM RAIL — vertical perforated contact sheet along the stage's
    right edge, the same design language as the homepage viewer. */
@@ -201,6 +222,12 @@ a{color:inherit}
 .dl-all-btn svg{width:15px;height:15px}
 .selection-bar{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(15,12,9,0.98);border-top:1px solid var(--border);padding:14px 20px calc(14px + env(safe-area-inset-bottom,0px));transform:translateY(100%);transition:transform .4s cubic-bezier(0.16,1,0.3,1)}
 .selection-bar.visible{transform:translateY(0)}
+/* The bar is FIXED to the bottom of the screen, so the page needs room beneath
+   its last block or the closing prompt sits underneath it. Measured at phone
+   size on 20 Sep 2026: the prompt ended at the very bottom of the screen and
+   its button sat 42 CSS px behind the bar. Only while the bar is showing, so a
+   gallery with nothing picked keeps its tight ending. */
+body.has-selection #page-wrap{padding-bottom:calc(84px + env(safe-area-inset-bottom,0px))}
 .selection-bar-inner{max-width:600px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
 .selection-bar-count{font-size:13px}.selection-bar-count strong{color:var(--accent)}
 .selection-bar-btn{padding:12px 24px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:#0f0c09;background:var(--accent);border:none;border-radius:24px;white-space:nowrap;transition:background-color .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease, opacity .25s ease, transform .25s ease, filter .25s ease}
@@ -457,7 +484,7 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
         <img src="" alt="Libertypictures" class="cover-logo" id="cover-logo" style="display:none;">
         <div class="cover-bg" id="cover-bg"></div>
         <div class="cover-scrim"></div>
-        <div class="cover-content" style="max-width:500px;">
+        <div class="cover-content" style="max-width:min(500px,100%);">
             <div class="cover-eyebrow" id="cover-eyebrow">&nbsp;</div>
             <h1 class="cover-name serif" id="cover-name">&nbsp;</h1>
             <div class="cover-date" id="cover-date"></div>
@@ -784,12 +811,22 @@ function renderNow() {
 /* ===================== OPEN GALLERY (proof browse or delivery finals) ===================== */
 function renderOpenGallery() {
     var isDeliv = view === 'delivery';
-    document.title = (gallery.eventTitle || gallery.clientName) + (isDeliv ? ' \u2014 Your Finals' : '') + ' | Libertypictures';
+    /* Trimmed once, here, because a title of spaces is not a title and the
+       places below all have to agree on what "no event title" means. */
+    var evTitle = String(gallery.eventTitle == null ? '' : gallery.eventTitle).trim();
+    document.title = (evTitle || gallery.clientName || 'Gallery') + (isDeliv ? ' \u2014 Your Finals' : '') + ' | Libertypictures';
     var pw = $('page-wrap'); pw.style.display = 'block';
     window.scrollTo(0, 0);
 
+    /* The client's name is the eyebrow on the line directly above, so the big
+       line is the EVENT TITLE or nothing at all. Falling back to the client
+       name printed the same name twice on the cover — Liberty, 20 Sep 2026:
+       "when I leave the event title blank, the name of client doesn't get
+       duplicated as event title". */
+    var coverName = $('cover-name');
+    coverName.textContent = evTitle ? evTitle + (isDeliv ? ' \u2014 Your Finals' : '') : '';
+    coverName.style.display = evTitle ? '' : 'none';
     $('cover-eyebrow').textContent = gallery.clientName || 'Your gallery';
-    $('cover-name').textContent = (gallery.eventTitle || gallery.clientName) + (isDeliv ? ' \u2014 Your Finals' : '');
     if (gallery.eventDate) {
         var d = new Date(String(gallery.eventDate).slice(0, 10) + 'T00:00:00');
         if (!isNaN(d.getTime())) {
@@ -805,7 +842,9 @@ function renderOpenGallery() {
     } else { bg.classList.add('no-photo'); }
     if (G.logoUrl) { var lg = $('cover-logo'); lg.src = API + G.logoUrl; lg.style.display = 'block'; }
 
-    $('header-name').textContent = (gallery.eventTitle || gallery.clientName) + (isDeliv ? ' \u2014 Finals' : '');
+    /* The header carries one line and no eyebrow, so the client's name is not a
+       repeat here — it is the useful thing to show when no title was set. */
+    $('header-name').textContent = (evTitle || gallery.clientName || '') + (isDeliv ? ' \u2014 Finals' : '');
 
     // first-open per-mode guide copy (welcome sheet) — proof: how to pick, delivery: how to download
     var guide = $('welcome-sheet');
@@ -857,7 +896,11 @@ function renderOpenGallery() {
     fp.querySelector('p').textContent = 'Happy with your picks?';
     var fb = $('finished-btn');
     fb.textContent = 'Finalise my selection';
-    fb.style.display = '';
+    /* Deliberately not shown: the bar fixed to the bottom of the screen already
+       carries "Finalise my selection" whenever picks exist, and two identical
+       buttons a few pixels apart is what read as broken. The prompt stays above
+       it as the closing line. */
+    fb.style.display = 'none';
     fb.disabled = false;
     fb.onclick = function () { startFinalise(); };
     $('finished-done').style.display = 'none';
@@ -919,6 +962,9 @@ function updateBarAndPrompt() {
     favs.style.display = count > 0 ? 'block' : 'none';
     var fp = $('finished-prompt');
     fp.style.display = (!isDeliv() && count > 0) ? 'block' : 'none';
+    /* Room beneath the last block while the fixed bar is up — without it the
+       closing prompt ends up underneath the bar (see the CSS rule). */
+    document.body.classList.toggle('has-selection', count > 0);
 }
 function clearSelection() {
     var ids = Object.keys(starred).filter(function (k) { return starred[k]; });
