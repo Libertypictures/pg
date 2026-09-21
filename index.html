@@ -283,8 +283,38 @@
            what makes it read as support for the claim above it instead of as
            the first thing shouting for attention. */
         .lp-hero-proof { display: none; margin-top: clamp(20px, 3.2vh, 36px); }
-        .lp-hero-proof.is-in { display: block; animation: lp-proof-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) 0.55s both; }
-        @keyframes lp-proof-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+        /* THE REVEAL IS PER ITEM, NOT PER BLOCK.
+
+           The whole strip used to rise and fade as one thing, half a second after
+           the headline. Right in sequence, wrong in feeling: four credentials
+           arriving as a single slab reads as a panel switching on, and a panel
+           switching on is the opposite of a quiet claim — which is what this
+           strip is for.
+
+           Each one now arrives in its own turn, a little later than the last, so
+           it assembles instead of appearing. The gaps are even and small — 140ms
+           apart, on a 0.95s rise — so they read as one gesture with four parts
+           rather than as four events: by 1.07s the last has landed, still inside
+           the moment the visitor is reading the headline above it.
+
+           A gentler rise than the block used to make (7px, not 10px) and a softer
+           easing, because the item is smaller than the strip was and the same
+           distance would look like more movement, not less.
+
+           Two things keep it honest. Only opacity and transform animate, both of
+           which a phone composites without touching layout — the same constraint
+           the floating pill and the assistant's dock are built under. And `both`
+           is what holds each item invisible until its own turn, instead of the
+           strip flashing whole and then staggering, which is the failure this
+           would have had if the delays were written on the keyframes. */
+        .lp-hero-proof.is-in { display: block; }
+        .lp-hero-proof.is-in .lp-hero-proof-item { animation: lp-proof-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        .lp-hero-proof.is-in .lp-hero-proof-item:nth-child(1) { animation-delay: 0.65s; }
+        .lp-hero-proof.is-in .lp-hero-proof-item:nth-child(2) { animation-delay: 0.79s; }
+        .lp-hero-proof.is-in .lp-hero-proof-item:nth-child(3) { animation-delay: 0.93s; }
+        .lp-hero-proof.is-in .lp-hero-proof-item:nth-child(4) { animation-delay: 1.07s; }
+        @keyframes lp-proof-in { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
         .lp-hero-proof-items { display: flex; justify-content: center; align-items: center; }
         .lp-hero-proof-item { padding: 0 clamp(12px, 3vw, 26px); border-left: 1px solid rgba(255,255,255,0.22); }
         .lp-hero-proof-item:first-child { border-left: 0; }
@@ -313,7 +343,7 @@
             .lp-hero-proof-number { font-size: clamp(16px, 5.4vw, 22px); }
             .lp-hero-proof-label { margin-top: 6px; }
         }
-        @media (prefers-reduced-motion: reduce) { .lp-hero-proof.is-in { animation: none; } }
+        @media (prefers-reduced-motion: reduce) { .lp-hero-proof.is-in, .lp-hero-proof.is-in .lp-hero-proof-item { animation: none; } }
 
         /* FEATURED IN */
         .featured-in { padding: 60px 0; text-align: center; }
@@ -1599,5 +1629,5 @@
 <!-- The studio assistant. It answers from the studio's live data and hands
      anything it cannot answer to Liberty. If it is not switched on it removes
      itself, so this page renders exactly as it did before it existed. -->
-<script src="assistant.js?v=11d8c56527" defer></script>
+<script src="assistant.js?v=7e1577678f" defer></script>
 </body></html>

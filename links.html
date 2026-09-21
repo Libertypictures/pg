@@ -69,6 +69,34 @@
     .link-card:active { transform: translateY(0); }
     .link-icon { flex-shrink: 0; width: 22px; height: 22px; color: var(--accent); display: flex; align-items: center; justify-content: center; }
     .link-icon svg { width: 100%; height: 100%; stroke-width: 1.6; }
+
+    /* ==== The assistant's door ================================================
+
+       The fifth card on this page, and deliberately the first one. Every other
+       card here is a destination — a page to read, a conversation to open
+       somewhere else — while this one answers the question the other four leave
+       you with, and answers it without leaving the page.
+
+       The same hairline material as its neighbours, because this page has no
+       coloured "primary" by design; it is distinguished by a slightly lifted
+       surface and by being the only one whose mark is the assistant's own face.
+       That face is NOT drawn here: the element carries `data-lp-face` and the
+       widget fills it, so this page owns no copy of the drawing — one character,
+       one drawing, the same rule the dashboard follows.
+
+       The face keeps the widget's own 1.9px stroke rather than the 1.6px the
+       other cards use, so it reads as the same drawing in both places.
+
+       `html.lpa-dock-alive` is what reserves room under this page. The
+       assistant's dock floats at the foot of the screen, and this page is short
+       enough that it would sit on top of the copyright line; the class is added
+       by the widget AFTER its dock is built, so a widget that fails to start
+       leaves this page exactly as it was. (This is SKILLS.md rule 25: a bar
+       fixed to the bottom of a screen reserves its own room.) */
+    .link-card-ask { width: 100%; font: inherit; text-align: left; cursor: pointer;
+        background: var(--card-hover); border-color: var(--accent); }
+    .link-card-ask .link-icon svg { stroke-width: 1.9; }
+    html.lpa-dock-alive body { padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)); }
     .link-text { flex: 1; min-width: 0; }
     .link-title { font-weight: 600; font-size: 13.5px; letter-spacing: 0.2px; }
     .link-desc { font-size: 11.5px; color: var(--text-soft); margin-top: 3px; }
@@ -117,8 +145,24 @@
         <p class="brand-welcome">Glad you're here.</p>
     </header>
 
-    <!-- Flat link list — same style for all, ordered by intent -->
+    <!-- Flat link list, ordered by intent — with one exception, and the exception
+         is the whole point of this page. The assistant is first because it is the
+         only card that answers rather than sends you somewhere: somebody arriving
+         from an Instagram bio usually has one question, and the four cards below
+         make them choose a destination before they have asked it.
+
+         `hidden` until the widget says it is on the page and can be opened. A card
+         that opens nothing is worse than no card, and the honest way to know is to
+         ask the thing that would have to do the opening. -->
     <nav class="link-list" aria-label="Links">
+        <button type="button" class="link-card link-card-ask" id="links-ask" hidden>
+            <div class="link-icon" data-lp-face></div>
+            <div class="link-text">
+                <div class="link-title">Ask me anything</div>
+                <div class="link-desc">Rates, dates and what's included — answered here, in a moment</div>
+            </div>
+            <span class="link-arrow">›</span>
+        </button>
         <a href="https://libertymusa.com/?utm_source=igbio&amp;utm_medium=links&amp;utm_campaign=portraits" class="link-card">
             <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
             <div class="link-text">
@@ -183,9 +227,37 @@
         })
         .catch(function () { /* page renders fine without settings */ });
 </script>
+<script>
+    /* The one door on this page that opens something here instead of somewhere
+       else.
+
+       Revealed only once the assistant says it is on the page, for the same
+       reason the widget fails closed: a card that opens nothing is worse than no
+       card. The alternative — showing it and hoping — is how a page ends up with
+       a dead button, and nobody reports a dead button, they just stop using the
+       page.
+
+       Registered on DOMContentLoaded rather than run inline, because
+       assistant.js is deferred and a deferred script runs AFTER the document is
+       parsed: waiting for this event is the only way to be sure the widget has
+       already had its turn. The click handler re-checks anyway — the widget
+       removes its own way in when it gives up, and a door must not outlive the
+       room it opens into. */
+    document.addEventListener('DOMContentLoaded', function () {
+        var ask = document.getElementById('links-ask');
+        if (!ask) return;
+        if (!window.lpAssistant || typeof window.lpAssistant.open !== 'function') return;
+        ask.hidden = false;
+        ask.addEventListener('click', function () {
+            if (window.lpAssistant && typeof window.lpAssistant.open === 'function') {
+                window.lpAssistant.open();
+            }
+        });
+    });
+</script>
 <!-- The studio assistant. It answers from the studio's live data and hands
      anything it cannot answer to Liberty. If it is not switched on it removes
      itself, so this page renders exactly as it did before it existed. -->
-<script src="assistant.js?v=11d8c56527" defer></script>
+<script src="assistant.js?v=7e1577678f" defer></script>
 </body>
 </html>

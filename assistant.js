@@ -41,6 +41,15 @@
       field below is 16px for that reason, and the comment is here so nobody
       "tidies" it back down.
 
+   6. A PAGE MAY OWN A DOOR AND A SLOT FOR THE FACE, but never a copy of either.
+      The links page is a list of doors, so one of them is the assistant itself —
+      a card a visitor taps — and that page gets in through `window.lpAssistant`
+      rather than by copying this file's opening code. Its card carries
+      `data-lp-face` and is filled from the same drawing the dock uses, on the
+      same principle as the dashboard: one character, one drawing. The dock also
+      shows itself on a page too short to scroll past the reveal, because the
+      link-in-bio page is exactly that and the assistant was invisible on it.
+
    The API base is hardcoded rather than read from the page, because each page
    defines its own constant in its own scope and this file cannot see them. The
    branded hostname is the stable one; it is what every page already calls. */
@@ -127,6 +136,29 @@
                 'What do clients say about the studio?',
                 'How much is a portrait session?',
                 'Can I book a session like these?'
+            ]
+        },
+        /* The link-in-bio page, which is where everybody arriving from Instagram
+           lands first. That arrival is the only thing true of these visitors and
+           nobody else on the site: they have seen a grid of photographs and
+           nothing else, and the page under them is four doors.
+
+           So the three are the two questions a stranger actually has — what it
+           costs, and how to get one — plus where the studio even is, which only
+           a visitor who has seen no page yet needs to ask.
+
+           These USED to be the default three, word for word, on the reasoning
+           that the traffic is the same person. It is the same person, and the
+           set was still wrong: a named set that is a subset of the fallback is
+           not an adaptation at all, it is the fallback spelled twice, and the
+           suite refuses it for exactly that reason (every named page must offer
+           at least one question no unnamed page offers). The first version of
+           this comment argued the rule away instead of meeting it. */
+        links: {
+            ask: [
+                'How much is a portrait session?',
+                'How do I book a session?',
+                'Where are you based?'
             ]
         }
     };
@@ -805,7 +837,36 @@
         // Hand the page's own floating button back before leaving: the class
         // below is the only thing that hid it, and the page still works.
         document.documentElement.classList.remove('lpa-dock-alive');
+        /* And the way in, because a page must not be able to open a chat box
+           that has just removed itself from the page. A page holding the
+           reference and calling it would get a sheet with no parent: no visible
+           failure and nothing on screen, which is the worst of both. */
+        try { delete window.lpAssistant; } catch (err) { window.lpAssistant = null; }
         window.__lpAssistantLoaded = false;
+    }
+
+    /* A PAGE MAY OPEN THE ASSISTANT ITSELF.
+
+       The links page is a list of doors, and one of them should be the
+       assistant: a card a visitor taps to ask a question, rather than a floating
+       pill they have to notice at the bottom of a screen. That page needs a way
+       in, and the alternative was copying the widget's opening code into the
+       page — which is how two versions of one behaviour begin to disagree.
+
+       Deliberately three read-only functions and nothing else. There is no way
+       in here to reach the page, to send a message as the visitor, or to read
+       the conversation; a door does not need any of that, and every one of those
+       would be a promise about a stranger's privacy that this file makes
+       nowhere else.
+
+       Published from start(), so it exists only when the widget does, and
+       removed in removeWidget() with it. */
+    function publish() {
+        window.lpAssistant = {
+            open: function () { openSheet(); },
+            close: function () { closeSheet(); },
+            isOpen: function () { return open; }
+        };
     }
 
     function ownTheFooter(on) {
@@ -1465,9 +1526,30 @@
        sheet's anchor.
        ------------------------------------------------------------------ */
 
+    /* AND WHEN IT MUST SHOW ITSELF ANYWAY.
+
+       That rule has a hole in it, and the links page was standing in the hole:
+       the dock is revealed once the visitor has scrolled past 55% of the
+       viewport, and a page too short to scroll that far NEVER reveals it. The
+       link-in-bio page is five cards — on a phone it does not scroll at all — so
+       the assistant was loaded, built, correct, and permanently invisible on the
+       one page that is nothing but a list of doors. Nobody would have reported
+       it as a bug either; it would have read as "the assistant is not on that
+       page".
+
+       So the reveal is skipped where it cannot happen: if the page cannot be
+       scrolled past the threshold there is no hero to protect, and the dock is
+       simply shown. `load` is listened for as well as resize, because
+       scrollHeight grows when the page's images arrive — on a long page that can
+       briefly look short, and the correction should not have to wait for the
+       next scroll. */
+    function revealThreshold() { return window.innerHeight * 0.55; }
+
     function wireReveal() {
         function update() {
-            var past = window.scrollY > (window.innerHeight * 0.55);
+            var maxScroll = Math.max(0, (document.documentElement.scrollHeight || 0) - window.innerHeight);
+            var reachable = maxScroll > revealThreshold();
+            var past = !reachable || window.scrollY > revealThreshold();
             if (past === revealed) return;
             revealed = past;
             if (open) return;
@@ -1475,6 +1557,7 @@
         }
         window.addEventListener('scroll', update, { passive: true });
         window.addEventListener('resize', update);
+        window.addEventListener('load', update);
         update();
     }
 
@@ -1605,8 +1688,35 @@
                     if (span) span.textContent = book.label;
                 }
                 applyAssistantSettings(s);
+                // The look is the studio's to choose, so the page's own face slots
+                // are redrawn once that choice is known — see fillFaceSlots.
+                fillFaceSlots(true);
             })
             .catch(function () {});
+    }
+
+    /* PAGE-OWNED SLOTS FOR THE FACE.
+
+       A page can own a piece of the assistant's identity — the links page's ask
+       card is one — without copying the drawing, which is how two copies of a
+       face begin to drift out of step. Anything carrying `data-lp-face` is
+       filled from the same faceSVG() the dock uses.
+
+       Filled twice on purpose: once immediately, so the page is never briefly
+       missing its mark, and again when the studio's settings land, because the
+       look it was drawn in is the studio's to choose and the first pass can only
+       use the default. `replace` is what makes the second pass a repair rather
+       than a second face. */
+    function fillFaceSlots(replace) {
+        var slots = document.querySelectorAll('[data-lp-face]');
+        for (var i = 0; i < slots.length; i++) {
+            var next = iconForLook(SAY.look);
+            if (slots[i].firstChild) {
+                if (replace) slots[i].replaceChild(next, slots[i].firstChild);
+            } else {
+                slots[i].appendChild(next);
+            }
+        }
     }
 
     function start() {
@@ -1615,6 +1725,10 @@
         invites = SAY.invites.slice();
         buildDock();
         buildSheet();
+        // The one way in a page owns, published only once there is a sheet to
+        // open — see publish().
+        publish();
+        fillFaceSlots(false);
         wireReveal();
         wireKeyboard();
         // The words are on screen before the settings have answered; whatever
