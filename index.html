@@ -309,11 +309,24 @@
            strip flashing whole and then staggering, which is the failure this
            would have had if the delays were written on the keyframes. */
         .lp-hero-proof.is-in { display: block; }
-        .lp-hero-proof.is-in .lp-hero-proof-item { animation: lp-proof-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) both; }
-        .lp-hero-proof.is-in .lp-hero-proof-item:nth-child(1) { animation-delay: 0.65s; }
-        .lp-hero-proof.is-in .lp-hero-proof-item:nth-child(2) { animation-delay: 0.79s; }
-        .lp-hero-proof.is-in .lp-hero-proof-item:nth-child(3) { animation-delay: 0.93s; }
-        .lp-hero-proof.is-in .lp-hero-proof-item:nth-child(4) { animation-delay: 1.07s; }
+        /* Slower than it was, and later than it was.
+
+           The owner's note was "the social proof needs to chime in a little more
+           slowly", and the first version did the opposite of chime: four
+           credentials arrived inside four tenths of a second, each on a 0.95s
+           fade, which reads as a strip switching on rather than as a credit
+           being offered, one at a time, by somebody who is not in a hurry.
+
+           The travel is unchanged at seven pixels. It is the TIME that moved —
+           a longer distance across a hero is a bigger gesture, not a gentler
+           one, and "slowly" is only ever about time. 1.6s an item, and a beat
+           over a fifth of a second between them, so the last one is still
+           settling as the first has finished rather than after it. */
+        .lp-hero-proof.is-in .lp-hero-proof-item { animation: lp-proof-in 1.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+        .lp-hero-proof.is-in .lp-hero-proof-item:nth-child(1) { animation-delay: 1.05s; }
+        .lp-hero-proof.is-in .lp-hero-proof-item:nth-child(2) { animation-delay: 1.27s; }
+        .lp-hero-proof.is-in .lp-hero-proof-item:nth-child(3) { animation-delay: 1.49s; }
+        .lp-hero-proof.is-in .lp-hero-proof-item:nth-child(4) { animation-delay: 1.71s; }
         @keyframes lp-proof-in { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: none; } }
         .lp-hero-proof-items { display: flex; justify-content: center; align-items: center; }
         .lp-hero-proof-item { padding: 0 clamp(12px, 3vw, 26px); border-left: 1px solid rgba(255,255,255,0.22); }
@@ -1629,5 +1642,5 @@
 <!-- The studio assistant. It answers from the studio's live data and hands
      anything it cannot answer to Liberty. If it is not switched on it removes
      itself, so this page renders exactly as it did before it existed. -->
-<script src="assistant.js?v=7e1577678f" defer></script>
+<script src="assistant.js?v=4e6ea3deac" defer></script>
 </body></html>

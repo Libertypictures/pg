@@ -42,13 +42,23 @@
       "tidies" it back down.
 
    6. A PAGE MAY OWN A DOOR AND A SLOT FOR THE FACE, but never a copy of either.
-      The links page is a list of doors, so one of them is the assistant itself —
-      a card a visitor taps — and that page gets in through `window.lpAssistant`
-      rather than by copying this file's opening code. Its card carries
-      `data-lp-face` and is filled from the same drawing the dock uses, on the
-      same principle as the dashboard: one character, one drawing. The dock also
-      shows itself on a page too short to scroll past the reveal, because the
-      link-in-bio page is exactly that and the assistant was invisible on it.
+      `data-lp-door` is an EMPTY element a page puts where it wants the
+      assistant to be — the links page has one, first above its destinations —
+      and this file builds the field, the face and the button inside it. The page
+      owns a place rather than a second version of the behaviour: it cannot open
+      a box, send a question or read a reply. A page that owns a door gets no
+      dock (the owner's word for the links page was "cluttered"), and a page that
+      does not gets the dock, including on a page too short to scroll past the
+      reveal. `window.lpAssistant` remains the way in for a page that would
+      rather have a plain button of its own.
+
+   7. IT KNOWS WHICH PAGE IT IS STANDING ON, and says so. The last segment of
+      the path travels with every question as `page`, and the worker matches it
+      against a fixed table of page descriptions before any of it can reach the
+      prompt — which is how "how do I book", asked while standing ON the booking
+      page, stopped being answered with a link to the booking page. A key nobody
+      has described is silent, so a page added next year changes nothing until
+      somebody writes it down in `grounding.js`.
 
    The API base is hardcoded rather than read from the page, because each page
    defines its own constant in its own scope and this file cannot see them. The
@@ -59,7 +69,21 @@
 
     var API = 'https://api.libertymusa.com';
     var ENDPOINT = API + '/api/assistant/public';
-    var MAX_HISTORY = 8;
+    /* How much of the conversation travels back with the next question.
+
+       Doubled, from four exchanges to six, after the owner reported that the
+       assistant "gives up after a few messages". Part of what it was doing was
+       forgetting: this is the ONLY memory the widget has — the studio stores no
+       transcript — so a question asked five turns in arrived at the model with
+       the first four exchanges, including the visitor's own name and package,
+       already gone. A conversation that forgets what it just said does not sound
+       confused, it sounds like a stranger, and the model's answer to that is
+       either a re-ask or a handover.
+
+       Bounded on purpose, and still small: the worker re-validates every entry
+       and caps the COUNT as well as the length, because this is untrusted input
+       coming back through a public endpoint. */
+    var MAX_HISTORY = 12;
 
     /* How long a question may go unanswered before the widget starts explaining
        itself, and how long before it gives up and offers somewhere else to go.
@@ -95,38 +119,47 @@
         'Do you shoot weddings?'
     ];
 
+    /* TWO QUESTIONS ON A NAMED PAGE, NOT THREE.
+
+       The owner's words were "there are too many suggestions on the assistant
+       chat and the copy seems too generic". Both halves of that were true, and
+       they were the same fault: three chips in a row meant one of them had to be
+       filler, and the filler was always the price question — the one every page
+       shares, which is therefore the one that tells a visitor reading the
+       portfolio nothing about the portfolio.
+
+       So what is left is the pair that a visitor standing HERE actually has.
+       Nothing was cut for being unanswerable: every question below was asked of
+       the live assistant before it was written down, which the suite enforces.
+       The generic set stays at three, because it is the one that has to cover
+       every page nobody named. */
     var PAGE = {
         portfolio: {
             ask: [
                 'What kind of work do you shoot?',
-                'Can I book a session like these?',
-                'How much is a portrait session?'
+                'Can I book a session like these?'
             ]
         },
         gallery: {
             ask: [
-                'What kind of work do you shoot?',
                 'How do I get my own gallery?',
-                'How much is a portrait session?'
+                'What kind of work do you shoot?'
             ]
         },
         book: {
             ask: [
                 'How far ahead should I book?',
-                'How much is a portrait session?',
                 'What do your packages include?'
             ]
         },
         'wedding-book': {
             ask: [
                 "What's included in a wedding package?",
-                'How much do wedding packages cost?',
-                'Do you shoot pre-weddings?'
+                'How much do wedding packages cost?'
             ]
         },
         wedding: {
             ask: [
-                "What's included in a wedding package?",
                 'How much do wedding packages cost?',
                 'Do you shoot pre-weddings?'
             ]
@@ -134,7 +167,6 @@
         review: {
             ask: [
                 'What do clients say about the studio?',
-                'How much is a portrait session?',
                 'Can I book a session like these?'
             ]
         },
@@ -157,7 +189,6 @@
         links: {
             ask: [
                 'How much is a portrait session?',
-                'How do I book a session?',
                 'Where are you based?'
             ]
         }
@@ -171,6 +202,11 @@
        loadSettings(), which only ever writes over these when the studio has
        actually said something. */
     var SAY = {
+        /* The box's NAME, not a heading: it is what the dialog is called — the
+           words a screen reader announces when it opens — and it is no longer
+           drawn at the top of the chat. See the note on `.lpa-head` in the
+           stylesheet, and the studio's Heading field in Settings, which still
+           decides this string. */
         title: 'Ask about anything',
         // Shorter and warmer than "Hello — I can tell you about sessions, prices
         // and open dates...", which was both long AND said nothing about who is
@@ -210,6 +246,8 @@
     var sendBtn = null;
     var typingEl = null;
     var typingDots = null;
+    var avatarEl = null;      // the one face in the log, always on the newest reply
+    var doorInputs = [];      // the fields of any doors the page owns, kept for settings
     var history = [];
     var busy = false;
     var open = false;
@@ -334,6 +372,33 @@
         '.lpa-dock.is-busy .lpa-lobe-ask .lpa-mouth.is-open{opacity:1}',
         '.lpa-lobe-ask:hover .lpa-face,.lpa-dock.is-open .lpa-face,.lpa-dock.is-busy .lpa-face{transform:scale(1.06)}',
 
+        /* AND THE RESTING MOUTH IS NEVER QUITE STILL.
+
+           Two blinking eyes over a straight line is a `:|` face, and a face that
+           only blinks is a face holding its breath: the eyes move and nothing
+           else does. The mouth now widens and narrows on its own, slowly, which
+           is the smallest change that reads as somebody idling rather than as an
+           icon being rendered.
+
+           A transform on the ONE resting mouth, deliberately not a fourth mouth:
+           the three mouths are drawn once, stacked and crossfaded (see above),
+           and a second neutral path that had to be kept in step with the first is
+           exactly the drift that rule exists to prevent.
+
+           `transform-box` matters. A path scales about the origin of the SVG by
+           default, and the resting mouth is a horizontal line on the 24-box grid,
+           so scaling it from there does not grow it — it slides it sideways off
+           the face. With fill-box the line grows about its own middle.
+
+           5.2s against the blink's 3.4s, and deliberately NOT a multiple of it:
+           two cycles that stay in step become a metronome, which is the one thing
+           both timings were chosen to avoid. It stops with the blink for anyone
+           who has asked for less motion — see the block at the foot of this
+           stylesheet, which names the eyes and the mouths together. */
+        '.lpa-face .lpa-mouth.is-neutral{transform-box:fill-box;transform-origin:center;',
+        'animation:lpa-mouth 5.2s ease-in-out infinite}',
+        '@keyframes lpa-mouth{0%,100%{transform:scaleX(.86)}48%{transform:scaleX(1.16)}}',
+
         /* ── the words it says instead of "ask a question" ─────────────────── */
 
         /* A few invitations, cycled slowly. Kept quiet on purpose: it swaps at
@@ -423,27 +488,54 @@
            grows, and the header — the row holding the only way out of this
            sheet — is the first thing to be crushed. The log absorbs the shrink
            instead, because it is the only row that can. */
-        '.lpa-head{position:relative;flex:none;display:flex;align-items:center;justify-content:space-between;gap:12px;',
-        'padding:14px 13px 13px 17px;border-bottom:1px solid var(--border-color,#e8e3d9)}',
-        '.lpa-title{font-family:"Fraunces",Georgia,serif;font-size:16px;line-height:1.25;letter-spacing:.2px}',
+        '.lpa-head{position:relative;flex:none;display:flex;align-items:center;justify-content:flex-end;gap:12px;',
+        'padding:9px 9px 0}',
         '.lpa-close{flex:none;width:32px;height:32px;border-radius:50%;border:none;background:transparent;color:inherit;',
-        'cursor:pointer;display:grid;place-items:center;opacity:.6;transition:opacity .25s ease,background-color .25s ease,transform .4s ' + SPRING + '}',
+        'cursor:pointer;display:grid;place-items:center;opacity:.55;transition:opacity .25s ease,background-color .25s ease,transform .4s ' + SPRING + '}',
         '.lpa-close:hover{opacity:1;background:var(--highlight-bg,#f8f4ec)}',
         '.lpa-close:active{transform:scale(.92)}',
         '.lpa-close svg{width:13px;height:13px}',
-        /* A phone-shaped grab handle: the sheet answers a downward drag, and
-           saying so with a handle is the whole point of a handle. */
-        '.lpa-grab{position:absolute;top:6px;left:50%;transform:translateX(-50%);width:40px;height:4px;',
-        'border-radius:999px;background:var(--border-color,#e8e3d9);opacity:.9}',
-        '@media (min-width:641px){.lpa-grab{display:none}}',
+        /* THE HEAD IS A CLOSE BUTTON AND NOTHING ELSE.
+
+           It used to be three things: a grab handle, a heading reading "Ask
+           about anything", and the ×. On a phone that is a title bar's worth of
+           height over a conversation, and the heading said the same generic
+           thing on every page of the site — the one line in the sheet that could
+           have been any studio's. The visitor can see what this is: the face is
+           on the newest reply and the first words are the assistant introducing
+           itself.
+
+           Both are gone as DRAWN things, which is not the same as gone as
+           behaviour, so the two halves are worth stating separately:
+
+           * the handle was only ever decoration. The gesture it advertised still
+             works — the head is still the sheet's drag surface — and a sheet is
+             dragged by its top edge by everyone who has ever used one.
+           * the heading is still the box's NAME. It is on the dialog as its
+             accessible name, so a screen reader still announces it, and the
+             studio's own heading setting still decides what that name is. The
+             field is not a lie; it is simply no longer printed on screen. */
 
         /* ── the conversation ─────────────────────────────────────────────── */
 
         '.lpa-log{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;',
-        'padding:16px 15px 6px;display:flex;flex-direction:column;gap:13px}',
+        'padding:14px 15px 6px;display:flex;flex-direction:column;gap:13px}',
         /* The studio answers as plain text, the way a person writes: no bubble,
            no border, nothing to click. The visitor's own words get the pill. */
         '.lpa-bot{font-size:15px;line-height:1.72;color:var(--text-primary,#1a1815);max-width:94%;white-space:pre-wrap;word-break:break-word}',
+        /* THE LATEST REPLY WEARS THE FACE, AND ONLY THE LATEST ONE.
+
+           A conversation with no speaker is a wall of italic-free text: the
+           visitor's own words are a pill, and everything else is a paragraph
+           nobody is visibly saying. One face — the same drawing as the dock's,
+           moved rather than copied — sits on the newest reply and travels down
+           as the conversation grows. It is the assistant's turn to speak that
+           it marks, so it lives on the newest line and never accumulates: an
+           avatar on every reply is a wall of faces, and a face on the FIRST
+           reply is a face that is no longer talking. */
+        '.lpa-said{display:flex;gap:10px;align-items:flex-start}',
+        '.lpa-avatar{flex:none;width:15px;height:15px;margin-top:5px;color:var(--accent,#8a7355)}',
+        '.lpa-avatar svg{width:100%;height:100%;display:block}',
         '.lpa-me{align-self:flex-end;max-width:86%;padding:9px 14px;border-radius:15px 15px 4px 15px;',
         'background:var(--highlight-bg,#f8f4ec);font-size:14.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}',
         /* A destination the assistant named, made tappable — a URL in a
@@ -497,6 +589,39 @@
         'white-space:nowrap;transition:background-color .25s ease,color .25s ease,transform .4s ' + SPRING + '}',
         '.lpa-chip:hover{background:var(--highlight-bg,#f8f4ec)}',
         '.lpa-chip:active{transform:scale(.97)}',
+
+        /* ── the door a page owns ─────────────────────────────────────────── */
+
+        /* The links page is a list of destinations, and the assistant is the
+           only one of them that ANSWERS. Asking a visitor to choose it from the
+           list and then type in a chat box that opens elsewhere is two steps
+           where one will do — so the page owns a PLACE and the widget builds the
+           thing that stands in it.
+
+           `data-lp-door` is that place: an empty element in the page's own
+           markup, filled here with the same face and the same request path the
+           dock uses. It is a door rather than a copy of the room, which is the
+           same rule as the face slots: the page can open the conversation and
+           cannot read it, and there is no second drawing of the character and no
+           second request to keep in step.
+
+           The field is 16px for the reason every field in this file is: iOS
+           Safari zooms the whole page when a focused field is smaller than that,
+           and it does not zoom back out. */
+        '.lpa-door{display:flex;flex-direction:column;gap:11px;padding:16px 17px;',
+        'border:1px solid var(--border-color,#e8e3d9);border-radius:18px;background:var(--bg-card,#fefdfb)}',
+        '.lpa-door-head{display:flex;align-items:flex-start;gap:11px}',
+        '.lpa-door-face{flex:none;width:19px;height:19px;margin-top:1px;color:var(--accent,#8a7355)}',
+        '.lpa-door-face svg{width:100%;height:100%;display:block}',
+        '.lpa-door-title{font-weight:600;font-size:14px;letter-spacing:.1px}',
+        '.lpa-door-sub{font-size:12px;line-height:1.55;color:var(--text-secondary,#6b6459);margin-top:3px}',
+        '.lpa-door-row{display:flex;align-items:center;gap:8px}',
+        '.lpa-door-input{flex:1;min-width:0;box-sizing:border-box;padding:11px 15px;border-radius:999px;',
+        'border:1px solid var(--border-color,#e8e3d9);background:transparent;color:inherit;font:inherit;font-size:16px}',
+        '.lpa-door-input:focus{outline:none;border-color:var(--accent,#8a7355);box-shadow:0 0 0 4px rgba(138,115,85,.10)}',
+        '.lpa-door-send{flex:none;padding:11px 17px;border-radius:999px;border:none;cursor:pointer;font-family:inherit;',
+        'font-size:12.5px;font-weight:600;letter-spacing:.2px;background:var(--btn-primary-bg,#1a1815);color:var(--btn-primary-text,#fff)}',
+        '.lpa-door-send:active{transform:scale(.97)}',
 
         /* ── the composer ─────────────────────────────────────────────────── */
 
@@ -747,11 +872,32 @@
         logEl.scrollTop = logEl.scrollHeight;
     }
 
+    /* THE ONE FACE IN THE CONVERSATION.
+
+       Built once, on the first reply, and MOVED onto every reply after it —
+       appendChild moves a node rather than cloning it, so "the newest reply
+       wears the face" is expressed by putting the same element in a new parent
+       and letting the old parent lose it. Copied instead, the log would fill up
+       with faces and every one of them would have to be kept in step.
+
+       It is a slot like any other the page might own (`data-lp-face`), so the
+       studio's own choice of look reaches it through the same fillFaceSlots()
+       call, rather than through a second drawing that could drift. */
+    function avatar() {
+        if (!avatarEl) {
+            avatarEl = el('span', 'lpa-avatar');
+            avatarEl.setAttribute('data-lp-face', '');
+            avatarEl.appendChild(iconForLook(SAY.look));
+        }
+        return avatarEl;
+    }
+
     /** The studio's words: plain text, no bubble — except that a destination it
         names is tappable. See the note on LINK_SPLIT. */
     function say(text) {
         var stick = atBottom();
         var row = el('div', 'lpa-row');
+        var line = el('div', 'lpa-said');
         var box = el('div', 'lpa-bot');
         String(text == null ? '' : text).split(LINK_SPLIT).forEach(function (part) {
             if (!part) return;
@@ -764,7 +910,12 @@
                 box.appendChild(document.createTextNode(part));
             }
         });
-        row.appendChild(box);
+        // The face first, so the words are indented beside it, and only after
+        // the reply has been built — a reply that is somehow empty is not worth
+        // a face of its own.
+        line.appendChild(avatar());
+        line.appendChild(box);
+        row.appendChild(line);
         logEl.appendChild(row);
         if (stick) toBottom();
         return row;
@@ -806,6 +957,8 @@
            request is made, because this function is the one place that already
            knows whether a reply is still coming — including every path that ends
            in an error or a timeout. */
+        // The dock is optional now: a page that owns a door has no dock, and a
+        // face that cannot be shown is not a reason to fail a reply.
         if (dock) dock.classList.toggle('is-busy', !!on);
         if (on) {
             if (typingEl) return;
@@ -834,6 +987,15 @@
         if (dock && dock.parentNode) dock.parentNode.removeChild(dock);
         if (sheet && sheet.parentNode) sheet.parentNode.removeChild(sheet);
         if (scrim && scrim.parentNode) scrim.parentNode.removeChild(scrim);
+        /* And the doors, which live in the PAGE's markup rather than in this
+           file's own. A form left standing here would be a field that swallows
+           what a visitor types: the sheet it opens has just been taken off the
+           page, so the submit would do nothing visible at all — which is the
+           dead button every rule about doors exists to prevent. */
+        var doors = document.querySelectorAll('[data-lp-door]');
+        for (var i = 0; i < doors.length; i++) {
+            while (doors[i].firstChild) doors[i].removeChild(doors[i].firstChild);
+        }
         // Hand the page's own floating button back before leaving: the class
         // below is the only thing that hid it, and the page still works.
         document.documentElement.classList.remove('lpa-dock-alive');
@@ -1098,7 +1260,17 @@
                 // The saved contact is how a returning client is recognised. It
                 // is only ever looked up, never trusted as an identity, and an
                 // unrecognised one simply means a normal first-time answer.
-                body: JSON.stringify({ message: question, history: history.slice(-MAX_HISTORY), contact: savedContact })
+                // `page` is the last segment of the path, and it is the ONE
+                // thing the widget knows that the worker cannot: which page the
+                // visitor is standing on. The worker checks it against a fixed
+                // list before it reaches the prompt, so a page added tomorrow
+                // sends nothing and changes nothing.
+                body: JSON.stringify({
+                    message: question,
+                    history: history.slice(-MAX_HISTORY),
+                    contact: savedContact,
+                    page: pageKey()
+                })
             });
 
             if (res.status === 503) {   // not switched on, or a deploy without the model
@@ -1286,6 +1458,10 @@
     }
 
     function stepInvite() {
+        // No dock means no label to rotate — a page with its own door renders
+        // the same settings, and every one of them has to survive being applied
+        // to a widget without one.
+        if (!wordEl) return;
         // Never mid-conversation, never while the sheet is open, and never
         // while the dock is off screen where nobody can see it change.
         if (open || busy || !invites.length || document.hidden) return;
@@ -1300,6 +1476,7 @@
     }
 
     function startInvites() {
+        if (!wordEl) return;
         if (inviteTimer || reducedMotion() || invites.length < 2) return;
         /* Two seconds, not five. The invitations are three or four words each
            and the old gap left the button sitting on one line long enough to
@@ -1326,7 +1503,7 @@
     /** The bridge, and the lean toward each other, while the halves split or
         merge. Timed to the dock's own gap transition, not a fixed guess. */
     function liquify() {
-        if (!neck) return;
+        if (!neck || !dock) return;
         neck.classList.remove('is-live');
         dock.classList.remove('is-stretching');
         // Reading offsetWidth restarts the animation instead of coalescing it.
@@ -1347,18 +1524,19 @@
         sheet = el('div', 'lpa-sheet');
         sheet.setAttribute('role', 'dialog');
         sheet.setAttribute('aria-modal', 'true');
-        sheet.setAttribute('aria-label', 'Ask the studio a question');
+        /* The box's NAME, which is the studio's heading if they wrote one — set
+           again in applyAssistantSettings() when the settings land, because the
+           sheet is built before anything has been fetched. It is announced and
+           not drawn; see the note on `.lpa-head`. */
+        sheet.setAttribute('aria-label', SAY.title);
         sheet.hidden = true;
 
+        /* A row with the way out on it and nothing else. The title and the grab
+           handle that used to live here are explained, and gone, in the
+           stylesheet beside `.lpa-head` — but the head element itself stays,
+           because it is also the sheet's drag surface and the drag is still
+           there: it was only the decoration that was removed. */
         var head = el('div', 'lpa-head lpa-in');
-        head.appendChild(el('span', 'lpa-grab'));
-        /* One line and nothing under it. The old header was a title plus a
-           sentence explaining the title plus a close button — and on a phone
-           that is most of the height of the sheet before the conversation has
-           started. "Ask about a session" was also narrower than the thing it
-           described: it answers questions about sessions, rates, dates and the
-           studio itself. */
-        head.appendChild(el('div', 'lpa-title', SAY.title));
 
         var close = el('button', 'lpa-close');
         close.type = 'button';
@@ -1481,9 +1659,9 @@
            the dock while it is one capsule and to each half once they are apart,
            so switching it after the move would leave the capsule briefly hollow
            with a hole where the join used to be. */
-        dock.classList.add('is-open');
+        if (dock) dock.classList.add('is-open');
         liquify();
-        lobeAsk.setAttribute('aria-expanded', 'true');
+        if (lobeAsk) lobeAsk.setAttribute('aria-expanded', 'true');
         settleInvites();
 
         if (!greetingShown) {
@@ -1503,8 +1681,8 @@
         sheet.classList.remove('is-on');
         scrim.classList.remove('is-on');
         liquify();
-        dock.classList.remove('is-open');
-        lobeAsk.setAttribute('aria-expanded', 'false');
+        if (dock) dock.classList.remove('is-open');
+        if (lobeAsk) lobeAsk.setAttribute('aria-expanded', 'false');
         if (inputEl) inputEl.blur();
         if (lobeAsk) lobeAsk.focus();
 
@@ -1631,8 +1809,12 @@
         var title = str(s.assistant_title) || str(s.assistant_name);
         if (title) {
             SAY.title = title;
-            var t = sheet && sheet.querySelector('.lpa-title');
-            if (t) t.textContent = title;
+            /* Applied to the dialog's NAME rather than to a heading, because
+               the chat box no longer draws one. The setting still does
+               something real — it is what the box is called out loud — and the
+               dashboard's hint for the field says so. See the note on
+               `.lpa-head` in the stylesheet. */
+            if (sheet) sheet.setAttribute('aria-label', title);
         }
 
         // Only matters if the sheet has not been opened yet — after the first
@@ -1647,6 +1829,7 @@
         if (placeholder) {
             SAY.placeholder = placeholder;
             if (inputEl) inputEl.placeholder = placeholder;
+            doorInputs.forEach(function (field) { field.placeholder = placeholder; });
         }
 
         var invites = lines(s.assistant_invites);
@@ -1719,22 +1902,112 @@
         }
     }
 
+    /* PAGE-OWNED DOORS.
+
+       A page may put the assistant itself on the page — the links page does,
+       because a list of four destinations and no way to ask a question is a page
+       that makes you guess. The page owns an EMPTY element carrying
+       `data-lp-door`; this fills it.
+
+       Which way round that runs matters, and it is the whole reason this is a
+       slot rather than a second published function. The page cannot send as the
+       visitor and cannot open a box of its own: it holds a place, the widget
+       builds what stands in it, and the question the visitor types here travels
+       through exactly the same send() the chat box uses — same conversation, same
+       history, same rate limit. There is one way to ask, and this is another
+       door onto it, not another room. */
+    function askDoor() {
+        var form = el('form', 'lpa-door');
+
+        var head = el('div', 'lpa-door-head');
+        var face = el('span', 'lpa-door-face');
+        face.setAttribute('data-lp-face', '');
+        face.appendChild(iconForLook(SAY.look));
+        head.appendChild(face);
+        var copy = el('div', null);
+        copy.appendChild(el('div', 'lpa-door-title', 'Ask me anything'));
+        copy.appendChild(el('div', 'lpa-door-sub',
+            'Rates, dates and what is included \u2014 answered here, in a moment.'));
+        head.appendChild(copy);
+        form.appendChild(head);
+
+        var row = el('div', 'lpa-door-row');
+        var input = el('input', 'lpa-door-input');
+        input.type = 'text';
+        input.setAttribute('aria-label', 'Your question');
+        input.placeholder = SAY.placeholder;
+        // Kept, so a studio that renames the placeholder in Settings renames it
+        // here too. A field on a page that says something different from the one
+        // in the chat box is two voices for one assistant.
+        doorInputs.push(input);
+        row.appendChild(input);
+        // Not `send`: that is the widget's own function, and a variable of the
+        // same name in this scope would shadow it and break the button silently.
+        var askBtn = el('button', 'lpa-door-send', 'Ask');
+        askBtn.type = 'submit';
+        row.appendChild(askBtn);
+        form.appendChild(row);
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var question = input.value.trim();
+            if (!question) { input.focus(); return; }
+            input.value = '';
+            input.blur();
+            // The same sheet, the same conversation. removeWidget() takes this
+            // form away with the rest of the widget, which is why there is no
+            // liveness check tied to a handler that cannot outlive it.
+            openSheet();
+            send(question);
+        });
+        return form;
+    }
+
+    /** Fill every door slot, and say how many were filled. Never twice: a page
+        that carries two slots gets two doors, and one that is somehow visited
+        twice keeps the one field it was given. */
+    function fillDoorSlots() {
+        var slots = document.querySelectorAll('[data-lp-door]');
+        var filled = 0;
+        for (var i = 0; i < slots.length; i++) {
+            if (slots[i].firstChild) continue;
+            slots[i].appendChild(askDoor());
+            filled += 1;
+        }
+        return filled;
+    }
+
     function start() {
         injectStyles();
         adoptSiteCta();
         invites = SAY.invites.slice();
-        buildDock();
+        /* THE DOCK STANDS DOWN WHERE THE PAGE OWNS A DOOR.
+
+           The links page is short and is nothing but doors, so a floating
+           capsule over it is a second way in for a page that already has one —
+           and the owner's note on it was blunt: "the links page is currently
+           cluttered". A page that owns a door gets no dock.
+
+           Decided from whether a door was actually BUILT rather than from
+           whether the page asked for one. A slot this file failed to fill — a
+           page with the attribute and a script that threw — would otherwise
+           leave the visitor with no way into the assistant at all, which is the
+           worst of both. So it fails OPEN: no door, and the dock is there. */
+        var doorOwned = fillDoorSlots() > 0;
+        if (!doorOwned) buildDock();
         buildSheet();
         // The one way in a page owns, published only once there is a sheet to
         // open — see publish().
         publish();
         fillFaceSlots(false);
-        wireReveal();
+        if (!doorOwned) {
+            wireReveal();
+            // The words are on screen before the settings have answered; whatever
+            // the studio has written lands on top of these a moment later. The
+            // widget never waits on a request to become usable.
+            startInvites();
+        }
         wireKeyboard();
-        // The words are on screen before the settings have answered; whatever
-        // the studio has written lands on top of these a moment later. The
-        // widget never waits on a request to become usable.
-        startInvites();
         loadSettings();
         savedContact = loadSaved();
     }

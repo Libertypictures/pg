@@ -19,12 +19,21 @@
         --bg: #faf8f4; --text: #1a1815; --text-soft: #6b6459; --accent: #8a7355; --accent-deep: #6e5c44;
         --border: #e8e3d9; --card-bg: rgba(26,24,21,0.03); --card-hover: rgba(138,115,85,0.10);
         --shadow: rgba(26,24,21,0.06); --shadow-lift: rgba(26,24,21,0.14);
+        /* The names the ASSISTANT reads, mapped onto this page's own palette.
+           The widget's door is built from this page's tokens or from its own
+           light-theme defaults, and this page's tokens are named differently —
+           so without these three lines the door would be the right shape in the
+           wrong colours in dark mode, which is worse than either. Same values,
+           two names, one material. */
+        --bg-card: #fffdfa; --border-color: var(--border); --text-secondary: var(--text-soft);
+        --btn-primary-bg: #1a1815; --btn-primary-text: #fff;
     }
     @media (prefers-color-scheme: dark) {
         :root {
             --bg: #161513; --text: #f3f0ea; --text-soft: #a8a196; --accent: #c4a67e; --accent-deep: #d9bf98;
             --border: #35332d; --card-bg: rgba(255,255,255,0.04); --card-hover: rgba(196,166,126,0.14);
             --shadow: rgba(0,0,0,0.3); --shadow-lift: rgba(0,0,0,0.5);
+            --bg-card: #201e1b; --btn-primary-bg: #f3f0ea; --btn-primary-text: #1a1815;
         }
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -72,31 +81,22 @@
 
     /* ==== The assistant's door ================================================
 
-       The fifth card on this page, and deliberately the first one. Every other
-       card here is a destination — a page to read, a conversation to open
-       somewhere else — while this one answers the question the other four leave
-       you with, and answers it without leaving the page.
+       The FIRST thing on this page, and not a card like the ones under it.
+       Every other entry here is a destination — a page to read, a conversation
+       that opens somewhere else — and this is the only one that answers the
+       question they leave you with, without leaving the page. Put in the list
+       as a fifth card it read as another option to weigh up; it is a field, so
+       the visitor's one question is the first thing they can act on.
 
-       The same hairline material as its neighbours, because this page has no
-       coloured "primary" by design; it is distinguished by a slightly lifted
-       surface and by being the only one whose mark is the assistant's own face.
-       That face is NOT drawn here: the element carries `data-lp-face` and the
-       widget fills it, so this page owns no copy of the drawing — one character,
-       one drawing, the same rule the dashboard follows.
-
-       The face keeps the widget's own 1.9px stroke rather than the 1.6px the
-       other cards use, so it reads as the same drawing in both places.
-
-       `html.lpa-dock-alive` is what reserves room under this page. The
-       assistant's dock floats at the foot of the screen, and this page is short
-       enough that it would sit on top of the copyright line; the class is added
-       by the widget AFTER its dock is built, so a widget that fails to start
-       leaves this page exactly as it was. (This is SKILLS.md rule 25: a bar
-       fixed to the bottom of a screen reserves its own room.) */
-    .link-card-ask { width: 100%; font: inherit; text-align: left; cursor: pointer;
-        background: var(--card-hover); border-color: var(--accent); }
-    .link-card-ask .link-icon svg { stroke-width: 1.9; }
-    html.lpa-dock-alive body { padding-bottom: calc(104px + env(safe-area-inset-bottom, 0px)); }
+       The element is EMPTY, and the widget fills it: a place, never a copy of
+       the behaviour or of the face. That is why it renders as nothing at all
+       while empty — a page must never show a box that cannot answer — and why
+       the reservation for a floating dock is gone from this page. There is no
+       dock here any more: the widget stands its dock down when a page owns a
+       door, so nothing floats over the copyright line and nothing needs room
+       under it. */
+    .link-ask:empty { display: none; }
+    .link-ask { margin-bottom: 2px; }
     .link-text { flex: 1; min-width: 0; }
     .link-title { font-weight: 600; font-size: 13.5px; letter-spacing: 0.2px; }
     .link-desc { font-size: 11.5px; color: var(--text-soft); margin-top: 3px; }
@@ -155,14 +155,21 @@
          that opens nothing is worse than no card, and the honest way to know is to
          ask the thing that would have to do the opening. -->
     <nav class="link-list" aria-label="Links">
-        <button type="button" class="link-card link-card-ask" id="links-ask" hidden>
-            <div class="link-icon" data-lp-face></div>
-            <div class="link-text">
-                <div class="link-title">Ask me anything</div>
-                <div class="link-desc">Rates, dates and what's included — answered here, in a moment</div>
-            </div>
-            <span class="link-arrow">›</span>
-        </button>
+        <!-- THE ASSISTANT, AND IT IS A FIELD RATHER THAN A CARD.
+
+             A link-in-bio page is four destinations and no way to ask anything,
+             so a visitor with one question has to guess which of the four
+             answers it. This is the only place on the site where the assistant
+             is not something you have to notice at the foot of the screen — you
+             type your question where you are already reading.
+
+             The element stays EMPTY until the widget fills it, and the widget
+             builds the field, the face and the button: a page owns a place and
+             never a copy of the behaviour, the same rule the face slots follow.
+             Nothing here needs a script of its own, and nothing here can be a
+             dead button — if the widget does not run, this renders as nothing
+             at all and the four links below it are exactly as they were. -->
+        <div class="link-ask" id="links-ask" data-lp-door></div>
         <a href="https://libertymusa.com/?utm_source=igbio&amp;utm_medium=links&amp;utm_campaign=portraits" class="link-card">
             <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
             <div class="link-text">
@@ -227,37 +234,15 @@
         })
         .catch(function () { /* page renders fine without settings */ });
 </script>
-<script>
-    /* The one door on this page that opens something here instead of somewhere
-       else.
-
-       Revealed only once the assistant says it is on the page, for the same
-       reason the widget fails closed: a card that opens nothing is worse than no
-       card. The alternative — showing it and hoping — is how a page ends up with
-       a dead button, and nobody reports a dead button, they just stop using the
-       page.
-
-       Registered on DOMContentLoaded rather than run inline, because
-       assistant.js is deferred and a deferred script runs AFTER the document is
-       parsed: waiting for this event is the only way to be sure the widget has
-       already had its turn. The click handler re-checks anyway — the widget
-       removes its own way in when it gives up, and a door must not outlive the
-       room it opens into. */
-    document.addEventListener('DOMContentLoaded', function () {
-        var ask = document.getElementById('links-ask');
-        if (!ask) return;
-        if (!window.lpAssistant || typeof window.lpAssistant.open !== 'function') return;
-        ask.hidden = false;
-        ask.addEventListener('click', function () {
-            if (window.lpAssistant && typeof window.lpAssistant.open === 'function') {
-                window.lpAssistant.open();
-            }
-        });
-    });
-</script>
+<!-- No script of this page's own. The door above is filled by the widget, and
+     that is the whole point: a page that builds its own version of the way in is
+     how two versions of one behaviour begin to disagree, and a page that reveals
+     a door it cannot open is how a dead button ships. If the assistant is off,
+     the slot stays empty, the page renders as it did before the assistant
+     existed, and nobody is asked to tap anything that does nothing. -->
 <!-- The studio assistant. It answers from the studio's live data and hands
      anything it cannot answer to Liberty. If it is not switched on it removes
      itself, so this page renders exactly as it did before it existed. -->
-<script src="assistant.js?v=7e1577678f" defer></script>
+<script src="assistant.js?v=4e6ea3deac" defer></script>
 </body>
 </html>
