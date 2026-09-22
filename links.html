@@ -26,6 +26,13 @@
            wrong colours in dark mode, which is worse than either. Same values,
            two names, one material. */
         --bg-card: #fffdfa; --border-color: var(--border); --text-secondary: var(--text-soft);
+        /* The chat SHEET's surface, which the widget takes from these two names.
+           This page did not map them, and the widget's own fallback was a
+           literal white — so on a phone in dark mode the assistant opened as a
+           white panel over a near-black page. The widget now falls back to a
+           dark surface of its own, and this page names them anyway: two reasons
+           the same box cannot come out the wrong colour. */
+        --bg-container: var(--bg); --text-primary: var(--text);
         --btn-primary-bg: #1a1815; --btn-primary-text: #fff;
     }
     @media (prefers-color-scheme: dark) {
@@ -34,6 +41,7 @@
             --border: #35332d; --card-bg: rgba(255,255,255,0.04); --card-hover: rgba(196,166,126,0.14);
             --shadow: rgba(0,0,0,0.3); --shadow-lift: rgba(0,0,0,0.5);
             --bg-card: #201e1b; --btn-primary-bg: #f3f0ea; --btn-primary-text: #1a1815;
+            --bg-container: var(--bg); --text-primary: var(--text);
         }
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -65,32 +73,68 @@
         .brand-welcome { animation: none; opacity: 1; transform: none; }
     }
 
-    /* ==== Link cards — one uniform style, no colored "primary" ==== */
+    /* ==== Link cards — one uniform style, no colored "primary" ====
+
+       TWO NUMBERS HERE ARE NOT THIS PAGE'S OWN, AND IT IS DELIBERATE.
+
+       The assistant's card is built by the widget, not by this page, and it is
+       drawn first: `border-radius: 18px` and `padding: 15px 16px`, in
+       assistant.js, where it also appears on every other page. The five entries
+       below it were square-cornered and padded 16px 18px, so a visitor looking
+       at the page saw a rounded card sitting on top of four sharp ones whose
+       text started two pixels further right — the assistant looked bolted on by
+       someone who had not seen the rest, which is the opposite of the intent.
+
+       So the page matches the CARD rather than the card matching the page: the
+       radius is the same 18, the gap and padding are the card's 13 and 15/16,
+       and there is a guard in tools/test-assistant-widget.js that fails if the
+       two radii ever drift apart — because the failure mode here is silent, and
+       it is a visitor who notices it. */
     .link-list { display: flex; flex-direction: column; gap: 10px; }
     .link-card {
-        display: flex; align-items: center; gap: 14px;
+        display: flex; align-items: center; gap: 13px;
         background: var(--card-bg); border: 1px solid var(--border);
-        padding: 16px 18px; text-decoration: none; color: var(--text);
+        padding: 15px 16px; border-radius: 18px; text-decoration: none; color: var(--text);
         transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
         box-shadow: 0 2px 8px var(--shadow);
     }
     @media (hover: hover) { .link-card:hover { background: var(--card-hover); transform: translateY(-2px); box-shadow: 0 10px 26px var(--shadow-lift); border-color: var(--accent); } }
     .link-card:active { transform: translateY(0); }
+    /* Keyboard gets the same signal a hover gets. Four of these cards and a face
+       above them were all reachable with Tab and none of them said so — and
+       `--card-hover` is already the page's own tint, so the ring follows the
+       colour scheme instead of being a second brown that only works in light. */
+    .link-card:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 4px var(--card-hover); }
+    /* A 360px phone was giving a fifth of its width to margin. The cards get the
+       room instead: this is the page people open from a bio link, one-handed,
+       and the longest description on it is the one that wraps. */
+    @media (max-width: 380px) {
+        body { padding: 32px 16px 32px; }
+        .page { gap: 18px; }
+    }
     .link-icon { flex-shrink: 0; width: 22px; height: 22px; color: var(--accent); display: flex; align-items: center; justify-content: center; }
     .link-icon svg { width: 100%; height: 100%; stroke-width: 1.6; }
 
     /* ==== The assistant's door ================================================
 
-       The FIRST thing on this page, and not a card like the ones under it.
-       Every other entry here is a destination — a page to read, a conversation
-       that opens somewhere else — and this is the only one that answers the
-       question they leave you with, without leaving the page. Put in the list
-       as a fifth card it read as another option to weigh up; it is a field, so
-       the visitor's one question is the first thing they can act on.
+       The FIRST thing on this page, and the only entry that ANSWERS rather
+       than sends you somewhere. Tapping it opens the assistant itself, and the
+       widget draws it from this page's tokens so it sits among the cards below
+       as one of them rather than as a panel bolted on. It is first because
+       somebody arriving from an Instagram bio usually has one question, and the
+       four destinations underneath all make them choose before they have asked
+       it.
+
+       IT IS A CARD, NOT A BOX TO TYPE IN. It was a text field with an Ask
+       button, and that was a worse idea than it looked: the visitor typed their
+       question on the page, the sheet opened over it, and the answer arrived
+       beside a SECOND field — two boxes for one conversation, and the one they
+       had just used was the one that could not answer. One tap, one place to
+       type, and that place is the composer the reply appears above.
 
        The element is EMPTY, and the widget fills it: a place, never a copy of
        the behaviour or of the face. That is why it renders as nothing at all
-       while empty — a page must never show a box that cannot answer — and why
+       while empty — a page must never show a card that cannot open — and why
        the reservation for a floating dock is gone from this page. There is no
        dock here any more: the widget stands its dock down when a page owns a
        door, so nothing floats over the copyright line and nothing needs room
@@ -155,20 +199,20 @@
          that opens nothing is worse than no card, and the honest way to know is to
          ask the thing that would have to do the opening. -->
     <nav class="link-list" aria-label="Links">
-        <!-- THE ASSISTANT, AND IT IS A FIELD RATHER THAN A CARD.
-
-             A link-in-bio page is four destinations and no way to ask anything,
-             so a visitor with one question has to guess which of the four
-             answers it. This is the only place on the site where the assistant
-             is not something you have to notice at the foot of the screen — you
-             type your question where you are already reading.
+        <!-- THE ASSISTANT. A link-in-bio page is four destinations and no way
+             to ask anything, so a visitor with one question has to guess which
+             of the four answers it. This is the one entry that answers — and it
+             is a door, not a box: tapping it opens the assistant, rather than
+             offering a second field that exists only to be abandoned when the
+             real one opens.
 
              The element stays EMPTY until the widget fills it, and the widget
-             builds the field, the face and the button: a page owns a place and
-             never a copy of the behaviour, the same rule the face slots follow.
-             Nothing here needs a script of its own, and nothing here can be a
-             dead button — if the widget does not run, this renders as nothing
-             at all and the four links below it are exactly as they were. -->
+             builds the face, the words and the whole card: a page owns a place
+             and never a copy of the behaviour, the same rule the face slots
+             follow. Nothing here needs a script of its own, and nothing here can
+             be a dead button — if the widget does not run, this renders as
+             nothing at all and the four links below it are exactly as they
+             were. -->
         <div class="link-ask" id="links-ask" data-lp-door></div>
         <a href="https://libertymusa.com/?utm_source=igbio&amp;utm_medium=links&amp;utm_campaign=portraits" class="link-card">
             <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
@@ -243,6 +287,6 @@
 <!-- The studio assistant. It answers from the studio's live data and hands
      anything it cannot answer to Liberty. If it is not switched on it removes
      itself, so this page renders exactly as it did before it existed. -->
-<script src="assistant.js?v=4e6ea3deac" defer></script>
+<script src="assistant.js?v=7567a19e40" defer></script>
 </body>
 </html>

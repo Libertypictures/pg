@@ -93,106 +93,25 @@
     var SLOW_AFTER = 12000;
     var GIVE_UP_AFTER = 50000;
 
-    /* The questions offered depend on the page the visitor is standing on.
+    /* THE SUGGESTED QUESTIONS ARE GONE, ALL OF THEM.
 
-       Somebody reading the portfolio wants to ask about the work they are
-       looking at; somebody on the booking page wants to ask about dates; and
-       somebody on the wedding page is asking about Beloved Imprint, not about
-       the price of a portrait session. One set of three questions for the whole
-       site made the widget look like it was bolted on rather than part of the
-       page.
+       A per-page table of two questions (three on a page nobody named) used to
+       stand here, drawn as a scrollable row of chips above the composer. The
+       owner asked for it to go: "can we remove all suggestions from the chat?"
 
-       Every question below is one the assistant has been *driven* with against
-       the live API and answered from the studio's own data — that is the bar,
-       because a suggestion is a promise. A tap on a question the assistant
-       cannot answer does not fail quietly: it creates a handover, and the studio
-       gets woken up for something nobody asked.
+       Why the TABLE went with the chips rather than staying behind as data.
+       Every question in it had been driven against the live API and answered
+       before it was written down, and the suite enforced that, because a
+       suggestion is a promise: a tap on a question the assistant cannot answer
+       does not fail quietly, it wakes Liberty up for something nobody asked.
+       Left as data with nothing drawing it, that promise would still have to be
+       kept by hand — by whoever added the next question, for no reader at all.
+       A table nobody draws is a rule that only exists to be missed.
 
-       The keys are the last segment of the path, so `/book` and `/book.html`
-       are the same page and `/pay/` is the pay page. Anything not named here —
-       the home page, the links page, a 404, a page added next year — gets
-       DEFAULT_ASK, which is why that list is the safest one rather than the
-       shortest. */
-    var DEFAULT_ASK = [
-        'How much is a portrait session?',
-        'What do your packages include?',
-        'Do you shoot weddings?'
-    ];
-
-    /* TWO QUESTIONS ON A NAMED PAGE, NOT THREE.
-
-       The owner's words were "there are too many suggestions on the assistant
-       chat and the copy seems too generic". Both halves of that were true, and
-       they were the same fault: three chips in a row meant one of them had to be
-       filler, and the filler was always the price question — the one every page
-       shares, which is therefore the one that tells a visitor reading the
-       portfolio nothing about the portfolio.
-
-       So what is left is the pair that a visitor standing HERE actually has.
-       Nothing was cut for being unanswerable: every question below was asked of
-       the live assistant before it was written down, which the suite enforces.
-       The generic set stays at three, because it is the one that has to cover
-       every page nobody named. */
-    var PAGE = {
-        portfolio: {
-            ask: [
-                'What kind of work do you shoot?',
-                'Can I book a session like these?'
-            ]
-        },
-        gallery: {
-            ask: [
-                'How do I get my own gallery?',
-                'What kind of work do you shoot?'
-            ]
-        },
-        book: {
-            ask: [
-                'How far ahead should I book?',
-                'What do your packages include?'
-            ]
-        },
-        'wedding-book': {
-            ask: [
-                "What's included in a wedding package?",
-                'How much do wedding packages cost?'
-            ]
-        },
-        wedding: {
-            ask: [
-                'How much do wedding packages cost?',
-                'Do you shoot pre-weddings?'
-            ]
-        },
-        review: {
-            ask: [
-                'What do clients say about the studio?',
-                'Can I book a session like these?'
-            ]
-        },
-        /* The link-in-bio page, which is where everybody arriving from Instagram
-           lands first. That arrival is the only thing true of these visitors and
-           nobody else on the site: they have seen a grid of photographs and
-           nothing else, and the page under them is four doors.
-
-           So the three are the two questions a stranger actually has — what it
-           costs, and how to get one — plus where the studio even is, which only
-           a visitor who has seen no page yet needs to ask.
-
-           These USED to be the default three, word for word, on the reasoning
-           that the traffic is the same person. It is the same person, and the
-           set was still wrong: a named set that is a subset of the fallback is
-           not an adaptation at all, it is the fallback spelled twice, and the
-           suite refuses it for exactly that reason (every named page must offer
-           at least one question no unnamed page offers). The first version of
-           this comment argued the rule away instead of meeting it. */
-        links: {
-            ask: [
-                'How much is a portrait session?',
-                'Where are you based?'
-            ]
-        }
-    };
+       What a visitor gets instead is the greeting and an empty composer: one
+       invitation to type, and nothing put into their mouth. The guard that
+       replaces this section asserts the chips cannot come back — see
+       tools/test-assistant-widget.js. */
 
     /* The studio's own words for this widget.
 
@@ -222,7 +141,6 @@
             'Let me help you book',
             'I can answer for you'
         ],
-        suggestions: null,   // null means "use this page's own three"
         look: 'smile'        // smile | strokes | bubble — see applyLook/swaps
     };
 
@@ -242,12 +160,11 @@
     var scrim = null;
     var logEl = null;
     var inputEl = null;
-    var chipsEl = null;
     var sendBtn = null;
     var typingEl = null;
     var typingDots = null;
     var avatarEl = null;      // the one face in the log, always on the newest reply
-    var doorInputs = [];      // the fields of any doors the page owns, kept for settings
+    var sheetOpener = null;   // what opened the sheet, so closing it can put focus back
     var history = [];
     var busy = false;
     var open = false;
@@ -346,58 +263,69 @@
         '@keyframes lpa-blink{0%,92%,100%{transform:scaleY(1)}94%,96%{transform:scaleY(.06)}',
         '98%{transform:scaleY(1)}}',
 
-        /* ── the mouth, and the three things this face does ──────────────── */
+        /* ── the mouth, and the two things this face does ─────────────────── */
 
         /* Every mouth the face owns is drawn, stacked, and exactly one of them is
            showing. Crossfading rather than interpolating the path: a shape that
            has to morph between a straight line and an arc has to keep the same
            SVG commands, and the moment it cannot, the mouth snaps between them.
 
-             straight   the resting face — nobody is talking to it
-             smile      a pointer is on it, or the chat is open
-             open       an answer is on its way
+             the outline   the resting mouth — one closed shape, rewritten every
+                           frame by the engine below. It is the only mouth the
+                           face moves, and it is never crossfaded.
+             smile         a pointer is on it, or the chat is open
 
-           The last one wins over the other two, on purpose: a face that keeps
-           smiling through four seconds of thinking is a face that does not look
-           like it is listening, and being busy is the one moment the face has
-           something true to say. */
+           THE OPEN MOUTH IS A POSE OF THAT OUTLINE, NOT A THIRD DRAWING, and it
+           happens only while an answer is on its way. Asked for on 22 September
+           2026: "the default state of the assistant face should be the shrinking
+           and extending line, the mouth opening should only ever happen when
+           replying". Until then it opened at rest, passing through ) and 0 while
+           nothing was happening — a face rehearsing rather than listening. */
         '.lpa-face .lpa-mouth{opacity:0;transition:opacity .26s ease}',
         '.lpa-face .lpa-mouth.is-on{opacity:1}',
         '.lpa-lobe-ask:hover .lpa-mouth.is-on,.lpa-dock.is-open .lpa-mouth.is-on{opacity:0}',
         '.lpa-lobe-ask:hover .lpa-mouth.is-smile,.lpa-dock.is-open .lpa-mouth.is-smile{opacity:1}',
-        /* Written against the lobe inside the dock rather than the dock alone,
-           so it ties on specificity with the hover rule above and wins by being
-           later — otherwise a hovered face would smile while it was working. */
+        /* While it is answering, the mouth that MOVES is the one to show. The
+           sheet being open is exactly when the answer is coming, and without
+           this the smile above would be the visible mouth through the whole
+           wait. Written against the lobe inside the dock rather than the dock
+           alone, so it ties on specificity with the hover rule above and wins by
+           being later — otherwise a hovered face would smile while it worked. */
         '.lpa-dock.is-busy .lpa-lobe-ask .lpa-mouth{opacity:0}',
-        '.lpa-dock.is-busy .lpa-lobe-ask .lpa-mouth.is-open{opacity:1}',
+        '.lpa-dock.is-busy .lpa-lobe-ask .lpa-mouth.is-on{opacity:1}',
         '.lpa-lobe-ask:hover .lpa-face,.lpa-dock.is-open .lpa-face,.lpa-dock.is-busy .lpa-face{transform:scale(1.06)}',
 
-        /* AND THE RESTING MOUTH IS NEVER QUITE STILL.
+        /* ── the resting mouth, and the two movements it has ──────────────── */
 
-           Two blinking eyes over a straight line is a `:|` face, and a face that
-           only blinks is a face holding its breath: the eyes move and nothing
-           else does. The mouth now widens and narrows on its own, slowly, which
-           is the smallest change that reads as somebody idling rather than as an
-           icon being rendered.
+        /* The mouth is ONE closed outline whose `d` is rewritten every frame by
+           the engine below: its top and bottom edges are both flat when it is
+           shut, which IS the straight line the owner asked for, and both bow
+           outward as it opens. One element covers every pose, so there is exactly
+           one neutral mouth and nothing to keep in step. Nothing here is inside
+           the SVG's own markup, so it works in every browser that can set an
+           attribute, and it needs no polyfill.
 
-           A transform on the ONE resting mouth, deliberately not a fourth mouth:
-           the three mouths are drawn once, stacked and crossfaded (see above),
-           and a second neutral path that had to be kept in step with the first is
-           exactly the drift that rule exists to prevent.
+           The owner's own words for the opening: "id like if it can go from -
+           to ) to 0". That is the mouth passing THROUGH shapes, and neither a
+           transform nor a crossfade can do it: scaling a line only makes a longer
+           line, and crossfading stacked mouths can only ever be one of them at a
+           time, never between them.
 
-           `transform-box` matters. A path scales about the origin of the SVG by
-           default, and the resting mouth is a horizontal line on the 24-box grid,
-           so scaling it from there does not grow it — it slides it sideways off
-           the face. With fill-box the line grows about its own middle.
+           BOTH MOVEMENTS GO THROUGH THAT ONE ENGINE, which is the correction.
+           The resting one used to be a CSS keyframe on a class while the opening
+           one was driven from script, so neither could run in the other's state
+           and the opening could not be moved onto the answer without a second
+           mechanism to keep in step.
 
-           5.2s against the blink's 3.4s, and deliberately NOT a multiple of it:
-           two cycles that stay in step become a metronome, which is the one thing
-           both timings were chosen to avoid. It stops with the blink for anyone
-           who has asked for less motion — see the block at the foot of this
-           stylesheet, which names the eyes and the mouths together. */
-        '.lpa-face .lpa-mouth.is-neutral{transform-box:fill-box;transform-origin:center;',
-        'animation:lpa-mouth 5.2s ease-in-out infinite}',
-        '@keyframes lpa-mouth{0%,100%{transform:scaleX(.86)}48%{transform:scaleX(1.16)}}',
+             at rest          the line, shrinking and extending
+             while answering  the same line, passing through ) and the round 0
+
+           What the studio's setting chooses is the second of those — whether the
+           mouth speaks while it answers, only ever breathes, or is still. The
+           rest is the line in all three, because that is the face he asked to
+           keep. Under prefers-reduced-motion the loop does not run at all — see
+           the block at the foot of this stylesheet, which names the eyes and the
+           mouths together. */
 
         /* ── the words it says instead of "ask a question" ─────────────────── */
 
@@ -464,15 +392,36 @@
            (`--lpa-safe` is the safe-area inset, and the keyboard state zeroes
            it: with the keys up the home-indicator strip is behind the keyboard,
            so reserving for it would only push the sheet off the top again.) */
+        /* ── the sheet's own surface, and why it is a FALLBACK ───────────────
+
+           The sheet takes its colours from the page when the page names them:
+           `--bg-container`, `--text-primary` and `--border-color` are the
+           studio's token names, and most pages map them onto their own palette.
+           Four do not — links, gallery, wedding and pay are all missing the first
+           two — so the sheet fell straight through to a literal `#fff` and opened
+           as a WHITE PANEL ON A DARK PAGE.
+
+           Found on 22 September 2026 by opening the links page in dark mode and
+           looking at it, having been live for as long as the sheet has existed.
+           It is worth naming why nothing caught it: every screenshot anybody had
+           taken of this widget was taken in light mode, and in light mode the
+           literal and the page's own token are the same colour to within a shade.
+
+           So the defaults are NAMED and SCHEME-AWARE — the dark block further down
+           swaps them — which means a page that forgets gets a sheet belonging to
+           the scheme its visitor is actually in. A page that names them still
+           wins, which is the whole point of a fallback. */
         '.lpa-sheet{position:fixed;left:50%;',
         '--lpa-safe:env(safe-area-inset-bottom,0px);--lpa-top-gap:10px;',
+        '--lpa-sheet-bg:#fff;--lpa-sheet-ink:#1a1815;--lpa-sheet-line:#e8e3d9;',
+        '--lpa-sheet-rim:rgba(255,255,255,.35);',
         'bottom:calc(var(--lpa-foot,68px) + var(--lpa-safe) + var(--lpa-lift,0px));',
         'z-index:90;width:min(420px,calc(100vw - 22px));',
         'max-height:min(calc(100svh - var(--lpa-foot,68px) - var(--lpa-safe) - var(--lpa-lift,0px) - var(--lpa-top-gap)),620px);',
         'display:flex;flex-direction:column;overflow:hidden;transform-origin:50% 118%;',
-        'background:var(--bg-container,#fff);color:var(--text-primary,#1a1815);',
-        'border:1px solid var(--border-color,#e8e3d9);border-radius:30px;',
-        'box-shadow:0 30px 80px rgba(26,24,21,.28),0 1px 0 rgba(255,255,255,.35) inset;',
+        'background:var(--bg-container,var(--lpa-sheet-bg));color:var(--text-primary,var(--lpa-sheet-ink));',
+        'border:1px solid var(--border-color,var(--lpa-sheet-line));border-radius:30px;',
+        'box-shadow:0 30px 80px rgba(26,24,21,.28),0 1px 0 var(--lpa-sheet-rim) inset;',
         'font-family:inherit;font-size:14px;line-height:1.6;',
         'opacity:0;pointer-events:none;transform:translateX(-50%) translateY(22px) scale(.38);',
         'transition:transform .6s ' + SPRING + ',opacity .36s ease,border-radius .6s ' + SPRING + ',max-height .4s ease;',
@@ -562,66 +511,53 @@
         'animation:lpa-dot 1.15s ease-in-out infinite}',
         '.lpa-typing i:nth-child(2){animation-delay:.16s}',
         '.lpa-typing i:nth-child(3){animation-delay:.32s}',
+        /* The waiting row's own face, sized to sit in that row rather than in the
+           conversation: the avatar's 5px top margin exists to drop it onto the
+           first line of a paragraph, and in a row of dots it would only push the
+           face off centre. */
+        '.lpa-typing .lpa-avatar{width:15px;height:15px;margin-top:0;margin-right:1px}',
         '@keyframes lpa-dot{0%,100%{opacity:.22;transform:translateY(0)}50%{opacity:.85;transform:translateY(-2px)}}',
 
-        /* ── the suggested questions ──────────────────────────────────────── */
-
-        /* One scrollable row rather than three stacked lines: on a phone the
-           wrapped version ate a third of the sheet before a word was typed.
-           They leave as soon as the visitor asks something of their own. */
-        /* The right edge fades rather than cutting a word in half: it says
-           "there is more" without an arrow, a dot row or a scrollbar. */
-        '.lpa-chips{flex:none;display:flex;flex-wrap:nowrap;gap:8px;padding:4px 15px 13px;overflow-x:auto;',
-        'max-height:64px;scrollbar-width:none;',
-        'transition:opacity .34s ease,transform .4s ' + SPRING + ',max-height .44s ' + SPRING + ',padding .44s ' + SPRING + ';',
-        'mask-image:linear-gradient(to right,#000 calc(100% - 34px),transparent);',
-        '-webkit-mask-image:linear-gradient(to right,#000 calc(100% - 34px),transparent)}',
-        '.lpa-chips::-webkit-scrollbar{display:none}',
-        /* The row they leave is space the conversation can use, so it collapses
-           as it fades rather than sitting there empty. The selector is written
-           out with the sheet's own entry rule on purpose: `.lpa-sheet.is-on
-           .lpa-in` is more specific than `.lpa-chips.is-gone`, and the first
-           version of this simply never faded anything. */
-        '.lpa-chips.is-gone,.lpa-sheet.is-on .lpa-chips.is-gone{opacity:0;transform:translateY(8px);',
-        'max-height:0;padding-top:0;padding-bottom:0;pointer-events:none}',
-        '.lpa-chip{flex:none;padding:8px 14px;border-radius:999px;border:1px solid var(--border-color,#e8e3d9);',
-        'background:transparent;color:inherit;font:inherit;font-size:12.5px;letter-spacing:.1px;cursor:pointer;',
-        'white-space:nowrap;transition:background-color .25s ease,color .25s ease,transform .4s ' + SPRING + '}',
-        '.lpa-chip:hover{background:var(--highlight-bg,#f8f4ec)}',
-        '.lpa-chip:active{transform:scale(.97)}',
 
         /* ── the door a page owns ─────────────────────────────────────────── */
 
         /* The links page is a list of destinations, and the assistant is the
-           only one of them that ANSWERS. Asking a visitor to choose it from the
-           list and then type in a chat box that opens elsewhere is two steps
-           where one will do — so the page owns a PLACE and the widget builds the
-           thing that stands in it.
+           only one of them that ANSWERS. So the page owns a PLACE and the
+           widget builds the thing that stands in it.
 
            `data-lp-door` is that place: an empty element in the page's own
-           markup, filled here with the same face and the same request path the
-           dock uses. It is a door rather than a copy of the room, which is the
-           same rule as the face slots: the page can open the conversation and
-           cannot read it, and there is no second drawing of the character and no
-           second request to keep in step.
+           markup, filled here with the same face the dock uses, shaped like the
+           page's own cards so it belongs among them, and opening the same
+           conversation.
 
-           The field is 16px for the reason every field in this file is: iOS
-           Safari zooms the whole page when a focused field is smaller than that,
-           and it does not zoom back out. */
-        '.lpa-door{display:flex;flex-direction:column;gap:11px;padding:16px 17px;',
-        'border:1px solid var(--border-color,#e8e3d9);border-radius:18px;background:var(--bg-card,#fefdfb)}',
-        '.lpa-door-head{display:flex;align-items:flex-start;gap:11px}',
-        '.lpa-door-face{flex:none;width:19px;height:19px;margin-top:1px;color:var(--accent,#8a7355)}',
+           IT IS A CARD, NOT A FIELD, and that is the correction. The first
+           version put a real text field on the page: the visitor typed their
+           question there, and the answer — and a SECOND field — arrived in the
+           sheet that opened over it. Two boxes for one conversation, and the
+           one they had already typed into was the useless one, because a field
+           on the page cannot show a reply, keep the history or hold the
+           greeting; it existed only to be abandoned halfway. Tapping the card
+           opens the assistant itself, which is the whole of what the visitor
+           meant, and there is one place in the world to type: the composer, in
+           the same box the answer will appear in.
+
+           No field here also means no 16px rule to keep — there is no input in
+           a door for iOS to zoom the page for. */
+        '.lpa-door{display:flex;align-items:center;gap:13px;width:100%;box-sizing:border-box;text-align:left;',
+        'padding:15px 16px;border:1px solid var(--border-color,#e8e3d9);border-radius:18px;',
+        'background:var(--bg-card,#fefdfb);color:inherit;font:inherit;cursor:pointer;',
+        'box-shadow:0 2px 8px rgba(26,24,21,.05);',
+        'transition:border-color .25s ease,box-shadow .25s ease,transform .25s ease}',
+        '@media (hover:hover){.lpa-door:hover{border-color:var(--accent,#8a7355);transform:translateY(-2px);',
+        'box-shadow:0 10px 26px rgba(26,24,21,.12)}}',
+        '.lpa-door:active{transform:translateY(0)}',
+        '.lpa-door:focus-visible{outline:none;border-color:var(--accent,#8a7355);box-shadow:0 0 0 4px rgba(138,115,85,.14)}',
+        '.lpa-door-face{flex:none;width:22px;height:22px;color:var(--accent,#8a7355)}',
         '.lpa-door-face svg{width:100%;height:100%;display:block}',
-        '.lpa-door-title{font-weight:600;font-size:14px;letter-spacing:.1px}',
-        '.lpa-door-sub{font-size:12px;line-height:1.55;color:var(--text-secondary,#6b6459);margin-top:3px}',
-        '.lpa-door-row{display:flex;align-items:center;gap:8px}',
-        '.lpa-door-input{flex:1;min-width:0;box-sizing:border-box;padding:11px 15px;border-radius:999px;',
-        'border:1px solid var(--border-color,#e8e3d9);background:transparent;color:inherit;font:inherit;font-size:16px}',
-        '.lpa-door-input:focus{outline:none;border-color:var(--accent,#8a7355);box-shadow:0 0 0 4px rgba(138,115,85,.10)}',
-        '.lpa-door-send{flex:none;padding:11px 17px;border-radius:999px;border:none;cursor:pointer;font-family:inherit;',
-        'font-size:12.5px;font-weight:600;letter-spacing:.2px;background:var(--btn-primary-bg,#1a1815);color:var(--btn-primary-text,#fff)}',
-        '.lpa-door-send:active{transform:scale(.97)}',
+        '.lpa-door-copy{flex:1;min-width:0}',
+        '.lpa-door-title{font-weight:600;font-size:13.5px;letter-spacing:.2px}',
+        '.lpa-door-sub{font-size:11.5px;color:var(--text-secondary,#6b6459);margin-top:3px}',
+        '.lpa-door-arrow{flex:none;color:var(--text-secondary,#6b6459);font-size:16px;opacity:.45}',
 
         /* ── the composer ─────────────────────────────────────────────────── */
 
@@ -685,6 +621,13 @@
         '@media (prefers-color-scheme:dark){',
         '.lpa-dock{--lpa-glass:rgba(38,36,32,.6);--lpa-ink:#f3f0ea;',
         '--lpa-lip:inset 0 1px 0 rgba(255,255,255,.12),0 1px 2px rgba(0,0,0,.22),0 7px 16px rgba(0,0,0,.22)}',
+        /* Every `--lpa-sheet-*` the rule above names, so a page that does not
+           map the studio's own tokens gets a sheet belonging to the scheme its
+           visitor is in. The suite asserts this list against that one: add a
+           token up there and forget it here is exactly how the white panel
+           happened the first time. */
+        '.lpa-sheet{--lpa-sheet-bg:#201e1b;--lpa-sheet-ink:#f3f0ea;--lpa-sheet-line:#35332d;',
+        '--lpa-sheet-rim:rgba(255,255,255,.06)}',
         '.lpa-dock.is-open .lpa-lobe-ask{background:rgba(243,240,234,.94);color:#1a1815}',
         '.lpa-scrim{background:rgba(0,0,0,.42)}}',
 
@@ -700,7 +643,7 @@
         'html.lpa-dock-alive .lp-float-book{display:none!important}',
 
         '@media (prefers-reduced-motion:reduce){',
-        '.lpa-dock,.lpa-sheet,.lpa-in,.lpa-neck,.lpa-lobe,.lpa-chip,.lpa-send,.lpa-btn,',
+        '.lpa-dock,.lpa-sheet,.lpa-in,.lpa-neck,.lpa-lobe,.lpa-send,.lpa-btn,.lpa-door,',
         '.lpa-word,.lpa-face,.lpa-face .lpa-eye,.lpa-face .lpa-mouth,',
         '.lpa-bare{transition:none!important;animation:none!important}}'
     ].join('');
@@ -775,6 +718,248 @@
        wider character rather than the same one. */
     var BARE_SCALE = 1.32;
 
+    /* ── THE MOUTH'S OWN LIFE ────────────────────────────────────────────────
+
+       The owner asked for the mouth to pass through three shapes rather than
+       only widen: "id like if it can go from - to ) to 0". A day later he
+       corrected WHERE that belongs: "the default state of the assistant face
+       should be the shrinking and extending line, the mouth opening should only
+       ever happen when replying". So there are two movements on one outline —
+       the line at rest, and that same line opening while an answer is on its way
+       — and this walks one number round whichever of them is in force.
+
+       BOTH ARE HERE, and that is the fix rather than a tidy-up: the resting
+       movement used to be a CSS keyframe on a class while the opening one was
+       driven from script, so neither could run in the other's state.
+
+       WHY A FUNCTION AND NOT A KEYFRAME. CSS cannot interpolate an SVG path in
+       every browser the site supports (animating `d` works in Chrome and very
+       recent Safari and not in Firefox), and a browser that cannot is a browser
+       where the face is motionless with nothing saying so. Setting an attribute
+       from requestAnimationFrame works everywhere, and it is what lets the shape
+       be a real shape: the shut pose, the small bottom-heavy `)` and the round
+       `0` are three points on one continuous curve rather than three drawings
+       cut together.
+
+       WHAT IT COSTS, MEASURED RATHER THAN ASSUMED. One attribute write, at 24
+       frames a second, on one element that is a few dozen bytes — chosen against
+       a full 60 because the movement is slow enough that 24 is indistinguishable
+       and it is a third of the writes. The loop does NOT run while the tab is in
+       the background, does not run at all for anyone who has asked for less
+       motion, and does not run in the two settings that are not "talk". A
+       forever-animation that keeps painting behind a hidden tab is how a site
+       quietly eats a phone battery, and the whole point of this face is that it
+       should cost a visitor nothing to have on the page. */
+    var NEUTRAL_MOUTHS = [];
+
+    /* THE SPOKEN CYCLE. The three poses, as fractions of one cycle: shut, the
+       small opening that reads as `)`, and the round one that reads as `0` —
+       then back, with a beat of stillness at each end so it reads as somebody
+       speaking rather than as a machine looping. It runs ONLY while an answer is
+       on its way. */
+    var MOUTH_SPOKEN = [
+        //  t     top   bot   grow
+        [0.00, 0, 0, 0],
+        [0.24, 0, 0, 0],
+        [0.38, 0.55, 1.5, 0.02],
+        [0.52, 1.9, 2.6, 0.10],
+        [0.66, 1.65, 2.35, 0.08],
+        [0.80, 0.5, 1.2, 0.02],
+        [1.00, 0, 0, 0]
+    ];
+
+    /* THE RESTING MOVEMENT, as one number: the line's half-width, as a fraction
+       of itself, at the widest point of the breath. It was a CSS keyframe
+       scaling between .86 and 1.16 — the same movement, asymmetrically
+       eyeballed — and its shape is the same here: a full cycle in, wider, out,
+       narrower, back. Both ends of it pass through the shut line, which is why
+       switching between resting and speaking cannot produce a jump worth
+       smoothing: the two differ by at most this fraction of a 6.6-unit mouth,
+       which is half a pixel at the size the dock draws it. */
+    var MOUTH_BREATH = 0.15;
+
+    /* One full cycle at each pace, for BOTH movements. "lively" is the default
+       and is deliberately quicker than the 5.2s the resting movement used to
+       take — that is the other half of what was asked for. None is a multiple of
+       the blink's 3.4s: two cycles that stay in step become a metronome. */
+    var MOUTH_MS = { calm: 4800, lively: 3200, quick: 2200 };
+
+    /* What the studio's setting chooses — and it is a choice about ANSWERING now,
+       not about resting, because the rest is the line in every one of them:
+
+         talk     the line, then ), then the round 0, while it answers
+         line     the line while it answers, never opening
+         still    nothing moves at all
+
+       THREE behaviours, not four, and the difference matters: the dashboard's
+       dropdown has to offer one option per behaviour, because two names for one
+       movement in a list of choices is a list that lies. So the names this row
+       has held BEFORE are not in here. They are in MOUTH_ALIAS below, one line
+       each, which is the only place a legacy value is allowed to live. */
+    var MOUTH_STYLES = { talk: 1, line: 1, still: 1 };
+    /* Names this setting held while it meant something else, and what they mean
+       now. One entry today:
+
+         breathe   "widens and narrows slowly" — a RESTING movement, which is
+                   what the rest used to be. The rest is the line in every
+                   setting now, so the only question left is what happens while
+                   it answers, and somebody who chose a slow widening chose a
+                   movement rather than a mouth that never opens. It resolves to
+                   the opening, not to silence: the owner's words for the
+                   opening were "the mouth opening should only ever happen when
+                   replying", and the live studio's row still reads `breathe`.
+                   Left unhandled, that row would give the face that never once
+                   opened while it answered — the opposite of what was asked.
+
+       A legacy name is resolved BEFORE the lookup, so the value the studio's
+       row holds and the value the dropdown offers are the same behaviour — and
+       `test-assistant-widget.js` checks that every name in here is one the
+       dropdown can actually reach. */
+    var MOUTH_ALIAS = { breathe: 'talk' };
+    /* Which of those open the mouth while a reply is on its way. */
+    var MOUTH_OPENS = { talk: 1 };
+    var MOUTH_STYLE = 'talk';
+    var MOUTH_PACE = 'lively';
+    var MOUTH_FRAME_MS = 1000 / 24;
+
+    /* True only while a reply is being waited for. Set by typing(), read every
+       frame, so EVERY face on the page speaks together — the dock's, the newest
+       reply's, and the one on a page that owns a door and has no dock at all. */
+    var MOUTH_SPEAKING = false;
+
+    var mouthFrame = 0;    // the pending requestAnimationFrame, 0 when stopped
+    var mouthClock = 0;    // when this run started, in the frame's own clock
+    var mouthDrawn = 0;    // the elapsed time the last path write happened at
+
+    /* The outline of the mouth for one pose, in the 24-box every other icon on
+       this site is drawn in. `at` is the face's own box transform, passed in
+       because the bare look is the same face at a different scale and a path
+       built for one is wrong for the other.
+
+       `top`, `bot` and `grow` are CONTROL-POINT offsets rather than the visible
+       depth of the opening: a cubic's middle sits about three quarters of the
+       way to its controls, so `bot` 2.6 opens the mouth about 1.95 units below
+       the line it rests on. Named for what they are so nobody has to reverse the
+       factor to change one.
+
+       The ends never move: they are the same two points the smile's ends sit on,
+       so the face does not jump when the mouth changes state. */
+    function mouthPath(at, top, bot, grow) {
+        var half = MOUTH_HALF * (1 + grow);
+        var bend = half * 0.55;
+        var y = at(MOUTH_Y);
+        var l = at(FACE_MID - half), r = at(FACE_MID + half);
+        var lc = at(FACE_MID - half + bend), rc = at(FACE_MID + half - bend);
+        return 'M' + l + ' ' + y +
+            'C' + lc + ' ' + at(MOUTH_Y - top) + ' ' + rc + ' ' + at(MOUTH_Y - top) +
+            ' ' + r + ' ' + y +
+            'C' + rc + ' ' + at(MOUTH_Y + bot) + ' ' + lc + ' ' + at(MOUTH_Y + bot) +
+            ' ' + l + ' ' + y + 'Z';
+    }
+
+    /** Ease in and out of each pose, so nothing arrives at a corner. */
+    function mouthEase(t) {
+        return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+    }
+
+    /** The pose at a point in the spoken cycle, interpolated between the poses
+        above. */
+    function spokenPose(t) {
+        for (var i = 1; i < MOUTH_SPOKEN.length; i++) {
+            var a = MOUTH_SPOKEN[i - 1], b = MOUTH_SPOKEN[i];
+            if (t > b[0]) continue;
+            var span = b[0] - a[0];
+            var f = span > 0 ? mouthEase(Math.max(0, Math.min(1, (t - a[0]) / span))) : 0;
+            return [a[1] + (b[1] - a[1]) * f, a[2] + (b[2] - a[2]) * f, a[3] + (b[3] - a[3]) * f];
+        }
+        return [0, 0, 0];
+    }
+
+    /** The resting pose at a point in the cycle: the shut line, widened and
+        narrowed. A sine rather than a table of poses, because it is ONE movement
+        and a three-point table would round its ends off into a crawl, pause,
+        crawl. `top` and `bot` are zero throughout: at rest the mouth is a line,
+        and a line that opens is the other cycle. */
+    function restPose(t) {
+        return [0, 0, MOUTH_BREATH * Math.sin(Math.PI * 2 * t)];
+    }
+
+    /** Write one pose to every live resting mouth. */
+    function paintMouth(top, bot, grow) {
+        var live = [];
+        for (var i = 0; i < NEUTRAL_MOUTHS.length; i++) {
+            var m = NEUTRAL_MOUTHS[i];
+            // A swapped look or a redrawn face slot leaves its old path behind,
+            // and it is dropped here rather than at the moment it is orphaned:
+            // the list would otherwise grow for the life of the page.
+            if (!m.el.isConnected) continue;
+            live.push(m);
+            m.el.setAttribute('d', mouthPath(m.at, top, bot, grow));
+        }
+        if (live.length !== NEUTRAL_MOUTHS.length) NEUTRAL_MOUTHS = live;
+    }
+
+    /** Say that an answer is on its way, or that it has arrived. THE ONLY thing
+        that opens the mouth, and the reason the face has no `is-open` element
+        left in it: opening is a pose of the one outline, so this flag is all a
+        face has to be given. Nothing restarts and nothing is rebuilt — the next
+        frame reads the new value, which is what makes the change invisible. */
+    function speak(on) {
+        MOUTH_SPEAKING = !!on;
+    }
+
+    function stopMouth() {
+        if (mouthFrame) window.cancelAnimationFrame(mouthFrame);
+        mouthFrame = 0;
+        mouthClock = 0;
+    }
+
+    function mouthTick(stamp) {
+        mouthFrame = 0;
+        // Checked every frame rather than once at the start: a visitor can hide
+        // the tab, can change their motion preference, and an answer can arrive,
+        // while this is running.
+        if (MOUTH_STYLE === 'still' || document.hidden || reducedMotion()) return;
+        var now = typeof stamp === 'number' ? stamp : Date.now();
+        if (!mouthClock) { mouthClock = now; mouthDrawn = now - MOUTH_FRAME_MS; }
+        var elapsed = now - mouthClock;
+        if (elapsed - mouthDrawn >= MOUTH_FRAME_MS) {
+            mouthDrawn = elapsed;
+            var t = (elapsed % MOUTH_MS[MOUTH_PACE]) / MOUTH_MS[MOUTH_PACE];
+            /* WHICH CYCLE IS IN FORCE is read here, every frame, rather than set
+               wherever an answer is asked for: an answer is asked for from three
+               places (the sheet, a door, a retry after a slow reply) and a mouth
+               each of them had to remember to tell is a mouth that keeps opening
+               on a page somebody forgot to update. */
+            var pose = (MOUTH_SPEAKING && MOUTH_OPENS[MOUTH_STYLE]) ? spokenPose(t) : restPose(t);
+            paintMouth(pose[0], pose[1], pose[2]);
+        }
+        mouthFrame = window.requestAnimationFrame(mouthTick);
+    }
+
+    /** (Re)start the mouth from the settings that are in force right now. Safe to
+        call as often as the settings change, and the only way anything starts it.
+
+        The loop now runs for the RESTING movement too, in every setting but
+        "still": the line shrinking and extending IS the resting face, so a
+        setting can no longer be the thing that switches the idle movement off. */
+    function startMouth() {
+        stopMouth();
+        // A visitor who asked for less motion gets the shut mouth and no loop at
+        // all — not a loop that draws the same shape, which is still a wake-up.
+        if (reducedMotion() || MOUTH_STYLE === 'still') {
+            paintMouth(0, 0, 0);
+            return;
+        }
+        mouthFrame = window.requestAnimationFrame(mouthTick);
+    }
+
+    /* A tab that goes away stops the mouth and a tab that comes back restarts it,
+       so a page left open in a background tab is not quietly animating. */
+    document.addEventListener('visibilitychange', function () {
+        if (document.hidden) stopMouth(); else startMouth();
+    });
+
     function faceSVG(bare) {
         var svg = document.createElementNS(SVG_NS, 'svg');
         svg.setAttribute('viewBox', '0 0 24 24');
@@ -808,8 +993,15 @@
 
         var left = FACE_MID - MOUTH_HALF, width = MOUTH_HALF * 2;
 
-        /* Straight: the line every mouth is measured from. */
-        mouth('M' + at(left) + ' ' + at(MOUTH_Y) + 'h' + size(width), 'is-neutral', true);
+        /* The resting mouth: one closed outline, drawn SHUT here and rewritten
+           every frame by the engine above. `at` travels with it because the bare
+           look is the same face at a different scale, and the engine needs the
+           transform this particular face was drawn with. */
+        var rest = document.createElementNS(SVG_NS, 'path');
+        rest.setAttribute('d', mouthPath(at, 0, 0, 0));
+        rest.setAttribute('class', 'lpa-mouth is-neutral is-on');
+        svg.appendChild(rest);
+        NEUTRAL_MOUTHS.push({ el: rest, at: at });
 
         /* A smile whose ends sit ON that line, so the face does not jump when
            the mouth changes — the middle dips instead. The radii are chosen for
@@ -818,15 +1010,12 @@
         mouth('M' + at(left) + ' ' + at(MOUTH_Y) + 'a' + size(3.8) + ' ' + size(3.4) +
             ' 0 0 0 ' + size(width) + ' 0', 'is-smile');
 
-        /* Open, while an answer is being composed. Drawn rather than typed, and
-           it is the only mouth that is not a line. */
-        var open = document.createElementNS(SVG_NS, 'ellipse');
-        open.setAttribute('cx', String(FACE_MID));
-        open.setAttribute('cy', String(at(MOUTH_Y + 0.9)));
-        open.setAttribute('rx', String(size(1.3)));
-        open.setAttribute('ry', String(size(1.5)));
-        open.setAttribute('class', 'lpa-mouth is-open');
-        svg.appendChild(open);
+        /* THERE IS NO SEPARATE OPEN MOUTH ANY MORE. It was an ellipse stacked
+           under the line and crossfaded in while an answer was being composed;
+           now the line OPENS — see the engine — so the face keeps one mouth and
+           the opening is the same drawing at a different pose. A face with a
+           second mouth is a face with two mouths to keep in step, and the second
+           one is exactly what was opening while nothing was happening. */
 
         return svg;
 
@@ -952,14 +1141,16 @@
     }
 
     function typing(on) {
-        /* The face knows when it is working: `is-busy` on the dock is what the
-           CSS hangs the open mouth on. Toggled here rather than where the
-           request is made, because this function is the one place that already
-           knows whether a reply is still coming — including every path that ends
-           in an error or a timeout. */
+        /* THE FACE KNOWS WHEN IT IS WORKING, and it says so here rather than
+           where the request is made, because this function is the one place that
+           already knows whether a reply is still coming — including every path
+           that ends in an error or a timeout. `speak()` opens the mouth on every
+           face on the page at once; `is-busy` on the dock is only what keeps the
+           mouth that MOVES the visible one while the sheet is open. */
         // The dock is optional now: a page that owns a door has no dock, and a
         // face that cannot be shown is not a reason to fail a reply.
         if (dock) dock.classList.toggle('is-busy', !!on);
+        speak(on);
         if (on) {
             if (typingEl) return;
             var row = el('div', 'lpa-row');
@@ -967,6 +1158,18 @@
             // grows the "still checking" line, so both are kept. Confusing the
             // two is how the caption would end up on the wrong element.
             var t = el('div', 'lpa-typing');
+            /* THE WAITING ROW WEARS THE FACE, because this is the one moment the
+               visitor is looking at the assistant and it has something true to
+               say — asked for in as many words: "the interractive faces are
+               nowhere to be found when typing". It is a `data-lp-face` slot like
+               every other face on a page, so it is the same drawing, it is
+               redrawn if the studio changes the look, and it speaks with the
+               rest: the mouth here is open for exactly as long as the answer is
+               coming. */
+            var waiting = el('span', 'lpa-avatar');
+            waiting.setAttribute('data-lp-face', '');
+            waiting.appendChild(iconForLook(SAY.look));
+            t.appendChild(waiting);
             t.appendChild(el('i'));
             t.appendChild(el('i'));
             t.appendChild(el('i'));
@@ -1226,9 +1429,6 @@
         var question = String(text || (inputEl ? inputEl.value : '') || '').trim();
         if (!question) return;
 
-        // The suggestions have done their job the moment a visitor asks
-        // something of their own, and from then on they are only clutter.
-        if (chipsEl) chipsEl.classList.add('is-gone');
         settleInvites();
         said(question);
         if (inputEl) { inputEl.value = ''; grow(); }
@@ -1354,27 +1554,6 @@
         var path = (location.pathname || '').replace(/\/+$/, '');
         var last = path.split('/').pop() || '';
         return last.replace(/\.html$/i, '').toLowerCase();
-    }
-
-    /** The questions to offer, in order of who knows best: the studio's own list
-        from Settings if it wrote one, then this page's, then the safe three. */
-    function suggestionsForPage() {
-        if (SAY.suggestions && SAY.suggestions.length) return SAY.suggestions;
-        var here = PAGE[pageKey()];
-        return (here && here.ask) || DEFAULT_ASK;
-    }
-
-    /** (Re)draw the suggested questions. Separate from buildSheet because the
-        studio's own list can arrive after the sheet was built. */
-    function renderChips() {
-        if (!chipsEl) return;
-        chipsEl.textContent = '';
-        suggestionsForPage().forEach(function (q) {
-            var c = el('button', 'lpa-chip', q);
-            c.type = 'button';
-            c.addEventListener('click', function () { send(q); });
-            chipsEl.appendChild(c);
-        });
     }
 
     /* The booking pages ARE the booking, so a "book" half there is noise: the
@@ -1550,10 +1729,6 @@
         logEl.setAttribute('aria-live', 'polite');
         sheet.appendChild(logEl);
 
-        chipsEl = el('div', 'lpa-chips lpa-in');
-        sheet.appendChild(chipsEl);
-        renderChips();
-
         var compose = el('div', 'lpa-compose lpa-in');
         var ring = el('div', 'lpa-ring');
         inputEl = el('textarea', 'lpa-input');
@@ -1636,9 +1811,14 @@
         update();
     }
 
-    function openSheet() {
+    function openSheet(from) {
         if (open) return;
         open = true;
+        /* WHAT OPENED THIS, so closeSheet() can put focus back where it was.
+           Passed in rather than read from document.activeElement, because
+           Safari does not reliably focus a button on click — reading it would
+           have silently aimed the focus at the document body instead. */
+        if (from && typeof from.focus === 'function') sheetOpener = from;
 
         if (sheet.hidden) {
             sheet.hidden = false;
@@ -1684,7 +1864,15 @@
         if (dock) dock.classList.remove('is-open');
         if (lobeAsk) lobeAsk.setAttribute('aria-expanded', 'false');
         if (inputEl) inputEl.blur();
-        if (lobeAsk) lobeAsk.focus();
+        /* WHERE THE FOCUS GOES BACK.
+
+           The dock's lobe when the dock opened it, and the page's own door when
+           that opened it. On the links page there is no lobe at all — the dock
+           stands down where a page owns a door — so the old `if (lobeAsk)` alone
+           left the visitor's focus nowhere after they closed the chat. */
+        if (sheetOpener && document.contains(sheetOpener)) sheetOpener.focus();
+        else if (lobeAsk) lobeAsk.focus();
+        sheetOpener = null;
 
         window.setTimeout(function () {
             if (!open && sheet) sheet.hidden = true;
@@ -1823,13 +2011,19 @@
         if (greeting) SAY.greeting = greeting;
 
         var askLabel = str(s.assistant_ask_label);
-        if (askLabel) SAY.ask = askLabel;
+        if (askLabel) {
+            SAY.ask = askLabel;
+            /* Any door already on the page says what the studio calls asking.
+               Read out of the document rather than held in a register, so this
+               cannot become a second thing to remember whenever a door exists. */
+            var doorTitles = document.querySelectorAll('.lpa-door-title');
+            for (var dt = 0; dt < doorTitles.length; dt++) doorTitles[dt].textContent = askLabel;
+        }
 
         var placeholder = str(s.assistant_placeholder);
         if (placeholder) {
             SAY.placeholder = placeholder;
             if (inputEl) inputEl.placeholder = placeholder;
-            doorInputs.forEach(function (field) { field.placeholder = placeholder; });
         }
 
         var invites = lines(s.assistant_invites);
@@ -1843,17 +2037,23 @@
             startInvites();
         }
 
-        var questions = lines(s.assistant_suggestions);
-        if (questions.length) {
-            SAY.suggestions = questions;
-            renderChips();
-        }
-
         /* The look, named. The old on/off setting still works — "off" was the
            bubble and anything else was the smiley, which is exactly what those
            two names mean now, so nothing already saved changes meaning. */
         var look = resolveLook(s);
         if (look && look !== SAY.look) { SAY.look = look; swapFaceIcon(); }
+
+        /* How the mouth moves while it answers, and how quickly — the rest is the
+           line in every one of them. Both are validated against the set of names
+           that exist rather than trusted: a setting is text in a database, and a
+           value nobody recognises has to mean "leave it alone" rather than
+           "stop moving". */
+        var mouthStyle = str(s.assistant_mouth).toLowerCase();
+        if (MOUTH_ALIAS[mouthStyle]) mouthStyle = MOUTH_ALIAS[mouthStyle];
+        if (MOUTH_STYLES[mouthStyle]) MOUTH_STYLE = mouthStyle;
+        var mouthPace = str(s.assistant_mouth_pace).toLowerCase();
+        if (MOUTH_MS[mouthPace]) MOUTH_PACE = mouthPace;
+        startMouth();
     }
 
     function loadSettings() {
@@ -1912,55 +2112,56 @@
        Which way round that runs matters, and it is the whole reason this is a
        slot rather than a second published function. The page cannot send as the
        visitor and cannot open a box of its own: it holds a place, the widget
-       builds what stands in it, and the question the visitor types here travels
-       through exactly the same send() the chat box uses — same conversation, same
-       history, same rate limit. There is one way to ask, and this is another
-       door onto it, not another room. */
+       builds what stands in it, and the conversation it opens is the same one
+       the chat box uses — same history, same rate limit. There is one way to
+       ask, and this is another door onto it, not another room. */
     function askDoor() {
-        var form = el('form', 'lpa-door');
+        /* A DOOR, NOT A FIELD.
 
-        var head = el('div', 'lpa-door-head');
+           The first version of this put a real text field on the page and sent
+           whatever was typed there into the sheet. The owner's read of it was
+           exact: "the first assistant chat box is useless and its awkward to
+           click th box, type in a question, then the assistant answer comes with
+           another chat box". Two boxes for one conversation — and the one they
+           had already typed into could not show a reply, keep the history or
+           hold the greeting, so it existed only to be abandoned halfway.
+
+           Now the card IS the door: one tap opens the assistant itself, and the
+           only place to type is the composer, in the box the answer arrives in.
+           A button rather than a div, so it is focusable, announced as an
+           action, and reachable with Enter and Space for free. */
+        var card = el('button', 'lpa-door');
+        card.type = 'button';
+
         var face = el('span', 'lpa-door-face');
         face.setAttribute('data-lp-face', '');
         face.appendChild(iconForLook(SAY.look));
-        head.appendChild(face);
-        var copy = el('div', null);
-        copy.appendChild(el('div', 'lpa-door-title', 'Ask me anything'));
+        card.appendChild(face);
+
+        var copy = el('div', 'lpa-door-copy');
+        // The studio's own label for asking, so a rename in Settings renames the
+        // door too: applyAssistantSettings() updates the cards already built.
+        copy.appendChild(el('div', 'lpa-door-title', SAY.ask));
         copy.appendChild(el('div', 'lpa-door-sub',
-            'Rates, dates and what is included \u2014 answered here, in a moment.'));
-        head.appendChild(copy);
-        form.appendChild(head);
+            'Rates, dates and what is included \u2014 answered right here.'));
+        card.appendChild(copy);
 
-        var row = el('div', 'lpa-door-row');
-        var input = el('input', 'lpa-door-input');
-        input.type = 'text';
-        input.setAttribute('aria-label', 'Your question');
-        input.placeholder = SAY.placeholder;
-        // Kept, so a studio that renames the placeholder in Settings renames it
-        // here too. A field on a page that says something different from the one
-        // in the chat box is two voices for one assistant.
-        doorInputs.push(input);
-        row.appendChild(input);
-        // Not `send`: that is the widget's own function, and a variable of the
-        // same name in this scope would shadow it and break the button silently.
-        var askBtn = el('button', 'lpa-door-send', 'Ask');
-        askBtn.type = 'submit';
-        row.appendChild(askBtn);
-        form.appendChild(row);
+        // Decorative, and hidden from the name a screen reader reads out: the
+        // card's name is its title and its line, not "... right here. ›".
+        var arrow = el('span', 'lpa-door-arrow', '\u203a');
+        arrow.setAttribute('aria-hidden', 'true');
+        card.appendChild(arrow);
 
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-            var question = input.value.trim();
-            if (!question) { input.focus(); return; }
-            input.value = '';
-            input.blur();
-            // The same sheet, the same conversation. removeWidget() takes this
-            // form away with the rest of the widget, which is why there is no
-            // liveness check tied to a handler that cannot outlive it.
-            openSheet();
-            send(question);
+        card.addEventListener('click', function () {
+            /* The same sheet, the same conversation. The card is handed over so
+               the sheet can give focus back here when it closes: a page that
+               owns a door has no dock lobe to return to, and a door must not
+               drop the keyboard user at the top of the document.
+               removeWidget() takes this card away with the rest of the widget,
+               which is why there is no liveness check on the handler. */
+            openSheet(card);
         });
-        return form;
+        return card;
     }
 
     /** Fill every door slot, and say how many were filled. Never twice: a page
@@ -2008,6 +2209,10 @@
             startInvites();
         }
         wireKeyboard();
+        /* The mouth starts here rather than when the settings land, so the face
+           is alive in the first frame it is on screen; the settings only ever
+           change WHICH movement it is. */
+        startMouth();
         loadSettings();
         savedContact = loadSaved();
     }
