@@ -1298,6 +1298,115 @@
         });
     }
 
+    /* ------------------------------------------------------------------ */
+    /* THE VISITOR'S WAY BACK TO THE STUDIO'S REPLY.
+
+       WHY THIS IS HERE AT ALL. The handover used to be a one-way door: the
+       visitor asked something the assistant could not answer, the question
+       appeared in the studio's bell, the studio wrote a real reply — and the
+       visitor was never told. They had closed the tab by then, and the next
+       time they opened the assistant it knew nothing about the question it had
+       passed on, so the studio's answer reached nobody and the work of writing
+       it looked, from both ends, like nothing had happened.
+
+       WHAT IS KEPT, AND WHY IT IS THIS AND NOTHING MORE. One capability: the
+       token the worker gave this browser when it handed the question over. That
+       token can do exactly one thing — read the studio's reply to that ONE
+       question — and the worker will not use it to name a notification, reveal a
+       contact, or confirm that a token is real. It expires at the worker's
+       fourteen days regardless of what is stored here, and it is never sent
+       anywhere except back to the studio's own API.
+
+       It is NOT a conversation. Nothing the visitor typed is kept beside it, so
+       a browser holding this token can re-read one reply and nothing else — and
+       the reply is the one thing a person came back for. */
+    var ASK_KEY = 'lp_assistant_asked';
+    var sweptReply = false;
+
+    function loadAsked() {
+        try {
+            var raw = window.localStorage.getItem(ASK_KEY);
+            if (!raw) return null;
+            var parsed = JSON.parse(raw);
+            if (!parsed || typeof parsed.token !== 'string' || !/^[a-f0-9]{32}$/.test(parsed.token)) return null;
+            return { token: parsed.token, question: typeof parsed.question === 'string' ? parsed.question : '' };
+        } catch (err) {
+            return null;
+        }
+    }
+
+    function saveAsked(token, question) {
+        if (!token) return;
+        try {
+            window.localStorage.setItem(ASK_KEY, JSON.stringify({
+                token: String(token),
+                // The visitor's own words, so the studio's reply can be shown
+                // under the question it answers rather than as a paragraph out
+                // of nowhere. Truncated: this is a label, not a transcript.
+                question: String(question || '').slice(0, 140)
+            }));
+        } catch (err) { /* a browser that refuses storage simply asks again */ }
+    }
+
+    /* NOTHING HERE EVER CLEARS THE TOKEN, and that is deliberate rather than
+       unfinished. There is no way for this file to tell "they have not replied
+       yet" from "that is more than fourteen days old", because the worker answers
+       both the same way ON PURPOSE — an endpoint that says which tokens are real
+       is an endpoint that answers a stranger's guesses. So the only thing that
+       can make this token worthless is the worker's own clock, and it is already
+       the thing that decides. Deleting it locally on a guess would throw away the
+       studio's reply because a phone was in a lift. */
+
+    /**
+     * The studio answered? Show it — once per visit, at the top of the log.
+     *
+     * Three outcomes and they must not be confused, which is this project's
+     * most expensive recurring fault: the studio HAS answered (draw it, wearing
+     * the face, with the question above it); the studio has not answered YET
+     * (say nothing at all — an "awaiting reply" line on every visit turns a
+     * slow answer into nagging); and the token is no longer good for anything
+     * (fourteen days old, or the row is gone) — the honest end of the promise,
+     * and the one case that clears the token, because a dead capability kept in
+     * a browser is a thing that will be asked about forever.
+     *
+     * Nothing here can break the assistant: every path is swallowed, because a
+     * visitor opening the box must get the box. */
+    async function sweepStudioReply() {
+        if (sweptReply) return;
+        sweptReply = true;
+        var asked = loadAsked();
+        if (!asked) return;
+        var data = null;
+        try {
+            var res = await fetch(API + '/api/assistant/answer?token=' + encodeURIComponent(asked.token));
+            data = await res.json();
+        } catch (err) {
+            // A network that cannot answer is NOT the end of the token: leave it
+            // and try again next visit. Clearing here would throw away the
+            // studio's reply because a phone was in a lift.
+            sweptReply = false;
+            return;
+        }
+        if (!data || data.status !== 'ok') return;
+        if (!data.answered) return;   // not yet, or long past — see the note above
+
+        var answer = String(data.answer || '').trim();
+        if (!answer) return;
+
+        if (asked.question) {
+            // The visitor's own words, in the shape their words always take, so
+            // the reply visibly belongs to the question under it.
+            var q = el('div', 'lpa-row');
+            q.appendChild(el('div', 'lpa-me', asked.question));
+            logEl.appendChild(q);
+        }
+        note('Liberty read your question and wrote back' +
+            (asked.question ? ' about the above' : '') +
+            '. This is their own reply, not the assistant\u2019s:');
+        say(answer);
+        toBottom();
+    }
+
     /** A button in the log that goes somewhere — used for WhatsApp, and only
         ever WhatsApp. */
     function actionButton(label, href, ghost) {
@@ -1326,6 +1435,10 @@
     function offerCallback(token, question) {
         whatsappButton('Continue on WhatsApp', question);
         if (!token) return;
+        // Kept BEFORE anything is asked of the visitor, because the reply is
+        // theirs whether or not they choose to leave an email address. See the
+        // note above ASK_KEY.
+        saveAsked(token, question);
 
         // If this browser has already told the studio who it is, there is
         // nothing to ask: attach it to the new handover so the notification in
@@ -1848,6 +1961,15 @@
             greetingShown = true;
             say(SAY.greeting);
         }
+
+        /* Did the studio reply to something this visitor handed over? Asked on
+           OPEN rather than at load, so nothing is fetched for the many visitors
+           who never open the box — and asked here rather than anywhere else
+           because this is the first moment there is a log to draw into. Guarded
+           like every other promise in this file: a reply we cannot fetch is not
+           a reason for the box to fail to open. */
+        var swept = sweepStudioReply();
+        if (swept && swept.catch) swept.catch(function () {});
 
         // Never on a phone: focusing throws the keyboard over the greeting
         // before it has been read.

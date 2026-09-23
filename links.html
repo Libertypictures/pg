@@ -4,16 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Libertypictures — Links</title>
-<meta name="description" content="Libertypictures — book a portrait or wedding session, chat, or send an email.">
+<meta name="description" content="Libertypictures — ask a question, see the studio's work, or explore weddings.">
 <meta name="theme-color" content="#8a7355" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#161513" media="(prefers-color-scheme: dark)">
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23000000'/%3E%3Ctext x='50' y='68' font-size='52' font-family='Georgia, serif' fill='%23c4a67e' text-anchor='middle'%3EL%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="/vendor/fonts.css?v=2ca4e079b3">
-<link rel="preconnect" href="https://api.libertymusa.com" crossorigin>
-<!-- Kick the settings request off during HTML parsing, before the
-     script tag near the bottom runs — knocks the biggest chunk off
-     the logo's time-to-first-pixel on cold visits. -->
-<link rel="preload" href="https://api.libertymusa.com/api/settings" as="fetch" crossorigin>
 <style>
     :root {
         --bg: #faf8f4; --text: #1a1815; --text-soft: #6b6459; --accent: #8a7355; --accent-deep: #6e5c44;
@@ -79,9 +74,9 @@
 
        The assistant's card is built by the widget, not by this page, and it is
        drawn first: `border-radius: 18px` and `padding: 15px 16px`, in
-       assistant.js, where it also appears on every other page. The five entries
-       below it were square-cornered and padded 16px 18px, so a visitor looking
-       at the page saw a rounded card sitting on top of four sharp ones whose
+       assistant.js, where it also appears on every other page. The two doors
+       below it were once square-cornered and padded 16px 18px, so a visitor
+       looking at the page saw a rounded card sitting on top of sharp ones whose
        text started two pixels further right — the assistant looked bolted on by
        someone who had not seen the rest, which is the opposite of the intent.
 
@@ -146,18 +141,33 @@
     .link-desc { font-size: 11.5px; color: var(--text-soft); margin-top: 3px; }
     .link-arrow { color: var(--text-soft); font-size: 16px; opacity: 0.45; flex-shrink: 0; }
 
-    /* ==== Footer ==== */
+    /* ==== Footer — contact and reviews, AS ONE QUIET ROW ================
+
+       WhatsApp and Email used to be two more full cards in the list above,
+       which made five destinations of equal weight — and the owner's note was
+       that the page had "too many options". They are not destinations; they are
+       ways of reaching a person, and a visitor choosing between them is a
+       visitor choosing before they know what they want. So they are one line of
+       small text at the foot of the page, with the review link beside them, and
+       the three doors above keep the room.
+
+       THE INSTAGRAM LINK IS GONE, and deliberately: this page exists because an
+       Instagram bio can hold only one link, so it is opened by people who are
+       already on Instagram. A row of social icons on a link-in-bio page sends
+       its one tap back where it came from. */
     .links-footer {
-        margin-top: 20px; text-align: center;
-        display: flex; flex-direction: column; gap: 10px; align-items: center;
+        margin-top: 22px; text-align: center;
+        display: flex; flex-direction: column; gap: 12px; align-items: center;
     }
-    .footer-ig { display: none; align-items: center; gap: 6px; color: var(--text-soft); text-decoration: none; font-size: 11.5px; letter-spacing: 0.4px; transition: color 0.2s ease; }
-    .footer-ig.is-visible { display: inline-flex; }
-    @media (hover: hover) { .footer-ig:hover { color: var(--accent); } }
-    .footer-ig svg { width: 14px; height: 14px; stroke-width: 1.8; }
-    .footer-review-link { color: var(--text-soft); text-decoration: none; opacity: 0.7; font-size: 10.5px; letter-spacing: 0.3px; }
-    @media (hover: hover) { .footer-review-link:hover { color: var(--accent); opacity: 1; text-decoration: underline; } }
-    .footer-copy { opacity: 0.55; font-size: 10.5px; letter-spacing: 0.3px; margin-top: 2px; }
+    .links-thin {
+        display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline;
+        gap: 4px 8px; font-size: 12px; letter-spacing: 0.2px;
+    }
+    .thin-link { color: var(--text-soft); text-decoration: none; transition: color 0.2s ease; }
+    @media (hover: hover) { .thin-link:hover { color: var(--accent); text-decoration: underline; } }
+    .thin-link:focus-visible { outline: none; color: var(--accent); text-decoration: underline; }
+    .thin-dot { color: var(--text-soft); opacity: 0.5; }
+    .footer-copy { opacity: 0.55; font-size: 10.5px; letter-spacing: 0.3px; }
 
     @media (prefers-reduced-motion: reduce) {
         body { animation: none; opacity: 1; }
@@ -168,7 +178,7 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="Libertypictures">
     <meta property="og:title" content="Links | Libertypictures">
-    <meta property="og:description" content="Book a portrait or wedding session, chat on WhatsApp, or send an email.">
+    <meta property="og:description" content="Ask a question, see the studio's work, or explore weddings.">
     <meta property="og:url" content="https://libertymusa.com/links">
     <meta property="og:image" content="https://libertymusa.com/og-image.jpg">
     <meta property="og:image:width" content="1200">
@@ -176,7 +186,7 @@
     <meta property="og:image:alt" content="Libertypictures — intimate visual stories">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Links | Libertypictures">
-    <meta name="twitter:description" content="Book a portrait or wedding session, chat on WhatsApp, or send an email.">
+    <meta name="twitter:description" content="Ask a question, see the studio's work, or explore weddings.">
     <meta name="twitter:image" content="https://libertymusa.com/og-image.jpg">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=31eb723a6e">
     <link rel="icon" href="/favicon.ico?v=6c2c1077ad" sizes="32x32">
@@ -189,15 +199,22 @@
         <p class="brand-welcome">Glad you're here.</p>
     </header>
 
-    <!-- Flat link list, ordered by intent — with one exception, and the exception
-         is the whole point of this page. The assistant is first because it is the
-         only card that answers rather than sends you somewhere: somebody arriving
-         from an Instagram bio usually has one question, and the four cards below
-         make them choose a destination before they have asked it.
+    <!-- THREE DOORS AND NOTHING ELSE COMPETING WITH THEM.
 
-         `hidden` until the widget says it is on the page and can be opened. A card
-         that opens nothing is worse than no card, and the honest way to know is to
-         ask the thing that would have to do the opening. -->
+         It was five: a portrait link, a wedding link, WhatsApp, Email and the
+         assistant's own card. The owner's read was that the page had "too many
+         options", and he was right in a way that mattered — a link-in-bio page
+         opened one-handed from a bio is not a menu, it is the moment somebody
+         decides whether to ask a question or leave. Two destinations carry the
+         real work (the studio, and weddings); the assistant is the one card that
+         ANSWERS rather than sends you somewhere; and WhatsApp, Email and the
+         review link are one quiet line in the footer, because they are ways of
+         reaching a person rather than places to go.
+
+         The portrait card used to be labelled "Portrait Sessions", which read
+         as a packages page — the owner's words were that it "sounds like a
+         packages page". It is The Studio now, and points at the home page, which
+         is what it always led to. -->
     <nav class="link-list" aria-label="Links">
         <!-- THE ASSISTANT. A link-in-bio page is four destinations and no way
              to ask anything, so a visitor with one question has to guess which
@@ -214,79 +231,55 @@
              nothing at all and the four links below it are exactly as they
              were. -->
         <div class="link-ask" id="links-ask" data-lp-door></div>
-        <a href="https://libertymusa.com/?utm_source=igbio&amp;utm_medium=links&amp;utm_campaign=portraits" class="link-card">
-            <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg></div>
+        <a href="https://libertymusa.com/?utm_source=igbio&amp;utm_medium=links&amp;utm_campaign=studio" class="link-card">
+            <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>
             <div class="link-text">
-                <div class="link-title">Portrait Sessions</div>
-                <div class="link-desc">Fashion, beauty, family, corporate, branding — see what's included and book</div>
+                <div class="link-title">The Studio</div>
+                <div class="link-desc">Portraits, families, brands — the work, what's included, and how to book</div>
             </div>
             <span class="link-arrow">›</span>
         </a>
         <a href="https://libertymusa.com/wedding.html?utm_source=igbio&amp;utm_medium=links&amp;utm_campaign=weddings" class="link-card">
             <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div>
             <div class="link-text">
-                <div class="link-title">Wedding Packages</div>
-                <div class="link-desc">From pre-wedding to the first dance</div>
-            </div>
-            <span class="link-arrow">›</span>
-        </a>
-        <a href="https://wa.me/2349075170240?text=Hi%20Liberty%2C%20I%27d%20like%20to%20chat%20about%20a%20session." target="_blank" rel="noopener" class="link-card">
-            <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg></div>
-            <div class="link-text">
-                <div class="link-title">Chat on WhatsApp</div>
-                <div class="link-desc">Fastest way to reach me</div>
-            </div>
-            <span class="link-arrow">›</span>
-        </a>
-        <a href="mailto:visualsliberty@gmail.com" class="link-card">
-            <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg></div>
-            <div class="link-text">
-                <div class="link-title">Email</div>
-                <div class="link-desc">For the details, or when it's not urgent</div>
+                <div class="link-title">Weddings</div>
+                <div class="link-desc">Beloved Imprint — from the pre-wedding to the first dance</div>
             </div>
             <span class="link-arrow">›</span>
         </a>
     </nav>
 
-    <!-- Footer -->
+    <!-- Footer: one quiet line of ways to reach a person, then the copyright.
+         No Instagram — see the note above the thin-row styles. -->
     <footer class="links-footer">
-        <a id="footer-ig" class="footer-ig" href="#" target="_blank" rel="noopener">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.5" y2="6.5"/></svg>
-            <span id="footer-ig-handle">@libertypictures</span>
-        </a>
-        <a class="footer-review-link" href="https://libertymusa.com/review.html?utm_source=igbio&amp;utm_medium=links">Past client? Leave a review →</a>
+        <nav class="links-thin" aria-label="Contact and reviews">
+            <a class="thin-link" href="https://wa.me/2349075170240?text=Hi%20Liberty%2C%20I%27d%20like%20to%20chat%20about%20a%20session." target="_blank" rel="noopener">WhatsApp</a>
+            <span class="thin-dot" aria-hidden="true">·</span>
+            <a class="thin-link" href="mailto:visualsliberty@gmail.com">Email</a>
+            <span class="thin-dot" aria-hidden="true">·</span>
+            <a class="thin-link" href="https://libertymusa.com/review.html?utm_source=igbio&amp;utm_medium=links">Leave a review</a>
+        </nav>
         <div class="footer-copy">Libertypictures © 2026</div>
     </footer>
 </main>
 
-<script>
-    var API_BASE = 'https://api.libertymusa.com';
+<!-- NO SCRIPT OF THIS PAGE'S OWN, AND NO REQUEST OF ITS OWN EITHER.
 
-    // Settings fetch is now only for the Instagram handle in the
-    // footer. High priority so the footer isn't blank for long.
-    fetch(API_BASE + '/api/settings', { priority: 'high' })
-        .then(function (r) { return r.json(); })
-        .then(function (data) {
-            var s = (data && data.settings) || {};
-            if (s.instagram_handle) {
-                var handle = s.instagram_handle.replace(/^@/, '');
-                var ig = document.getElementById('footer-ig');
-                ig.href = 'https://instagram.com/' + handle;
-                ig.classList.add('is-visible');
-                document.getElementById('footer-ig-handle').textContent = '@' + handle;
-            }
-        })
-        .catch(function () { /* page renders fine without settings */ });
-</script>
-<!-- No script of this page's own. The door above is filled by the widget, and
-     that is the whole point: a page that builds its own version of the way in is
-     how two versions of one behaviour begin to disagree, and a page that reveals
-     a door it cannot open is how a dead button ships. If the assistant is off,
-     the slot stays empty, the page renders as it did before the assistant
-     existed, and nobody is asked to tap anything that does nothing. -->
+     There used to be one: a fetch of /api/settings whose only use was the
+     Instagram handle in the footer. With Instagram gone the page has nothing to
+     ask the API for, so it no longer opens a connection to it at all — one less
+     round trip on a page whose entire visit is a few seconds on a phone, and one
+     less thing that can be slow on the cold-load path.
+
+     The door above is filled by the widget, and that is the whole point: a page
+     that builds its own version of the way in is how two versions of one
+     behaviour begin to disagree, and a page that reveals a door it cannot open is
+     how a dead button ships. If the assistant is off, the slot stays empty, the
+     page renders as it did before the assistant existed, and nobody is asked to
+     tap anything that does nothing. -->
 <!-- The studio assistant. It answers from the studio's live data and hands
      anything it cannot answer to Liberty. If it is not switched on it removes
      itself, so this page renders exactly as it did before it existed. -->
-<script src="assistant.js?v=7567a19e40" defer></script>
+<script src="assistant.js?v=4b6771c58e" defer></script>
 </body>
 </html>
