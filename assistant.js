@@ -1098,7 +1098,8 @@
         if (!avatarEl) {
             avatarEl = el('span', 'lpa-avatar');
             avatarEl.setAttribute('data-lp-face', '');
-            avatarEl.appendChild(iconForLook(SAY.look));
+            var avatarFace = lookFace();
+            if (avatarFace) avatarEl.appendChild(avatarFace);
         }
         return avatarEl;
     }
@@ -1190,7 +1191,8 @@
                coming. */
             var waiting = el('span', 'lpa-avatar');
             waiting.setAttribute('data-lp-face', '');
-            waiting.appendChild(iconForLook(SAY.look));
+            var waitingFace = lookFace();
+            if (waitingFace) waiting.appendChild(waitingFace);
             t.appendChild(waiting);
             t.appendChild(el('i'));
             t.appendChild(el('i'));
@@ -1724,7 +1726,8 @@
         // strokes or the plain bubble. Without an icon the lobe is a word and
         // nothing else, which is a smaller thing than this widget is trying to
         // be.
-        lobeAsk.appendChild(iconForLook(SAY.look));
+        var lobeFace = lookFace();
+        if (lobeFace) lobeAsk.appendChild(lobeFace);
         wordEl = el('span', 'lpa-word', SAY.ask);
         lobeAsk.appendChild(wordEl);
         // This used to call a bare `close` rather than closeSheet — and a bare
@@ -2121,6 +2124,44 @@
         return faceIcon();
     }
 
+    /* THE LOOK IS THE STUDIO'S, AND UNTIL IT IS KNOWN NOTHING IS DRAWN.
+
+       Every face used to be drawn twice: once while the page was being built,
+       in the DEFAULT look — two eyes, a mouth, and a head drawn round them —
+       and again when Settings answered, in whatever the studio had actually
+       chosen. The second pass was the repair, and the first pass was visible:
+       on the links page the assistant's card wore that head — the owner's
+       report was "the circle around it for a split second" — until the studio's
+       own headless face replaced it. A mark that is briefly WRONG is worse than
+       a mark that arrives a moment late, so every face is now drawn once, when
+       the choice is known.
+
+       Two things make that safe rather than clever. A Settings request that
+       fails draws the default anyway (see loadSettings), so no card can be left
+       with no face at all — the failure is the only case where the default is
+       the honest answer. And a face drawn late is not a still picture: the
+       mouth engine walks its list of live mouths on every frame and picks up
+       whatever arrived, so a face drawn after the loop started still breathes. */
+    var lookKnown = false;
+
+    /** A face in the studio's look, or nothing at all while that is unknown. */
+    function lookFace() {
+        return lookKnown ? iconForLook(SAY.look) : null;
+    }
+
+    /** The moment the look is known — from Settings, or from their failure.
+        The dock's lobe and every face slot are drawn here and nowhere else. */
+    function settleLook() {
+        lookKnown = true;
+        swapFaceIcon();
+        fillFaceSlots(true);
+        /* The capsule was measured for its longest invitation WITHOUT the face,
+           because the face did not exist yet. Re-measure now that it does, or
+           the dock would be twenty-odd pixels narrow and would twitch between
+           words — the exact thing that pin exists to prevent. */
+        pinInviteWidth();
+    }
+
     function swapFaceIcon() {
         if (!lobeAsk) return;
         var old = lobeAsk.querySelector('svg');
@@ -2221,11 +2262,16 @@
                     if (span) span.textContent = book.label;
                 }
                 applyAssistantSettings(s);
-                // The look is the studio's to choose, so the page's own face slots
-                // are redrawn once that choice is known — see fillFaceSlots.
-                fillFaceSlots(true);
+                // The look is the studio's to choose, and this is the moment it
+                // becomes known: the lobe and every face slot are drawn here.
+                settleLook();
             })
-            .catch(function () {});
+            /* AND THE SAME THING WHEN SETTINGS DO NOT ANSWER. The default is not
+               the studio's look, but a card with no face at all is worse than a
+               card wearing the wrong one — so the failure path settles the look
+               with the defaults this file already holds rather than leaving the
+               mark empty forever. */
+            .catch(function () { settleLook(); });
     }
 
     /* PAGE-OWNED SLOTS FOR THE FACE.
@@ -2235,12 +2281,17 @@
        face begin to drift out of step. Anything carrying `data-lp-face` is
        filled from the same faceSVG() the dock uses.
 
-       Filled twice on purpose: once immediately, so the page is never briefly
-       missing its mark, and again when the studio's settings land, because the
-       look it was drawn in is the studio's to choose and the first pass can only
-       use the default. `replace` is what makes the second pass a repair rather
-       than a second face. */
+       Called twice, and only the second call draws. The first runs while the
+       page is being built, before Settings have answered, and there is nothing
+       honest to draw then: the only look this file could use is the default,
+       and the default is not the studio's. That was the first version's bug,
+       and the owner saw what it cost — the links page's card wore the smiley's
+       head until the studio's own headless face replaced it. So the early call
+       is a no-op now, and the call that draws is the one that knows. `replace`
+       still means what it did: a slot may already hold a face, and a face is
+       repaired rather than doubled. */
     function fillFaceSlots(replace) {
+        if (!lookKnown) return;
         var slots = document.querySelectorAll('[data-lp-face]');
         for (var i = 0; i < slots.length; i++) {
             var next = iconForLook(SAY.look);
@@ -2285,7 +2336,10 @@
 
         var face = el('span', 'lpa-door-face');
         face.setAttribute('data-lp-face', '');
-        face.appendChild(iconForLook(SAY.look));
+        /* NO FACE YET. The span already holds its 22px box in the stylesheet, so
+           the card is the size it will be either way and nothing shifts when
+           the mark arrives a moment later — see lookKnown above for why the
+           mark is not drawn in advance. */
         card.appendChild(face);
 
         var copy = el('div', 'lpa-door-copy');
