@@ -297,12 +297,16 @@
     }
     function formatNaira(n) { return '\u20a6' + Math.round(n || 0).toLocaleString(); }
 
-    /* The studio's number is stored in local form ("09075170240"), and wa.me only
-       opens a chat for an INTERNATIONAL number — so a link built from the setting
-       verbatim, which is what this line used to do, opens nothing at all. A
-       leading zero becomes the country code. 234 is not a guess: it is what the
-       hand-written link on this page already uses, and what the site's structured
-       data declares. Same rule as the assistant widget and gallery.html.
+    /* The studio's number is stored in Settings exactly as it was last typed, and
+       wa.me only opens a chat for an INTERNATIONAL number — so a link built from
+       the setting verbatim, which is what this line used to do, opens nothing at
+       all. A leading zero becomes the country code. The code is not a guess: it
+       is what the hand-written link on this page uses, and what the site's
+       structured data declares. Same rule as the assistant widget and
+       gallery.html.
+
+       The number itself is quoted nowhere in this file on purpose: a comment
+       that names it is a copy of it, and that is the copy nobody updates.
 
        The old expression also read /\\D/g, which strips backslashes and letter
        D's rather than the punctuation it was written to remove. */

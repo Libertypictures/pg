@@ -1239,10 +1239,16 @@
     }
 
     /* wa.me only opens a chat for an INTERNATIONAL number. The studio's setting
-       is stored in local form ("09075170240"), and a link built from that
-       verbatim does not work — so a leading zero is swapped for the country
-       code. 234 is not a guess: it is what every hand-written link on the site
-       already uses, and what the page's own structured data declares. */
+       is stored exactly as it was last typed, and a link built from it verbatim
+       can therefore open nothing at all — so a leading zero is swapped for the
+       country code. The code is not a guess: it is what every hand-written link
+       on the site uses, and what the pages' structured data declares.
+
+       The number itself is quoted nowhere in this file on purpose. A comment
+       that names it is a copy of it, and that is the copy nobody updates — so
+       the number lives in Settings, and ops/set-studio-number.sh moves every
+       copy of it (these links, the structured data, and the tool that writes it)
+       in a single run. */
     var COUNTRY_CODE = '234';
 
     function whatsappLink(message) {

@@ -666,12 +666,15 @@ var G = { fee: 9000, extDays: 14, graceDays: 1, studio: 'Libertypictures', waNum
 
 /* ---------- tiny helpers ---------- */function $(id) { return document.getElementById(id); }
 
-/* The studio's number is stored in local form ("09075170240"), and wa.me only
-   opens a chat for an INTERNATIONAL number — so a link built from the setting
-   verbatim, which is what this page used to do, opened nothing at all. A leading
-   zero becomes the country code. 234 is not a guess: it is what every
-   hand-written link on this site already uses, and what the site's structured
-   data declares. Same rule as the assistant widget and invoice.html. */
+/* The studio's number is stored in Settings exactly as it was last typed, and
+   wa.me only opens a chat for an INTERNATIONAL number — so a link built from the
+   setting verbatim, which is what this page used to do, opened nothing at all. A
+   leading zero becomes the country code. The code is not a guess: it is what
+   every hand-written link on this site uses, and what the site's structured data
+   declares. Same rule as the assistant widget and invoice.html.
+
+   The number itself is quoted nowhere in this file on purpose: a comment that
+   names it is a copy of it, and that is the copy nobody updates. */
 function waDigits(raw) {
     var digits = String(raw == null ? '' : raw).replace(/[^0-9]/g, '');
     if (!digits) return '';
