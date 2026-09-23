@@ -255,13 +255,51 @@
            can only vanish, which reads as a glitch, while a stroke eye closes.
            See the lpa-blink keyframes. */
         '.lpa-face{overflow:visible;transition:transform .4s ' + SPRING + '}',
-        '.lpa-face .lpa-eye{transform-box:fill-box;transform-origin:center;animation:lpa-blink 3.4s infinite}',
-        /* Faster than it was. A blink that lands every 6.4s is a metronome — you
-           notice the interval rather than the face. At 3.4s it reads as
-           breathing, which is the whole point of it being the only thing on the
-           page that moves unasked. */
-        '@keyframes lpa-blink{0%,92%,100%{transform:scaleY(1)}94%,96%{transform:scaleY(.06)}',
-        '98%{transform:scaleY(1)}}',
+        '.lpa-face .lpa-eye{transform-box:fill-box;transform-origin:center;animation:lpa-blink 18s infinite}',
+        /* THE PATTERN HE ASKED FOR — 1, 11, 1, 111, 1, 11 — as one cycle.
+
+           An interval cannot say "sometimes twice, once three times": a pattern
+           is a SEQUENCE, so the eyes ride one 18s track. Ten blinks on a 3000ms
+           pulse, grouped 1, 2, 1, 3, 1, 2, the blinks inside a group 350ms
+           apart, each blink 180ms of closing, shut, opening (it was 204ms —
+           "slightly faster" is 12%, and still a blink rather than a flinch).
+
+           The gaps BETWEEN blinks are what stops a shorter pulse reading as a
+           mechanism: 3000, 2650, 3000, 2300, 3000, 2650ms, never the same twice
+           running, because a group of two or three eats into the beat that
+           follows it. A plain 3.0s blink would be MORE mechanical than the
+           single 3.4s one it replaces — the alternation is the whole trick.
+
+           The pulse and the flurry are both deliberately not multiples of the
+           mouth's 4800/3200/2200ms (see MOUTH_MS below): two cycles that stay
+           in step become a metronome. tools/lib-blink-rhythm.js reads this
+           track back as a rhythm, and refuses a beat that shares a period with
+           the mouth or a beat that is a whole number of flurries. */
+        '@keyframes lpa-blink{',
+        /* The values the eye HOLDS, so each line is either a blink's closed
+           window or the open time between two of them; percentages are of 18s.
+           60ms to shut, 60ms shut, 60ms open — ten blinks, 41 stops. */
+        '0%{transform:scaleY(1)}',
+        '.3333%,.6667%{transform:scaleY(.06)}',
+        '1%,16.6667%{transform:scaleY(1)}',
+        '17%,17.3333%{transform:scaleY(.06)}',
+        '17.6667%,18.6111%{transform:scaleY(1)}',
+        '18.9444%,19.2778%{transform:scaleY(.06)}',
+        '19.6111%,33.3333%{transform:scaleY(1)}',
+        '33.6667%,34%{transform:scaleY(.06)}',
+        '34.3333%,50%{transform:scaleY(1)}',
+        '50.3333%,50.6667%{transform:scaleY(.06)}',
+        '51%,51.9444%{transform:scaleY(1)}',
+        '52.2778%,52.6111%{transform:scaleY(.06)}',
+        '52.9444%,53.8889%{transform:scaleY(1)}',
+        '54.2222%,54.5556%{transform:scaleY(.06)}',
+        '54.8889%,66.6667%{transform:scaleY(1)}',
+        '67%,67.3333%{transform:scaleY(.06)}',
+        '67.6667%,83.3333%{transform:scaleY(1)}',
+        '83.6667%,84%{transform:scaleY(.06)}',
+        '84.3333%,85.2778%{transform:scaleY(1)}',
+        '85.6111%,85.9444%{transform:scaleY(.06)}',
+        '86.2778%,100%{transform:scaleY(1)}}',
 
         /* ── the mouth, and the two things this face does ─────────────────── */
 
@@ -803,7 +841,10 @@
     /* One full cycle at each pace, for BOTH movements. "lively" is the default
        and is deliberately quicker than the 5.2s the resting movement used to
        take — that is the other half of what was asked for. None is a multiple of
-       the blink's 3.4s: two cycles that stay in step become a metronome. */
+       either of the blink's two cadences (its 3000ms pulse and its 350ms
+       flurry): two cycles that stay in step become a metronome. 3.2s is the
+       nearest miss and the reason the pulse is 3.0s — 3200 against 3200 would
+       fall into step exactly. */
     var MOUTH_MS = { calm: 4800, lively: 3200, quick: 2200 };
 
     /* What the studio's setting chooses — and it is a choice about ANSWERING now,
