@@ -160,10 +160,10 @@
         .lp-hero-slide { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transition: opacity 0.9s ease; }
         .lp-hero-slide.is-active { opacity: 1; }
         .lp-hero-flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; z-index: 3; transition: opacity 0.1s ease; }
-        .lp-hero-flash.is-flashing { opacity: 0.32; transition: opacity 0.06s ease; }
+        .lp-hero-flash.is-flashing { opacity: 0.25; transition: opacity 0.06s ease; }
         .lp-hero-scrim { position: absolute; inset: 0; background: linear-gradient(to top, rgba(var(--hero-scrim-rgb),0.7), rgba(var(--hero-scrim-rgb),0.15) 55%); }
         .lp-hero-content { position: relative; padding: 0 6vw; color: #fff; max-width: 700px; text-align: center; }
-        .lp-hero-title { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(30px, 5.5vw, 58px); line-height: 1.2; margin-bottom: 20px; color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+        .lp-hero-title { font-family: 'Fraunces', serif; font-style: italic; font-weight: 400; font-size: clamp(27px, 5vw, 52px); line-height: 1.2; margin-bottom: 20px; color: #fff; text-shadow: 0 4px 24px rgba(0,0,0,0.4); }
         .lp-hero-sub { font-size: 14px; color: rgba(255,255,255,0.82); max-width: 380px; margin: 0 auto; line-height: 1.7; }
 
 
@@ -331,7 +331,7 @@
         .lp-hero-proof-items { display: flex; justify-content: center; align-items: center; }
         .lp-hero-proof-item { padding: 0 clamp(12px, 3vw, 26px); border-left: 1px solid rgba(255,255,255,0.22); }
         .lp-hero-proof-item:first-child { border-left: 0; }
-        .lp-hero-proof-number { font-family: 'Fraunces', serif; font-size: clamp(17px, 4.2vw, 26px); font-weight: 500; line-height: 1; color: #fff; }
+        .lp-hero-proof-number { font-family: 'Fraunces', serif; font-size: clamp(16px, 3.9vw, 23px); font-weight: 500; line-height: 1; color: #fff; }
         .lp-hero-proof-label { font-size: clamp(6.5px, 1.9vw, 8.5px); letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.62); margin-top: 7px; font-weight: 500; }
         /* On a phone the row becomes a 2×2 block, and the hairlines become a
            cross rather than a series of left edges.
@@ -353,7 +353,7 @@
             .lp-hero-proof-item:nth-child(even) { border-left: 1px solid rgba(255,255,255,0.22); }
             .lp-hero-proof-item:nth-child(n+3) { border-top: 1px solid rgba(255,255,255,0.14); padding-top: 16px; margin-top: 16px; }
             .lp-hero-proof-item:last-child:nth-child(odd) { grid-column: 1 / -1; border-left: 0; }
-            .lp-hero-proof-number { font-size: clamp(16px, 5.4vw, 22px); }
+            .lp-hero-proof-number { font-size: clamp(15px, 4.7vw, 19px); }
             .lp-hero-proof-label { margin-top: 6px; }
         }
         @media (prefers-reduced-motion: reduce) { .lp-hero-proof.is-in, .lp-hero-proof.is-in .lp-hero-proof-item { animation: none; } }
@@ -730,7 +730,7 @@
             .work-section { padding-top: 130px; padding-bottom: 16px; }
             .lp-hero { height: 100vh; height: 100svh; }
             .section-heading { font-size: 16px; }
-            .lp-hero-title { font-size: clamp(26px, 8vw, 34px); }
+            .lp-hero-title { font-size: clamp(24px, 7.2vw, 30px); }
             .lp-hero-sub { font-size: clamp(9.5px, 3.1vw, 12px); white-space: nowrap; max-width: none; }
         }
     </style>
@@ -1046,12 +1046,37 @@
     // HERO — identical logic to the booking page: two separate render
     // paths based on hero_mode, never mixing video and slideshow.
     (function () {
+        // The `type` has to describe the file that is actually stored, never
+        // the one we wish were stored. Settings holds a `.mov` hero reel, and
+        // this line used to declare every hero video as `video/mp4` — so the
+        // browser that believes the declaration (Chrome, and therefore
+        // Android) was told something false and gave up, while Safari played
+        // it because it read the file itself. An extension nobody recognises
+        // gets no `type` at all, which leaves the browser sniffing the
+        // container instead of being misled.
+        //
+        // This is the declaration only. A ProRes or HEVC `.mov` still will not
+        // play outside Safari, and the cure for that is exporting an MP4 — no
+        // line here can do it.
+        var VIDEO_TYPES = {
+            mp4: 'video/mp4', m4v: 'video/mp4',
+            webm: 'video/webm', ogv: 'video/ogg', mov: 'video/quicktime'
+        };
+        function videoTypeFor(url) {
+            var path = String(url || '').split('?')[0].split('#')[0];
+            var dot = path.lastIndexOf('.');
+            if (dot === -1) return '';
+            return VIDEO_TYPES[path.slice(dot + 1).toLowerCase()] || '';
+        }
+
         function renderVideo(s) {
             if (!s.hero_video_url) return;
             var oldVideo = document.getElementById('lp-hero-video');
             var newVideo = oldVideo.cloneNode(false);
             newVideo.muted = true;
-            newVideo.innerHTML = '<source src="' + API_BASE + s.hero_video_url + '" type="video/mp4">';
+            var videoType = videoTypeFor(s.hero_video_url);
+            newVideo.innerHTML = '<source src="' + API_BASE + s.hero_video_url + '"' +
+                (videoType ? ' type="' + videoType + '"' : '') + '>';
             oldVideo.parentNode.replaceChild(newVideo, oldVideo);
             newVideo.play().catch(function (err) { console.error('Hero video could not autoplay:', err.message); });
         }
@@ -1642,5 +1667,5 @@
 <!-- The studio assistant. It answers from the studio's live data and hands
      anything it cannot answer to Liberty. If it is not switched on it removes
      itself, so this page renders exactly as it did before it existed. -->
-<script src="assistant.js?v=f442c04008" defer></script>
+<script src="assistant.js?v=7f4c856c25" defer></script>
 </body></html>

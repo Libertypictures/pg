@@ -631,6 +631,28 @@
         '.lpa-dock.is-open .lpa-lobe-ask{background:rgba(243,240,234,.94);color:#1a1815}',
         '.lpa-scrim{background:rgba(0,0,0,.42)}}',
 
+        /* The capsule is glass, and glass carries an assumption: that the
+           browser will blur what is behind it. `backdrop-filter` is what makes
+           the pill legible over a photograph — at 62% white with the blur
+           working, the page underneath reads as soft colour, which is the
+           whole point of the material. Without the blur it is 62% white over
+           whatever is scrolling past, and the page's own text reads straight
+           through the label: the capsule looks broken rather than frosted.
+
+           RULE 5 of `tools/test-frontend-rules.js` forbids frosted fixed
+           surfaces outright, and it cannot see this one — everything here is
+           injected from JavaScript rather than written in the page. That is
+           how this widget came to keep a blur the pages themselves are not
+           allowed to have, and it is why this is a fallback rather than a
+           redesign: where the blur is unavailable the glass becomes a solid
+           surface, and the capsule keeps its shape, its position and its
+           words. Both schemes are named here so the dark glass gets the same
+           treatment as the light one. */
+        '@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){',
+        '.lpa-dock{--lpa-glass:rgba(255,252,248,.97)}',
+        '@media (prefers-color-scheme:dark){.lpa-dock{--lpa-glass:rgba(38,36,32,.95)}}',
+        '}',
+
         /* The page's own floating pill, stood down. Two of them cannot share
            the foot of a phone: hers sat centred and collapsed to a circle while
            this one sat to its right, and on a 390px screen they landed on top of
