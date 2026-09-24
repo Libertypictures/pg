@@ -167,6 +167,12 @@
     var sheetOpener = null;   // what opened the sheet, so closing it can put focus back
     var history = [];
     var busy = false;
+    /* How many questions this visitor has asked. It exists for the one decision
+       taken on 24 September 2026 that needs it: whether the widget may quietly
+       remove itself. The owner's requirement, in his own words — *"as long as my
+       client dont get ignored"* — and a page that has never been asked anything
+       is not the same situation as a conversation somebody is standing in. */
+    var asked = 0;
     var open = false;
     var greetingShown = false;
     var revealed = false;
@@ -453,6 +459,34 @@
         '--lpa-safe:env(safe-area-inset-bottom,0px);--lpa-top-gap:10px;',
         '--lpa-sheet-bg:#fff;--lpa-sheet-ink:#1a1815;--lpa-sheet-line:#e8e3d9;',
         '--lpa-sheet-rim:rgba(255,255,255,.35);',
+        /* ── AND THE SAME DISCIPLINE FOR EVERY COLOUR INSIDE THE SHEET ────
+
+           The white PANEL was fixed on 22 September 2026 by naming the sheet's
+           own two-scheme defaults. The pill the visitor's own words sit in, the
+           callback card, the note, the reply text and the field rings never got
+           the same treatment, and on 24 September the owner photographed the
+           result: *"the client's sent text become pure whiteout blank when
+           chatting with the assistant."*
+
+           The cause, measured from this file and his own pages: `.lpa-me` took
+           its background from `--highlight-bg`, which only TWO of the six pages
+           that carry the widget define — so on the links, home, portfolio and
+           wedding pages it fell through to a hardcoded cream — while the text
+           inside it was INHERITED from the sheet, which in dark mode is
+           `#f3f0ea`. Near-white words on a cream pill. The same bug had the
+           assistant's own replies (`--lpa-bot`, near-black default) drawn on a
+           dark sheet wherever a page did not define `--text-primary`.
+
+           So every colour used inside the sheet is a token this widget OWNS,
+           defaulted from the page where the page names one (light scheme only,
+           exactly like the sheet above) and overridden in the dark block below.
+           A page that forgets a token can no longer produce a widget that cannot
+           be read — which is the promise the sheet already makes. */
+        '--lpa-ink:var(--text-primary,#1a1815);--lpa-soft:var(--text-secondary,#6b6459);',
+        '--lpa-accent:var(--accent,#8a7355);--lpa-line:var(--border-color,#e8e3d9);',
+        '--lpa-surface:var(--bg-card,#fefdfb);',
+        '--lpa-pill-bg:var(--highlight-bg,#f8f4ec);--lpa-pill-ink:var(--text-primary,#1a1815);',
+        '--lpa-card-bg:var(--highlight-bg,#f8f4ec);--lpa-card-ink:var(--text-secondary,#6b6459);',
         'bottom:calc(var(--lpa-foot,68px) + var(--lpa-safe) + var(--lpa-lift,0px));',
         'z-index:90;width:min(420px,calc(100vw - 22px));',
         'max-height:min(calc(100svh - var(--lpa-foot,68px) - var(--lpa-safe) - var(--lpa-lift,0px) - var(--lpa-top-gap)),620px);',
@@ -479,7 +513,7 @@
         'padding:9px 9px 0}',
         '.lpa-close{flex:none;width:32px;height:32px;border-radius:50%;border:none;background:transparent;color:inherit;',
         'cursor:pointer;display:grid;place-items:center;opacity:.55;transition:opacity .25s ease,background-color .25s ease,transform .4s ' + SPRING + '}',
-        '.lpa-close:hover{opacity:1;background:var(--highlight-bg,#f8f4ec)}',
+        '.lpa-close:hover{opacity:1;background:var(--lpa-pill-bg,#f8f4ec)}',
         '.lpa-close:active{transform:scale(.92)}',
         '.lpa-close svg{width:13px;height:13px}',
         /* THE HEAD IS A CLOSE BUTTON AND NOTHING ELSE.
@@ -509,7 +543,7 @@
         'padding:14px 15px 6px;display:flex;flex-direction:column;gap:13px}',
         /* The studio answers as plain text, the way a person writes: no bubble,
            no border, nothing to click. The visitor's own words get the pill. */
-        '.lpa-bot{font-size:15px;line-height:1.72;color:var(--text-primary,#1a1815);max-width:94%;white-space:pre-wrap;word-break:break-word}',
+        '.lpa-bot{font-size:15px;line-height:1.72;color:var(--lpa-ink,#1a1815);max-width:94%;white-space:pre-wrap;word-break:break-word}',
         /* THE LATEST REPLY WEARS THE FACE, AND ONLY THE LATEST ONE.
 
            A conversation with no speaker is a wall of italic-free text: the
@@ -521,31 +555,32 @@
            avatar on every reply is a wall of faces, and a face on the FIRST
            reply is a face that is no longer talking. */
         '.lpa-said{display:flex;gap:10px;align-items:flex-start}',
-        '.lpa-avatar{flex:none;width:15px;height:15px;margin-top:5px;color:var(--accent,#8a7355)}',
+        '.lpa-avatar{flex:none;width:15px;height:15px;margin-top:5px;color:var(--lpa-accent,#8a7355)}',
         '.lpa-avatar svg{width:100%;height:100%;display:block}',
         '.lpa-me{align-self:flex-end;max-width:86%;padding:9px 14px;border-radius:15px 15px 4px 15px;',
-        'background:var(--highlight-bg,#f8f4ec);font-size:14.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}',
+        'background:var(--lpa-pill-bg,#f8f4ec);color:var(--lpa-pill-ink,#1a1815);',
+        'font-size:14.5px;line-height:1.55;white-space:pre-wrap;word-break:break-word}',
         /* A destination the assistant named, made tappable — a URL in a
            paragraph is not something anyone can use on a phone. Marked with an
            underline rather than a button: it is part of the sentence it is in,
            not a second call to action competing with the visitors own words. */
-        '.lpa-link{color:inherit;text-decoration:underline;text-decoration-color:var(--accent,#8a7355);',
+        '.lpa-link{color:inherit;text-decoration:underline;text-decoration-color:var(--lpa-accent,#8a7355);',
         'text-underline-offset:2.5px;text-decoration-thickness:1px;font-weight:500}',
         '.lpa-link:hover{text-decoration-thickness:2px}',
         '.lpa-note{display:flex;gap:9px;align-items:flex-start;font-size:12.5px;line-height:1.6;',
-        'color:var(--text-secondary,#6b6459);max-width:96%}',
+        'color:var(--lpa-soft,#6b6459);max-width:96%}',
         '.lpa-note::before{content:"";flex:none;width:4px;height:4px;border-radius:50%;margin-top:7px;',
-        'background:var(--accent,#8a7355);opacity:.8}',
-        '.lpa-card{border-radius:16px;padding:13px;background:var(--highlight-bg,#f8f4ec);',
+        'background:var(--lpa-accent,#8a7355);opacity:.8}',
+        '.lpa-card{border-radius:16px;padding:13px;background:var(--lpa-card-bg,#f8f4ec);',
         'display:flex;flex-direction:column;gap:8px;max-width:100%}',
-        '.lpa-card p{font-size:13px;color:var(--text-secondary,#6b6459);line-height:1.6;margin:0}',
+        '.lpa-card p{font-size:13px;color:var(--lpa-card-ink,#6b6459);line-height:1.6;margin:0}',
         '.lpa-typing{display:flex;gap:4px;align-items:center;padding:3px 0}',
         /* Three dots with no explanation is what "it just kept loading" looks
            like from the other side. Once a wait passes the point where silence
            starts to read as broken, the dots say what they are doing. */
         '.lpa-typing.is-slow::after{content:"Still checking the studio\u2019s records\u2026";',
-        'font-size:12px;color:var(--text-secondary,#6b6459);margin-left:7px;white-space:nowrap}',
-        '.lpa-typing i{width:5px;height:5px;border-radius:50%;background:var(--accent,#8a7355);opacity:.45;',
+        'font-size:12px;color:var(--lpa-soft,#6b6459);margin-left:7px;white-space:nowrap}',
+        '.lpa-typing i{width:5px;height:5px;border-radius:50%;background:var(--lpa-accent,#8a7355);opacity:.45;',
         'animation:lpa-dot 1.15s ease-in-out infinite}',
         '.lpa-typing i:nth-child(2){animation-delay:.16s}',
         '.lpa-typing i:nth-child(3){animation-delay:.32s}',
@@ -603,7 +638,7 @@
         /* The ring lives on the wrapper so the whole thing lights up on focus,
            and the field itself stays chrome-free. */
         '.lpa-ring{display:flex;align-items:flex-end;gap:8px;padding:5px 5px 5px 16px;',
-        'border:1px solid var(--border-color,#e8e3d9);border-radius:26px;background:var(--bg-card,#fefdfb);',
+        'border:1px solid var(--lpa-line,#e8e3d9);border-radius:26px;background:var(--lpa-surface,#fefdfb);',
         'transition:border-color .3s ease,box-shadow .3s ease}',
         '.lpa-ring:focus-within{border-color:var(--accent,#8a7355);box-shadow:0 0 0 4px rgba(138,115,85,.10)}',
         /* 16px, not 14. See decision 5 at the top of this file: anything smaller
@@ -614,7 +649,7 @@
         '.lpa-input{flex:1;min-width:0;box-sizing:border-box;border:none;background:transparent;color:inherit;',
         'font:inherit;font-size:16px;line-height:1.5;resize:none;padding:9px 0 10px;max-height:132px;overflow-y:auto}',
         '.lpa-input:focus{outline:none}',
-        '.lpa-input::placeholder{color:var(--text-secondary,#6b6459);opacity:.75}',
+        '.lpa-input::placeholder{color:var(--lpa-soft,#6b6459);opacity:.75}',
         '.lpa-send{flex:none;width:36px;height:36px;border-radius:50%;border:none;display:grid;place-items:center;',
         'background:var(--btn-primary-bg,#1a1815);color:var(--btn-primary-text,#fff);cursor:pointer;',
         'transition:transform .45s ' + SPRING + ',opacity .25s ease}',
@@ -627,13 +662,13 @@
         'font-weight:600;letter-spacing:.2px;background:var(--btn-primary-bg,#1a1815);color:var(--btn-primary-text,#fff);',
         'transition:transform .45s ' + SPRING + ',opacity .25s ease}',
         '.lpa-btn:active{transform:scale(.98)}',
-        '.lpa-btn.is-ghost{background:transparent;color:inherit;border:1px solid var(--border-color,#e8e3d9)}',
+        '.lpa-btn.is-ghost{background:transparent;color:inherit;border:1px solid var(--lpa-line,#e8e3d9)}',
         '.lpa-btn.is-wide{width:100%;box-sizing:border-box}',
         '.lpa-btn svg{width:14px;height:14px}',
         '.lpa-form{display:flex;flex-direction:column;gap:8px}',
         /* 16px here too, for the same reason as the composer. */
         '.lpa-field{width:100%;box-sizing:border-box;padding:10px 12px;border-radius:12px;',
-        'border:1px solid var(--border-color,#e8e3d9);background:transparent;color:inherit;font:inherit;font-size:16px}',
+        'border:1px solid var(--lpa-line,#e8e3d9);background:transparent;color:inherit;font:inherit;font-size:16px}',
         '.lpa-field:focus{outline:none;border-color:var(--accent,#8a7355);box-shadow:0 0 0 4px rgba(138,115,85,.10)}',
         '.lpa-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}',
         '.lpa-row{display:flex;flex-direction:column;gap:9px}',
@@ -665,7 +700,14 @@
            token up there and forget it here is exactly how the white panel
            happened the first time. */
         '.lpa-sheet{--lpa-sheet-bg:#201e1b;--lpa-sheet-ink:#f3f0ea;--lpa-sheet-line:#35332d;',
-        '--lpa-sheet-rim:rgba(255,255,255,.06)}',
+        '--lpa-sheet-rim:rgba(255,255,255,.06);',
+        /* Every one of the tokens the light rule names, so a page that maps
+           nothing at all still gets a widget belonging to the scheme its visitor
+           is in. The pill is the one that was photographed: a surface of its own,
+           and ink of its own to sit on it. */
+        '--lpa-ink:#f3f0ea;--lpa-soft:#a8a196;--lpa-accent:#c4a67e;--lpa-line:#35332d;',
+        '--lpa-surface:#26241f;--lpa-pill-bg:#2b2925;--lpa-pill-ink:#f3f0ea;',
+        '--lpa-card-bg:#26241f;--lpa-card-ink:#cfc9c0}',
         '.lpa-dock.is-open .lpa-lobe-ask{background:rgba(243,240,234,.94);color:#1a1815}',
         '.lpa-scrim{background:rgba(0,0,0,.42)}}',
 
@@ -1612,6 +1654,11 @@
         if (busy) return;
         var question = String(text || (inputEl ? inputEl.value : '') || '').trim();
         if (!question) return;
+        /* Counted AFTER the guard, so a stray press of send on an empty box is
+           not a question — this counter decides whether the widget may remove
+           itself on a 503, and an empty press must not keep a switched-off
+           assistant standing on a page nobody has spoken to. */
+        asked += 1;
 
         settleInvites();
         said(question);
@@ -1657,7 +1704,27 @@
                 })
             });
 
+            /* ── SWITCHED OFF, OR A MODEL THAT CANNOT ANSWER RIGHT NOW ────
+
+               This used to remove the widget and return, whatever was happening.
+               That is right for a page nobody has spoken to — an assistant that
+               is not switched on should not stand there offering a chat box —
+               and it was WRONG in the case the owner named, because a page that
+               is switched off is indistinguishable from a model that has run out
+               of its daily allowance, and that can happen MID-CONVERSATION. What
+               the visitor saw then was their question vanishing, the way in
+               removed from under them, and no words at all.
+
+               So the two cases are separated by whether anything has been asked.
+               Nothing asked: stand down, exactly as before. Something asked:
+               never remove the conversation — say what is happening and give them
+               the way to reach a person, which is the same thing every other
+               failure path in this file does. */
             if (res.status === 503) {   // not switched on, or a deploy without the model
+                if (asked > 0) {
+                    fallback('The assistant is briefly unavailable \u2014 message the studio and Liberty will help you directly.');
+                    return;
+                }
                 removeWidget();
                 return;
             }
@@ -1678,12 +1745,33 @@
                 history.push({ role: 'user', content: question });
                 history.push({ role: 'assistant', content: data.reply });
                 history = history.slice(-MAX_HISTORY);
-            } else {
+            } else if (!data || data.handedOver) {
                 note('Let me pass that to the studio — they will come back to you personally.');
+            } else {
+                /* A blank answer with nobody told. The worker is arranged so that
+                   this cannot happen \u2014 an empty reply is always a handover \u2014 and
+                   this is the second half of that promise: if it ever does, the
+                   visitor is not told a person is coming when nobody has been told. */
+                fallback('I could not answer that just now — message the studio and Liberty will help you directly.');
             }
             if (data && data.handedOver) {
-                note('That one is beyond me, so the studio has been told about it and will answer you personally.');
-                offerCallback(data.handoverToken, question);
+                /* AND ONLY IF THE STUDIO HAS ACTUALLY BEEN TOLD.
+
+                   notify() swallows its own error, so a database that was briefly
+                   unwritable meant this widget said "the studio has been told about
+                   it and will answer you personally" while nothing had been written
+                   anywhere \u2014 and drew a callback form against a row that did not
+                   exist, so the visitor's number went nowhere. The worker now
+                   reports whether the row landed (`studioTold`), and when it did
+                   not, the honest thing is the route to a person rather than the
+                   reassuring sentence. Older workers do not send the field at all,
+                   and `=== false` keeps them behaving exactly as they did. */
+                if (data.studioTold === false) {
+                    fallback('I could not pass that on just now — message the studio and Liberty will help you directly.');
+                } else {
+                    note('That one is beyond me, so the studio has been told about it and will answer you personally.');
+                    offerCallback(data.handoverToken, question);
+                }
             }
         } catch (err) {
             // A network failure is not a reason to leave a broken box on screen
