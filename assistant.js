@@ -1740,14 +1740,38 @@
             }
 
             var data = await res.json();
+            /* ONE SENTENCE ABOUT A HANDOVER, SAID ONCE, FROM ONE PLACE.
+
+               This reply used to be able to say TWO of them for one question,
+               and a client photographed the result on 24 September 2026:
+
+                   • Let me pass that to the studio — they will come back to you personally.
+                   • That one is beyond me, so the studio has been told about it and
+                     will answer you personally.
+
+               Both sentences are this file's own words and both were true. The
+               fault is that they were decided in two places: the `else if` below
+               spoke for any handover whose reply was empty, and the block that
+               follows spoke AGAIN for that same handover — so the commonest
+               handover there is, one the assistant does not speak before making,
+               got described twice in two different sentences. It is exactly the
+               fault ADR-0043 fixed on the worker, where every net decided the
+               client's sentence on its own, and it is fixed the same way here: the
+               decision lives in one door, and this is it.
+
+               So an empty reply is no longer taken to BE the handover. A body that
+               says so is answered by the block below and only by it, because that
+               is the block that knows, from `studioTold`, whether the studio was
+               actually told. What is left for this branch is no body at all, which
+               nothing above has explained. */
             if (data && data.reply) {
                 say(data.reply);
                 history.push({ role: 'user', content: question });
                 history.push({ role: 'assistant', content: data.reply });
                 history = history.slice(-MAX_HISTORY);
-            } else if (!data || data.handedOver) {
+            } else if (!data) {
                 note('Let me pass that to the studio — they will come back to you personally.');
-            } else {
+            } else if (!data.handedOver) {
                 /* A blank answer with nobody told. The worker is arranged so that
                    this cannot happen \u2014 an empty reply is always a handover \u2014 and
                    this is the second half of that promise: if it ever does, the
