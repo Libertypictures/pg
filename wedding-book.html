@@ -32,6 +32,10 @@
          client whose pay button did nothing because a percentage of a price is
          a float and Paystack refuses an amount that is not whole kobo. -->
     <script defer src="/vendor/money.js?v=76922a72c1"></script>
+    <!-- What the client is told the moment their reservation is saved — a date that
+         is HELD is named as held, with the day it runs out. One file for both
+         booking pages. See reservation.js. -->
+    <script defer src="/reservation.js?v=d14977d690"></script>
 
     <style>
         :root {
@@ -129,6 +133,11 @@
         .cta-btn-primary { display: block; width: 100%; background-color: rgba(26,24,21,0.88); backdrop-filter: blur(16px) saturate(160%); -webkit-backdrop-filter: blur(16px) saturate(160%); box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); color: #fff; padding: 19px 45px; font-size: 13.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.8px; border: none; border-radius: 30px; cursor: pointer; transition: background-color 0.4s cubic-bezier(0.16,1,0.3,1), color 0.4s cubic-bezier(0.16,1,0.3,1), border-color 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s cubic-bezier(0.16,1,0.3,1), opacity 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.4s cubic-bezier(0.16,1,0.3,1), filter 0.4s cubic-bezier(0.16,1,0.3,1); }
         @media (hover: hover) { .cta-btn-primary:hover { background-color: rgba(138,115,85,0.92); color: #fff; transform: translateY(-2px); box-shadow: 0 16px 32px rgba(138,115,85,0.28), inset 0 1px 0 rgba(255,255,255,0.16); } }
         .cta-btn-primary:disabled { background-color: var(--border-color); backdrop-filter: none; -webkit-backdrop-filter: none; color: var(--text-secondary); cursor: not-allowed; transform: none; box-shadow: none; }
+        /* The other way to pay, as a quiet line under the transfer button. Offered
+           only when that one is live: both lead to the same charge
+           (docs/decisions/0080). */
+        .cta-btn-alt { display:block; width:100%; margin:-8px auto 0; padding:10px 20px; background:none; border:none; color:var(--text-secondary); font-family:inherit; font-size:12px; font-weight:500; text-decoration:underline; text-underline-offset:4px; cursor:pointer; }
+        @media (hover: hover) { .cta-btn-alt:hover { color:var(--accent); } }
         .receipt-action-btn { background: rgba(26,24,21,0.05); border: 1px solid var(--border-color); color: var(--text-primary); padding: 11px 22px; font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px; border-radius: 30px; cursor: pointer; transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease, transform 0.3s ease, filter 0.3s ease; }
         @media (hover: hover) { .receipt-action-btn:hover { background: rgba(138,115,85,0.12); border-color: var(--accent); color: var(--accent-deep); } }
         @media (prefers-color-scheme: dark) { .receipt-action-btn { background: rgba(255,255,255,0.05); } }
@@ -206,6 +215,16 @@
         .lpb-toast-icon svg { color:var(--lpb-accent-text); }
         .lpb-toast-body h3 { font-family:'Fraunces',serif; font-weight:500; font-size:15px; margin-bottom:5px; color:var(--lpb-text); }
         .lpb-toast-body p { font-size:12.5px; color:var(--lpb-muted); line-height:1.7; margin:0; }
+        /* One fact per line, from reservation.js: a run of facts drawn as a paragraph
+           is unreadable and lets two numbers run into each other. */
+        .lpb-toast-lines { list-style:none; margin:2px 0 0; padding:0; }
+        .lpb-toast-lines li { font-size:12.5px; color:var(--lpb-muted); line-height:1.7; padding:5px 0 5px 13px; position:relative; font-variant-numeric:tabular-nums; }
+        .lpb-toast-lines li + li { border-top:1px solid var(--lpb-accent); }
+        .lpb-toast-lines li::before { content:''; position:absolute; left:0; top:12px; width:4px; height:4px; border-radius:50%; background:var(--lpb-accent); }
+        /* The closing sentence: the last line on the card, and the one that says
+           what happens next. No control, and no figure — the amount is on the
+           summary, which recomputes as extras are chosen (docs/decisions/0080). */
+        .lpb-toast-closing { margin:9px 0 0; padding-top:9px; border-top:1px solid var(--lpb-accent); }
         @keyframes lpb-fade-up { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:translateY(0); } }
         .lpb-animate-in { animation:lpb-fade-up 0.4s ease forwards; }
         /* ============================================================
@@ -327,7 +346,7 @@
         </section>
         <section data-lp-booking="" id="lp-booking">
             <div class="lpb-inner">
-                <div class="lpb-heading"><h2 class="serif">Appointment Calendar</h2><p>Choose your wedding date and a consultation time &#8212; we'll confirm within 24 hours.</p></div>
+                <div class="lpb-heading"><h2 class="serif">Appointment Calendar</h2><p>Choose your wedding date and a consultation time &#8212; then secure it with the retainer below.</p></div>
                 <div class="lpb-card" id="lpb-form-card">
                     <span class="lpb-step-label">Choose a Date</span>
                     <div class="lpb-cal-nav">
@@ -350,7 +369,11 @@
                         <button class="lpb-submit" id="lpb-submit-btn" disabled="">Book Appointment</button>
                         <p class="lpb-submit-hint" id="lpb-submit-hint">Select a date, time, name &amp; email to continue</p>
                     </div>
-                    <div class="lpb-toast" id="lpb-success-card"><div class="lpb-toast-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div><div class="lpb-toast-body"><h3>Request Received</h3><p id="lpb-success-msg">We'll confirm your booking within 24 hours.</p></div></div>
+                    <!-- Empty on purpose: every word here is written from the worker's
+                         answer to the booking just saved (reservation.js). It used to
+                         promise a confirmation within 24 hours while the page's next
+                         step — and its step header — was the retainer. -->
+                    <div class="lpb-toast" id="lpb-success-card" role="status" aria-live="polite"><div class="lpb-toast-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div><div class="lpb-toast-body"><h3 data-held-title></h3><ul class="lpb-toast-lines" data-held-lines></ul><p class="lpb-toast-closing" data-held-closing></p></div></div>
                 </div>
             </div>
         </section>
@@ -391,8 +414,13 @@
                 <div class="payment-recap-box" id="payment-recap-package" style="display:none;"><div class="payment-recap-row"><span id="payment-recap-name">Package Name</span><span id="payment-recap-subtotal">&#8358;0</span></div><div class="payment-recap-row payment-recap-retainer-row"><span>Retainer Due Today</span><span id="payment-recap-retainer-amount">&#8358;0</span></div></div>
                 <div class="input-group"><label class="input-label" for="client-email">Email Address for Receipt</label><input type="email" id="client-email" class="email-input" placeholder="hello@example.com" required=""><p style="font-size:11px;margin-top:8px;color:var(--text-secondary);">Pre-filled from your booking &#8212; edit if you'd like the receipt sent elsewhere.</p></div>
                 <label style="display:flex;align-items:flex-start;gap:9px;text-align:left;font-size:12px;color:var(--text-secondary);margin-bottom:24px;cursor:pointer;line-height:1.6;"><input type="checkbox" id="policy-ack" style="margin-top:3px;flex-shrink:0;"><span>I've read and agree to the <a href="#terms-conditions" id="policy-link" style="color:var(--accent);text-decoration:underline;">Terms and Conditions</a>.</span></label>
-                <button type="button" class="cta-btn-primary" id="pay-btn" onclick="payWithPaystack()" disabled="">Select a package to pay</button>
-                <p style="font-size:11.5px;margin-top:18px;color:var(--text-secondary);" id="payment-secure-note">Payments securely processed by Paystack.</p>
+                <button type="button" class="cta-btn-primary" id="pay-btn" onclick="payWithPaystack('bank_transfer')" disabled="">Select a package to pay</button>
+                <!-- The other way, as a quiet line: a checkout restricted to one
+                     channel lands on that channel's screen, which is how a client
+                     paying by transfer is shown the studio's account number
+                     (docs/decisions/0080). -->
+                <button type="button" class="cta-btn-alt" id="pay-card-btn" onclick="payWithPaystack('card')" disabled="" hidden="">Or pay by card instead</button>
+                <p style="font-size:11.5px;margin-top:18px;color:var(--text-secondary);" id="payment-secure-note">Paystack takes the payment and adds its fee on top of what you send — about 1.5%, capped at ₦2,000 — so the checkout asks for a little more than the amount above. A transfer and a card cost the same.</p>
                 <div id="lpb-payment-success" style="display:none;text-align:center;padding:28px 4px 4px;">
                     <div style="width:52px;height:52px;border-radius:50%;background:var(--highlight-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
                     <div class="serif" style="font-size:19px;font-weight:500;margin-bottom:10px;">You're booked.</div>
@@ -421,9 +449,9 @@
                 <div class="till-perf"></div>
                 <div class="till-total"><span>SUBTOTAL</span><span id="receipt-subtotal"></span></div>
                 <div class="till-total"><span>BALANCE DUE ON DELIVERY</span><span id="receipt-balance"></span></div>
-                <div class="till-grand"><span>PAID TODAY</span><span id="receipt-retainer"></span></div>
+                <div class="till-grand"><span id="receipt-grand-label">PAID TODAY</span><span id="receipt-retainer"></span></div>
                 <div class="till-perf"></div>
-                <div class="till-thanks">*** THANK YOU ***</div>
+                <div class="till-thanks" id="receipt-state">*** THANK YOU ***</div>
                 <div class="till-barcode" id="receipt-barcode" data-till-barcode aria-hidden="true"></div>
                 <div class="till-barcode-ref" id="receipt-barcode-ref"></div>
                 <div class="till-foot">libertymusa.com/wedding-book</div>
@@ -760,27 +788,62 @@
         function weddingSyncPayCta() {
             var payBtn = document.getElementById('pay-btn');
             if (!payBtn) return;
-            if (window.lpbBookingConfirmed) {
-                payBtn.removeAttribute('disabled');
-                payBtn.setAttribute('aria-disabled', 'false');
-                payBtn.innerText = 'Pay Retainer (' + formatNaira(cart.retainer) + ')';
+            /* BOTH HALVES: a reservation, and a price to pay on it. A saved
+               consultation with no package chosen used to enable this button as
+               "Pay Retainer (₦0)" — a live button that could only ever answer
+               "Please select a package first", which is the same invitation to a
+               charge that cannot happen that the money word on this page is not
+               allowed to make. Pick a package (before or after booking) and
+               calculateTotals() re-runs this, so it lights up with the real
+               retainer the moment there is one. */
+            /* Both buttons take money, so the same fact switches both, and the
+               card route appears only when there is a charge to make
+               (docs/decisions/0080). */
+            var cardBtn = document.getElementById('pay-card-btn');
+            function offer(on, label) {
+                if (on) {
+                    payBtn.removeAttribute('disabled');
+                    payBtn.setAttribute('aria-disabled', 'false');
+                } else {
+                    payBtn.setAttribute('disabled', 'disabled');
+                    payBtn.setAttribute('aria-disabled', 'true');
+                }
+                payBtn.innerText = label;
+                if (!cardBtn) return;
+                cardBtn.hidden = !on;
+                if (on) { cardBtn.removeAttribute('disabled'); } else { cardBtn.setAttribute('disabled', 'disabled'); }
+            }
+            if (window.lpbBookingConfirmed && cart.retainer > 0) {
+                offer(true, 'Pay ' + formatNaira(cart.retainer) + ' by bank transfer');
                 return;
             }
-            payBtn.setAttribute('disabled', 'disabled');
-            payBtn.setAttribute('aria-disabled', 'true');
+            /* Nothing is payable yet, so only the transfer button is on screen and
+               its label names the step that is really missing. */
             if (!cart.baseName) {
-                payBtn.innerText = 'Choose a package to continue';
+                offer(false, 'Choose a package to continue');
                 return;
             }
             /* The booking form's own button enables itself only once a date,
                a time, a name and an email are all present, so it is the honest
                signal for which half of that step is still outstanding. */
             var submitEl = document.getElementById('lpb-submit-btn');
-            payBtn.innerText = (submitEl && !submitEl.disabled)
+            offer(false, (submitEl && !submitEl.disabled)
                 ? 'Tap Book Appointment above'
-                : 'Pick a date above to continue';
+                : 'Pick a date above to continue');
         }
-        function payWithPaystack() {
+
+        /* WHICH CHECKOUT OPENS: two buttons, each naming its own route, and a
+           checkout limited to ONE channel lands on that channel's screen instead
+           of on Paystack's card default. Bank transfer is the default here for the
+           same reason as on the session page — see docs/decisions/0080 — so
+           anything but an explicit 'card' is a transfer, argument or not. */
+        var payChannel = 'bank_transfer';
+        function choosePayChannel(want) {
+            payChannel = (want === 'card') ? 'card' : 'bank_transfer';
+        }
+
+        function payWithPaystack(want) {
+            choosePayChannel(want);
             if (typeof PaystackPop === 'undefined' || typeof PaystackPop.setup !== 'function' || typeof LPMoney === 'undefined') { alert("The secure payment window has not loaded yet. Please refresh the page, or message us on WhatsApp and we will take the payment with you."); return; }
             if (!window.lpbBookingConfirmed) {
                 /* The old alert told the client to use a form "above" without
@@ -814,6 +877,9 @@
             try {
             handler = PaystackPop.setup({
                 key: 'pk_live_05373c45337d6a937f51d9c3045c7839369d503d', email: email, amount: LPMoney.toKobo(cart.retainer), currency: 'NGN',
+                /* ONE channel, set by the button that was pressed — see
+                   choosePayChannel above, and docs/decisions/0080. */
+                channels: [payChannel],
                 /* Carried on the charge so Paystack can tell the worker what this
                    money was for even if this browser never comes back to say so.
                    See the note on the same block in book.html. */
@@ -892,6 +958,22 @@
                 document.getElementById('receipt-subtotal').textContent = formatNaira(cart.subtotal);
                 document.getElementById('receipt-balance').textContent = formatNaira(cart.balance);
                 document.getElementById('receipt-retainer').textContent = formatNaira(cart.retainer);
+
+                /* WHAT THIS DOCUMENT MAY CALL THE MONEY, read at the moment it
+                   is written. The figure above is the CART's retainer — the
+                   amount the client is about to pay — and the two words around
+                   it ("PAID TODAY", "*** THANK YOU ***") used to be typed into
+                   the template, where an amount was the only thing that could
+                   ever fill them. The reference is the one thing on this page
+                   that comes back from Paystack, so it decides the words — the
+                   same rule the booking summary above already follows
+                   (inv-state). See ADR-0059. */
+                var receiptRef = (document.getElementById('lpb-payment-reference') || {}).textContent || '';
+                var receiptPaid = String(receiptRef).trim().length > 0;
+                var grandLabel = document.getElementById('receipt-grand-label');
+                if (grandLabel) grandLabel.textContent = receiptPaid ? 'PAID TODAY' : 'RETAINER DUE';
+                var receiptState = document.getElementById('receipt-state');
+                if (receiptState) receiptState.textContent = receiptPaid ? '*** THANK YOU ***' : '*** AWAITING RETAINER ***';
             }
             jpegBtn.addEventListener('click', function () {
                 if (typeof html2canvas === 'undefined') { alert('Could not load the image export tool.'); return; }
@@ -943,7 +1025,7 @@
         var timesGrid = $('lpb-times-grid'), timesPlaceholder = $('lpb-times-placeholder');
         var nameInput = $('lpb-name'), emailInput = $('lpb-email');
         var submitBtn = $('lpb-submit-btn'), submitHint = $('lpb-submit-hint');
-        var successCard = $('lpb-success-card'), successMsg = $('lpb-success-msg');
+        var successCard = $('lpb-success-card');
 
         function renderCalendar() {
             monthLabel.textContent = MONTHS[viewMonth] + ' ' + viewYear;
@@ -1007,7 +1089,25 @@
 
         submitBtn.addEventListener('click', async function () {
             if (!selStartISO) { submitHint.textContent = 'Please select an available time.'; return; }
-            var booking = { name: nameInput.value.trim(), email: emailInput.value.trim(), start: selStartISO, timeZone: LPB_TIMEZONE };
+            /* THE PACKAGE TRAVELS WITH THE RESERVATION, not only with the payment.
+               This payload used to be a name, an email and a time — on a page whose
+               own first line tells the client to "select your desired package, book
+               your date, and secure your retainer below". So a wedding booking
+               reached the studio's panel with no price on it ("no price was
+               recorded on it"), and the card the client read could not name the
+               retainer. Book.html has sent this since the same fix reached it
+               (docs/decisions/0059) — the reservation remembers what was chosen. */
+            var booking = {
+                name: nameInput.value.trim(),
+                email: emailInput.value.trim(),
+                start: selStartISO,
+                timeZone: LPB_TIMEZONE,
+                packageName: cart.baseName,
+                packagePrice: cart.basePrice,
+                addons: cart.addons,
+                totalAmount: cart.subtotal,
+                retainerAmount: cart.retainer
+            };
             submitBtn.disabled = true; var orig = submitBtn.textContent; submitBtn.textContent = 'Sending\u2026';
             try {
                 var saved = await submitBooking(booking);
@@ -1020,10 +1120,34 @@
                 if (typeof weddingSummaryMeta === 'function') weddingSummaryMeta();
                 if (typeof updateStep === 'function') updateStep(3);
                 var ce = document.getElementById('client-email'); if (ce && !ce.value) ce.value = booking.email;
-                successMsg.innerHTML = 'Your consultation request for <strong>' + MONTHS[selDate.getMonth()] + ' ' + selDate.getDate() + '</strong> at <strong>' + selTime + '</strong> has been received.<br>We\u2019ll confirm within 24 hours \u2014 check <strong>' + booking.email + '</strong>.';
-                successCard.classList.add('lpb-visible');
+                showHeldNotice(saved, booking);
+                /* Nothing is still being sent: the control says what happened.
+                   It sat at "Sending…", disabled, for as long as the page was
+                   open — a control describing a state the page is not in. */
+                submitBtn.textContent = 'Date held';
             } catch (err) { submitHint.textContent = err.message || 'Something went wrong.'; submitBtn.disabled = false; submitBtn.textContent = orig; }
         });
+
+        /* WHAT JUST HAPPENED, AND WHAT IS STILL OWED. The words are not written
+           here — they come from the worker's answer to the booking it just saved,
+           through reservation.js, the one place that knows a held date must be
+           named as held and with the day the hold ends. */
+        function showHeldNotice(saved, booking) {
+            if (typeof LPReservation === 'undefined') {
+                console.error('[LibertyPictures Wedding] reservation.js did not load \u2014 the confirmation card was left out.');
+                return;
+            }
+            /* No money formatter is handed over, on purpose: the amount is
+               settled on the summary below this card, which recomputes as the
+               client chooses, and a card drawn once must not print a figure that
+               can go stale (docs/decisions/0080). */
+            var notice = LPReservation.heldNotice(saved, booking.email);
+            LPReservation.draw(successCard, notice);
+            /* Nothing is hidden, collapsed or scrolled: the card appears in place
+               below the submit button, and its closing sentence says where to go
+               next — the extras, the summary and the retainer, in that order. */
+            successCard.classList.add('lpb-visible');
+        }
 
         renderCalendar();
     })();
