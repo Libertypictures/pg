@@ -202,6 +202,24 @@
     @media (hover: hover) { .link-alt-btn:hover { background: rgba(138,115,85,0.08); } }
     .link-settled { font-size: 13px; color: var(--ink-soft); line-height: 1.75; margin-top: 12px; }
     .link-else { display: block; margin: 24px auto 0; background: none; border: none; color: var(--ink-soft); font-size: 12.5px; text-decoration: underline; cursor: pointer; font-family: 'Inter', sans-serif; }
+
+    /* ---------- Tell the studio about a transfer ---------- */
+    /* ONE QUIET LINE, UNDER THE PAY BUTTON — not a rival to it. Every checkout on
+       this site opens on bank transfer, so a box titled "paying by transfer
+       instead?" sitting among the payment fields read as a second way to pay,
+       and the amount it pre-filled made saying "I have sent it" one tap
+       (docs/decisions/0080). */
+    .claim-toggle { display: block; width: 100%; margin: 0; padding: 16px 0 0; background: none; border: none; border-top: 1px solid var(--border); font-family: 'Inter', sans-serif; font-size: 12.5px; color: var(--ink-soft); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+    .claim-box { margin-top: 16px; padding: 16px 16px 6px; background: var(--forest-soft); border: 1px solid var(--border); border-radius: var(--radius-sm); text-align: left; }
+    .claim-btn { display: block; width: 100%; padding: 14px 16px; margin: 4px 0 10px; background: var(--ink); color: var(--bg); border: none; border-radius: var(--radius-sm); font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; }
+    .claim-btn:disabled { opacity: 0.6; cursor: default; }
+    /* The other way to pay: a quiet line under the primary button, shown only
+       when there is a charge to make. */
+    .pay-alt { display: block; width: 100%; margin: 10px 0 0; padding: 10px 20px; background: none; border: none; font-family: 'Inter', sans-serif; font-size: 12.5px; font-weight: 500; color: var(--ink-soft); text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+    .pay-alt[hidden] { display: none; }
+    .claim-msg { font-size: 12px; line-height: 1.65; color: var(--ink-soft); margin: 0 0 12px; }
+    .claim-msg.is-error { color: var(--error); }
+    .claim-msg.is-done { color: var(--forest); }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     .secure-note { display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 11px; color: var(--ink-faint); margin-top: 14px; }
@@ -339,10 +357,42 @@
                 <span class="spinner"></span>
                 <span class="pay-btn-text">Select an amount to pay</span>
             </button>
+            <!-- The other way to pay, as a quiet line: a checkout restricted to ONE
+                 channel lands on that channel's own screen, which is how a client
+                 paying by transfer is shown the account number instead of a card
+                 form (docs/decisions/0080). -->
+            <button type="button" class="pay-alt" id="pay-card-btn" hidden>Or pay by card instead</button>
+            <!-- WHAT A TRANSFER COSTS, said where the client pays (ADR-0080). The
+                 checkout opens on bank transfer, and that channel adds its fee to
+                 what the SENDER sends — so the figure waiting at checkout is named
+                 here first, in the same sentence all four pay entrances carry. -->
             <p class="secure-note">
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
-                Secured by Paystack
+                Paystack takes the payment and adds its fee on top of what you send — about 1.5%, capped at ₦2,000 — so the checkout asks for a little more than the amount above. A transfer and a card cost the same.
             </p>
+
+            <!-- TELLING THE STUDIO ABOUT A TRANSFER, as one quiet line UNDER the
+                 pay button rather than a box beside it (docs/decisions/0080). The
+                 amount is the client's own — never pre-filled from what they owe,
+                 so a claim costs a deliberate figure — and nothing here calls it
+                 paid: the words after sending promise that a person will check the
+                 bank (ADR-0071). Shown only on a page opened with the client's own
+                 token, and only while money is owed. -->
+            <div id="link-claim" style="display:none;">
+                <button type="button" class="claim-toggle" id="claim-title" aria-expanded="false" aria-controls="claim-body">Already sent a transfer?</button>
+                <div class="claim-box" id="claim-body" hidden>
+                    <p class="claim-msg" id="claim-msg">Tell the studio you have sent the retainer and they will check the money. Nothing is confirmed until they do.</p>
+                    <div class="field-group">
+                        <label for="claim-amount">How much did you transfer? (&#8358;)</label>
+                        <input type="number" id="claim-amount" min="1" step="1" inputmode="numeric" placeholder="the amount you sent">
+                    </div>
+                    <div class="field-group">
+                        <label for="claim-note">Anything that helps them find it? (optional)</label>
+                        <input type="text" id="claim-note" maxlength="140" placeholder="e.g. a transfer from my brother's account, Zen Bank">
+                    </div>
+                    <button type="button" class="claim-btn" id="claim-btn">Tell the studio I've transferred it</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -390,7 +440,14 @@
         linkBooking: null,
         linkOutstanding: [],
         linkTotalOutstanding: 0,
-        linkPayAll: false
+        linkPayAll: false,
+        /* This client's own link, on a booking that is HELD and not yet booked:
+           the retainer is the thing to pay, and this page is where they pay it.
+           Before this, an unpaid retainer had no payable link anywhere in the
+           product: the booking page's popup is the only entrance, so an emailed
+           link to this page answered "nothing to pay right now" and the hold ran
+           out while the client was told there was nothing to do. */
+        linkRetainer: false
     };
 
     // The booking currently picked for payment from the lookup result.
@@ -428,6 +485,7 @@
     var otherDescriptionInput = document.getElementById('other-description');
     var payBtn = document.getElementById('pay-btn');
     var payBtnText = payBtn.querySelector('.pay-btn-text');
+    var payCardBtn = document.getElementById('pay-card-btn');
     var formError = document.getElementById('form-error');
     var linkSection = document.getElementById('link-section');
     var linkHello = document.getElementById('link-hello');
@@ -439,6 +497,13 @@
     var linkAltBtn = document.getElementById('link-alt-btn');
     var linkSettled = document.getElementById('link-settled');
     var linkElseBtn = document.getElementById('link-else-btn');
+    var linkClaim = document.getElementById('link-claim');
+    var claimTitle = document.getElementById('claim-title');
+    var claimBody = document.getElementById('claim-body');
+    var claimMsg = document.getElementById('claim-msg');
+    var claimAmount = document.getElementById('claim-amount');
+    var claimNote = document.getElementById('claim-note');
+    var claimBtn = document.getElementById('claim-btn');
 
     /* Every amount this page is willing to charge, in whole naira. The helper
        does the rounding; this is the only reason a payment button here can be
@@ -517,6 +582,63 @@
         } catch (e) { return String(iso || ''); }
     }
 
+    /* WHAT THIS CLIENT IS TOLD ABOUT A BOOKING NOTHING HAS SETTLED YET.
+
+       This sentence used to say "is reserved" on every one of these links. It is
+       true while the worker's hold is running — availability refuses the slot —
+       and false the moment it runs out, at which point anyone else can book that
+       day and the client is reading that it is theirs. The worker now says where
+       the date stands (bookingMoney in apps/api/src/lib/bookingMoney.js) and this
+       is the only place that turns it into words.
+
+       No `money` field means a worker older than this page: the page then says
+       what it has always said. An absence of information is not evidence that a
+       hold ended, and a page must never be the thing that invents a release. */
+    function linkPendingSentence(money, when, holdEndsOn) {
+        var thing = 'Your session' + (when ? ' on ' + escapeHtml(when) : '');
+        var where_ = thing + ' is reserved';
+        if (money) {
+            if (money.paid) {
+                where_ = thing + ' is booked, and your retainer has been received';
+            } else if (money.holdLive) {
+                var until = holdEndsOn ? humanDate(holdEndsOn) : '';
+                where_ = thing + ' is reserved' + (until ? ' until ' + escapeHtml(until) : '');
+            } else {
+                where_ = thing + ' is not booked yet' +
+                    (money.holdEnded ? ' \u2014 the date is free again' : '');
+            }
+        }
+        if (money && money.paid) {
+            return where_ + ' \u2014 there is no balance to settle at this moment, and no further ' +
+                'payment is needed from you.';
+        }
+        /* The sentence here used to send an unpaid client to a receipt they had
+           been emailed. A receipt is not a thing an unpaid booking has: the
+           worker sends one only after the retainer is verified, so on this
+           booking there was nothing in that inbox to open and the client was
+           told there was. The retainer is paid on the booking page \u2014 which is
+           where the reminder email already links \u2014 and a client who cannot find
+           the way there can ask. */
+        /* When the hold is live this page takes the retainer itself, so this
+           sentence is only ever reached by a booking it cannot charge for: a hold
+           that has run out, one that was never recorded, or one with no price on
+           it. Paying a retainer cannot secure a date that is free again, so the
+           honest ending is a person, not a button. */
+        return where_ + ', but the retainer has not been paid yet \u2014 so there is no balance to ' +
+            'settle at this moment. Message us and we will help you with your booking.';
+    }
+
+    /* WHAT IS STILL OWED AFTER THE RETAINER, in the page's words — from the two
+       amounts the worker wrote on the booking, never from a split this page
+       calculates. A booking whose whole price is its retainer says so instead of
+       naming a balance that will never arrive. */
+    function restSentence(booking) {
+        var rest = Math.max(0, whole(booking && booking.totalAmount) - whole(booking && booking.retainerAmount));
+        return rest > 0
+            ? ', and the balance of ' + formatNaira(rest) + ' is settled on the day.'
+            : ', and nothing further is due.';
+    }
+
     function refreshLinkAmount() {
         linkAmountLabel.textContent = state.linkPayAll
             ? 'All outstanding sessions'
@@ -529,6 +651,13 @@
     function enterLinkMode(data) {
         var b = data.booking || {};
         var when = humanDate(b.sessionDate);
+        /* The worker's own words for the time it stored, when it sent them. A
+           retainer is asked for against an hour, and the email that brought the
+           client here names one — so the page it opens names the same hour in the
+           same words rather than a bare day. An older worker sends no label, and
+           this line then falls back to the day, which is what this page has
+           always shown. */
+        var slot = String(b.sessionLabel == null ? '' : b.sessionLabel).trim() || when;
         var balance = whole(b.balanceDue);
         var others = (data.outstanding || []).filter(function (x) { return Number(x.id) !== Number(b.id); });
         var first = String(b.name || '').trim().split(/\s+/)[0];
@@ -555,11 +684,32 @@
         linkHello.textContent = 'Hello' + (first ? ' ' + first : '') + ' \u2014';
 
         if (data.state === 'retainer_pending') {
-            linkAmountDisplay.style.display = 'none';
-            linkSettled.style.display = 'block';
-            linkSettled.innerHTML = 'Your session' + (when ? ' on ' + escapeHtml(when) : '') +
-                ' is reserved, but the retainer has not been paid yet \u2014 so there is no balance to settle at this moment. ' +
-                'Open the receipt in your email to pay the retainer, or message us and we will send it again.';
+            /* PAY THE RETAINER, while the hold is running. The worker says where
+               the date stands (`money`, lib/bookingMoney.js) and what is still
+               owed (`retainerDue`); this page does not decide either. A date whose
+               hold has run out is not payable here — the retainer cannot secure a
+               slot that is free again — and a booking with no price on it has
+               nothing to charge, so both keep the sentence they had. */
+            state.linkRetainer = !!(data.money && data.money.paid === false && data.money.holdLive) && whole(b.retainerDue) > 0;
+            if (state.linkRetainer) {
+                linkHello.textContent += ' here is your retainer.';
+                linkAmountDisplay.style.display = 'flex';
+                linkAmountLabel.textContent = 'Retainer due \u2014 ' + (b.packageName || 'your session');
+                linkAmountValue.textContent = formatNaira(whole(b.retainerDue));
+                /* The whole of what the client still owes, from the worker's own
+                   two figures: a line that promises "the balance is settled on the
+                   day" on a booking whose whole price IS the retainer would name
+                   a payment that is never coming. */
+                linkDetail.innerHTML = (slot ? 'Your session on <strong>' + escapeHtml(slot) + '</strong>' : 'Your date') +
+                    ' is held. The retainer secures it' + restSentence(b);
+            } else {
+                linkAmountDisplay.style.display = 'none';
+                linkSettled.style.display = 'block';
+                linkSettled.innerHTML = linkPendingSentence(data.money || null, when, data.holdEndsOn || '');
+            }
+            /* What the client has already told the studio, if anything: their own
+               figure is shown back to them rather than asked for again. */
+            renderClaim(data.claim, false);
         } else if (data.state === 'settled' || balance <= 0) {
             linkAmountDisplay.style.display = 'none';
             linkSettled.style.display = 'block';
@@ -581,12 +731,124 @@
             }
         }
 
+        /* The page's own name for what it is asking for. A retainer is not a
+           balance: nobody owes it as the remainder of a session they have booked,
+           they owe it to make the booking real. 'Your Balance' with a balance of
+           nothing was one of the ways this page told a held client there was
+           nothing to do. */
+        if (state.linkRetainer) {
+            document.querySelector('h1').textContent = 'Your Retainer';
+            document.querySelector('.sub').textContent = 'Pay it and your date is confirmed';
+        }
+
         // Filled in from the booking, so nothing has to be typed.
         if (b.name) document.getElementById('customer-name').value = b.name;
         if (b.email) document.getElementById('customer-email').value = b.email;
 
         updatePayButton();
     }
+
+    /* -- "I HAVE TRANSFERRED THE RETAINER" -------------------------------
+
+       The studio used to hear this on WhatsApp: no booking number, no figure it
+       could trust, and the booking in front of it saying nothing at all. This
+       box says it in the product instead (ADR-0071 in the platform repo), and
+       it is written so a client cannot read it as a payment: the amount is what
+       THEY say they sent, the copy promises a person will check the bank, and
+       the words never say paid or confirmed. The worker stores a claim and
+       nothing else - no money, no receipt, no confirmation. */    function renderClaim(claim, justSaid) {
+        var booking = state.linkBooking || {};
+        var due = whole(booking.retainerDue);
+        /* The whole control belongs to a page opened with the client's own token,
+           and only while money is owed: this block now sits among the payment
+           fields, which every other payment type shows too (docs/decisions/0080). */
+        if (!linkToken || !(due > 0)) { linkClaim.style.display = 'none'; return; }
+        linkClaim.style.display = 'block';
+
+        /* NOTHING IS FILLED IN FROM WHAT THEY OWE. The figure is the client's to
+           type, so saying "I have sent the retainer" costs a deliberate number
+           rather than one tap on a page the checkout had already sized for them.
+           What they have ALREADY told the studio is shown back \u2014 that is the one
+           amount this box knows. */
+        var claimed = !!(claim && claim.at);
+        var said = claim && whole(claim.amount) > 0 ? whole(claim.amount) : 0;
+        claimAmount.value = said ? String(said) : '';
+        if (claim && claim.note) claimNote.value = claim.note;
+
+        /* The fields are shut until the line is pressed \u2014 or until the client has
+           already told the studio something, which is information rather than a
+           question, so it opens itself. */
+        var open = claimed;
+        claimBody.hidden = !open;
+        claimTitle.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+        if (claimed) {
+            claimTitle.textContent = 'You told the studio about a transfer';
+            claimMsg.className = 'claim-msg is-done';
+            claimMsg.innerHTML = justSaid
+                ? 'Told. They will check the money and record it \u2014 nothing is confirmed until they do.'
+                : 'You said you sent ' + formatNaira(said) + '. They will check the money and record it \u2014 nothing is confirmed until they do. If something has changed, send it again.';
+        } else {
+            /* One question, then the honest sentence about what happens to it.
+               Two situations still read differently: while the date is held, a
+               transfer is one way to secure it; once the hold has lapsed the only
+               honest offer is to look for money that was sent BEFORE the date was
+               released - this page must never invite a client to pay for a slot
+               that is free again. */
+            claimTitle.textContent = 'Already sent a transfer?';
+            claimMsg.className = 'claim-msg';
+            claimMsg.innerHTML = state.linkRetainer
+                ? 'Tell the studio you have sent the retainer and they will check the money. Nothing is confirmed until they do.'
+                : 'If you sent the retainer before your date was released, tell the studio so they can look for it. Nothing is confirmed until they record it.';
+        }
+        claimBtn.textContent = claimed ? 'Send an update' : "Tell the studio I've transferred it";
+        claimBtn.disabled = false;
+    }
+
+    async function submitClaim() {
+        if (!linkToken) return;
+        var amount = whole(Number(claimAmount.value));
+        if (!(amount > 0)) {
+            claimMsg.className = 'claim-msg is-error';
+            claimMsg.textContent = 'Enter the amount you transferred.';
+            return;
+        }
+        claimBtn.disabled = true;
+        var was = claimBtn.textContent;
+        claimBtn.textContent = 'Sending\u2026';
+        try {
+            var res = await fetch(API_BASE + '/api/pay/booking/' + encodeURIComponent(linkToken) + '/claim', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: amount, note: claimNote.value || '' })
+            });
+            var data = await res.json();
+            if (!res.ok || data.status !== 'ok') throw new Error((data && data.message) || 'We could not send that just now.');
+            renderClaim(data.claim, true);
+        } catch (err) {
+            claimMsg.className = 'claim-msg is-error';
+            claimMsg.textContent = (err && err.message) || 'We could not send that just now. Please try again, or message the studio.';
+            claimBtn.disabled = false;
+            claimBtn.textContent = was;
+        }
+    }
+
+    claimBtn.addEventListener('click', submitClaim);
+
+    /* The card button drives the same single payment path — no second copy of
+       the validation, the metadata or the confirmation. */
+    if (payCardBtn) {
+        payCardBtn.addEventListener('click', function () {
+            choosePayChannel('card');
+            payBtn.click();
+        });
+    }
+
+    /* The quiet line opens the fields, and a second press shuts them again. */
+    claimTitle.addEventListener('click', function () {
+        claimBody.hidden = !claimBody.hidden;
+        claimTitle.setAttribute('aria-expanded', claimBody.hidden ? 'false' : 'true');
+    });
 
     if (linkToken) {
         fetch(API_BASE + '/api/pay/booking/' + encodeURIComponent(linkToken))
@@ -746,6 +1008,7 @@
         if (state.type === 'balance') {
             // Opened from their own link: the amount is already known, so
             // nothing here depends on a lookup having been run.
+            if (state.linkRetainer) return whole(state.linkBooking.retainerDue);
             if (state.linkBooking) {
                 return state.linkPayAll ? whole(state.linkTotalOutstanding) : whole(state.linkBooking.balanceDue);
             }
@@ -767,9 +1030,16 @@
 
     function updatePayButton() {
         var amount = getCurrentAmount();
+        /* Both buttons take money, so the same fact switches both, and the card
+           route appears only when there is a charge to make (docs/decisions/0080). */
+        if (payCardBtn) {
+            payCardBtn.hidden = !(amount > 0);
+            payCardBtn.disabled = !(amount > 0);
+        }
         if (amount > 0) {
             payBtn.disabled = false;
-            payBtnText.textContent = 'Pay ' + formatNaira(amount) + (state.linkPayAll ? ' \u2014 all sessions' : '');
+            payBtnText.textContent = 'Pay ' + formatNaira(amount) +
+                (state.linkRetainer ? ' retainer' : (state.linkPayAll ? ' \u2014 all sessions' : ''));
         } else {
             payBtn.disabled = true;
             payBtnText.textContent = state.linkBooking
@@ -778,7 +1048,19 @@
         }
     }
 
+    /* WHICH CHECKOUT OPENS. Each button names its own route, and a checkout
+       limited to ONE channel lands on that channel's screen rather than on
+       Paystack's card default — which is what makes "bank transfer" a default a
+       client can rely on rather than a tab they have to find. Bank transfer is
+       what this studio's clients use, so anything but an explicit 'card' is a
+       transfer (docs/decisions/0080). */
+    var payChannel = 'bank_transfer';
+    function choosePayChannel(want) {
+        payChannel = (want === 'card') ? 'card' : 'bank_transfer';
+    }
+
     payBtn.addEventListener('click', function () {
+        choosePayChannel('bank_transfer');
         formError.textContent = '';
 
         var amount = getCurrentAmount();
@@ -827,14 +1109,22 @@
             email: email,
             amount: kobo,
             currency: 'NGN',
+            /* ONE channel, set by the button that was pressed \u2014 see
+               choosePayChannel above, and docs/decisions/0080. */
+            channels: [payChannel],
             /* What this charge IS, carried on the charge itself — so Paystack's
                webhook can still record it when this browser never comes back to
-               confirm. `flow` is the payment type the worker already knows
-               ('balance', 'other' or 'gallery'), and the booking id is only
-               meaningful for a balance, which is the one case that needs to
-               know WHICH session the money settles. */
+               confirm, and so it is filed as the right kind of money. The label
+               is a payment type the worker already handles ('balance', 'other',
+               'gallery'), and the booking id is only meaningful for a balance,
+               which is the one case that needs to know WHICH session settles. */
             metadata: {
-                flow: state.type,
+                /* A retainer paid from the client's own link is its OWN kind of
+                   charge: the worker's webhook files it through
+                   applyRetainerPayment, which is also what confirms the booking
+                   and sends the receipt — so labelling it a balance would settle
+                   the wrong thing and leave the booking unconfirmed and held. */
+                flow: state.linkRetainer ? 'retainer' : state.type,
                 bookingId: attributeTo,
                 galleryToken: state.type === 'gallery' ? galleryToken : '',
                 packageName: state.selectedPackage ? state.selectedPackage.name : '',
@@ -884,7 +1174,28 @@
             customerPhone: details.phone || null,
             reference: response.reference,
         };
-        if (state.type === 'balance') {
+        var endpoint = API_BASE + '/confirm-payment-request';
+        /* THE RETAINER, paid from the client's own link.
+
+           This is deliberately NOT a payment request. No request was raised, the
+           money is the booking's own retainer, and it has to travel the road the
+           booking page's popup takes \u2014 /confirm-payment, which asks Paystack about
+           the reference and then calls applyRetainerPayment. That road is the one
+           that confirms the booking, creates the calendar event exactly once,
+           raises the studio's notification and sends the receipt. Filed as a
+           balance payment instead, the money would be recorded against a booking
+           that stayed held and unconfirmed, and the client's date would still be
+           let go at the end of the hold \u2014 having paid for it. */
+        if (state.linkRetainer && state.linkBooking) {
+            endpoint = API_BASE + '/confirm-payment';
+            payload = {
+                bookingId: String(state.linkBooking.id),
+                reference: response.reference,
+                retainerAmount: whole(details.amount),
+                packageName: state.linkBooking.packageName || 'Session',
+                phone: details.phone || null,
+            };
+        } else if (state.type === 'balance') {
             var picked = state.linkBooking || selectedLookupBooking();
             payload.packageName = picked
                 ? picked.packageName
@@ -909,7 +1220,7 @@
             for (var attempt = 0; attempt < 3; attempt++) {
                 if (attempt > 0) await new Promise(function (r) { setTimeout(r, 1500 * attempt); });
                 try {
-                    var res = await fetch(API_BASE + '/confirm-payment-request', {
+                    var res = await fetch(endpoint, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload),
@@ -937,11 +1248,24 @@
         document.getElementById('success-reference').textContent = reference;
 
         var picked = state.linkBooking || selectedLookupBooking();
-        var purpose = state.type === 'balance'
+        var purpose = state.linkRetainer
+            ? 'my retainer'
+            : state.type === 'balance'
             ? (state.linkPayAll
                 ? 'my outstanding balance'
                 : ((picked ? picked.packageName : (state.selectedPackage ? state.selectedPackage.name : 'Session')) + ' balance'))
             : (state.type === 'gallery' ? 'my gallery extension' : otherDescriptionInput.value.trim());
+        /* What just happened to their date, said plainly. A retainer is the one
+           payment on this page that changes the booking itself, and the client
+           who paid it is the one person who cannot see that from here. */
+        if (state.linkRetainer) {
+            var heldOn = state.linkBooking
+                ? (String(state.linkBooking.sessionLabel || '').trim() || humanDate(state.linkBooking.sessionDate))
+                : '';
+            document.getElementById('success-message').textContent = 'Your date is confirmed' +
+                (heldOn ? ' for ' + heldOn : '') + '. Your receipt goes to ' +
+                (details.email || 'your email') + restSentence(state.linkBooking);
+        }
         var waMessage = "Hello there! I've just paid " + formatNaira(details.amount) + " for " + purpose + " (Reference: " + reference + ").";
         var waLink = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(waMessage);
         document.getElementById('whatsapp-link').href = waLink;

@@ -118,6 +118,13 @@
         @media (hover: hover) { .btn-pay:hover { background-color: rgba(138,115,85,0.95); transform: translateY(-1px); box-shadow: 0 16px 32px rgba(138,115,85,0.28); } }
         .btn-pay:disabled { background-color: var(--border-color); color: var(--text-secondary); cursor: not-allowed; transform: none; box-shadow: none; }
         .pay-or { text-align: center; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.6px; color: var(--text-faint); padding: 4px 0; }
+        /* HOW, THEN HOW MUCH (docs/decisions/0080): one choice of channel, on by
+           default for the transfer, above the amounts. */
+        .pay-ways { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+        .pay-ways-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.6px; color: var(--text-faint); }
+        .pay-way { padding: 7px 16px; border: 1px solid var(--border-color); border-radius: 20px; background: transparent; color: var(--text-secondary); font-family: inherit; font-size: 11.5px; font-weight: 600; letter-spacing: 0.4px; cursor: pointer; }
+        .pay-way.is-on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-deep); }
+        @media (hover: hover) { .pay-way:hover { border-color: var(--accent); } }
         .btn-secondary {
             display: block; width: 100%; text-align: center; background: transparent; border: 1px solid var(--border-color);
             color: var(--text-primary); padding: 13px 24px; font-size: 11px; font-weight: 600; text-transform: uppercase;
@@ -347,12 +354,28 @@
             .catch(function () {});
     })();
 
+    /* WHAT AN INVOICE'S MONEY MAY BE CALLED — one place, three words.
+
+       `partial` means "some payment has been recorded and the total is not
+       covered". It does NOT mean the retainer arrived: the retainer on an invoice
+       is a 70% suggestion this page offers (a button reading "Pay 70% retainer"),
+       never a recorded fact, so a ₦5,000 part payment on a ₦500,000 invoice used
+       to be drawn — to the client — as "Retainer Paid" / "Retainer received".
+       The amount paid is evidence that MONEY arrived, and nothing about which
+       money it was; the words say that, and the balance says the rest. Same rule
+       as ADR-0057, which removed the identical word from bookings. */
+    function invoiceMoneyWords(status) {
+        if (status === 'paid') return { pill: 'Paid', hero: 'Total paid', banner: 'Paid in full' };
+        if (status === 'partial') return { pill: 'Part paid', hero: 'Balance due', banner: 'Payment received' };
+        if (status === 'overdue') return { pill: 'Overdue', hero: 'Amount due', banner: '' };
+        return { pill: 'Payment Due', hero: 'Amount due', banner: '' };
+    }
+
     function applyStatusPill(status) {
         var pill = document.getElementById('inv-status-pill');
         var variant = status === 'paid' ? 'is-paid' : (status === 'partial' ? 'is-unpaid' : (status === 'overdue' ? 'is-overdue' : 'is-unpaid'));
-        var label = status === 'paid' ? 'Paid' : (status === 'partial' ? 'Retainer Paid' : (status === 'overdue' ? 'Overdue' : 'Payment Due'));
         pill.className = 'status-pill ' + variant;
-        pill.textContent = label;
+        pill.textContent = invoiceMoneyWords(status).pill;
     }
 
     function renderInvoice(inv) {
@@ -362,7 +385,7 @@
         /* One rule for the number on the page and the number charged: whole
            naira, from the shared helper. See vendor/money.js. */
         var remaining = LPMoney.wholeNaira(inv.balanceRemaining != null ? inv.balanceRemaining : Math.max(0, (inv.totalAmount || 0) - (inv.amountPaid || 0)));
-        document.getElementById('hero-label').textContent = inv.status === 'paid' ? 'Total paid' : (inv.status === 'partial' ? 'Balance due' : 'Amount due');
+        document.getElementById('hero-label').textContent = invoiceMoneyWords(inv.status).hero;
         document.getElementById('inv-amount').textContent = formatNaira(inv.status === 'paid' ? inv.totalAmount : (inv.status === 'partial' ? remaining : inv.totalAmount));
         document.getElementById('inv-due').innerHTML = inv.status === 'paid'
             ? (inv.paidAt ? 'Received ' + formatDate(inv.paidAt) : 'Received in full')
@@ -411,18 +434,31 @@
         var html = '';
         var remaining = inv.balanceRemaining != null ? inv.balanceRemaining : Math.max(0, (inv.totalAmount || 0) - (inv.amountPaid || 0));
 
+        /* ONE CHANNEL PER BUTTON, and the transfer it is on by default. A
+           checkout limited to a single channel lands on that channel's own
+           screen; offered both, Paystack opens its card form — which is the
+           difference between a client being shown the account number and a
+           client hunting for it (docs/decisions/0080). */
+        var payWays = '<div class="pay-ways" role="group" aria-label="How would you like to pay?">' +
+            '<span class="pay-ways-label">Pay by</span>' +
+            '<button type="button" class="pay-way is-on" data-pay-channel="bank_transfer">Bank transfer</button>' +
+            '<button type="button" class="pay-way" data-pay-channel="card">Card</button>' +
+        '</div>';
+
         if (inv.status === 'paid') {
             html += '<div class="paid-banner">' +
                 '<div class="check-circle"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>' +
-                '<p><strong>Paid in full</strong><span>' + (inv.paidAt ? 'Received ' + formatDate(inv.paidAt) : 'Received') + ' \u2014 thank you for your business.</span></p>' +
+                '<p><strong>' + invoiceMoneyWords('paid').banner + '</strong><span>' + (inv.paidAt ? 'Received ' + formatDate(inv.paidAt) : 'Received') + ' \u2014 thank you for your business.</span></p>' +
             '</div>';
         } else if (inv.status === 'partial') {
-            html += '<div class="partial-banner"><span>Retainer received \u2014 <strong>' + formatNaira(inv.amountPaid) + '</strong> paid, <strong>' + formatNaira(remaining) + '</strong> remaining.</span></div>';
+            html += payWays;
+            html += '<div class="partial-banner"><span>' + invoiceMoneyWords('partial').banner + ' \u2014 <strong>' + formatNaira(inv.amountPaid) + '</strong> paid, <strong>' + formatNaira(remaining) + '</strong> remaining.</span></div>';
             html += '<button type="button" class="btn-pay" data-pay-amount="' + remaining + '" data-pay-label="Pay Remaining Balance">' +
                 '<span>Pay remaining balance</span><span class="btn-pay-amount">' + formatNaira(remaining) + '</span></button>';
         } else {
             var full = LPMoney.wholeNaira(inv.totalAmount || 0);
             var retainer = LPMoney.splitNaira(full).retainer;
+            html += payWays;
             html += '<button type="button" class="btn-pay" data-pay-amount="' + full + '" data-pay-label="Pay in Full">' +
                 '<span>Pay in full</span><span class="btn-pay-amount">' + formatNaira(full) + '</span></button>';
             html += '<div class="pay-or">or</div>';
@@ -431,7 +467,7 @@
 
         html += '<div class="pay-trust">' +
             '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' +
-            '<span>Payments secured by Paystack \u2014 instant confirmation</span></div>';
+            '<span>Paystack takes the payment and adds its fee on top of what you send — about 1.5%, capped at ₦2,000 — so the checkout asks for a little more than the amount above. A transfer and a card cost the same.</span></div>';
 
         html += '<div class="doc-actions">' +
             '<button type="button" id="download-pdf-btn">Download PDF</button>' +
@@ -441,6 +477,14 @@
 
         actionsEl.querySelectorAll('[data-pay-amount]').forEach(function (btn) {
             btn.addEventListener('click', function () { payInvoice(parseFloat(btn.dataset.payAmount), btn); });
+        });
+        /* The pills only choose which checkout the amount buttons will open. */
+        var wayButtons = actionsEl.querySelectorAll('[data-pay-channel]');
+        wayButtons.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                choosePayChannel(btn.dataset.payChannel);
+                wayButtons.forEach(function (other) { other.classList.toggle('is-on', other === btn); });
+            });
         });
         document.getElementById('save-invoice-btn').addEventListener('click', saveInvoiceAsJpeg);
         document.getElementById('download-pdf-btn').addEventListener('click', function () { window.print(); });
@@ -469,6 +513,14 @@
     // PAYMENT — mirrors the Book page's Paystack flow, but the amount
     // charged depends on which button was clicked (full, retainer, or
     // remaining balance) rather than always being the invoice total.
+    /* WHICH CHECKOUT OPENS: anything but an explicit 'card' is a bank transfer,
+       so the default survives a button that passes nothing at all
+       (docs/decisions/0080). */
+    var payChannel = 'bank_transfer';
+    function choosePayChannel(want) {
+        payChannel = (want === 'card') ? 'card' : 'bank_transfer';
+    }
+
     function payInvoice(amount, btn) {
         if (!currentInvoice || !amount) return;
         if (typeof PaystackPop === 'undefined' || typeof PaystackPop.setup !== 'function') {
@@ -501,6 +553,9 @@
             email: currentInvoice.clientEmail,
             amount: kobo,
             currency: 'NGN',
+            /* ONE channel, chosen by the pills above — see choosePayChannel, and
+               docs/decisions/0080. */
+            channels: [payChannel],
             /* The invoice this charge belongs to, carried on the charge itself.
                The client's browser normally confirms the payment itself straight
                afterwards — but if it never gets the chance, Paystack's webhook
