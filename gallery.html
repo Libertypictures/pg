@@ -70,13 +70,24 @@ a{color:inherit}
 .cover-bg.loaded{opacity:1}
 .cover-bg.no-photo{background:linear-gradient(160deg,#1a1714,#0f0c09);opacity:1}
 .cover-scrim{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,12,9,0.15) 0%,transparent 30%,rgba(15,12,9,0.55) 100%)}
-.cover-logo{position:absolute;top:28px;left:50%;transform:translateX(-50%);z-index:3;height:34px;width:auto;filter:invert(1);opacity:0;animation:coverIn 1s ease .2s forwards}
-/* The box cannot be wider than the phone it is on: `max-width:min(600px,100%)`,
-   and the same on the cover's own inline cap of 500px. A block pinned at 500px
-   inside a 439px screen overhangs it by 30px on each side, which is how the
-   event title ended up with no guard at all (Liberty, 20 Sep 2026: "the title
-   goes end to end"). */
-.cover-content{position:relative;z-index:2;text-align:center;padding:40px 24px 80px;max-width:min(600px,100%)}
+/* The studio's mark sits 16px from the top of the cover — moved up from 28px on
+   26 Sep 2026 ("the logo should go higher a little bit"). The guard in
+   tools/test-gallery-client-view.js pins this number; change it there in the same
+   commit if it is asked for again. */
+.cover-logo{position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:3;height:34px;width:auto;filter:invert(1);opacity:0;animation:coverInX 1s ease .2s forwards}
+/* The box cannot be wider than the phone it is on: `max-width:min(860px,100%)`,
+   the same on the cover's own inline cap (which is the one that decides). A block
+   pinned at a fixed px inside a 439px screen overhangs it, which is how the event
+   title ended up with no guard at all (Liberty, 20 Sep 2026: "the title goes end
+   to end").
+
+   `width:100%` was added on 28 Sep 2026, and it is the whole of the desktop fault.
+   The box is a flex child, so it was shrink-to-fit: measured on the served page at
+   1600x900 it was **97px wide** — the width of the word "Zaza" — and the cap of
+   500px in both places had never once bound. The cover of a gallery with no event
+   title was therefore three lines of 10-11px type at the bottom of a 1600px
+   screen. A measure has to be a width to be one. */
+.cover-content{position:relative;z-index:2;text-align:center;width:100%;padding:40px 24px 80px;max-width:min(860px,100%)}
 .cover-eyebrow{display:block;font-family:'Outfit',sans-serif;font-size:10px;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,0.5);font-weight:400;margin-bottom:20px;opacity:0;animation:coverIn 1s ease .4s forwards}
 /* white-space:nowrap removed on 20 Sep 2026. It meant a long event title could
    not wrap, so it drew off BOTH edges of the screen — measured on the served
@@ -91,11 +102,49 @@ a{color:inherit}
    and the date below it is 11px — so the hierarchy is unchanged, only smaller. */
 .cover-name{font-family:'Cormorant Garamond','Fraunces',serif;font-weight:300;font-size:clamp(20px,5vw,34px);line-height:1.15;letter-spacing:3px;text-transform:none;margin-bottom:16px;color:rgba(255,255,255,0.95);opacity:0;animation:coverIn 1.1s ease .6s forwards}
 .cover-date{font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:300;color:rgba(255,255,255,0.35);margin-bottom:48px;opacity:0;animation:coverIn 1s ease .8s forwards}
+/* How many photographs are behind this cover. Written from the set's own count
+   (see paintCoverCount) — a gallery whose cover says nothing at all is the thing
+   this line is for, and the count is the one fact the page has before anyone
+   scrolls.
+
+   `display:none` below 1024px, and that is deliberate: THE PHONE'S COVER IS NOT
+   THIS LINE'S BUSINESS. It was added on 28 Sep 2026 for a desktop complaint, and
+   the phone's cover is the one part of this page Liberty has never had a word
+   against — a fourth small line under the date is a change to it, not an
+   improvement to it. The date keeps its own 48px below on a phone for the same
+   reason, and the desktop block below is where all of this is undone. */
+.cover-meta{display:none;font-family:'Outfit',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:300;color:rgba(255,255,255,0.45);margin-bottom:44px;opacity:0;animation:coverIn 1s ease .9s forwards}
 .cover-scroll-hint{display:inline-flex;flex-direction:column;align-items:center;gap:0;font-size:0;color:transparent;opacity:0;animation:coverIn 1s ease 1.2s forwards}
 .cover-scroll-hint span{display:block;width:1px;height:36px;background:linear-gradient(to bottom,var(--cream-faint),transparent);animation:scrollPulse 2s ease infinite}
 @keyframes scrollPulse{0%,100%{opacity:0.3}50%{opacity:0.8}}
 .cover-expiry{position:absolute;bottom:20px;left:0;right:0;z-index:2;text-align:center;font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:400;color:var(--cream-faint);opacity:0;animation:coverIn .9s ease 1s forwards}
+
+/* ── THE COVER ON A DESKTOP ──
+   Everything here is spacing and measure; the type sizes are the ones Liberty
+   chose on 20 Sep 2026 and tools/test-gallery-client-view.js pins them. What was
+   wrong at 1600x900 was not the size of the words but that there was no
+   composition at all: a 97px box, three lines pinned to the bottom of the window,
+   and the deadline floating alone 20px above the bottom edge. The block is now
+   centred in the window with the deadline as its own last line, and the count and
+   the hint have room to breathe. */
+@media(min-width:1024px){
+.cover{justify-content:center;padding-top:64px}
+.cover-content{padding:0 40px 56px}
+.cover-eyebrow{font-size:11px;letter-spacing:9px;margin-bottom:24px}
+.cover-date{font-size:12px;letter-spacing:4px;margin-bottom:16px}
+.cover-meta{display:block;font-size:12px;letter-spacing:4px;margin-bottom:48px}
+.cover-scroll-hint span{height:64px}
+.cover-expiry{position:static;margin-top:28px;font-size:12px;letter-spacing:3px}
+}
 @keyframes coverIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+/* The cover mark fades in from the SAME 16px below, but it is also centred with a
+   transform, and an animation may not have two: `coverIn` writes `transform`, so
+   on the logo it replaced `translateX(-50%)` for as long as the animation applied
+   — and with `forwards` that is for ever. Measured on the served page: `left:50%`
+   put the mark's LEFT EDGE on the centre line, 21px right of centre for a 43px
+   mark, and any other logo would be off by half its own width instead. So the
+   logo carries the translate in its own keyframes, where nothing overwrites it. */
+@keyframes coverInX{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
 
 /* ── GALLERY HEADER ── */
 .gallery-header{position:sticky;top:0;z-index:40;background:rgba(15,12,9,0.98);border-bottom:1px solid var(--border);padding:14px 20px}
@@ -131,6 +180,73 @@ a{color:inherit}
 .gallery-header-name{font-size:11px}
 }
 
+/* ── THE GRID ON A DESKTOP ──
+   Measured on the served page at 1600x900 (Liberty, 28 Sep 2026: "the grid is
+   bad/poor … basically the desktop version is really bad"). The container was
+   pinned at 1100px inside a 1600px window — 150px of black on each side — with
+   six tracks of 171px, so a portrait at span 3 drew TWO 530x795 photographs per
+   row, one row to a screen, and a 303-photo set scrolled 144,332px.
+
+   The window now decides both. The track count goes to 60 and a portrait's span
+   is one share of it — 15 for four across, 12 for five, 10 for six — so the
+   photographs stay between ~250 and ~500px wide on any desktop, which is what
+   makes a proof sheet readable without making it a phone again. A landscape is
+   always two across, whatever the width. */
+@media(min-width:821px){
+.gallery-grid{max-width:min(1560px,100%);grid-template-columns:repeat(60,1fr);gap:10px;padding:32px 24px 48px}
+.g-tile.portrait,.g-tile.square{grid-column:span 15}
+.g-tile.landscape{grid-column:span 30}
+/* The header and the extras section share the grid's measure and its 24px inset,
+   so the gallery's name lines up with the first tile's left edge and the MY PICKS
+   button with the last one's right edge, at every window width. */
+.gallery-header-inner{max-width:min(1560px,100%);padding:0 24px}
+}
+@media(min-width:1440px){
+.g-tile.portrait,.g-tile.square{grid-column:span 12}
+}
+@media(min-width:1680px){
+.g-tile.portrait,.g-tile.square{grid-column:span 10}
+}
+/* A dozen finals are not a proof sheet. Under 25 photographs the grid stays three
+   across however wide the window is, so a small delivery is not shrunk to
+   thumbnails. `data-density` is written by setGridDensity() from the set's own
+   count, and these rules live inside the desktop block on purpose: span 20 of a
+   four-track phone grid is a whole row, not two thirds of nothing. */
+@media(min-width:821px){
+.gallery-grid[data-density="small"] .g-tile.portrait,
+.gallery-grid[data-density="small"] .g-tile.square{grid-column:span 20}
+.gallery-grid[data-density="small"] .g-tile.landscape{grid-column:span 40}
+}
+
+/* ── EXTRAS — bonus photos the studio added beyond the client's picks.
+   A delivery gallery carries two kinds of photo: the finals the picks map to
+   (one per selection slot) and any extra shots the studio uploaded outside
+   those slots. The API has always sent the second kind separately as
+   `extraPhotos`; this page stopped drawing them on 9 Sep 2026, when a layout
+   rewrite dropped 542 lines and the extras section with them — so a client who
+   was sent extras saw only their picks, and nothing on either side said why.
+   They are shown BELOW the finals and never mixed in: a client counting their
+   finals must not have to work out which tiles were their selections. */
+.extras-zone{max-width:1100px;margin:0 auto;padding:0 16px;border-top:1px solid var(--border)}
+.extras-head{text-align:center;padding:30px 0 2px}
+.extras-eyebrow{font-size:9px;letter-spacing:3.5px;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:8px}
+.extras-title{font-family:'Fraunces',serif;font-size:20px;font-weight:400;letter-spacing:.4px;color:rgba(255,255,255,0.94)}
+.extras-count{color:var(--accent);font-size:56%;letter-spacing:2px;margin-left:6px}
+.extras-note{font-size:12px;color:var(--cream-faint);line-height:1.75;max-width:520px;margin:9px auto 0}
+#extras-grid{padding:20px 0 40px}
+.g-tile.is-extra::after{content:'';position:absolute;inset:0;border:1px solid rgba(196,166,126,0.35);pointer-events:none}
+.g-chip-extra{position:absolute;top:10px;left:10px;z-index:2;font-size:8px;font-weight:700;letter-spacing:2px;padding:4px 9px;border-radius:2px;color:#171208;background:var(--accent);pointer-events:none}
+@media(min-width:821px){
+.extras-zone{max-width:min(1560px,100%);padding:0 24px}
+}
+@media(max-width:820px){
+.extras-zone{padding:0 6px}
+.extras-head{padding:24px 0 2px}
+.extras-title{font-size:17px}
+#extras-grid{padding:14px 0 30px}
+.g-chip-extra{top:5px;left:5px;font-size:7px;padding:3px 6px;letter-spacing:1.4px}
+}
+
 /* ── CINEMATIC VIEWER — the Featured Work film presentation fused
    onto the gallery: a fullscreen film stage with a perforated
    film-strip rail of every photo, numbered frames, negative-film
@@ -145,7 +261,11 @@ a{color:inherit}
 .lb-star-btn svg{width:18px;height:18px;stroke:var(--cream);fill:none;transition:background-color .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease, opacity .2s ease, transform .2s ease, filter .2s ease}
 .lb-star-btn.is-active{background:rgba(196,166,126,0.25)}
 .lb-star-btn.is-active svg{fill:var(--accent);stroke:var(--accent)}
-.lb-main{flex:1;display:flex;min-height:0;position:relative}
+.lb-main{flex:1;display:flex;min-height:0;position:relative;justify-content:center}
+/* The stage is the width of the photograph on it, not the width of the window:
+   lbFitStage() (see the note beside it) writes the width this box should have.
+   flex:1 stays as the fallback — with no script this box is the window and the
+   rail sits at its edge, which is what the page did until 28 Sep 2026. */
 .lb-stage{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;position:relative;padding:0 6px;min-height:0;touch-action:pan-x;overflow:hidden}
 .lb-img-wrap{width:100%;height:100%;display:flex;align-items:center;justify-content:center}
 .lb-img-wrap img{max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain}
@@ -154,6 +274,16 @@ a{color:inherit}
    right edge, the same design language as the homepage viewer. */
 .lb-film{width:min(150px,23vw);flex-shrink:0;position:relative;overflow-y:auto;overflow-x:hidden;scroll-behavior:smooth;scrollbar-width:none;overscroll-behavior-y:contain;background:var(--strip-surface);filter:drop-shadow(0 4px 10px rgba(0,0,0,0.4));-webkit-mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,0.08) 0.4%,rgba(0,0,0,0.25) 0.9%,rgba(0,0,0,0.5) 1.4%,rgba(0,0,0,0.78) 1.9%,black 2.5%,black 97.5%,rgba(0,0,0,0.78) 98.1%,rgba(0,0,0,0.5) 98.6%,rgba(0,0,0,0.25) 99.1%,rgba(0,0,0,0.08) 99.6%,transparent 100%);mask-image:linear-gradient(to bottom,transparent 0%,rgba(0,0,0,0.08) 0.4%,rgba(0,0,0,0.25) 0.9%,rgba(0,0,0,0.5) 1.4%,rgba(0,0,0,0.78) 1.9%,black 2.5%,black 97.5%,rgba(0,0,0,0.78) 98.1%,rgba(0,0,0,0.5) 98.6%,rgba(0,0,0,0.25) 99.1%,rgba(0,0,0,0.08) 99.6%,transparent 100%)}
 .lb-film::-webkit-scrollbar{display:none}
+/* A frame on this rail is its own width times 560/400, so the rail's width is
+   also how many frames a screenful holds: 150px gave 210px frames and THREE of
+   them in the 756px stage of a 900px-tall window — measured on the served page,
+   28 Sep 2026 ("the strip only shows 3 images"). 104px gives 146px frames and
+   five whole ones with the sixth arriving as you scroll, and it costs the
+   photograph nothing, because the picture was ever only as wide as the window is
+   tall. Nothing else about the film changes: same art, same negatives,same perforations, same frame numbers. */
+@media(min-width:821px){
+.lb-film{width:clamp(88px,6.5vw,108px)}
+}
 .film-track{display:flex;flex-direction:column;position:relative;gap:0;background:none}
 .film-thumb{position:relative;width:100%;aspect-ratio:400/560;border:none;padding:0;cursor:pointer;display:block;flex-shrink:0;background-color:transparent;background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 560' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='fb' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%230a0805'/%3E%3Cstop offset='0.5' stop-color='%2316100a'/%3E%3Cstop offset='1' stop-color='%230a0805'/%3E%3C/linearGradient%3E%3ClinearGradient id='fw' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%23050403'/%3E%3Cstop offset='1' stop-color='%23070604'/%3E%3C/linearGradient%3E%3Cmask id='m'%3E%3Crect x='0' y='0' width='400' height='560' fill='white'/%3E%3Crect x='16' y='40' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='120' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='200' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='280' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='360' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='440' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='16' y='520' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='40' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='120' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='200' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='280' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='360' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='440' width='22' height='16' rx='2' fill='black'/%3E%3Crect x='362' y='520' width='22' height='16' rx='2' fill='black'/%3E%3C/mask%3E%3C/defs%3E%3Crect x='0' y='0' width='400' height='560' fill='url(%23fb)' mask='url(%23m)'/%3E%3Crect x='70' y='15' width='260' height='530' fill='url(%23fw)'/%3E%3C/svg%3E");background-size:100% 100%;background-repeat:no-repeat}
 .film-thumb + .film-thumb{margin-top:-3px}
@@ -484,10 +614,11 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
         <img src="" alt="Libertypictures" class="cover-logo" id="cover-logo" style="display:none;">
         <div class="cover-bg" id="cover-bg"></div>
         <div class="cover-scrim"></div>
-        <div class="cover-content" style="max-width:min(500px,100%);">
+        <div class="cover-content" style="max-width:min(860px,100%);">
             <div class="cover-eyebrow" id="cover-eyebrow">&nbsp;</div>
             <h1 class="cover-name serif" id="cover-name">&nbsp;</h1>
             <div class="cover-date" id="cover-date"></div>
+            <div class="cover-meta" id="cover-meta"></div>
             <div class="cover-scroll-hint"><span></span></div>
         </div>
         <div class="cover-expiry" id="cover-expiry"></div>
@@ -516,6 +647,16 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
     </div>
 
     <div class="gallery-grid" id="gallery-grid"></div>
+
+    <!-- EXTRAS — bonus photos the studio added beyond the client's picks -->
+    <section class="extras-zone" id="extras-zone" style="display:none">
+        <div class="extras-head">
+            <div class="extras-eyebrow">Bonus photos</div>
+            <h2 class="extras-title">Extras<span class="extras-count" id="extras-count"></span></h2>
+            <p class="extras-note">Beyond your selected finals, these extra shots came with your delivery &mdash; they&rsquo;re yours too. Keep the ones you want with the &star; and download them with your finals.</p>
+        </div>
+        <div class="gallery-grid" id="extras-grid"></div>
+    </section>
 
     <!-- Download All — shown when 20+ photos -->
     <div class="dl-all-bar" id="dl-all-bar" style="display:none;">
@@ -637,6 +778,8 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
      - proof, finalised              → “picks locked in” screen
      - delivery, unpublished         → “finals being edited” screen
      - delivery, published           → view finals, keep + download
+     - share                         → view photos, keep + download (live on creation;
+                                       no picks, no checklist, no finals — see canKeep()/words())
      - locked (409)                  → pay-to-reopen wall (secure pay page)
      - expired (410)                 → window ended
    All photo URLs returned by the API are /api/images/... paths on the worker,
@@ -650,15 +793,59 @@ var token = params.get('t');
 
 var gallery = null;      // server row (phase, status, expiresAt, photos…)
 var photos = [];         // photos shown on the grid / in the viewer
-var view = 'proof';      // 'proof' | 'delivery' — set from server phase
+var extras = [];         // delivery-only: bonus photos the studio added beyond the client's picks
+var view = 'proof';      // 'proof' | 'delivery' | 'share' — set from server phase
+
+/* ===================== WHAT IT CAN DO vs WHAT IT SAYS =====================
+
+   One question used to answer both — `view === 'delivery'` — and that is what
+   would have printed “Your Finals” over a one-off set of photos:
+
+     canKeep()   what the page can DO. A proof gallery picks (star = send to the
+                 studio); a delivery and a SHARE gallery keep (star = download).
+     words()     what the page SAYS. A share gallery has no finals and no picks,
+                 so every sentence that named them is given the right word
+                 instead of the gallery being told it is a delivery.
+
+   A SHARE gallery is the studio's one-off set: view it, star what you want,
+   download it all as one file or one photo at a time. Nothing to pick, nothing
+   to finalise, nothing being edited — and it is live the moment it is made. */
+function canKeep() { return view === 'delivery' || view === 'share'; }
+function isShare() { return view === 'share'; }
+var VOCAB = {
+    proof: {
+        collection: 'photos', keeps: 'picks', verb: 'picked', keepVerb: 'pick',
+        keepsLabel: 'My Picks', star: 'Pick this photo for editing',
+        save: 'Finalise my selection', allLabel: 'Download All Photos',
+        title: '', byline: '',
+        guideKey: 'lp-guide-proof', viewerGuide: 'lp-viewer-guide-proof'
+    },
+    delivery: {
+        collection: 'finals', keeps: 'keeps', verb: 'kept', keepVerb: 'keep',
+        keepsLabel: 'My Keeps', star: 'Keep this final for downloading',
+        save: 'Download my picks', allLabel: 'Download All Finals',
+        title: 'Your Finals', byline: 'delivered by ',
+        guideKey: 'lp-guide-deliv', viewerGuide: 'lp-viewer-guide-deliv'
+    },
+    share: {
+        collection: 'photos', keeps: 'keeps', verb: 'kept', keepVerb: 'keep',
+        keepsLabel: 'My Keeps', star: 'Keep this photo for downloading',
+        save: 'Download my keeps', allLabel: 'Download All Photos',
+        title: '', byline: 'from ',
+        guideKey: 'lp-guide-share', viewerGuide: 'lp-viewer-guide-share'
+    }
+};
+function words() { return VOCAB[view] || VOCAB.proof; }
 var starred = {};        // photoId -> true/false (picks in proof, keeps in delivery)
 var currentLbIdx = 0;
 var showingFavs = false;
 var gate = '';           // current rendered screen ('open'|'finalised'|'notready'|'lock')
 var lockedInfo = null;   // 409 payload when locked
 
-var LS_GUIDE_PROOF = 'lp-guide-proof';
-var LS_GUIDE_DELIV = 'lp-guide-deliv';
+/* The welcome sheet and the viewer's own guide are remembered per KIND, so a
+   client who has already seen a pick gallery's guide still gets the download
+   one — and a share gallery's guide is its own, not borrowed from the delivery
+   words. The keys live in VOCAB below. */
 var BRAND_PATTERN = [null, 'LIBERTY PORTRA', null, 'LIBERTYPICTURES', null, null, 'LIBERTY PORTRA', null, 'LIBERTYPICTURES', null, 'LIBERTY PORTRA', null];
 
 /* Settings used by banners + lock wall (fee in naira) */
@@ -700,9 +887,8 @@ function toast(msg) {
 }
 function pickCount() { return Object.keys(starred).filter(function (k) { return starred[k]; }).length; }
 function pickedPhotos() { return photos.filter(function (p) { return starred[p.id]; }); }
-function isDeliv() { return view === 'delivery'; }
-function verb() { return isDeliv() ? 'kept' : 'picked'; }
-function noun() { return isDeliv() ? 'keeps' : 'picks'; }
+function verb() { return words().verb; }
+function noun() { return words().keeps; }
 
 function daysUntil(ts) {
     var end = new Date(String(ts).replace(' ', 'T'));
@@ -733,10 +919,14 @@ function loadGallery() {
         })
         .then(function (data) {
             gallery = data;
-            view = (data.phase === 'delivery') ? 'delivery' : 'proof';
+            view = (data.phase === 'delivery') ? 'delivery' : (data.phase === 'share' ? 'share' : 'proof');
             photos = data.photos || [];
+            // Extras only exist where a checklist does — a delivery's business. A
+            // share gallery's photos are its photos.
+            extras = (view === 'delivery') ? (data.extraPhotos || []) : [];
             starred = {};
             photos.forEach(function (p) { starred[p.id] = !!p.isStarred; });
+            extras.forEach(function (p) { starred[p.id] = !!p.isStarred; });
             // Surface the extension fee for banners (proof/delivery settings may lag behind
             // the locked payload; the locked wall always uses the authoritative 409 values).
             fetchSettings();
@@ -802,8 +992,13 @@ function renderNow() {
     state.classList.remove('lock-mode');
 
     if (gate === 'lock') { renderLockWall(lockedInfo); return; }
-    if (view === 'delivery') {
-        if (!gallery.deliveredAt || !photos.length) { gate = 'notready'; renderNotReady(); return; }
+    if (canKeep()) {
+        /* Extras count as photos here: a delivery whose shots all arrived as
+           extras is a gallery the client can look at, not one still being
+           edited. delivered_at stays the real "ready" signal for a delivery; a
+           share gallery is stamped delivered when it is created, so the same
+           test reads "ready" for both without a special case. */
+        if (!gallery.deliveredAt || (!photos.length && !extras.length)) { gate = 'notready'; renderNotReady(); return; }
         gate = 'open'; renderOpenGallery();
         return;
     }
@@ -813,11 +1008,12 @@ function renderNow() {
 
 /* ===================== OPEN GALLERY (proof browse or delivery finals) ===================== */
 function renderOpenGallery() {
-    var isDeliv = view === 'delivery';
+    var isDeliv = canKeep();
+    var W = words();
     /* Trimmed once, here, because a title of spaces is not a title and the
        places below all have to agree on what "no event title" means. */
     var evTitle = String(gallery.eventTitle == null ? '' : gallery.eventTitle).trim();
-    document.title = (evTitle || gallery.clientName || 'Gallery') + (isDeliv ? ' \u2014 Your Finals' : '') + ' | Libertypictures';
+    document.title = (evTitle || gallery.clientName || 'Gallery') + (W.title ? ' \u2014 ' + W.title : '') + ' | Libertypictures';
     var pw = $('page-wrap'); pw.style.display = 'block';
     window.scrollTo(0, 0);
 
@@ -827,15 +1023,16 @@ function renderOpenGallery() {
        "when I leave the event title blank, the name of client doesn't get
        duplicated as event title". */
     var coverName = $('cover-name');
-    coverName.textContent = evTitle ? evTitle + (isDeliv ? ' \u2014 Your Finals' : '') : '';
+    coverName.textContent = evTitle ? evTitle + (W.title ? ' \u2014 ' + W.title : '') : '';
     coverName.style.display = evTitle ? '' : 'none';
     $('cover-eyebrow').textContent = gallery.clientName || 'Your gallery';
     if (gallery.eventDate) {
         var d = new Date(String(gallery.eventDate).slice(0, 10) + 'T00:00:00');
         if (!isNaN(d.getTime())) {
-            $('cover-date').textContent = d.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) + (isDeliv ? ' \u00b7 delivered by ' + G.studio : '');
+            $('cover-date').textContent = d.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) + (W.byline ? ' \u00b7 ' + W.byline + G.studio : '');
         }
     }
+    paintCoverCount();
     var bg = $('cover-bg');
     bg.classList.remove('loaded');
     if (gallery.coverUrl) {
@@ -847,13 +1044,18 @@ function renderOpenGallery() {
 
     /* The header carries one line and no eyebrow, so the client's name is not a
        repeat here — it is the useful thing to show when no title was set. */
-    $('header-name').textContent = (evTitle || gallery.clientName || '') + (isDeliv ? ' \u2014 Finals' : '');
+    $('header-name').textContent = (evTitle || gallery.clientName || '') + (W.title ? ' \u2014 ' + W.title : '');
 
-    // first-open per-mode guide copy (welcome sheet) — proof: how to pick, delivery: how to download
+    // first-open per-mode guide copy (welcome sheet) — proof: how to pick,
+    // delivery and share: how to download
     var guide = $('welcome-sheet');
     var steps = guide.querySelectorAll('.intro-step');
     if (steps.length) {
-        if (isDeliv) {
+        if (isShare()) {
+            steps[0].querySelector('p').innerHTML = '<strong>These are your photos</strong> \u2014 ready to look at and download. Tap any photo for the film viewer, or download straight from the grid.';
+            steps[1].querySelector('p').innerHTML = '<strong>Tap the \u2605 star to keep</strong> a photo for downloading later \u2014 your keeps fill the bottom bar.';
+            steps[2].querySelector('p').innerHTML = '<strong>Download your kept photos at once</strong> \u2014 share them to your Photos or save as a zip.';
+        } else if (isDeliv) {
             steps[0].querySelector('p').innerHTML = '<strong>These are your edited finals</strong> \u2014 every photo you picked, delivered. Tap any photo for the film viewer, or download straight from the grid.';
             steps[1].querySelector('p').innerHTML = '<strong>Tap the \u2605 star to keep</strong> a photo for downloading later \u2014 your keeps fill the bottom bar.';
             steps[2].querySelector('p').innerHTML = '<strong>Download your kept finals at once</strong> \u2014 share them to your Photos or save as a zip.';
@@ -864,13 +1066,15 @@ function renderOpenGallery() {
         }
         var gi = guide.querySelector('#guide-expiry-text');
         var left = daysUntil(gallery.expiresAt);
-        if (gi) gi.innerHTML = isDeliv
+        if (gi) gi.innerHTML = isShare()
+            ? '<strong>Your photos stay available for a limited time.</strong> Download what you want before the window ends \u2014 you can always reopen it with one small payment.'
+            : isDeliv
             ? '<strong>Your finals stay available for a limited time.</strong> Download before the window ends \u2014 you can always reopen it with one small payment.'
             : (left === null
                 ? '<strong>Your gallery is available for a limited time.</strong> Make your picks before the window ends.'
                 : '<strong>You have ' + left + ' day' + (left === 1 ? '' : 's') + ' to pick.</strong> If time runs out, your current stars are locked in automatically.');
     }
-    var firstKey = isDeliv ? LS_GUIDE_DELIV : LS_GUIDE_PROOF;
+    var firstKey = W.guideKey;
     var isFirst = false;
     try { isFirst = !sessionStorage.getItem(firstKey); sessionStorage.setItem(firstKey, '1'); } catch (e) {}
     if (isFirst) { guide.style.display = 'flex'; }
@@ -880,11 +1084,11 @@ function renderOpenGallery() {
     var favs = $('favs-toggle-btn');
     favs.style.display = 'none';
     showingFavs = false;
-    favs.textContent = isDeliv ? '\u2605 My Keeps' : '\u2605 My Picks';
+    favs.textContent = '\u2605 ' + W.keepsLabel;
     favs.style.background = 'rgba(196,166,126,0.12)';
     favs.onclick = function () {
         showingFavs = !showingFavs;
-        favs.textContent = showingFavs ? 'Show All' : (isDeliv ? '\u2605 My Keeps' : '\u2605 My Picks');
+        favs.textContent = showingFavs ? 'Show All' : ('\u2605 ' + W.keepsLabel);
         favs.style.background = showingFavs ? 'rgba(196,166,126,0.3)' : 'rgba(196,166,126,0.12)';
         document.querySelectorAll('.g-tile').forEach(function (tile) {
             var id = Number(tile.dataset.id);
@@ -893,9 +1097,10 @@ function renderOpenGallery() {
         if (showingFavs) window.scrollTo({ top: $('gallery-header').offsetTop, behavior: 'smooth' });
     };
 
-    // finished prompt — proof only, once they have picks (tap = finalise)
+    // finished prompt — proof only, once they have picks (tap = finalise).
+    // There is nothing to finalise in a share or a delivery gallery.
     var fp = $('finished-prompt');
-    fp.style.display = (!isDeliv && pickCount() > 0) ? 'block' : 'none';
+    fp.style.display = (view === 'proof' && pickCount() > 0) ? 'block' : 'none';
     fp.querySelector('p').textContent = 'Happy with your picks?';
     var fb = $('finished-btn');
     fb.textContent = 'Finalise my selection';
@@ -908,13 +1113,14 @@ function renderOpenGallery() {
     fb.onclick = function () { startFinalise(); };
     $('finished-done').style.display = 'none';
 
-    // review only on delivery
-    $('review-section').style.display = isDeliv ? '' : 'none';
+    // review on any gallery the client was given photos by — the moment they
+    // have just received them is the one moment worth asking
+    $('review-section').style.display = canKeep() ? '' : 'none';
 
-    // download-all bar only on delivery
+    // download-all bar wherever the client can keep photos
     var dlBar = $('dl-all-bar');
-    dlBar.style.display = (isDeliv && photos.length >= 3) ? 'block' : 'none';
-    dlBar.querySelector('.dl-all-btn').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download All Finals';
+    dlBar.style.display = (canKeep() && photos.length >= 3) ? 'block' : 'none';
+    dlBar.querySelector('.dl-all-btn').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> ' + W.allLabel;
 
     renderGrid();
     updateBarAndPrompt();
@@ -922,29 +1128,89 @@ function renderOpenGallery() {
     prewarmLb();
 }
 
+/* ============ THE SET ON THIS SCREEN ============ */
+/* Two facts about the set decide how the page is laid out: how many photographs
+   there are, and how wide the window is. The width is the stylesheet's business
+   (the breakpoints in the desktop grid block); the count is written here, once,
+   so the rules that read it are never fed from anywhere else. */
+
+/* How many across the grid draws is decided in CSS — 60 tracks, and a span of 15,
+   12 or 10 for a portrait, at the desktop breakpoints. The one thing the page
+   decides is whether this is a SMALL set: under 25 photographs the grid stays
+   three across however wide the window is, so a delivery of a dozen finals is not
+   shrunk to thumbnails to fill a widescreen. */
+function setGridDensity() {
+    var density = (photos.length && photos.length <= 24) ? 'small' : 'full';
+    /* Both grids, from the one count: the extras below the finals are the same set
+       on the same screen, and two densities on one page would read as a mistake. */
+    ['gallery-grid', 'extras-grid'].forEach(function (id) {
+        var grid = $(id);
+        if (grid) grid.dataset.density = density;
+    });
+}
+
+/* The line under the date on the cover: "303 photos". The count is the one thing
+   the page knows before anyone scrolls, and on a desktop it is what gives the
+   cover a second line of substance when no event title was set — the case that
+   measured 97px wide, three lines of 10-11px type at the bottom of a 1600px
+   window. A gallery with no photographs says nothing rather than "0 photos". */
+function paintCoverCount() {
+    var el = $('cover-meta');
+    if (!el) return;
+    var n = photos.length + extras.length;
+    el.textContent = n ? (n + (n === 1 ? ' photo' : ' photos')) : '';
+}
+
 /* ===================== GRID ===================== */
+/* One tile shape for both grids — the finals and the extras are the same kind
+   of thing to look at, and the EXTRA chip plus the section they sit in are what
+   tell them apart. `isExtra` never reaches the finals grid. */
+function tileHtml(p, i, isExtra) {
+    var cls = 'g-tile ' + (p.orientation || 'portrait') + (isExtra ? ' is-extra' : '') + (starred[p.id] ? ' is-starred' : '');
+    return '<div class="' + cls + '" data-index="' + i + '" data-id="' + p.id + (isExtra ? '" data-extras="1"' : '"') + '>' +
+        '<img src="' + pThumb(p) + '" alt="" loading="lazy">' +
+        (isExtra ? '<span class="g-chip-extra">EXTRA</span>' : '') +
+        '<button class="g-tile-star" data-star-id="' + p.id + '" aria-label="Star">' + starSvg(!!starred[p.id]) + '</button>' +
+    '</div>';
+}
 function renderGrid() {
     var grid = $('gallery-grid');
+    setGridDensity();
     if (!photos.length) {
-        grid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:var(--cream-faint);padding:60px 20px;font-size:13px;">No photos in this gallery yet.</p>';
-        return;
+        /* With extras present the gallery is not empty — the extras section
+           below carries it, so no "no photos yet" line above it. */
+        grid.innerHTML = extras.length ? '' : '<p style="grid-column:1/-1;text-align:center;color:var(--cream-faint);padding:60px 20px;font-size:13px;">No photos in this gallery yet.</p>';
+    } else {
+        grid.innerHTML = photos.map(function (p, i) { return tileHtml(p, i, false); }).join('');
     }
-    grid.innerHTML = photos.map(function (p, i) {
-        var cls = 'g-tile ' + (p.orientation || 'portrait') + (starred[p.id] ? ' is-starred' : '');
-        return '<div class="' + cls + '" data-index="' + i + '" data-id="' + p.id + '">' +
-            '<img src="' + pThumb(p) + '" alt="" loading="lazy">' +
-            '<button class="g-tile-star" data-star-id="' + p.id + '" aria-label="Star">' + starSvg(!!starred[p.id]) + '</button>' +
-        '</div>';
-    }).join('');
+    renderExtras();
     updateBarAndPrompt();
 }
+/* The extras section — bonus photos beyond the client's picks, kept separate
+   from the finals on purpose (see the CSS note above). */
+function renderExtras() {
+    var zone = $('extras-zone');
+    if (!zone) return;
+    if (!canKeep() || !extras.length) { zone.style.display = 'none'; return; }
+    zone.style.display = '';
+    $('extras-count').textContent = String(extras.length).padStart(2, '0');
+    $('extras-grid').innerHTML = extras.map(function (p, i) { return tileHtml(p, i, true); }).join('');
+}
+function openFromTile(tile) {
+    var i = Number(tile.dataset.index);
+    if (tile.hasAttribute('data-extras')) openLightbox(i, extras);
+    else openLightbox(i);
+}
 (function () {
-    var grid = $('gallery-grid');
-    grid.addEventListener('click', function (e) {
-        var starBtn = e.target.closest('.g-tile-star');
-        if (starBtn) { e.stopPropagation(); toggleStar(Number(starBtn.dataset.starId)); return; }
-        var tile = e.target.closest('.g-tile');
-        if (tile) openLightbox(Number(tile.dataset.index));
+    ['gallery-grid', 'extras-grid'].forEach(function (gridId) {
+        var grid = $(gridId);
+        if (!grid) return;
+        grid.addEventListener('click', function (e) {
+            var starBtn = e.target.closest('.g-tile-star');
+            if (starBtn) { e.stopPropagation(); toggleStar(Number(starBtn.dataset.starId)); return; }
+            var tile = e.target.closest('.g-tile');
+            if (tile) openFromTile(tile);
+        });
     });
 })();
 function updateBarAndPrompt() {
@@ -953,10 +1219,10 @@ function updateBarAndPrompt() {
     if (count > 0) bar.classList.add('visible'); else bar.classList.remove('visible');
     $('selection-count').innerHTML = '<strong>' + count + '</strong> ' + verb();
     var saveBtn = $('save-selected-btn');
-    saveBtn.textContent = isDeliv() ? 'Download my picks' : 'Finalise my selection';
+    saveBtn.textContent = words().save;
     saveBtn.style.display = '';
     saveBtn.disabled = false;
-    saveBtn.onclick = isDeliv() ? saveSelectedClick : startFinalise;
+    saveBtn.onclick = canKeep() ? saveSelectedClick : startFinalise;
     var clearBtn = $('clear-selection-btn');
     clearBtn.style.display = 'inline-block';
     clearBtn.disabled = false;
@@ -964,7 +1230,7 @@ function updateBarAndPrompt() {
     var favs = $('favs-toggle-btn');
     favs.style.display = count > 0 ? 'block' : 'none';
     var fp = $('finished-prompt');
-    fp.style.display = (!isDeliv() && count > 0) ? 'block' : 'none';
+    fp.style.display = (view === 'proof' && count > 0) ? 'block' : 'none';
     /* Room beneath the last block while the fixed bar is up — without it the
        closing prompt ends up underneath the bar (see the CSS rule). */
     document.body.classList.toggle('has-selection', count > 0);
@@ -972,7 +1238,7 @@ function updateBarAndPrompt() {
 function clearSelection() {
     var ids = Object.keys(starred).filter(function (k) { return starred[k]; });
     if (!ids.length) return;
-    if (!confirm('Clear your ' + ids.length + (isDeliv() ? ' kept' : ' picked') + ' photo' + (ids.length === 1 ? '' : 's') + '? You can star them again anytime.')) return;
+    if (!confirm('Clear your ' + ids.length + ' ' + verb() + ' photo' + (ids.length === 1 ? '' : 's') + '? You can star them again anytime.')) return;
     var btn = $('clear-selection-btn');
     btn.disabled = true;
     fetch(API + '/api/gallery/' + encodeURIComponent(token) + '/clear-selection', { method: 'POST' })
@@ -982,9 +1248,10 @@ function clearSelection() {
             if (!d || d.status !== 'ok') { window.alert('Could not clear your selection \u2014 please try again.'); return; }
             ids.forEach(function (k) { starred[k] = false; });
             photos.forEach(function (p) { refreshTile(p.id); });
+            extras.forEach(function (p) { refreshTile(p.id); });
             showingFavs = false;
             var favs = $('favs-toggle-btn');
-            if (favs) { favs.textContent = isDeliv() ? '\u2605 My Keeps' : '\u2605 My Picks'; favs.style.background = 'rgba(196,166,126,0.12)'; }
+            if (favs) { favs.textContent = '\u2605 ' + words().keepsLabel; favs.style.background = 'rgba(196,166,126,0.12)'; }
             updateBarAndPrompt();
             if ($('lightbox').classList.contains('active')) closeLightbox();
             toast('Selection cleared');
@@ -1032,7 +1299,7 @@ function toggleStar(photoId) {
         toast('Could not reach the server \u2014 check your connection');
     });
 }
-function starSemanticsTitle() { return isDeliv() ? 'Keep this final for downloading' : 'Pick this photo for editing'; }
+function starSemanticsTitle() { return words().star; }
 
 /* ==========================================================================
    CINEMATIC VIEWER ENGINE — resident film rail, instant swaps,
@@ -1041,38 +1308,39 @@ function starSemanticsTitle() { return isDeliv() ? 'Keep this final for download
 var savedScrollY = 0, filmThumbs = [], filmListKey = '', lastTapAt = 0;
 var lbPicksOnly = false;
 var lbOrder = [];
+var lbSet = [];        // the set the viewer is showing — the finals grid, or the extras grid
 
-function lbNoun() { return isDeliv() ? 'kept' : 'picked'; }
-function lbOnlyNoun() { return isDeliv() ? 'keeps' : 'picks'; }
-function lbPickVerb() { return isDeliv() ? 'keep' : 'pick'; }
-function lbFilmNeg() { return isDeliv(); }
-function lbGuideKey() { return 'lp-viewer-guide-' + (isDeliv() ? 'deliv' : 'proof'); }
+function lbNoun() { return words().verb; }
+function lbOnlyNoun() { return words().keeps; }
+function lbPickVerb() { return words().keepVerb; }
+function lbFilmNeg() { return canKeep(); }
+function lbGuideKey() { return words().viewerGuide; }
 function lbCur() { return lbOrder.length ? lbOrder[currentLbIdx].p : null; }
 function orderIndexById(id) {
     for (var i = 0; i < lbOrder.length; i++) if (lbOrder[i].p.id === id) return i;
     return -1;
 }
 function photosIndexById(id) {
-    for (var i = 0; i < photos.length; i++) if (photos[i].id === id) return i;
+    for (var i = 0; i < lbSet.length; i++) if (lbSet[i].id === id) return i;
     return -1;
 }
 function lbPickedCount() { return pickCount(); }
 function lbStarTitle() {
-    return isDeliv() ? 'Keep this final for downloading' : 'Pick this photo for editing';
+    return words().star;
 }
 
 /* ---------- order + film DOM ---------- */
 function rebuildLbOrder() {
     lbOrder = [];
-    for (var i = 0; i < photos.length; i++) {
-        if (lbPicksOnly && !starred[photos[i].id]) continue;
-        lbOrder.push({ p: photos[i], pos: i });
+    for (var i = 0; i < lbSet.length; i++) {
+        if (lbPicksOnly && !starred[lbSet[i].id]) continue;
+        lbOrder.push({ p: lbSet[i], pos: i });
     }
 }
 function filmNeedsRebuild() {
     var cnt = 0, k;
     for (k in starred) if (starred[k]) cnt++;
-    var key = photos.length + ':' + (lbPicksOnly ? 'p' + cnt : 'a') + ':' + lbFilmNeg() + ':' + view;
+    var key = lbSet.length + ':' + (lbPicksOnly ? 'p' + cnt : 'a') + ':' + lbFilmNeg() + ':' + view + (lbSet === extras ? ':x' : '');
     if (key === filmListKey) return false;
     filmListKey = key;
     return true;
@@ -1087,7 +1355,7 @@ function buildFilmDOM() {
         x = lbOrder[i]; p = x.p; orig = x.pos;
         thumbUrl = pThumb(p);
         brand = BRAND_PATTERN[orig % BRAND_PATTERN.length];
-        html.push('<button type="button" class="film-thumb' + (starred[p.id] ? ' is-starred' : '') + (p.orientation === 'landscape' ? ' is-landscape' : '') + (lbFilmNeg() ? ' is-neg' : '') + '" data-id="' + p.id + '" data-pos="' + orig + '" aria-label="View photo ' + (orig + 1) + ' of ' + photos.length + '">' +
+        html.push('<button type="button" class="film-thumb' + (starred[p.id] ? ' is-starred' : '') + (p.orientation === 'landscape' ? ' is-landscape' : '') + (lbFilmNeg() ? ' is-neg' : '') + '" data-id="' + p.id + '" data-pos="' + orig + '" aria-label="View photo ' + (orig + 1) + ' of ' + lbSet.length + '">' +
             '<img ' + (i < EAGER ? 'src="' + thumbUrl + '"' : 'data-src="' + thumbUrl + '"') + ' alt="" decoding="async" loading="lazy">' +
             '<span class="film-star">' + starSvg(true) + '</span>' +
             '<span class="frame-num">' + (orig + 1) + '</span>' +
@@ -1141,13 +1409,14 @@ function refreshFilmThumb(photoId) {
 }
 
 /* ---------- open / step / chrome ---------- */
-function openLightbox(idx) {
+function openLightbox(idx, set) {
     if ($('lightbox').classList.contains('active')) return;
-    if (!photos.length) return;
+    lbSet = set || photos;
+    if (!lbSet.length) return;
     lbPicksOnly = showingFavs;
     rebuildLbOrder();
     if (filmNeedsRebuild()) buildFilmDOM();
-    currentLbIdx = orderIndexById(photos[idx].id);
+    currentLbIdx = orderIndexById(lbSet[idx].id);
     if (currentLbIdx < 0) currentLbIdx = 0;
     savedScrollY = window.scrollY;
     document.body.style.position = 'fixed';
@@ -1165,6 +1434,42 @@ function closeLightbox() {
     document.body.style.position = ''; document.body.style.top = ''; document.body.style.width = '';
     if (savedScrollY) window.scrollTo(0, savedScrollY);
 }
+/* ── THE STAGE IS THE PHOTOGRAPH'S OWN WIDTH ──
+   Measured on the served page at 1600x900 (Liberty, 28 Sep 2026: "the strip is
+   too far from the main image"): the stage was the width of the window (1450px),
+   the photograph inside it drew 567px wide because the window is only 756px
+   tall, and the film rail therefore stood 442px away from the picture it belongs
+   to.
+
+   The stage now takes the width the photograph will actually draw at — the
+   stage's own height times the file's shape — capped at the room beside the rail,
+   so the rail hangs off the picture's edge and the two are centred together. With
+   no script, or before a file has loaded, the stylesheet's `flex:1` still gives
+   the old layout, and a photograph is never made smaller than the window allows:
+   the fitted width is the smaller of what the picture wants and what is there.
+
+   lbStageWidth() is the whole of that arithmetic and nothing else may call it:
+   tools/test-gallery-viewer.js RUNS it, because the mistake to guard against is
+   reading the file's PIXEL SIZE where its SHAPE was meant — a 240x360 file and a
+   2400x3600 one of the same picture must land in the same stage. */
+function lbStageWidth(photoW, photoH, stageH, roomForPhoto) {
+    if (!(photoW > 0) || !(photoH > 0) || !(stageH > 0) || !(roomForPhoto > 0)) return roomForPhoto;
+    var drawn = stageH * (photoW / photoH);
+    if (!isFinite(drawn) || drawn <= 0) return roomForPhoto;
+    return Math.max(1, Math.min(Math.round(drawn), roomForPhoto));
+}
+function lbFitStage() {
+    var stage = $('lb-stage'), img = $('lb-img'), main = stage ? stage.parentElement : null;
+    if (!stage || !img || !main) return;
+    var rail = $('lb-film');
+    var pad = 12;                                  /* .lb-stage's own 6px on each side */
+    var room = main.clientWidth - (rail ? rail.offsetWidth : 0) - pad;
+    if (room <= 0 || !stage.clientHeight) return;  /* the lightbox is not on screen yet */
+    stage.style.flex = '0 0 auto';
+    stage.style.width = (lbStageWidth(img.naturalWidth, img.naturalHeight, stage.clientHeight, room) + pad) + 'px';
+}
+window.addEventListener('resize', function () { lbFitStage(); });
+
 function applyLb() {
     if (!lbOrder.length) { currentLbIdx = 0; return; }
     var x = lbOrder[currentLbIdx];
@@ -1172,10 +1477,11 @@ function applyLb() {
     var p = x.p, img = $('lb-img'), url = pUrl(p);
     if (img.getAttribute('src') !== url) {
         img.classList.remove('lb-ready');
-        img.onload = function () { img.classList.add('lb-ready'); };
+        img.onload = function () { img.classList.add('lb-ready'); lbFitStage(); };
         img.src = url;
         img.alt = p.filename || 'Photo';
     }
+    lbFitStage();
     var totalStr = String(lbOrder.length);
     $('lb-counter').textContent = String(currentLbIdx + 1).padStart(totalStr.length, '0') + ' / ' + totalStr;
     if (lbPicksOnly) $('lb-counter').textContent += ' \u00b7 ' + lbOnlyNoun();
@@ -1197,7 +1503,7 @@ function preloadLbNeighbors() {
 }
 function syncLbChrome() {
     var c = lbPickedCount();
-    var d = isDeliv();
+    var d = canKeep();
     var sb = $('lb-save-btn'), sa = $('lb-save-all-btn'), fin = $('lb-finalise-btn');
     var showSb = d;
     var showSa = d && c > 0;
@@ -1307,11 +1613,11 @@ function lbFeedback(msg) {
     lbFbTimer = setTimeout(function () { f.classList.remove('show'); }, 1400);
 }
 function lbAddMsg() {
-    if (isDeliv()) return '<b>Kept</b> \u2014 ready to download later';
+    if (canKeep()) return '<b>Kept</b> \u2014 ready to download later';
     return '<b>Picked</b> \u2014 tap the photo again to undo';
 }
 function lbUnstarMsg() {
-    if (isDeliv()) return 'Removed from your keeps';
+    if (canKeep()) return 'Removed from your keeps';
     return 'Removed from your picks';
 }
 function starFx(x, y, on, id) {
@@ -1342,6 +1648,7 @@ function tapStar(x, y) {
 /* ---------- pre-warm ---------- */
 function prewarmLb() {
     if (!photos.length) return;
+    lbSet = photos;
     lbPicksOnly = false;
     rebuildLbOrder();
     if (filmNeedsRebuild()) buildFilmDOM();
@@ -1361,7 +1668,7 @@ function lbGuideIcons() {
 }
 
 function lbGuideContent() {
-    var d = isDeliv();
+    var d = canKeep();
     var pickedNoun = d ? 'kept' : 'picked';
     var picksLabel = d ? 'keeps' : 'picks';
     var steps = [
@@ -1579,7 +1886,7 @@ async function downloadSingle(p) {
     } catch (e) { console.error('Save failed:', e); toast('Could not download that photo'); }
 }
 var saveSelectedClick = async function () {
-    var sel = photos.filter(function (p) { return starred[p.id]; });
+    var sel = photos.concat(extras).filter(function (p) { return starred[p.id]; });
     if (!sel.length) return;
     var btn = $('save-selected-btn'); btn.disabled = true; var orig = btn.textContent;
     btn.textContent = 'Preparing\u2026';
@@ -1616,7 +1923,7 @@ async function zipDl(list) {
         var content = await zip.generateAsync({ type: 'blob' });
         $('dl-progress-bar').style.width = '100%';
         var base = (gallery.eventTitle || gallery.clientName || 'gallery').replace(/[^a-z0-9]+/gi, '-').toLowerCase();
-        var zn = base + (isDeliv() ? '-finals' : '-photos') + '.zip';
+        var zn = base + '-' + words().collection + '.zip';
         dlBlob(content, zn);
         $('dl-title').textContent = 'Download ready';
         $('dl-message').textContent = 'Your photos have been saved.';
@@ -1733,11 +2040,15 @@ function renderNotReady() {
     state.style.display = 'flex';
     state.innerHTML = '<div style="max-width:420px;text-align:center;padding:10px">' +
         '<div class="pay-spinner"></div>' +
-        '<h1 class="serif" style="font-size:24px;line-height:1.4;margin:14px 0 10px">Your finals are being edited</h1>' +
-        '<p style="font-size:13px;color:var(--cream-soft);line-height:1.8">Liberty is retouching your picks right now. This link will open automatically once they\u2019re delivered \u2014 usually within a day or two. Questions? ' +
-        '<a href="#" id="nr-wa" style="color:var(--accent)">Message us on WhatsApp</a>.</p>' +
+        (isShare()
+            ? '<h1 class="serif" style="font-size:24px;line-height:1.4;margin:14px 0 10px">No photos here yet</h1>' +
+              '<p style="font-size:13px;color:var(--cream-soft);line-height:1.8">' + escHtml(G.studio) + ' has not added the photos to this gallery yet. It will open by itself as soon as they do \u2014 nothing to do on your side. Questions? ' +
+              '<a href="#" id="nr-wa" style="color:var(--accent)">Message us on WhatsApp</a>.</p>'
+            : '<h1 class="serif" style="font-size:24px;line-height:1.4;margin:14px 0 10px">Your finals are being edited</h1>' +
+              '<p style="font-size:13px;color:var(--cream-soft);line-height:1.8">Liberty is retouching your picks right now. This link will open automatically once they\u2019re delivered \u2014 usually within a day or two. Questions? ' +
+              '<a href="#" id="nr-wa" style="color:var(--accent)">Message us on WhatsApp</a>.</p>') +
         '</div>';
-    wireWa('nr-wa', 'Hi ' + G.studio + '! How are my edited finals coming along?');
+    wireWa('nr-wa', isShare() ? 'Hi ' + G.studio + '! I opened my gallery link and there are no photos in it yet.' : 'Hi ' + G.studio + '! How are my edited finals coming along?');
 }
 
 function wireWa(id, text) {
@@ -1751,7 +2062,11 @@ function renderLockWall(info) {
     var fee = (typeof info.fee === 'number' && info.fee >= 0) ? info.fee : G.fee;
     var days = (typeof info.extensionDays === 'number' && info.extensionDays > 0) ? info.extensionDays : G.extDays;
     var graceDays = (typeof info.graceDays === 'number' && info.graceDays > 0) ? info.graceDays : G.graceDays;
-    var isProof = info.phase !== 'delivery';
+    /* A lock wall has to describe the window that ended, and there are three
+       kinds of window: a proof gallery's pick deadline, and a download window for
+       a delivery and for a share gallery. */
+    var locked = info.phase === 'delivery' || info.phase === 'share' ? 'download' : 'pick';
+    var isProof = locked === 'pick';
 
     var closeAt = info.closedAt || info.lockedAt || null;
     var closeTs = closeAt ? new Date(String(closeAt).replace(' ', 'T')) : null;
@@ -1771,10 +2086,12 @@ function renderLockWall(info) {
 
     var lead = isProof
         ? '<p class="lock-lead">The viewing window ended on <strong>' + closedText + '</strong>. Your photos and every pick you made are safe \u2014 nothing has been removed.</p>'
-        : '<p class="lock-lead">The download window ended on <strong>' + closedText + '</strong>. Your finals are safe \u2014 nothing has been removed.</p>';
+        : (locked === 'download' && info.phase === 'share'
+            ? '<p class="lock-lead">The download window ended on <strong>' + closedText + '</strong>. Your photos are safe \u2014 nothing has been removed.</p>'
+            : '<p class="lock-lead">The download window ended on <strong>' + closedText + '</strong>. Your finals are safe \u2014 nothing has been removed.</p>');
     var perks =
         '<div class="lock-perk"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>Instant access \u2014 reopens the moment payment clears</span></div>' +
-        '<div class="lock-perk"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>Your ' + (isProof ? 'selections' : 'finals') + ' are preserved</span></div>' +
+        '<div class="lock-perk"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>Your ' + (isProof ? 'selections' : (info.phase === 'share' ? 'photos' : 'finals')) + ' are preserved</span></div>' +
         '<div class="lock-perk"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg><span>' + days + ' more day' + (days === 1 ? '' : 's') + ' to ' + (isProof ? 'view and pick' : 'view and download') + '</span></div>';
 
     var scr = $('state-screen');
@@ -1822,7 +2139,7 @@ function paintExpiry() {
     var left = daysUntil(gallery.expiresAt);
     var ce = $('cover-expiry'), he = $('header-expiry');
     if (left === null) { ce.textContent = ''; he.textContent = ''; return; }
-    var actionWord = isDeliv() ? 'Download window' : 'Pick deadline';
+    var actionWord = canKeep() ? 'Download window' : 'Pick deadline';
     if (left <= 0) { ce.textContent = actionWord + ' ended'; he.textContent = 'Locked'; }
     else {
         ce.textContent = actionWord + ' \u00b7 ' + left + ' day' + (left === 1 ? '' : 's') + ' left';
@@ -1834,7 +2151,7 @@ function paintExpiry() {
     if (left > 0 && left <= 3 && !dismissed) {
         var end = new Date(String(gallery.expiresAt).replace(' ', 'T'));
         var endText = !isNaN(end.getTime()) ? end.toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' }) : '';
-        $('expiry-banner-text').innerHTML = '<strong>Available for ' + (left === 1 ? '1 more day' : left + ' more days') + (endText ? ' \u00b7 ends ' + endText : '') + '.</strong> ' + (isDeliv() ? 'Keep downloading' : 'Keep your picks open') + ' for ' + G.extDays + ' more day' + (G.extDays === 1 ? '' : 's') + ' with one small payment.';
+        $('expiry-banner-text').innerHTML = '<strong>Available for ' + (left === 1 ? '1 more day' : left + ' more days') + (endText ? ' \u00b7 ends ' + endText : '') + '.</strong> ' + (canKeep() ? 'Keep downloading' : 'Keep your picks open') + ' for ' + G.extDays + ' more day' + (G.extDays === 1 ? '' : 's') + ' with one small payment.';
         var payUrl = 'pay/index.html?type=gallery&amount=' + G.fee + '&gallery=' + encodeURIComponent(token) +
             '&name=' + encodeURIComponent(gallery.clientName || '') +
             '&days=' + G.extDays + '&return=' + encodeURIComponent(window.location.href);
