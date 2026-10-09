@@ -41,18 +41,50 @@
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-        font-family: 'Poppins', sans-serif; background: var(--bg); color: var(--text);
+        font-family: 'Poppins', sans-serif; color: var(--text);
         min-height: 100vh; min-height: 100svh;
         display: flex; flex-direction: column; align-items: center;
-        padding: 48px 20px 40px; -webkit-font-smoothing: antialiased;
+        /* 48px of empty air above the greeting was where the Abuja stamp now
+           stands, so the greeting and every door under it kept the place they
+           already had. See the note over the Day / Night styles. */
+        padding: 20px 20px 40px; -webkit-font-smoothing: antialiased;
         opacity: 0; animation: fade-in 0.6s ease 0.05s forwards;
+
+        /* THE MURAL IS PAINTED ON THE BODY, not on the page's own 420px column,
+           because it is the one part of this that has to reach the edges of the
+           window: a drawing that stopped at the column would draw the column's
+           outline and put the illustration back inside a box. The body is also
+           the mural's POSITIONING CONTEXT, which is what lets the layer below be
+           as tall as the page rather than as tall as the window.
+
+           The wash is the LIGHT the mural is drawn in — one soft rise from above
+           the top of the page that has spent itself by the time the city arrives
+           at the foot of it — and it is an image layer OVER the page's own --bg
+           rather than a replacement for it. The ground a visitor reads is still
+           this page's ground, one tint deep, which is what keeps the greeting,
+           the cards and the footer the contrast they already had.
+
+           ONE LIGHT, NOT TWO. This was two radial gradients, each parked over a
+           top corner, and two is what a visitor sees: two smudges that clearly
+           belong to whatever put them there. One light falling from above and
+           gone by the middle of the page is a room rather than an effect. */
+        position: relative;
+        background-color: var(--bg);
+        background-image: radial-gradient(132% 46% at 50% -6%, var(--dn-haze), var(--dn-haze-0) 100%);
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
     }
     @keyframes fade-in { to { opacity: 1; } }
 
+    /* THE COLUMN EVERYTHING A VISITOR CAME FOR STANDS IN — and NOT the mural's
+       positioning context, which is the one line of this that carries the whole
+       design. A drawing that has to reach the corners of the window cannot live
+       inside a 420px box, so the mural is hung on the body and is as wide as the
+       window instead. */
     .page { width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: 22px; }
 
-    /* ==== Identity — welcome line only, no logo ==== */
-    .brand { text-align: center; padding: 8px 0 4px; }
+    /* ==== Identity — the welcome line, and the hour it came from ==== */
+    .brand { text-align: center; padding: 0 0 2px; }
     .brand-welcome {
         font-size: 13px; color: var(--text-soft); font-weight: 400; letter-spacing: 0.2px;
         /* Subtle grow-in on first load — starts a touch smaller and
@@ -67,6 +99,349 @@
     @media (prefers-reduced-motion: reduce) {
         .brand-welcome { animation: none; opacity: 1; transform: none; }
     }
+
+    /* ==== Day / Night — the studio's own corner of Abuja, as a mural ==========
+
+       The page had a greeting and nothing of the studio's own place in it. This
+       is that place: a sketched Abuja — Aso Rock and its mast behind the city,
+       the mosque's dome between two minarets, a branch of leaves climbing the
+       left edge — drawn ONCE and lit TWICE, the way the reference sheet puts one
+       drawing under a sun and under a crescent moon.
+
+       IT IS A MURAL, NOT A PANEL. The first version of this stood in the identity
+       header and read as a picture above a links page: two designs in one column.
+       The second laid the same drawing into the top of the page as a shallow
+       horizon band, and that was worse in a quieter way — a strip of dense
+       linework standing exactly where the greeting stands is a strip nobody
+       asked for, and the page read as a page with a drawing added to it. So it is
+       neither. The drawing is spread across the WHOLE page and nearly all of it
+       is at the page's EDGES — the weather across the top and to the right, the
+       city along the foot, the plant up the left — with the middle of the page
+       left empty for the one thing a visitor came for. Corners and edges are
+       where a mural lives, and it is the reason this one reads as the page's own
+       ground rather than as something laid over it.
+
+       A THIRD OF THE MARKS, OVER FOUR TIMES THE DISTANCE. The band carried
+       nineteen buildings, nine leaves, twenty-one stars and twenty-two lit
+       windows inside a 420-unit strip, which is a drawing dense enough to be the
+       SUBJECT of the page. The mural carries a third of that spread from the top
+       of the window to the bottom of the page. Cutting the count is only half of
+       it: a mark is quiet because it is far from the next mark, so the same
+       drawing stretched over four times the area is a different object rather
+       than a smaller version of the same one. That is what tools/test-links-day-
+       night.js now counts — the marks and the distance between them — because
+       "minimal" is the one property here that a later edit can quietly undo.
+
+       WHICH OF THE TWO LIGHTS A VISITOR SEES IS NOT A PREFERENCE, IT IS THE HOUR.
+       The reference shows both sides so the two can be judged together; on a page
+       a visitor gets the one that is true where the studio is, and the head script
+       decides that from Abuja's own clock. The hour decides the SKY and nothing
+       else — the sun, the crescent, the stars, the windows that are lit. THE
+       LIGHT AND THE INK FOLLOW THE VISITOR'S COLOUR SCHEME INSTEAD, and that
+       split is the point rather than a compromise: a phone in light mode cannot
+       have its background turned to charcoal because it is late in Lagos, or the
+       cards, the assistant's sheet and the greeting would all be light ink on a
+       light surface. Two systems, two questions — "what hour is it where the
+       studio is" and "what surface is this visitor reading" — and the page holds
+       up in all four of the states they can be in together.
+
+       THE INK IS FAINT ON PURPOSE, AND IT IS ONE COLOUR. Every mark on the page
+       is `currentColor` from a single token, so the mural is drawn with one pen
+       and cannot drift into being several drawings; the token is a little over a
+       quarter of the way from the page's own text colour, the strongest a line
+       can be and still read as a place the page IS rather than as something
+       printed on it. The wash under it is MEASURED, not judged: the greeting is
+       `--text-soft`, the least contrasty ink this page has, and it sits in the
+       thickest part of the light, so tools/test-links-day-night.js computes all
+       four states and fails if a later edit buys a prettier wash with the
+       legibility of the page's own words. The wash also ends in its OWN colour at
+       zero alpha rather than in `transparent`, so a fade cannot pass through grey
+       on the way out.
+
+       IT COSTS THE PAGE NO HEIGHT, TAKES NO TAP, AND HAS NO OUTER EDGE. It is
+       absolute and it spans the whole page, so it cannot push a door down at any
+       width; it refuses pointer events, so a drawing that lies over a door cannot
+       swallow the tap that door was for; and because the city stands ON the
+       page's own bottom edge and runs off both sides, there is no edge of the
+       drawing anywhere for the eye to find. That last one is why the mask this
+       used to carry is gone: a mask was dissolving a bottom edge that no longer
+       exists, and a rule that is doing nothing is a rule that will be believed.
+
+       THE PICTURE IS INLINE SVG, so it is one request fewer than an image file
+       and cannot 404 in a cache. It is in THREE PIECES rather than one because
+       the three do not share a scale: the city is as wide as the window and
+       scales with its width, the sky is one wide field above it, and the plant is
+       sized against the page's HEIGHT because up is the direction it grows in. A
+       single box holding all three could only be right at one window size — it
+       would either letterbox the plant or stretch the city — so each is its own
+       inline drawing at its own scale, each hung on the edge it belongs to. */
+    /* THE TOKENS LIVE ON THE ROOT, not on the mural, because TWO surfaces read
+       them: the body (the light the mural is drawn in) and the mural (its pen).
+       The wash is named twice — its colour, and that same colour at zero alpha —
+       so a fade can end in its own ink at nothing rather than in `transparent`. */
+    :root {
+        --dn-haze: rgba(226,206,166,.10);  --dn-haze-0: rgba(226,206,166,0);
+        --dn-ink: rgba(41,37,30,.28);
+        --dn-star: rgba(41,37,30,.38);
+        /* THE LAMPS ARE NOT LIT ON PAPER. This was `#b0803a` — an amber lamp on
+           white paper, which is a window nobody has ever seen from a street in
+           daylight. On a light surface a window seen from outside is a dark
+           OPENING, so on paper it is the same ink family as the rest of this pen
+           at 42%. The amber lamp still exists, further down, where a lit window
+           belongs: on a dark surface. */
+        --dn-lit: rgba(41,37,30,.42);
+    }
+    /* The same light after dark: cooler, and no deeper. Selected off the document
+       element, which the head script stamps before any of this is parsed — so
+       there is no first frame in which the wrong side is on screen. */
+    html[data-abj="night"] {
+        --dn-haze: rgba(174,186,208,.10);  --dn-haze-0: rgba(174,186,208,0);
+    }
+    /* ON A DARK SURFACE, AND ONLY THERE, the pen is light — the reference sheet's
+       own choice on its right-hand panel. This is also where the two systems meet,
+       so it is written down: the light still answers to the VISITOR'S scheme
+       (these two blocks), the sky still answers to ABUJA's hour
+       (`html[data-abj="night"]` above and below), and the ink answers to the
+       scheme because it is ink ON that scheme's paper. */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --dn-haze: rgba(226,186,118,.11);  --dn-haze-0: rgba(226,186,118,0);
+            --dn-ink: rgba(240,234,221,.30);
+            --dn-star: rgba(240,234,221,.52);
+            --dn-lit: #e8b96b;
+        }
+        html[data-abj="night"] {
+            --dn-haze: rgba(126,140,182,.12);  --dn-haze-0: rgba(126,140,182,0);
+        }
+        /* The deep field, and the streak, belong to this block and no other: a
+           light-mode visitor at midnight gets the quiet night, a dark-mode
+           visitor at midnight gets all of it.
+
+           SELECTED ON `html` RATHER THAN ON THE CLASS ALONE, which is not
+           decoration. This block is written above the mural's own rules, and a
+           media query is not a cascade layer — it carries no weight of its own,
+           so a bare `.dn-deep` here and a bare `.dn-deep` down there are the same
+           rule at the same specificity and the LATER one wins. The first draft
+           of this did exactly that and put the deep sky behind an
+           `opacity: 0` that never got overruled. One extra element in the
+           selector settles it in the direction the cascade is already going. */
+        html .dn-deep { opacity: 1; }
+    }
+
+    /* THE MURAL, AND IT IS AS BIG AS THE PAGE. `inset: 0` inside a body that is
+       its own positioning context means the layer is exactly as wide as the
+       window and exactly as tall as the page is long — so the city keeps its
+       place at the foot of the page whether a visitor is looking at it or not,
+       and a visitor who scrolls has a page under them rather than a window with
+       a picture in it. */
+    .dn {
+        position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 0; overflow: hidden; pointer-events: none;
+        color: var(--dn-ink);
+    }
+    /* AND EVERYTHING A VISITOR CAME FOR STANDS ABOVE THE MURAL. The layer is one
+       z step behind the three things that were already on this page. */
+    .page > .brand, .page > .link-list, .page > .links-footer { position: relative; z-index: 1; }
+    /* THE THREE PIECES, EACH HUNG ON THE EDGE IT BELONGS TO.
+
+       THE SKY is as wide as the window and as tall as it is wide: one band of
+       weather across the top of the page holding the sun or the crescent, six
+       stars and the one cloud, with no horizon in it anywhere — that is the
+       whole difference between weather and a picture.
+
+       THE CITY runs the full width along the FOOT of the page, off both of its
+       edges, so there is no end of the city to find and no bottom edge to the
+       drawing either. It is the widest thing here and the lowest, which is what
+       keeps it out of the way of the words that stand over it.
+
+       AND IT HAS A FLOOR, WHICH IS THE ONE NUMBER IN THIS THAT IS A JUDGEMENT.
+       Below about 580px the box stops shrinking with the window: a phone whose
+       city scaled all the way down with it would carry a 12px skyline in a
+       letterbox, which is not a small mural — it is a mural that has failed. So
+       the box keeps a 580px floor, hangs off both edges instead, and the drawing
+       simply arrives at a size you can read. It is one number rather than a
+       breakpoint on purpose: a floor is continuous and a breakpoint jumps, and a
+       skyline that pops 40% taller when a window crosses 700px is a skyline
+       attached to the window rather than to the page.
+
+       THE PLANT is tied to the page's HEIGHT and grows out of the same ground the
+       city stands on, because up is the direction a plant grows in — sizing it by
+       width, as the other two are, would give a 2560px window a shrub and a phone
+       a sapling, and both would be wrong in different directions. */
+    .dn-sky, .dn-city, .dn-branch { display: block; }
+    .dn-sky { position: absolute; top: 0; left: 0; right: 0; width: 100%; height: auto; }
+    .dn-city { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: max(100%, 580px); height: auto; }
+    .dn-branch { position: absolute; bottom: 0; left: 0; height: 36%; aspect-ratio: 88 / 300; }
+    /* ON A SHORT WINDOW THERE IS NO COLUMN OF EMPTY PAPER LEFT FOR A PLANT, and
+       one tall enough to be a plant would climb straight through the words: an
+       844px page gives it 540px of nothing to stand in, and a 568px page gives it
+       none at all. So on a short window it is cut back to a sprig standing on the
+       city's own ground — small, low, and out of the way of the footer — rather
+       than a full branch with its leaves through the contact row. Measured on the
+       VIEWPORT's height, because that is the thing that has run out. */
+    @media (max-height: 700px) { .dn-branch { height: 20%; } }
+    .dn-base, .dn-fore, .dn-day, .dn-night { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
+    /* ONE PLACE AT TWO HOURS, AND THE CHANGE IS DRAWN RATHER THAN SWAPPED.
+
+       It was a swap: the sun's group was taken out of the page and the moon's
+       put in, which is the one way of drawing a transition that cannot have one
+       — `display: none` is not something that can be half-way. The two sides are
+       now the SAME drawing in the SAME place, cross-faded on OPACITY, and what
+       holds them together is the disc: the moon's outer arc IS the sun's own
+       circle, at the sun's own centre and radius (see the sky's markup below).
+       At dusk a visitor sees the disc lose its right edge and the rays draw back
+       into it, rather than one picture being replaced by another.
+
+       NOTHING HERE MOVES A BOX, so nothing below it can reflow — the same rule
+       the three movements further down are written under. And because the
+       attribute is set in the head, before the first paint, there is no first
+       frame showing the wrong side and no transition running on load. */
+    .dn-day, .dn-night { transition: opacity .8s ease; }
+    .dn-day { opacity: 1; }
+    .dn-night { opacity: 0; }
+    html[data-abj="night"] .dn-day { opacity: 0; }
+    html[data-abj="night"] .dn-night { opacity: 1; }
+    /* AND THE RAYS GO IN RATHER THAN OUT: they turn a fifth of a circle and shrink
+       towards the disc they came from, so the sun does not blink out of a sky it
+       is still in. Written on a wrapper and not on `.dn-rays` itself, because
+       that element is already turning under an animation, and an animation
+       outranks a transition — a rule written there would never once run. */
+    .dn-rays-wrap { transition: transform .9s ease, opacity .8s ease; transform-box: view-box; transform-origin: 523px 105px; }
+    html[data-abj="night"] .dn-rays-wrap { opacity: 0; transform: rotate(72deg) scale(.55); }
+    /* THE MARKS THAT ARE FILLED rather than drawn — the six stars, and the windows
+       a building keeps lit after dark. Given by class and not by attribute,
+       because a presentation attribute cannot read a custom property. */
+    .dn-star { fill: var(--dn-star); stroke: none; }
+    .dn-lit { fill: var(--dn-lit); stroke: none; }
+    /* AND WHAT A DARK SURFACE ADDS TO THE SAME NIGHT, which is the one place the
+       visitor's scheme is allowed to change more than the ink.
+
+       The hour still decides WHETHER it is night — the sun and the moon are
+       Abuja's and nobody else's — but the mode decides HOW MUCH NIGHT THERE IS.
+       On paper the after-dark sky is the reference sheet's quiet one: a handful
+       of stars in ink. On a dark surface it opens up into a deep field with a
+       shooting star through it, which is the version of the drawing a visitor
+       holding a phone in bed is actually looking at.
+
+       IT IS ONE GROUP OF EXTRA MARKS, not a second sky. Written as the opacity
+       of a parent rather than as a rule on each star, because a child's own
+       animation outranks a declaration: a twinkle written on a star that light
+       mode had hidden would have twinkled it straight back into view. Nothing
+       animates through a parent at zero. */
+    .dn-deep { opacity: 0; transition: opacity .8s ease; }
+    .dn-shoot { opacity: 0; }
+
+    /* ==== The stamp — where the greeting is from, and at what hour ============
+
+       ONE LINE, ABOVE THE GREETING, and it is the only part of this that costs
+       the page any height. It is here rather than floating over the sky because
+       it carries INFORMATION — the hour in Abuja, in real text, for anybody who
+       cannot see the sky at all — and information does not get to sit behind the
+       content. Its 30px came out of the 48px of empty air the greeting used to
+       float on, which is why the doors below it are exactly where they were.
+
+       It is written in the PAGE's own ink — --text for the hour, --text-soft for
+       the place, --accent for the sun or the moon — rather than in a palette of
+       its own, because the stamp belongs to the page and only the sky behind it
+       belongs to Abuja. There is nothing else to it: see the note below for the
+       box it used to be, and what took the box's place in the line's height. */
+    .dn-pill-row { display: flex; align-items: center; justify-content: center; gap: 9px; margin: 0 0 8px; }
+    /* NO BOX, AND NOTHING BESIDE IT. The stamp was a bordered pill with a short
+       dash drawn out of each side, and the owner's note was that the numbers and
+       the letters should sit on the page with nothing around them: the border,
+       the fill, the radius and the two dashes are gone, and the hour and the
+       place are now set on the page's own air, like the greeting under them.
+
+       WHAT IS LEFT IS THE LINE'S OWN HEIGHT, and it is the one number here that
+       is arithmetic rather than taste. The 2px the border used to add is in the
+       padding instead — 6px against the old 5px plus a 1px border — so the stamp
+       is exactly as tall as it was and every door below it is still where it
+       was. A stamp that is trimmed has to pay for it out of the space above it,
+       and this one pays out of its own. */
+    .dn-pill {
+        display: inline-flex; align-items: center; gap: 8px;
+        padding: 6px 0; color: var(--text);
+    }
+    .dn-icon { flex: 0 0 auto; width: 15px; height: 15px; color: var(--accent); display: grid; place-items: center; }
+    .dn-icon svg { display: block; width: 100%; height: 100%; grid-area: 1 / 1; transition: opacity .8s ease; }
+    /* Both icons are IN the markup and one of them is faded out, rather than the
+       script putting the right one in: a stamp that has to wait for a script to
+       have a sun would have no sun at all with scripts off. They are STACKED in
+       the one 15px box — two grid items in one cell — because two icons in a row
+       would be a 30px stamp; and the pair is chosen by the same `data-abj` the
+       sky is, so the icon and the sky cannot disagree. Being in the same cell is
+       also what makes them dissolve into each other rather than cut, which is
+       the same gesture the sky makes. The selectors are written as
+       `.dn-icon .dn-day-icon` on purpose, because `.dn-icon svg` is more
+       specific than a bare class and the first version of this shipped both
+       icons at once. */
+    .dn-icon .dn-night-icon { opacity: 0; }
+    html[data-abj="night"] .dn-icon .dn-day-icon { opacity: 0; }
+    html[data-abj="night"] .dn-icon .dn-night-icon { opacity: 1; }
+    .dn-clock { font-size: 12px; font-weight: 500; letter-spacing: .2px; font-variant-numeric: tabular-nums; }
+    /* Until the clock has been read there is no clock, and an empty element is
+       not a placeholder — it is taken out of the layout rather than shown as a
+       dash, and the separator before the place goes with it. With no script at
+       all the stamp reads "GMT+1 · Abuja", which is the half of it that is true
+       every hour of the day. */
+    .dn-clock:empty { display: none; }
+    .dn-place { font-size: 10.5px; letter-spacing: .4px; color: var(--text-soft); }
+    .dn-clock:not(:empty) + .dn-place::before { content: "\00b7"; margin-right: 6px; opacity: .55; }
+
+    /* THE THREE MOVEMENTS, AND WHY THEY ARE THESE THREE. All are the same kind
+       of thing: a change of presence, never a journey across the screen. A
+       reveal that MOVED would reflow what stands over it on the frame a phone
+       can least afford, so the stars breathe on opacity, the sun's rays turn on
+       a transform, and nothing here touches a box at all. The sun turns once
+       every four minutes and the clouds cross seven pixels in nearly two — slow
+       enough to be felt rather than watched, which is the only kind of moving a
+       page that already has a visitor's attention should do.
+
+       THE FOURTH IS NOT HERE, because it is not a movement but a change of
+       hour: the sun becoming the moon, up at the top of this block. It is
+       spelled out there rather than looped in here, because a page that ran the
+       sunset on a timer would be performing dusk rather than reading it — this
+       page's dusk happens when Abuja's does, once, and then it stays. */
+    @media (prefers-reduced-motion: no-preference) {
+        .dn-tw { animation: dn-twinkle 6.4s ease-in-out infinite; }
+        .dn-tw:nth-of-type(3n+1) { animation-delay: -1.6s; }
+        .dn-tw:nth-of-type(3n+2) { animation-delay: -3.4s; }
+        .dn-tw:nth-of-type(3n)   { animation-delay: -5.1s; }
+        .dn-rays { animation: dn-turn 240s linear infinite; transform-box: view-box; transform-origin: 523px 105px; }
+        .dn-clouds { animation: dn-drift 110s ease-in-out infinite alternate; }
+        /* THE ONE MOVEMENT THAT IS NOT A DRIFT. The streak crosses the sky in
+           under two seconds and then is gone for sixteen, which is why its
+           keyframes spend eighty-five percent of the cycle doing nothing: a
+           shooting star that was always on screen would be a scratch on the
+           page. It travels by translate and fades by opacity and touches
+           nothing else, the same rule the other three movements are under, and
+           it is written here rather than in the base styles because it is the
+           one thing on this page that a visitor who asked for less motion
+           should simply never see — at rest it is `opacity: 0`, so it is absent
+           under reduced motion rather than frozen mid-air. */
+        .dn-shoot { animation: dn-shoot 18s ease-in 3.5s infinite; }
+    }
+    @keyframes dn-twinkle { 0%, 100% { opacity: .38; } 50% { opacity: 1; } }
+    @keyframes dn-turn { to { transform: rotate(360deg); } }
+    /* THE BANK SWELLS ACROSS THE LIGHT AND BACK AGAIN, and the one thing it may
+       never do is swallow it. Seven units is small against a bank that is 160
+       units wide and 48 tall — the crown moves about two units either way, so
+       the light keeps a clear head at both ends of the travel. That is not a
+       hope, it is the number the guard checks twice: the crown is read at the
+       disc's own x AND at seven units to its right, which is where the bank's
+       ink sits when the drift is at its far end. */
+    @keyframes dn-drift { to { transform: translateX(-7px); } }
+    /* AND THE STREAK, WHICH IS THE ONLY THING HERE THAT GOES SOMEWHERE ONCE.
+       Eight and a half percent of eighteen seconds is the 1.5s of its flight;
+       the rest of the cycle it sits where it landed, invisible. Two points of
+       note for whoever moves it: the translate is written as its two components
+       because a length in an SVG transform is a length in USER UNITS, not in
+       pixels of the page — and the route it takes is the one band of this sky
+       that is empty at every window size, from the lower left up past       the plant's own side of the page, clear of the stamp, the greeting and the
+       light — and it starts on y=134 rather than on the 150 the rest of the
+       drawing would have allowed, because anything lower puts the tail's tip
+       behind the top card at 320px for the half-second it is fading in. */
+    @keyframes dn-shoot { 0% { opacity: 0; transform: translate(0, 0); } 0.8% { opacity: .9; } 6.4% { opacity: .8; } 8.5% { opacity: 0; transform: translate(144px, -132px); } 100% { opacity: 0; transform: translate(144px, -132px); } }
 
     /* ==== Link cards — one uniform style, no colored "primary" ====
 
@@ -104,8 +479,15 @@
        room instead: this is the page people open from a bio link, one-handed,
        and the longest description on it is the one that wraps. */
     @media (max-width: 380px) {
-        body { padding: 32px 16px 32px; }
+        body { padding: 10px 16px 32px; }
         .page { gap: 18px; }
+        /* A 360px phone gets a SMALLER stamp rather than a lower one. The air
+           above it is the illustration now, and the greeting under it keeps the
+           line it has always had: the stamp is trimmed by 2px here so the trade
+           still comes out even at this width. */
+        .dn-pill-row { margin-bottom: 6px; }
+        .dn-pill { padding: 5px 0; }
+        .dn-icon { width: 13px; height: 13px; }
     }
     .link-icon { flex-shrink: 0; width: 22px; height: 22px; color: var(--accent); display: flex; align-items: center; justify-content: center; }
     .link-icon svg { width: 100%; height: 100%; stroke-width: 1.6; }
@@ -139,7 +521,14 @@
     .link-text { flex: 1; min-width: 0; }
     .link-title { font-weight: 600; font-size: 13.5px; letter-spacing: 0.2px; }
     .link-desc { font-size: 11.5px; color: var(--text-soft); margin-top: 3px; }
-    .link-arrow { color: var(--text-soft); font-size: 16px; opacity: 0.45; flex-shrink: 0; }
+    /* NO POINTER, ON ANY OF THE DOORS. Each card used to end in a `›` pointing
+       right — this page's own, and the assistant's, which is drawn in
+       assistant.js — and the owner's note was that a card is a card and needs no
+       pointer to say it can be tapped: the whole card is the target, and its
+       border is what answers a hover or a Tab. Both the spans and the rule that
+       styled them are gone rather than hidden, and the widget's copy of the mark
+       went with them, so a later edit cannot find one of the three still here
+       and conclude the other two were an accident. */
 
     /* ==== Footer — contact and reviews, AS ONE QUIET ROW ================
 
@@ -172,6 +561,10 @@
     @media (prefers-reduced-motion: reduce) {
         body { animation: none; opacity: 1; }
         .link-card { transition: none; }
+        /* The sun becomes the moon in one frame rather than over 800ms, which is
+           what asking for less motion asks for. Both states are still drawn, so
+           what arrives is the right picture — only without the journey. */
+        .dn-day, .dn-night, .dn-deep, .dn-rays-wrap, .dn-icon svg { transition: none; }
     }
 </style>
     <link rel="canonical" href="https://libertymusa.com/links">
@@ -190,12 +583,120 @@
     <meta name="twitter:image" content="https://libertymusa.com/og-image.jpg">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=31eb723a6e">
     <link rel="icon" href="/favicon.ico?v=6c2c1077ad" sizes="32x32">
+
+    <!-- THE ONE THING THIS PAGE HAS TO ASK, AND IT ASKS IT BEFORE THE PAGE PAINTS.
+
+         The page is drawn in one place and two lights — the same Abuja, drawn at
+         midday and after dark — and a visitor should be shown the one that is
+         true where the studio is, not whichever one a designer last looked at. So
+         the page reads Abuja's own clock and stamps the answer onto the document
+         element, which the stylesheet has already been written to expect. The
+         hour decides the SKY (the sun, the crescent, the stars, the windows that
+         are lit); the visitor's own colour scheme decides the surface, and the
+         note over the Day / Night styles is where that split is argued.
+
+         WHY IT IS IN THE HEAD AND NOT AT THE FOOT OF THE BODY. An attribute set
+         after the sky had painted would show a visitor a moment of the wrong day
+         — literally: the sun would be up and then the moon would arrive over it.
+         A mark that is briefly wrong is worse than one that arrives a moment
+         late, the same reason the assistant's face is left empty until the
+         studio's chosen look is known.
+
+         IT OPENS NOTHING. No fetch, no request, no storage, not even a cookie:
+         it reads a clock and sets one attribute. The zone is asked for by name
+         (Africa/Lagos), and Nigeria has kept UTC+1 without interruption, so the
+         arithmetic fallback further down is not a guess at an offset — it IS the
+         offset, every day of the year, which is why no date is needed to work it
+         out. If the script never runs at all the page is simply the daytime
+         side, which is what the markup was written as. -->
+    <script>
+    (function () {
+        var SUN_UP = 6, SUN_DOWN = 18;   /* the hours the sun is up where the studio is */
+
+        function abuja() {
+            /* The browser's own knowledge of the zone where it has it, so the
+               number and the name of the zone cannot disagree. */
+            try {
+                var parts = new Intl.DateTimeFormat('en-GB', {
+                    timeZone: 'Africa/Lagos', hour: 'numeric', minute: '2-digit', hour12: true
+                }).formatToParts(new Date()), h = 12, m = '00', pm = false, i, p;
+                for (i = 0; i < parts.length; i++) {
+                    p = parts[i];
+                    if (p.type === 'hour') h = parseInt(p.value, 10);
+                    else if (p.type === 'minute') m = p.value;
+                    else if (p.type === 'dayPeriod') pm = /^p/i.test(p.value);
+                }
+                return {
+                    hour: (h % 12) + (pm ? 12 : 0),
+                    label: (h % 12 === 0 ? 12 : h % 12) + ':' + m + ' ' + (pm ? 'PM' : 'AM')
+                };
+            } catch (e) {
+                var d = new Date(Date.now() + 3600000), hh = d.getUTCHours(), mm = d.getUTCMinutes();
+                return {
+                    hour: hh,
+                    label: (hh % 12 === 0 ? 12 : hh % 12) + ':' + (mm < 10 ? '0' + mm : mm) + ' ' + (hh < 12 ? 'AM' : 'PM')
+                };
+            }
+        }
+
+        function paint() {
+            var t = abuja();
+            document.documentElement.setAttribute('data-abj', (t.hour >= SUN_UP && t.hour < SUN_DOWN) ? 'day' : 'night');
+            var el = document.querySelector('[data-dn-clock]');
+            if (el) el.textContent = t.label;
+        }
+
+        paint();
+        if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', paint);
+        else paint();
+
+        /* A visitor who leaves the page open past dusk should not be left looking
+           at the afternoon, so the answer is re-read once a minute — the smallest
+           interval that can never be wrong by more than the minute it waits. */
+        try { setInterval(paint, 60000); } catch (e) {}
+    })();
+    </script>
 </head>
 <body>
 
 <main class="page">
-    <!-- Identity: just a warm welcome line — logo intentionally omitted -->
+    <!-- Identity: a welcome line, and the stamp it came from — logo omitted -->
     <header class="brand">
+        <!-- THE STAMP. The greeting below says hello; this says WHERE FROM, and
+             at what hour — Abuja, at the offset the studio keeps all year, with
+             the hour the head script reads from Abuja's own clock.
+
+             IT HAS NO BOX. The hour and the place are set straight onto the page
+             — no border, no fill, and no dashes drawn out of the sides — so what
+             stands above the greeting is a line of text with the sun or the moon
+             at its left, and that is the whole of it. The room it takes up is
+             the line's own height; the note over the Day / night styles says
+             where the 2px of border went when the box did.
+
+             IT IS THE ONLY PART OF THIS FEATURE THAT TAKES UP ANY ROOM, and it
+             stands above the greeting deliberately: the 28px of empty air the
+             greeting used to float on paid for it, so nothing below it moved by
+             more than a pixel.
+
+             The illustration is NOT in here any more. It is the last thing in
+             the page, behind all of this, because it is the page's air rather
+             than a section of it — which is the whole change. What is left in
+             the header is the half of that feature which is information. -->
+        <div class="dn-pill-row">
+            <div class="dn-pill">
+                <span class="dn-icon" aria-hidden="true">
+                    <svg class="dn-day-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+                        <circle cx="12" cy="12" r="4.1"/>
+                        <path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M18.5 5.5l-1.7 1.7M7.2 16.8l-1.7 1.7"/>
+                    </svg>
+                    <svg class="dn-night-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20.2 14.6A8.6 8.6 0 0 1 9.4 3.8A8.6 8.6 0 1 0 20.2 14.6Z"/>
+                    </svg>
+                </span>
+                <span class="dn-clock" data-dn-clock></span>
+                <span class="dn-place">GMT+1 · Abuja</span>
+            </div>
+        </div>
         <p class="brand-welcome">Glad you're here.</p>
     </header>
 
@@ -237,15 +738,50 @@
                 <div class="link-title">The Studio</div>
                 <div class="link-desc">Portraits, families, brands — the work, what's included, and how to book</div>
             </div>
-            <span class="link-arrow">›</span>
         </a>
         <a href="https://libertymusa.com/wedding.html?utm_source=igbio&amp;utm_medium=links&amp;utm_campaign=weddings" class="link-card">
-            <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></div>
+            <!-- A HEART WITH AN ARROW THROUGH IT, and this time it is the reference
+                 sheet's own swash rather than a re-drawing of it. This door has
+                 been through three marks: the icon set's symmetric heart, then a
+                 hand-drawn heart-and-arrow with a filled ribbon and a solid head,
+                 and now the sheet itself, drawn as LINES — the owner scrapped the
+                 filled one and asked for this one instead.
+
+                 WHAT THE SHEET ACTUALLY IS: one weight the whole way along and no
+                 fill anywhere. An OPEN heart whose left lobe ends in a small hook
+                 curling down inside its own cleft, with one short tick set inside
+                 that lobe. A tail whose free end trails away at the lower left,
+                 runs under the heart, crosses its point and climbs into a shaft
+                 that ends in an arrowhead standing up and to the right, a barb on
+                 each side of the tip. Read off the sheet: the lobes are not each
+                 other's mirror — the left is the lower and the broader, the right
+                 rises higher — the cleft sits off the axis, the point is where the
+                 tail crosses it, and the head is the highest ink in the mark.
+
+                 SO IT IS STROKES, NOT A FILL. Filling it would have to invent a
+                 closed heart the reference does not have. The liberties taken are
+                 all about surviving 22px, where the box this draws in gives about
+                 one pixel per unit. WEIGHT: the sheet's own line measures about 0.6
+                 of a unit, which is half a pixel and greys out, so the heart and
+                 the sweep are struck at 1.4 and the barbs and the tick at 1.25.
+                 LENGTH: the tail is cut back by about a sixth of the sheet's width
+                 — its far units are the only ones there are to trade, and they buy
+                 size for the heart and the head, which are the two parts that have
+                 to be read. Between them the heart comes out about eleven pixels
+                 across with a hole through it, which is what an outline of a heart
+                 needs at this size and what the sheet, measured faithfully, does
+                 not have.
+
+                 FIVE STROKES: the heart, the tail-and-shaft that pierces it, the
+                 head's two barbs and the tick. The tail is drawn AFTER the heart,
+                 so where it crosses the point it is the tail that reads on top. -->
+
+            <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M10.5 10.7C10.2 10.3 9.9 9.6 9.6 8.85C8.9 8.6 7.7 8.6 6.5 8.8C5.2 9 4.1 9.2 3.5 9.9C2.8 10.7 2.9 11.7 3.5 12.6C4.1 13.9 5.6 15.2 7.4 15.8C8.2 16 9.5 16.5 10.1 16.8C11 16 11.5 15.3 11.9 14.6C12.6 13.5 13.4 11.7 13.8 10.3C14.1 9.1 13.6 7.8 12.6 7.4C11.7 7.1 10.6 7.8 9.7 8.85" stroke-width="1.4"/><path d="M0.4 18.8C1.2 19 2.4 19 3.6 18.8C4.8 18.6 5.6 18.3 6.8 17.9C7.8 17.6 8.4 17.3 9.4 16.7C10.2 16.1 10.6 15.9 11.4 15.8C12.2 15.7 13.4 16.1 14.2 15.7C15 15.4 15.9 15.1 16.6 14.6C17.5 13.9 18.3 13 19.1 12C20.2 10.4 20.9 8.4 21.7 7.1C22.4 6.1 22.9 5.4 23.4 5" stroke-width="1.4"/><path d="M18.9 8.4C20.5 7.3 22.1 6.2 23.5 5" stroke-width="1.25"/><path d="M23.5 5C23 6.6 23 8.7 23.3 10.3" stroke-width="1.25"/><path d="M5.3 10.3C4.8 10.8 4.7 11.5 5 12.3" stroke-width="1.25"/></svg></div>
+
             <div class="link-text">
                 <div class="link-title">Weddings</div>
                 <div class="link-desc">Beloved Imprint — from the pre-wedding to the first dance</div>
             </div>
-            <span class="link-arrow">›</span>
         </a>
     </nav>
 
@@ -261,7 +797,646 @@
         </nav>
         <div class="footer-copy">Libertypictures © 2026</div>
     </footer>
+
 </main>
+
+<!-- THE PLACE THE GREETING IS FROM — as a mural across the page rather than as a
+     section of it.
+
+     IT STANDS OUTSIDE `<main>` ON PURPOSE. Position, for this layer, is the
+     argument: `.page` is a 420px column, so a drawing that lives inside it can
+     only ever be as wide as the column, and the first two versions of this were
+     both accused — correctly — of being a picture sitting in a menu. Hung on the
+     BODY instead it is as wide as the window and as tall as the page, which is
+     the only way it can reach the corners.
+
+     IT IS STILL THE LAST THING IN THE MARKUP. It is the one part of this page
+     that is decoration and nothing else, so a screen reader reaches the greeting,
+     the assistant's door and every link before it is told about a drawing, and a
+     visitor who never reaches it has lost nothing. It can be last because it is
+     absolutely positioned behind the content, so where it sits in the document
+     has nothing to do with where it sits on the screen.
+
+     IT CANNOT TAKE A TAP. No link, no button, no field; the layer ignores pointer
+     events as well; and it is drawn behind the three things that came before it.
+     A decoration that happens to lie over a door is a decoration that can swallow
+     the tap that door was for.
+
+     WHAT IS DRAWN, AND WHY IT IS THIS LITTLE. Three pieces, each on an edge: the
+     sky across the top (the sun or the crescent over Aso Rock's side of the
+     window, six stars after dark, one slow cloud), the city low along the foot
+     (eight buildings, the mosque's dome between its two minarets, the rock and
+     its mast, two trees, a horizon and two field lines below it), and the plant
+     climbing the left edge (one stem, seven leaves, two fallen). The reference
+     sheet is dense and this is not, on purpose: the sheet is a drawing, and on
+     this page the drawing is the AIR the words stand in.
+
+     The illustration is INLINE SVG, so it is one request fewer than an image file
+     and cannot 404 in a cache. Each piece is marked aria-hidden because the
+     picture is not the information: the information — the hour in Abuja — is the
+     stamp in the header, in real text, where a visitor reaches it first. -->
+<figure class="dn" aria-label="Abuja, in daylight and after dark">
+
+    <!-- THE WEATHER, across the top of the page and off both sides. Nothing in
+         here is anchored to the ground: it is what is over the page rather than
+         what is at the end of it. -->
+    <svg class="dn-sky" viewBox="0 0 600 190" aria-hidden="true" focusable="false">
+        <defs>
+            <!-- ONE STAR, placed six times. A four-point sparkle rather than a
+                 dot: a round dot at a desk-width page is a speck of dust, and
+                 the reference sheet draws its stars as sparkles. -->
+            <path id="dn-spark" d="M0-4.4L.9-1L4.4 0L.9 1L0 4.4L-.9 1L-4.4 0L-.9-1Z"/>
+        </defs>
+        <g class="dn-base">
+            <!-- THE TWO SMALL CLOUDS, and they are FAR FROM THE LIGHT on purpose:
+                 the reference sheet scatters a few of these around a big bank,
+                 and that scattering is the difference between weather and a
+                 prop. One sits over the far left of the window and one over the
+                 right, both of them drawn from the same four-curve puff, and
+                 both of them placed where no stamp and no greeting ever reaches
+                 them — the left one above the left margin, the right one above
+                 the bank's own crown (measured at 320px, where both words and
+                 both clouds are closest together). They are NOT in the drifting
+                 group: they are the far distance, and distance does not move as
+                 fast as the thing in front of it. -->
+            <path d="M30 66C30.17 64.33 31.17 60 33 58C34.83 56 38.33 54.17 41 54C43.67 53.83 46.5 57.5 49 57C51.5 56.5 53.5 51.5 56 51C58.5 50.5 61.67 53.67 64 54C66.33 54.33 68 52.33 70 53C72 53.67 74.67 56.17 76 58C77.33 59.83 78.67 62.43 78 64C77.33 65.57 75.67 66.67 72 67.4C68.33 68.13 61.33 68.33 56 68.4C50.67 68.47 44 67.87 40 67.8C36 67.73 33.67 68.3 32 68C30.33 67.7 29.83 67.67 30 66Z" stroke-width="1.1" opacity=".65"/>
+            <path d="M464 57C464.17 55.33 464.33 51.83 466 50C467.67 48.17 471.33 46.17 474 46C476.67 45.83 479.5 49.5 482 49C484.5 48.5 486.5 43.5 489 43C491.5 42.5 494.67 45.67 497 46C499.33 46.33 501 44.33 503 45C505 45.67 507.67 48.17 509 50C510.33 51.83 511.67 54.43 511 56C510.33 57.57 508.67 58.67 505 59.4C501.33 60.13 494.33 60.33 489 60.4C483.67 60.47 477 59.87 473 59.8C469 59.73 466.5 60.47 465 60C463.5 59.53 463.83 58.67 464 57Z" stroke-width="1.1" opacity=".65"/>
+        </g>
+
+        <!-- DAYLIGHT. THE DISC CIRCLED HERE IS THE ONE LIGHT IN THIS SKY, and it
+             stands over the right-hand side of the window, clear of the stamp and
+             the greeting — so the window a visitor is looking through does not
+             move when the hour does. The sun's disc is drawn ONCE, here, and the
+             moon below is the same circle with a bite out of it: the light is the
+             one thing the two hours share, which is what the dissolve between
+             them turns on. The rays sit in a group of their own so that turning
+             and drawing back are two movements on two elements, and neither has
+             to be written into the other.
+
+             AND THE LIGHT SITS JUST ABOVE THE CLOUD RATHER THAN IN IT. This
+             sky used to bury the sun to its own midpoint: read across the disc's
+             whole width, the bank's crest rose 16.8 units above the disc's LOWER
+             edge, so the light read as weather with a lamp behind it rather than
+             as a sun coming up. Two ways out, and only one of them open — the
+             bank cannot come down (its lowest stroke is at 147.8, which is 79px
+             down a 320px window where the first door begins at 83), so the light
+             goes up instead. The bank is still drawn after BOTH hours and over
+             the foot of the disc, which is what lets the one cloud cross the sun
+             and the crescent alike.
+
+             IT WAS LIFTED AS ONE NUMBER. The disc, the crescent's outer arc, the
+             ray fan and BOTH of the turning points moved 17 units together,
+             which is why the morph below still holds and why nothing else in
+             this sky had to be touched. At rest the disc's lowest ink clears the
+             bank's highest crest under it by 4.2 units, and by 1.1 units at the
+             far end of the seven-unit drift — above the cloud at both ends of
+             the travel, and only just above it at one of them. Those two are read
+             off the flattened curves rather than off the path's own points,
+             which is the second thing this pass fixed: the old check read the
+             control points, and the control points flattered it. And no cloud's
+             ink comes within three pixels of the first card on a 320px window.
+             Those numbers are the guard's, not this comment's.
+
+             THE LIGHT DOES NOT MOVE, AND THAT IS WHAT MAKES IT A MORPH. Both
+             the crown and the crescent are cut from the same circle at 523,105,
+             so the bank can be drawn over the foot of a light that never
+             shifts: at dusk the same disc loses its right edge where the cloud
+             has been hiding it all day. -->
+        <g class="dn-day">
+            <circle cx="523" cy="105" r="13.5" stroke-width="1.25"/>
+            <path d="M518 110C521 107 524 104 527 102M519 113C522 110 525 107 528 105" stroke-width=".7" opacity=".5"/>
+            <!-- TEN RAYS OF UNEVEN LENGTH, and the unevenness is the point. They
+                 were a symmetric eight-ray crown, which is a sun that could have
+                 been set rather than drawn — every ray the same distance out,
+                 every gap the same. On the reference sheet the rays fan: long
+                 ones straight up and short ones near the level, drawn as if by
+                 hand and breaking off where the cloud crosses them.
+
+                 AND THE TWO LOWEST STILL BREAK OFF AT THE CLOUD. When the light
+                 was lifted clear of the bank these two came with it and floated,
+                 which lost the one thing that tied the sun to its weather — so
+                 both were re-aimed DOWNWARD, out of the fan and into the weather,
+                 and their far ends pass under the bank's top curve and are
+                 swallowed by it. What a visitor sees of each is the thirteen
+                 units that stand clear between the disc's own edge and the cloud;
+                 the rest is behind it, and that is the difference between a light
+                 standing over a cloud and a light that belongs to one.
+
+                 THE ARITHMETIC, because this is the kind of edit that looks
+                 harmless and is not. A ray shallow enough to read as one of this
+                 fan — sixteen degrees above the level, where the left-hand one
+                 sat — cannot reach the bank at all: the bank's crest at x=495
+                 falls away faster going left than any ray leaving the disc
+                 descends, so the ray and the weather diverge and the ray floats.
+                 A ray steep enough to reach the bank straight away is the other
+                 failure: at thirty degrees its far end lands twelve units inside
+                 a cloud drawn as an OUTLINE, so the tip is visible poking through
+                 the middle of the weather rather than hidden behind it. Between
+                 those two failures there is a band of a few degrees that does
+                 neither, and this is the middle of it: both rays leave the disc's
+                 edge twenty units out — the radius every ray in the fan starts
+                 from — descend at 19.5 degrees, and end thirty-one units out,
+                 of which three to four units are past the bank's top curve.
+
+                 THE BOUNDS ARE READ OFF THE BANK'S REAL CURVE by the guard, at
+                 both ends of the seven-unit drift and not at the control points:
+                 each far end sits at least half a unit inside the cloud's top ink
+                 (so the tip is covered by the weather's own line rather than
+                 hanging over it), no more than six units inside it (so the tip is
+                 not drawn through the middle of the cloud), and each near end
+                 still clears that same curve by two units or more (so it is a ray
+                 leaving the sun and not a line drawn through the cloud). Put
+                 either ray back at its old bearing and the first of those fails
+                 by eighteen units. -->
+            <g class="dn-rays-wrap">
+                <g class="dn-rays" stroke-width="1.1">
+                    <path d="M504.15 111.68L493.78 115.35M505.59 93.26L498.13 88.22M511.3 90.03L500.84 76.63M515.48 84.33L512.4 75.87M522.3 85.01L521.67 67.02M527.6 86.56L530.26 75.89M533.5 86.81L540.5 74.69M537.39 91.11L541.7 86.94M539.78 96.08L543.31 94.2M541.85 111.68L552.22 115.35"/>
+                </g>
+            </g>
+        </g>
+
+        <!-- AFTER DARK. THE MOON IS THE SUN'S OWN CIRCLE with its right-hand side
+             bitten away, which is the one thing a crescent cannot be drawn
+             without: the outer arc is centred on 523,105 at the sun's own radius
+             of 13.5, the bite is a second circle of 11.5 set five units to its
+             right, and the two meet at (530.5, 93.78) and (530.5, 116.22) — so
+             the crescent keeps three quarters of the disc's own edge and opens to
+             the right, the way the reference sheet's does. Share the centre and
+             the radius and the change of hour is the disc losing its right edge
+             rather than one drawing being replaced by another; move it to a
+             place and a size of its own, as this one had, and the light JUMPS
+             even if the fade is perfect — which is why the lift in the daylight block above moved these two
+             numbers and the disc's as one number and not five.
+
+             THE STARS COME IN TWO DEPTHS. Eight of them are the night at any
+             hour on any surface, spread wide and off-centre so that not one
+             lands in the stamp, in the greeting or in the light. The rest sit in
+             the `.dn-deep` group below with the shooting star, and that group is
+             written off in the styles until the visitor is on a dark surface —
+             so what a light-mode visitor sees after dark is the quiet sky, and
+             what a dark-mode visitor sees is the same sky with fourteen more
+             marks in it and something going across. -->
+        <g class="dn-night">
+            <path d="M530.5 93.78A13.5 13.5 0 1 0 530.5 116.22A11.5 11.5 0 1 1 530.5 93.78Z" stroke-width="1.25"/>
+            <path d="M514.6 99.8C512.6 102 512.4 104.4 512.6 106.6" stroke-width=".7" opacity=".5"/>
+            <use class="dn-star dn-tw" href="#dn-spark" transform="translate(108,32) scale(.55)" opacity=".85"/>
+            <use class="dn-star dn-tw" href="#dn-spark" transform="translate(46,96) scale(.45)" opacity=".7"/>
+            <use class="dn-star dn-tw" href="#dn-spark" transform="translate(172,142) scale(.5)" opacity=".75"/>
+            <use class="dn-star dn-tw" href="#dn-spark" transform="translate(240,20) scale(.5)" opacity=".7"/>
+            <use class="dn-star dn-tw" href="#dn-spark" transform="translate(330,140) scale(.45)" opacity=".7"/>
+            <use class="dn-star dn-tw" href="#dn-spark" transform="translate(26,166) scale(.4)" opacity=".65"/>
+            <use class="dn-star dn-tw" href="#dn-spark" transform="translate(556,44) scale(.45)" opacity=".7"/>
+            <use class="dn-star dn-tw" href="#dn-spark" transform="translate(585,96) scale(.45)" opacity=".65"/>
+            <!-- THE DEEP FIELD, AND THE STREAK. Fourteen more marks, thin and
+                 small — dust rather than stars — half of them twinkling and half
+                 steady, so the sky has weather in it rather than a pulse. Then
+                 the streak: a bowed trail with a shorter one under it and the
+                 sparkle def from this sky's own head at the leading end, drawn
+                 at the middle of its flight once and moved by CSS. It sits in a
+                 wrapper with the static transform, so the animation's translate
+                 is a journey FROM here rather than a replacement for here — the
+                 two are different properties and only one of them can win. -->
+            <g class="dn-deep">
+                <use class="dn-star dn-tw" href="#dn-spark" transform="translate(36,168) scale(.3)" opacity=".55"/>
+                <use class="dn-star" href="#dn-spark" transform="translate(62,56) scale(.34)" opacity=".5"/>
+                <use class="dn-star dn-tw" href="#dn-spark" transform="translate(86,112) scale(.3)" opacity=".5"/>
+                <use class="dn-star" href="#dn-spark" transform="translate(118,22) scale(.28)" opacity=".45"/>
+                <use class="dn-star" href="#dn-spark" transform="translate(146,78) scale(.32)" opacity=".5"/>
+                <use class="dn-star dn-tw" href="#dn-spark" transform="translate(166,136) scale(.3)" opacity=".5"/>
+                <use class="dn-star" href="#dn-spark" transform="translate(206,140) scale(.3)" opacity=".45"/>
+                <use class="dn-star dn-tw" href="#dn-spark" transform="translate(248,16) scale(.3)" opacity=".5"/>
+                <use class="dn-star" href="#dn-spark" transform="translate(286,138) scale(.28)" opacity=".45"/>
+                <use class="dn-star" href="#dn-spark" transform="translate(330,20) scale(.32)" opacity=".5"/>
+                <use class="dn-star dn-tw" href="#dn-spark" transform="translate(392,14) scale(.28)" opacity=".45"/>
+                <use class="dn-star" href="#dn-spark" transform="translate(444,150) scale(.3)" opacity=".45"/>
+                <use class="dn-star dn-tw" href="#dn-spark" transform="translate(566,40) scale(.3)" opacity=".5"/>
+                <use class="dn-star" href="#dn-spark" transform="translate(590,96) scale(.28)" opacity=".45"/>
+                <g transform="translate(26,134)">
+                    <g class="dn-shoot">
+                        <path d="M0 0C-7.7 5.4 -14.9 11.2 -21.7 17.6" stroke-width="1.2" opacity=".85"/>
+                        <path d="M1.1 1.3C-5.1 6.1 -10.3 10.6 -14.6 14" stroke-width=".6" opacity=".45"/>
+                        <use class="dn-star" href="#dn-spark" transform="scale(.72)" opacity=".9"/>
+                    </g>
+                </g>
+            </g>
+        </g>
+
+        <!-- THE BANK, AND IT IS DRAWN LAST, OVER THE LIGHT RATHER THAN UNDER IT.
+             Everything above this line is a sky with a disc in it; this is the
+             cloud that the disc is RISING OUT OF, and the only way to draw that
+             is to put the cloud in front. It is a cumulus bank built out of
+             five lobes: two small ones on the outside, two tall ones either
+             side, and — at the light's own x — one low one whose crown crosses
+             the disc four and a half units below its centre, so the sun (and,
+             after dark, the crescent the same circle becomes) shows its top
+             two-thirds and loses its foot.
+
+             IT RUNS OFF THE RIGHT OF THE WINDOW rather than ending in the sky,
+             for the same reason the city runs off both of its sides: a cloud
+             with two ends in the middle of the page is a sticker, and a cloud
+             that owns a corner of the window is weather. What hangs below it is
+             its own base, drawn as the shallow scallops the reference sheet
+             draws under its cloud — and no part of it comes nearer to the first
+             door on a 320px window than three pixels.
+
+             IT DRIFTS, AND IT IS THE ONLY THING UP HERE THAT DOES. Seven units
+             to the left over a minute and a half, and back, so the bank swells
+             against the light and away from it forever without ever leaving it:
+             the crown's clearance is checked at BOTH ends of that travel, which
+             is the one thing a slow drift on a drawing like this can quietly
+             ruin. The two small clouds are outside this group and stand still. -->
+        <g class="dn-fore">
+            <g class="dn-clouds" stroke-width="1.15" opacity=".8">
+                <path d="M450 138C449.5 134.73 452.83 130 455 127C457.17 124 460.33 120.83 463 120C465.67 119.17 468.67 121.17 471 122C473.33 122.83 474.5 125.67 477 125C479.5 124.33 482.83 119.83 486 118C489.17 116.17 492.67 114.33 496 114C499.33 113.67 503.17 115 506 116C508.83 117 511 118.83 513 120C515 121.17 516.17 121.92 518 123C519.83 124.08 522 126.5 524 126.5C526 126.5 528 124.25 530 123C532 121.75 533.33 120.33 536 119C538.67 117.67 542.67 116 546 115C549.33 114 552.67 112.67 556 113C559.33 113.33 563.33 115.83 566 117C568.67 118.17 569.67 120 572 120C574.33 120 577.33 117.67 580 117C582.67 116.33 585.33 115.67 588 116C590.67 116.33 593.33 118 596 119C598.67 120 601.67 120.17 604 122C606.33 123.83 608.67 127.5 610 130C611.33 132.5 613.67 134.67 612 137C610.33 139.33 605 142.47 600 144C595 145.53 588.33 146.23 582 146.2C575.67 146.17 569 143.73 562 143.8C555 143.87 547.33 146.5 540 146.6C532.67 146.7 525.33 144.37 518 144.4C510.67 144.43 503.33 146.7 496 146.8C488.67 146.9 480.33 145.03 474 145C467.67 144.97 462 147.77 458 146.6C454 145.43 450.5 141.27 450 138Z"/>
+                <path d="M462 132C464.67 131.33 472.67 128.43 478 128C483.33 127.57 489.33 128.57 494 129.4C498.67 130.23 504 132.4 506 133" stroke-width=".75" opacity=".5"/>
+                <path d="M540 131C542.67 130.27 550.67 127 556 126.6C561.33 126.2 567 127.7 572 128.6C577 129.5 583.67 131.43 586 132" stroke-width=".75" opacity=".5"/>
+            </g>
+        </g>
+    </svg>
+
+    <!-- THE CITY, low along the foot of the page. It runs off both edges rather
+         than stopping short of them, so there is no end of the city to find, and
+         it is drawn from the horizon UP — the ground under it is the page's own
+         bottom edge.
+
+         THE WHOLE ROW WAS DRAWN AGAIN FROM THE PANORAMA, and the note that came
+         with it was "include everything". What stood here before was a
+         SELECTION: the mosque, the church, the rock, the office, the tower, two
+         trees, and a footbridge this drawing had invented. What stands here now
+         is the panorama's own row, left to right, in the order the panorama puts
+         it in — the obelisk, the National Christian Centre with its swept wings,
+         the gate with the braced X in it, the National Mosque with its four
+         minarets and the two small pavilions at the dome's feet, the long open
+         arcade, the hipped pavilion, the domed block, the second hipped pavilion,
+         and NECOM House at the end with its banded shaft, its chevron crown, its
+         paired masts and the sail down its right side. Everything the sheet
+         draws along its skyline is in this file.
+
+         THE FOOTBRIDGE IS GONE and the gate is why. It was never in this
+         panorama or the last one; it had been carried in by an earlier round,
+         and what it was here FOR — one structure in a row of solid masses with
+         air under it — is the GATE, which the panorama does have, which this row
+         was missing, and which is more of a landmark besides. Its two lamps went
+         into the arcade's own bays, where they still light a phone's window:
+         see the note over the night group.
+
+         AND IT IS STILL A BAND RATHER THAN A PICTURE, which is the one thing of
+         the panorama's that could not come across. The sheet's skyline runs 1070
+         units wide and 325 tall above its horizon (3.3:1); this box is 560 by 96
+         (5.8:1), because this drawing is the AIR the words stand in and a
+         photograph-shaped drawing across the foot of a menu is a picture in a
+         menu. So every building here keeps the sheet's own PARTS — the dome is a
+         ribbed dome on a drum, the minarets are tapered shafts with collars and
+         crescent caps, the church is an A-frame with sweeping wings and a
+         doorway, the tower's head flares into a banded crown — laid out at the
+         width this row has room for and at a height this band can hold. What
+         that costs is height, and it is the one thing about the sheet that is
+         not here: its tallest building is 325 of its own 325 units and this band
+         has 68.
+
+         NO WINDOWS, which is the owner's other note, and the sheet is nothing
+         BUT windows: rows of squares up the obelisk's middle, a band of them
+         round the dome's drum, ten bays of lattice along each arcade, whole
+         floors of them up the tower. Not one is drawn here. The arcades are
+         OPEN — their columns reach the ground with the page's own paper between
+         them, which is what an arcade looks like when the glazing is taken out
+         of it — the drum carries a moulding instead of a window band, the
+         obelisk's stud strip is one rib rather than a dotted line, and the
+         tower's floors are the bands they actually are. The nine lit windows
+         that still come on after dark are this drawing's own nine and not the
+         sheet's, and they are checked where they are described. -->
+    <svg class="dn-city" viewBox="0 0 560 96" aria-hidden="true" focusable="false">
+        <g class="dn-base">
+            <!-- THE ROW ITSELF, in a group with a name on it for one reason: the
+                 reflection at the bottom of this drawing is a mirror of THIS,
+                 and the way to draw a mirror of something is to point at it
+                 rather than to draw it twice. See the use element below the
+                 group. -->
+            <g id="dn-city-plan">
+                <!-- ASO ROCK, far behind the city, and the mast it keeps from an
+                     earlier rest state of this drawing — drawn first so that
+                     everything else stands in front of it, and drawn FAINT,
+                     because it is the one thing in this row that is not a
+                     building: it is the hill the city was sited against, which on
+                     any postcard of this place is what the city is against. The
+                     sheet this row was redrawn from has no rock in it — a rock
+                     belongs behind a skyline rather than in one — so it keeps its
+                     old place at the left, behind the obelisk and the arcades,
+                     and gives the row a shoulder at the end a window opens on.
+                     Its mast is a BOX with a lattice line across it rather than a
+                     vertical with a crossbar, which at this size is a cross. -->
+                <g class="dn-rock" opacity=".5">
+                    <path d="M14 68C30 66.6 44 61 60 53C72 46.6 84 39.2 91 34.6C99 41 107 49 115 57C122 63 128 66.2 136 67.4" stroke-width="1"/>
+                    <path d="M57 54.6C71 47.6 80 42 88 37.4" stroke-width=".7" opacity=".6"/>
+                    <path d="M86 34.6V21.6H94V34.6" stroke-width="1"/>
+                    <path d="M86 28.1H94" stroke-width=".65" opacity=".6"/>
+                </g>
+
+                <!-- THE OBELISK, at the far left: the first thing the panorama
+                     draws, and the second-tallest thing on this row after NECOM
+                     House — the sheet stands the two within four units of each
+                     other, so a wide window gets a tower at each end of the row
+                     and a narrow one loses nothing it was using. Its head is the
+                     sheet's: a plate, a short pyramid and a needle, which is a
+                     shape no other building here has and which is why it reads at
+                     the size of a thumbnail. The strip of studs the sheet runs up
+                     its middle is NOT here — that would be the row of windows the
+                     owner asked this drawing not to have — and one rib stands in
+                     its place, because a shaft of this height with nothing on it
+                     is a post. -->
+                <g class="dn-monument" stroke-width="1.05">
+                    <path d="M6.6 68L7.1 21L13.9 20.6L14.4 68"/>
+                    <path d="M6.4 21.2L14.6 20.8L14 18.2L7 18.5ZM7.6 18.3L10.5 13.6L13.4 18.2M10.5 13.6V12.8" stroke-width=".95"/>
+                    <path d="M6.8 25.4H14.3M7 54H14.4" stroke-width=".65" opacity=".5"/>
+                    <path d="M9.6 63.4L10.2 24.8" stroke-width=".6" opacity=".45"/>
+                </g>
+
+                <!-- THE LONG ARCADES, in three places because that is how often
+                     the panorama draws them: two low wings at the left of the
+                     church, and the long one right of the mosque with the hipped
+                     pavilion sitting over its end. In the sheet each of these is
+                     a row of square lattice bays; here each is a cornice with
+                     columns under it, open to the ground, which is the same
+                     building with the glazing taken out — and it is also what a
+                     row of low blocks in this drawing has always been, because a
+                     rectangle is the shape a drawing of a city is least likely to
+                     contain and a row of them reads as a bar chart. NOT ONE OF
+                     THEM DRAWS ITS OWN BASE; the ground line at the end of this
+                     group draws all of them. The last one runs off the right
+                     edge, past the tower, so the row has no end to find. -->
+                <g class="dn-low" stroke-width="1.05">
+                    <path d="M19.4 68V56.6L46.6 56.2V68M19.6 59.8H46.4M23.8 68V61.6M28.4 68V61.6M33 68V61.5M37.6 68V61.5M42.2 68V61.4"/>
+                    <path d="M51.4 68V60.4L76.6 60V68M51.6 63H76.4M55.4 68V64.4M59.8 68V64.4M64.2 68V64.3M68.6 68V64.3M73 68V64.2"/>
+                    <path d="M399.4 68V56.6L432.6 56.2V68M399.6 59.8H432.4M403.8 68V61.6M409.2 68V61.6M414.6 68V61.5M420 68V61.5M425.4 68V61.4M430.2 68V61.4"/>
+                    <path d="M544 68V60.6L558 60.2L566 60.6V68"/>
+                </g>
+
+                <!-- TWO TREES, in the gaps the buildings leave for them — and
+                     they are DRAWN rather than set, like everything else down
+                     here. Their canopy was a perfect semicircle on a stick, which
+                     is an umbrella at any size, and at 22px it was the last shape
+                     in this drawing that had come off a set square: the two of
+                     them are not copies of each other either, because two
+                     identical trees are a pattern rather than a planting. -->
+                <g class="dn-trees">
+                    <path d="M90.4 68V63.4" stroke-width="1"/>
+                    <path d="M84.8 63.6C84 60 86.2 56.4 89.8 55.6C93.8 54.8 97 57 97 60C97 62.2 95.4 63.8 92.8 64C89.2 64.4 86.8 64.2 84.8 63.6Z" stroke-width="1.05"/>
+                    <path d="M124 68V63.4" stroke-width="1"/>
+                    <path d="M118.4 64C117.2 60.6 119.4 56.8 123 55.8C127 54.9 130.9 56.9 131 59.8C131.1 62 129.4 63.6 126.8 63.9C123.2 64.3 120.4 64.4 118.4 64Z" stroke-width="1.05"/>
+                </g>
+
+                <!-- THE NATIONAL CHRISTIAN CENTRE, and the sweep is the whole of
+                     it: the sheet draws a tall A-frame with a cross on the apex
+                     and two wings that come down off its flanks to the ground,
+                     wide as the church is tall. That is three shapes and this is
+                     three paths — the wings, the gable with its doorway under it,
+                     and the cross — and the reason the church is drawn at all is
+                     the one the last version of it gave: nothing else on this row
+                     is a triangle, which is what lets the eye tell the two big
+                     landmarks apart at 320px, where each of them is thirty pixels
+                     wide.
+
+                     IT IS THE QUIETEST BIG THING ON THIS ROW, deliberately. The
+                     owner's note was that this is a business and the religious
+                     centres should not be what the skyline highlights; so the
+                     cross is the shortest of the row's tall marks, the pair of
+                     them are drawn in a quarter pen at reduced opacity — the same
+                     pen Aso Rock has — and the base the sheet builds under the
+                     wings (piers and a row of panels) is not drawn at all: what
+                     holds this church up is the doorway and the two wing tips,
+                     which is the same air the gate is built on. -->
+                <g class="dn-church" stroke-width=".85" opacity=".8">
+                    <path d="M176.1 55.4C165.2 57.6 151.8 61.8 141.2 68.4M173.1 58.4C164 60.4 153.6 63.6 142.8 67.4M193.9 55.4C204.8 57.6 218.2 61.8 228.8 68.4M196.9 58.4C206 60.4 216.4 63.6 227.2 67.4"/>
+                    <path d="M163.6 68L185 46.4L206.4 68M179 68V61.4C179 58.6 181.6 56.6 185 56.6C188.4 56.6 191 58.6 191 61.4V68"/>
+                    <path class="dn-cross" d="M185 46.4V34.6M180.4 39.6H189.6"/>
+                </g>
+
+                <!-- THE GATE, and it is the one thing this row was missing that
+                     the panorama leads with after the church: a pair of swept
+                     pylons carrying a lintel, a braced X across the opening with
+                     a round boss where the arms cross, and a tie beam under it.
+                     It is here in place of the footbridge this drawing used to
+                     carry, for the reason the sheet gives — it is the structure
+                     with AIR under it, and a row of solid masses needs exactly
+                     one of those. The boss is a circle rather than a path, which
+                     is the honest way to draw a boss and which also means the
+                     city's path count is not paying for a dot. -->
+                <g class="dn-gate" stroke-width="1.05">
+                    <path d="M239 68.4C240.6 60.2 241.8 52.4 242.4 44.6L247.4 44.2C246.8 52.2 245.6 60.2 244.6 68.4M273 68.4C271.4 60.2 270.2 52.4 269.6 44.6L264.6 44.2C265.2 52.2 266.4 60.2 267.4 68.4M242.4 44.6H269.6M242.6 47.4H269.4M244.6 59.4H267.4"/>
+                    <path d="M242.8 47.6L269.2 59M269.2 47.6L242.8 59"/>
+                    <circle class="dn-boss" cx="256" cy="53.2" r="2.4" stroke-width=".9"/>
+                </g>
+
+                <!-- THE NATIONAL MOSQUE, and it is still the one shape in this
+                     drawing that could not be anywhere but here: a ribbed dome on
+                     a drum with FOUR minarets carrying crescents — two standing
+                     clear of the corners and two rising through the roof, which
+                     is how the real one is built and what makes it read at a
+                     glance. Each crescent is drawn twice, an outer bow and a
+                     shallower one inside it, because a single arc at this size is
+                     a tick and not a moon. The two small pavilions at the drum's
+                     feet are the sheet's own, drawn as domed caps with a spike on
+                     them and no crescent: the crescent is what the four minarets
+                     and the dome are for, and a fifth and sixth on the roofline
+                     would make it impossible to say which mark belongs to which
+                     building.
+
+                     AND IT IS THE QUIETEST BIG THING ON THIS ROW, deliberately.
+                     The owner's note was that this is a business and that the
+                     religious centres should not be what the skyline highlights —
+                     and the row had it backwards once: the church's cross was the
+                     TALLEST mark here and the mosque was next, with four of the
+                     eight lit windows burning on the two of them. So the dome is
+                     smaller than the sheet's is, the minarets are barely half
+                     their old height, and the group is drawn in a quarter pen at
+                     reduced opacity. The four minarets stay, because four is what
+                     makes it that building rather than a dome on a box, and being
+                     modest is not the same as being absent. Its windows are not
+                     drawn either — the drum has a moulding where the sheet has a
+                     band of squares, and the hall is a wall with an arcade of
+                     open arches in front of it, two of them taller than the rest
+                     where the sheet puts the two doorways in.
+
+                     IT IS STILL PLACED WHERE ITS OWN WINDOW CAN SEE IT, which at
+                     320px is the middle 309 of these 560 units: at either end of
+                     the row it would be a landmark nobody under 500px ever sees.
+                     Being seen is not the same as being lit, and the night group
+                     below takes that seriously. -->
+                <g class="dn-mosque" stroke-width=".85" opacity=".8">
+                    <path d="M282 68V57.6L340 57.2L398 57.5V68"/>
+                    <path d="M287 68A3.4 3.4 0 0 1 293.8 68M297 68A3.4 3.4 0 0 1 303.8 68M321 68A3.4 3.4 0 0 1 327.8 68M331 68A3.4 3.4 0 0 1 337.8 68M341 68A3.4 3.4 0 0 1 347.8 68M351 68A3.4 3.4 0 0 1 357.8 68M375 68A3.4 3.4 0 0 1 381.8 68M385 68A3.4 3.4 0 0 1 391.8 68M309 68L309.6 63.2C309.6 61.2 311.2 59.8 313 59.8C314.8 59.8 316.4 61.2 316.4 63.2L317 68M363 68L363.6 63.2C363.6 61.2 365.2 59.8 367 59.8C368.8 59.8 370.4 61.2 370.4 63.2L371 68" stroke-width=".7" opacity=".6"/>
+                    <path d="M324 57.4V53.4M356 57.2V53.2M322.4 53.4H357.6"/>
+                    <path d="M323 53.4A17 17 0 0 1 357 53.4" stroke-width="1"/>
+                    <path d="M340 36.5C336 39.4 332.4 44 330.6 52.6M340 36.5C344 39.4 347.6 44 349.4 52.6M340 36.5C337.4 39.8 335.2 45.2 334.6 52.6M340 36.5C342.6 39.8 344.8 45.2 345.4 52.6" stroke-width=".6" opacity=".5"/>
+                    <path class="dn-minaret" d="M282.2 68L283 41.4M286.2 41.2L287 68M281.4 46.2H287.8M282.8 41.4C280.4 39.6 280.4 37.6 283.4 36.6L285.8 36.4C288.8 37.4 288.8 39.4 286.4 41.2"/>
+                    <path class="dn-minaret" d="M307.2 57.6L307.8 48.4M310.8 48.2L311.4 57.6M306.4 52.6H312.2M307.6 48.4C305.6 46.8 305.6 45 308 44.2L310.6 44C312.8 44.8 312.8 46.8 311 48.2"/>
+                    <path class="dn-minaret" d="M372.8 57.6L372.2 48.4M369.2 48.2L368.6 57.6M373.6 52.6H367.8M372.4 48.4C374.4 46.8 374.4 45 372 44.2L369.4 44C367.2 44.8 367.2 46.8 369 48.2"/>
+                    <path class="dn-minaret" d="M397.8 68L397 41.4M393.8 41.2L393 68M398.6 46.2H392.2M397.2 41.4C399.6 39.6 399.6 37.6 396.6 36.6L394.2 36.4C391.2 37.4 391.2 39.4 393.6 41.2"/>
+                    <path d="M315.6 57.6C313.6 56.4 313.6 54.4 316 53.6L321 53.4C323.4 54.2 323.4 56.2 321.4 57.4M318.6 53.5V51.6M364.4 57.6C366.4 56.4 366.4 54.4 364 53.6L359 53.4C356.6 54.2 356.6 56.2 358.6 57.4M361.4 53.5V51.6" stroke-width=".7" opacity=".7"/>
+                    <path class="dn-crescent" d="M337.6 34Q340 37.4 342.4 34M338.4 33.6Q340 36.4 341.6 33.6M340 33.6V36.4M281.8 33.4Q284.2 36.8 286.6 33.4M282.6 33Q284.2 35.8 285.8 33M284.2 33.2V36.5M306.8 41.8Q309 44.8 311.2 41.8M307.5 41.4Q309 43.9 310.5 41.4M309 41.6V44.1M373.2 41.8Q371 44.8 368.8 41.8M372.5 41.4Q371 43.9 369.5 41.4M371 41.6V44.1M398.2 33.4Q395.8 36.8 393.4 33.4M397.4 33Q395.8 35.8 394.2 33M395.8 33.2V36.5" stroke-width=".8"/>
+                </g>
+
+                <!-- THE HIPPED PAVILIONS, and there are two of them because the
+                     sheet has two: a small one over the end of the arcade right
+                     of the mosque, and a second one past the domed block. Their
+                     roof is the shape that earns them a place in this row — a
+                     shallow hipped tent with the eaves overhanging and a finial
+                     at the ridge, where everything else here is a dome, a flare
+                     or a needle. The band of windows the sheet runs under each
+                     roof is not drawn; the sides stand open to the ground
+                     instead, which is the same arcade the rest of this row is
+                     built out of. -->
+                <g class="dn-hip" stroke-width="1">
+                    <path d="M434.8 57.4L448 52.8L461.2 57.2M432.8 57.6H463.2M448 52.8V50.6M437.8 57.8L438.2 68M458.8 57.6L458.4 68M438 64.4H458.6"/>
+                    <path d="M502.4 59L510 55.6L517.6 58.8M500.8 59.2H519M510 55.6V53.8M504 59.4L504.4 68M515.8 59.2L515.4 68M504.2 64.6H515.6"/>
+                </g>
+
+                <!-- THE DOMED BLOCK: a mid-rise with a cornice, a ribbed dome and
+                     a body carried on two bands, which is the sheet's second dome
+                     and the reason the mosque's is not the only curve in this
+                     row. The sheet's version is a long colonnaded mass with a
+                     window band and a plaque on it; the plaque, the band and the
+                     bay windows are all gone, and what is left is the mass, the
+                     two floor lines and the dome — which is the building, drawn
+                     at the width this row has for it. -->
+                <g class="dn-office" stroke-width="1.1">
+                    <path d="M468 68V31.6L482 31.1L498 31.4V68M469.8 44.6H496.2M470.6 57.4H495.4"/>
+                    <path d="M469.4 29.2H496.6" stroke-width=".8" opacity=".8"/>
+                    <path d="M473.6 29.2A10 10 0 0 1 493.6 29.2"/>
+                    <path d="M483.6 19.2C480.4 21.4 478.2 24.4 477.4 27.2M483.6 19.2C486.8 21.4 489 24.4 489.8 27.2" stroke-width=".7" opacity=".6"/>
+                </g>
+
+                <!-- AND NECOM HOUSE — the tower the sheet puts at the end of its
+                     row, and the tallest thing here by a third. Its crown is the
+                     whole point of it, and now the sheet's own: the shaft is a
+                     plain taper carrying the floor bands every tower of this kind
+                     has, the head flares out of the top of that into a wide cap
+                     with a chevron band across it, twins of slim masts stand out
+                     of the cap, and the sail the sheet sweeps down the right side
+                     is drawn as the sliver it is. The masts are BOXES — never a
+                     vertical with a bar across it, at any size, because that is a
+                     cross and this drawing already has one of those. -->
+                <g class="dn-tower" stroke-width="1.1">
+                    <path d="M522 68V34L523.4 28.6L532.6 28.6L534 34V68"/>
+                    <path class="dn-flare" d="M523.4 28.6C520.4 26 517.4 23.4 514.6 20.6L542 20.6C539 23.4 536 26 533.2 28.6Z"/>
+                    <path d="M515 21.2H539.6M515 26.2H539.6M516.4 25.6L521.6 22.2L526.8 25.6L532 22.2L537.4 25.6" stroke-width=".65" opacity=".65"/>
+                    <path d="M522.4 45.4H533.6M522.8 53.4H533.2M523.2 61.4H532.8" stroke-width=".6" opacity=".5"/>
+                    <path d="M533.2 28.6C536.4 33.4 538.4 39.4 538.8 46C539.2 52.6 538.4 60 537.2 68C536.4 60 535.8 52 535.2 46C534.6 39.6 534.2 33.2 533.6 28.6Z"/>
+                    <path d="M525.4 20.6V11.6H530.6V20.6M532.4 20.6V14.6H535.6V20.6" stroke-width="1"/>
+                </g>
+            </g>
+
+            <!-- AND WHAT IS UNDER IT. The sheet puts a full reflection under its
+                 horizon — every building mirrored, fading as it goes down — and
+                 that is the one part of the sheet that this drawing can have
+                 EXACTLY as it is drawn, because it is the same drawing: one use
+                 element pointing at the row above, with a negate in it and no new
+                 paths at all. It is why the row has a name on it.
+
+                 THE MIRROR IS TAKEN ABOUT THE GROUND LINE ITSELF (translate
+                 136 then scale -1, which maps y=68 to y=68), so the horizon is
+                 the one line in the picture that is neither drawn twice nor
+                 moved: what hangs below it is the foot of every building in the
+                 row, and nothing of it appears above the horizon because nothing
+                 in the row stands below it. THE GROUND PATH IS DELIBERATELY
+                 OUTSIDE THE GROUP being mirrored — a second copy of a hand-drawn
+                 line wandering either side of the first is two lines, and this
+                 drawing has one.
+
+                 IT IS NOT FADED, and that is the difference between this and the
+                 sheet: the ink simply stops at the foot of the page, the way the
+                 city stops at the left and right of it. Half strength, because a
+                 reflection is not a second city. And the NINE LAMPS ARE NOT IN
+                 IT: the mirror is taken of the row and not of the night, so what
+                 is reflected is the city rather than what is switched on inside
+                 it, which is also exactly what the ground path is left out for. -->
+            <use class="dn-mirror" href="#dn-city-plan" transform="translate(0,136) scale(1,-1)" opacity=".5"/>
+
+            <!-- ONE GROUND, AND IT IS THE ONLY LINE IN THIS DRAWING THAT RUNS THE
+                 WIDTH OF THE PAGE. There were four once: a horizon, a row of
+                 hatching just under it, and two fainter field lines below that —
+                 which is a foot drawn three times over, and at any window size it
+                 read as ruled paper rather than as the ground a city stands on.
+                 The hatching and both field lines are gone, and now the one line
+                 has a second job: it is the line the reflection is taken about.
+                 What is left is one stroke, hand-drawn rather than ruled — it
+                 wanders within about 1.3 units either side of 68, about a pixel
+                 on the narrowest window this page is read at, which is all
+                 "hand-drawn" means at this size — and every landmark above is
+                 left exactly on 68, so each one meets the line rather than
+                 hovering over it: where the ground rises it crosses the last
+                 half-unit of a wall, and where it dips the stroke's own round cap
+                 covers the difference. -->
+            <path class="dn-ground" d="M-6 68.6C46 67 106 69.4 164 68.1C222 66.8 280 69.3 340 68C400 66.7 456 69.4 514 68.1C542 67.4 558 68.2 566 67.8" stroke-width="1.2"/>
+        </g>
+
+        <!-- AFTER DARK, THE WINDOWS THE CITY KEEPS LIT — nine of them, and NOT
+             ONE of them is on the mosque or on the church. That is the whole of
+             the correction that put the lights on the businesses: three lamps
+             used to burn along the mosque's arcade and one in the church's gable,
+             which lit the two buildings this skyline is least about. They are now
+             two rows of pairs in the office block, two bands up the tower's
+             shaft, the obelisk's own, and two in the bays of the long arcade.
+
+             THE ARCADE'S PAIR IS NOT DECORATION, and this is worth writing down
+             because the cells of a colonnade are the one place a lit window in
+             this drawing does not look like a lit window: they are the gaps
+             between four columns, lit from under the cornice down to the ground,
+             which is a shopfront under an arcade rather than a square in a wall.
+             They are also the only lights a phone can see. At 320px a phone shows
+             these 560 units from about x=125 to x=435, which is the church, the
+             gate, the mosque and this arcade and almost nothing else — the
+             business district is off to the sides of a small window. So once the
+             religious buildings keep their own windows dark, the arcade is the
+             only thing left inside a phone's window that can carry a light at
+             all; what a small screen sees after dark is a quiet city with its
+             colonnade lit, which is a truer picture of this place than four lamps
+             on a minaret. -->
+        <g class="dn-night">
+            <rect class="dn-lit" x="471.4" y="50.4" width="2.8" height="5.4"/>
+            <rect class="dn-lit" x="489.4" y="50.4" width="2.8" height="5.4"/>
+            <rect class="dn-lit" x="471.4" y="57.6" width="2.8" height="5.4"/>
+            <rect class="dn-lit" x="489.4" y="57.6" width="2.8" height="5.4"/>
+            <rect class="dn-lit" x="524.4" y="31.4" width="7" height="2.6"/>
+            <rect class="dn-lit" x="524.4" y="42.4" width="7" height="2.6"/>
+            <rect class="dn-lit" x="410" y="61.6" width="3.8" height="6.4"/>
+            <rect class="dn-lit" x="420.8" y="61.6" width="3.8" height="6.4"/>
+            <rect class="dn-lit" x="9.4" y="40.4" width="2.6" height="6.6"/>
+        </g>
+    </svg>
+
+    <!-- THE PLANT, up the left edge, out of the same ground the city stands on.
+         One stem, seven leaves placed from ONE leaf drawing, and two that have
+         fallen — which is the reference sheet's own gesture, cut back to a
+         branch rather than a thicket. -->
+    <svg class="dn-branch" viewBox="0 0 88 300" aria-hidden="true" focusable="false">
+        <defs>
+            <g id="dn-leaf">
+                <path d="M0 0C8-7 20-8 30-1C20 6 8 6 0 0Z" stroke-width="1.15"/>
+                <path d="M2 0C11-.5 21-1.2 28-1.4" stroke-width=".75" opacity=".7"/>
+            </g>
+        </defs>
+        <g class="dn-base">
+            <!-- ONE STEM, and every leaf sit ON it rather than near it — placed
+                 from a single leaf drawing, alternating sides, shrinking as they
+                 climb the way the reference sheet's plant does. -->
+            <path d="M44 300C36 258 33 214 38 170C42 130 52 92 66 58C70 49 75 41 80 34" stroke-width="1.35"/>
+            <g opacity=".85">
+                <use href="#dn-leaf" transform="translate(40,272) rotate(-146)"/>
+                <use href="#dn-leaf" transform="translate(36,240) rotate(-30)"/>
+                <use href="#dn-leaf" transform="translate(36,208) rotate(-148) scale(.98)"/>
+                <use href="#dn-leaf" transform="translate(38,176) rotate(-28) scale(.95)"/>
+                <use href="#dn-leaf" transform="translate(41,146) rotate(-150) scale(.9)"/>
+                <use href="#dn-leaf" transform="translate(45,118) rotate(-30) scale(.85)"/>
+                <use href="#dn-leaf" transform="translate(51,92) rotate(-150) scale(.8)"/>
+                <use href="#dn-leaf" transform="translate(59,68) rotate(-32) scale(.72)"/>
+                <use href="#dn-leaf" transform="translate(68,46) rotate(-150) scale(.62)"/>
+            </g>
+            <use href="#dn-leaf" transform="translate(20,290) rotate(26) scale(.5)"/>
+            <use href="#dn-leaf" transform="translate(54,288) rotate(-154) scale(.44)"/>
+        </g>
+    </svg>
+</figure>
 
 <!-- NO SCRIPT OF THIS PAGE'S OWN, AND NO REQUEST OF ITS OWN EITHER.
 
@@ -280,6 +1455,6 @@
 <!-- The studio assistant. It answers from the studio's live data and hands
      anything it cannot answer to Liberty. If it is not switched on it removes
      itself, so this page renders exactly as it did before it existed. -->
-<script src="assistant.js?v=a3ace01d6d" defer></script>
+<script src="assistant.js?v=4e7684c564" defer></script>
 </body>
 </html>

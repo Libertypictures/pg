@@ -630,7 +630,11 @@
         '.lpa-door-copy{flex:1;min-width:0}',
         '.lpa-door-title{font-weight:600;font-size:13.5px;letter-spacing:.2px}',
         '.lpa-door-sub{font-size:11.5px;color:var(--text-secondary,#6b6459);margin-top:3px}',
-        '.lpa-door-arrow{flex:none;color:var(--text-secondary,#6b6459);font-size:16px;opacity:.45}',
+        /* NO POINTER ON THE DOOR. It used to end in a `›`, and the owner's note
+           was that a card is a card and needs no arrow to say it can be tapped —
+           the whole card is the target and its border is what answers a hover or
+           a Tab. The links page's own two cards dropped theirs at the same time,
+           so the three doors in that stack are one kind of thing. */
 
         /* ── the composer ─────────────────────────────────────────────────── */
 
@@ -2502,12 +2506,9 @@
         copy.appendChild(el('div', 'lpa-door-sub',
             'Rates, dates and what is included \u2014 answered right here.'));
         card.appendChild(copy);
-
-        // Decorative, and hidden from the name a screen reader reads out: the
-        // card's name is its title and its line, not "... right here. ›".
-        var arrow = el('span', 'lpa-door-arrow', '\u203a');
-        arrow.setAttribute('aria-hidden', 'true');
-        card.appendChild(arrow);
+        /* The card ends here: no arrow, and that is the change rather than an
+           omission — see the note over `.lpa-door`'s styles. A screen reader
+           reads the button out as its title and its line, which is what it is. */
 
         card.addEventListener('click', function () {
             /* The same sheet, the same conversation. The card is handed over so
