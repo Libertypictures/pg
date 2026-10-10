@@ -714,8 +714,29 @@
 
          The portrait card used to be labelled "Portrait Sessions", which read
          as a packages page — the owner's words were that it "sounds like a
-         packages page". It is The Studio now, and points at the home page, which
-         is what it always led to. -->
+         packages page". It became The Studio, and on 10 October 2026 the owner
+         renamed it again: the card now ASKS for the booking rather than naming
+         the place, because a link-in-bio visitor is deciding whether to book,
+         not browsing a studio. It still points at the home page, which is what
+         it has always led to, and the description now says what is behind it
+         rather than listing the kinds of work — the work, the packages, and what
+         a booking includes.
+
+         The four words of copy matter more than they look. "Portrait Sessions"
+         described a product, "The Studio" described a place, and neither said
+         what the visitor gets; "Book a shoot" is the only one of the three that
+         is a thing to DO.
+
+         THE CARDS BELOW ARE THIS PAGE'S OWN COPY, NOT ITS SOURCE. Since 10
+         October 2026 the studio edits them from the dashboard — the title, the
+         line under it, where it goes and the mark beside it — and the page
+         redraws the list from those rows (the script at the foot of this file
+         does the reading). What is written here is what a visitor sees whenever
+         that read does not succeed: no JavaScript, no connection, the records
+         empty. So these two are kept in step with the rows they were seeded
+         from rather than deleted, because they are the page's floor — and a page
+         with a floor can be edited from a phone without any way to make it
+         empty. -->
     <nav class="link-list" aria-label="Links">
         <!-- THE ASSISTANT. A link-in-bio page is four destinations and no way
              to ask anything, so a visitor with one question has to guess which
@@ -735,8 +756,8 @@
         <a href="https://libertymusa.com/?utm_source=igbio&amp;utm_medium=links&amp;utm_campaign=studio" class="link-card">
             <div class="link-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>
             <div class="link-text">
-                <div class="link-title">The Studio</div>
-                <div class="link-desc">Portraits, families, brands — the work, what's included, and how to book</div>
+                <div class="link-title">Book a shoot</div>
+                <div class="link-desc">The work, packages and what's included</div>
             </div>
         </a>
         <a href="https://libertymusa.com/wedding.html?utm_source=igbio&amp;utm_medium=links&amp;utm_campaign=weddings" class="link-card">
@@ -1438,20 +1459,138 @@
     </svg>
 </figure>
 
-<!-- NO SCRIPT OF THIS PAGE'S OWN, AND NO REQUEST OF ITS OWN EITHER.
+<!-- ONE REQUEST, AND THE PAGE DOES NOT NEED IT.
 
-     There used to be one: a fetch of /api/settings whose only use was the
-     Instagram handle in the footer. With Instagram gone the page has nothing to
-     ask the API for, so it no longer opens a connection to it at all — one less
-     round trip on a page whose entire visit is a few seconds on a phone, and one
-     less thing that can be slow on the cold-load path.
+     Until 10 October 2026 this page opened no connection of its own. The last
+     fetch it ever had was /api/settings, for an Instagram handle that no longer
+     exists, and with that gone the page had nothing left to ask for. It has
+     exactly one thing to ask for now: the cards themselves. Their titles, the
+     line under each one and where each one goes are rows the studio edits from
+     the dashboard, so the page reads them and draws the list from what comes
+     back (db/migrations/0031, routes/links.js in the studio's own records).
 
-     The door above is filled by the widget, and that is the whole point: a page
-     that builds its own version of the way in is how two versions of one
-     behaviour begin to disagree, and a page that reveals a door it cannot open is
-     how a dead button ships. If the assistant is off, the slot stays empty, the
-     page renders as it did before the assistant existed, and nobody is asked to
-     tap anything that does nothing. -->
+     WHAT HAPPENS WHEN THAT READ FAILS IS THE POINT OF THE WHOLE ARRANGEMENT.
+     The two cards above are markup, in this file, and they are what a visitor
+     sees unless the read succeeds with at least one usable card. No JavaScript,
+     a phone on a bad connection, the API asleep, the records empty: every one of
+     those renders the two cards this page was built with, and none of them is an
+     empty page. The request can only ever ADD to what is already here — which is
+     also why the studio can be strict about what a card may contain without
+     risking the page they are editing.
+
+     IT IS THE LAST THING ON THE PAGE AND IT BLOCKS NOTHING. The markup above is
+     parsed and painted before this runs, and the list is replaced only once an
+     answer has arrived, so the first paint does not wait on the API.
+
+     AND A CARD IS CHECKED AGAIN HERE BEFORE IT IS DRAWN. The server validates
+     every card it stores, and this repeats the two parts of that which matter to
+     a page: the destination is https or mailto and nothing else, and the words
+     are set as TEXT, never as markup. A page whose only guard against a
+     javascript: destination is a rule living on a server it does not own is
+     trusting something it cannot see. -->
+<script>
+(function () {
+    var API = 'https://api.libertymusa.com';
+    /* The marks this page can draw, by the name a card stores. The first two are
+       the page's own and are copied here exactly as they are drawn above; the
+       rest were fitted to the same box and the same 1.6 stroke so a card the
+       studio adds does not look like a different site. A name that is not in
+       here draws as a link, so an unknown mark is never a hole in a card. */
+    var ICONS = {
+        camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle>',
+        heart: '<path d="M10.5 10.7C10.2 10.3 9.9 9.6 9.6 8.85C8.9 8.6 7.7 8.6 6.5 8.8C5.2 9 4.1 9.2 3.5 9.9C2.8 10.7 2.9 11.7 3.5 12.6C4.1 13.9 5.6 15.2 7.4 15.8C8.2 16 9.5 16.5 10.1 16.8C11 16 11.5 15.3 11.9 14.6C12.6 13.5 13.4 11.7 13.8 10.3C14.1 9.1 13.6 7.8 12.6 7.4C11.7 7.1 10.6 7.8 9.7 8.85" stroke-width="1.4"/><path d="M0.4 18.8C1.2 19 2.4 19 3.6 18.8C4.8 18.6 5.6 18.3 6.8 17.9C7.8 17.6 8.4 17.3 9.4 16.7C10.2 16.1 10.6 15.9 11.4 15.8C12.2 15.7 13.4 16.1 14.2 15.7C15 15.4 15.9 15.1 16.6 14.6C17.5 13.9 18.3 13 19.1 12C20.2 10.4 20.9 8.4 21.7 7.1C22.4 6.1 22.9 5.4 23.4 5" stroke-width="1.4"/><path d="M18.9 8.4C20.5 7.3 22.1 6.2 23.5 5" stroke-width="1.25"/><path d="M23.5 5C23 6.6 23 8.7 23.3 10.3" stroke-width="1.25"/><path d="M5.3 10.3C4.8 10.8 4.7 11.5 5 12.3" stroke-width="1.25"/>',
+        calendar: '<rect x="3.2" y="5" width="17.6" height="15.4" rx="2.4"></rect><path d="M3.2 10.2h17.6"></path><path d="M8 3.2v3.4"></path><path d="M16 3.2v3.4"></path><path d="M8 14.2h3.4v3.4H8z"></path>',
+        mail: '<rect x="2.6" y="5.2" width="18.8" height="13.6" rx="2.4"></rect><path d="M3.4 6.8 12 13.1l8.6-6.3"></path>',
+        chat: '<path d="M20.6 15.3a2.3 2.3 0 0 1-2.3 2.3H7.7L3.6 21V5.4a2.3 2.3 0 0 1 2.3-2.3h12.4a2.3 2.3 0 0 1 2.3 2.3z"></path><path d="M7.6 9.1h8.8"></path><path d="M7.6 12.4h5.6"></path>',
+        star: '<polygon points="12 2.6 15 9.3 22 10 16.8 14.6 18.3 21.4 12 17.8 5.7 21.4 7.2 14.6 2 10 9 9.3"></polygon>',
+        gallery: '<rect x="2.8" y="4.6" width="18.4" height="14.8" rx="2.2"></rect><circle cx="8.4" cy="9.8" r="1.6"></circle><path d="M20.4 15.6 16.1 10.6 5.4 21"></path>',
+        arrow: '<path d="M4.4 12h13.4"></path><path d="M12.6 6.4 19.2 12l-6.6 5.6"></path>',
+        link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" stroke-width="1.5"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" stroke-width="1.5"></path>'
+    };
+    /* The ceiling, and it is the same six the studio's records refuse a seventh
+       of. The page would never draw more than the server will give it; this is
+       here so a page holding a stale answer cannot outlive the rule. */
+    var MAX = 6;
+
+    /* https and mailto, and nothing else. Deliberately NOT a list of the schemes
+       to refuse: `javascript:` is one of dozens, and the ones that are not on a
+       list yet are the reason a list is the wrong shape. */
+    function safeHref(raw) {
+        var value = String(raw == null ? '' : raw).trim();
+        if (!/^(https:\/\/|mailto:)/i.test(value)) return '';
+        if (/\s/.test(value)) return '';
+        return value;
+    }
+
+    function mark(key) {
+        var inner = ICONS[key] || ICONS.link;
+        return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">' + inner + '</svg>';
+    }
+
+    /* Built with createElement and textContent rather than as one HTML string:
+       the card's own words are then TEXT by construction and there is no step
+       where they could be read as tags, whatever a card happens to contain. */
+    function cardFor(card) {
+        var href = safeHref(card.href);
+        if (!href) return null;
+        var a = document.createElement('a');
+        a.className = 'link-card';
+        a.setAttribute('href', href);
+        var icon = document.createElement('div');
+        icon.className = 'link-icon';
+        icon.innerHTML = mark(card.icon);
+        var text = document.createElement('div');
+        text.className = 'link-text';
+        var title = document.createElement('div');
+        title.className = 'link-title';
+        title.textContent = card.title || '';
+        var desc = document.createElement('div');
+        desc.className = 'link-desc';
+        desc.textContent = card.description || '';
+        text.appendChild(title);
+        text.appendChild(desc);
+        a.appendChild(icon);
+        a.appendChild(text);
+        return a;
+    }
+
+    function redraw(items) {
+        var cards = items.filter(function (c) { return c && !c.isHidden; }).slice(0, MAX);
+        if (!cards.length) return;
+        var nav = document.querySelector('nav.link-list');
+        if (!nav) return;
+        var drawn = [];
+        cards.forEach(function (card) {
+            var el = cardFor(card);
+            if (el) drawn.push(el);
+        });
+        /* Not one card survived the check above: the page keeps exactly what it
+           has rather than becoming a list with a hole in it. */
+        if (!drawn.length) return;
+        /* The assistant's door is a door and stays first — it is the one entry
+           that answers rather than sends you somewhere, and it is the widget's
+           to fill, never this script's. */
+        var door = document.getElementById('links-ask');
+        var at = door ? door.nextSibling : nav.firstChild;
+        Array.prototype.slice.call(nav.querySelectorAll('.link-card')).forEach(function (el) {
+            nav.removeChild(el);
+        });
+        drawn.forEach(function (el) {
+            nav.insertBefore(el, at);
+        });
+    }
+
+    try {
+        fetch(API + '/api/links', { headers: { Accept: 'application/json' } })
+            .then(function (res) { return res.ok ? res.json() : null; })
+            .then(function (data) {
+                if (!data || !Array.isArray(data.items)) return;
+                redraw(data.items);
+            })
+            .catch(function () { /* the two cards above are the answer */ });
+    } catch (e) { /* ditto: an old browser without fetch keeps its own cards */ }
+})();
+</script>
 <!-- The studio assistant. It answers from the studio's live data and hands
      anything it cannot answer to Liberty. If it is not switched on it removes
      itself, so this page renders exactly as it did before it existed. -->
