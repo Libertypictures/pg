@@ -304,7 +304,7 @@
 
            Two things keep it honest. Only opacity and transform animate, both of
            which a phone composites without touching layout — the same constraint
-           the floating pill and the assistant's dock are built under. And `both`
+           the floating pill is built under. And `both`
            is what holds each item invisible until its own turn, instead of the
            strip flashing whole and then staggering, which is the failure this
            would have had if the delays were written on the keyframes. */
@@ -1664,8 +1664,19 @@
     })();
 </script>
 
-<!-- The studio assistant. It answers from the studio's live data and hands
-     anything it cannot answer to Liberty. If it is not switched on it removes
-     itself, so this page renders exactly as it did before it existed. -->
-<script src="assistant.js?v=4e7684c564" defer></script>
+<!-- NO ASSISTANT ON THIS PAGE, DELIBERATELY.
+
+     The widget is loaded by book.html, links.html, portfolio.html, wedding.html
+     and wedding-book.html, where a visitor arrives with a question. It was on
+     this page too, until 10 October 2026, when the owner asked for it off the
+     studio's home page — the page a "Book a shoot" card leads to is the one
+     where the work is looked at, and a floating way to ask something belongs
+     where somebody is already asking.
+
+     What is left here is the page's OWN way in: the `.lp-float-book` pill above,
+     which was always drawn even when the dock was present and is now simply not
+     stood down. Nothing else on this page reached for the widget, so deleting its
+     one <script> line was the whole of the change — if the assistant ever comes
+     back here, that comment and the gate's page list in ops/deploy-site.sh are
+     the two places that have to be told. -->
 </body></html>
