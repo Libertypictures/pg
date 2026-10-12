@@ -421,6 +421,9 @@
                      (docs/decisions/0080). -->
                 <button type="button" class="cta-btn-alt" id="pay-card-btn" onclick="payWithPaystack('card')" disabled="" hidden="">Or pay by card instead</button>
                 <p style="font-size:11.5px;margin-top:18px;color:var(--text-secondary);" id="payment-secure-note">Paystack takes the payment and adds its fee on top of what you send — about 1.5%, capped at ₦2,000 — so the checkout asks for a little more than the amount above. A transfer and a card cost the same.</p>
+                <!-- Shown from Paystack's callback until the booking is confirmed, so a
+                     client is not left watching a button that only says "Confirming…". -->
+                <p id="lpb-pay-status" role="status" aria-live="polite" style="display:none;font-size:12.5px;color:var(--text-secondary);margin-top:18px;line-height:1.8;"></p>
                 <div id="lpb-payment-success" style="display:none;text-align:center;padding:28px 4px 4px;">
                     <div style="width:52px;height:52px;border-radius:50%;background:var(--highlight-bg);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
                     <div class="serif" style="font-size:19px;font-weight:500;margin-bottom:10px;">You're booked.</div>
@@ -428,6 +431,22 @@
                     <p style="font-size:11px;color:var(--text-secondary);margin-bottom:24px;">Reference: <span id="lpb-payment-reference"></span></p>
                     <a href="#" id="lpb-whatsapp-link" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:#25D366;color:#fff;text-decoration:none;font-size:12.5px;font-weight:600;letter-spacing:0.4px;border-radius:30px;">Message Us on WhatsApp</a>
                     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px;"><button type="button" id="receipt-jpeg-btn" class="receipt-action-btn">Save Receipt as JPEG</button></div>
+                </div>
+                <!-- THE SAME PANEL AS THE SESSION PAGE (book.html), word for word:
+                     a client who has paid must never be told their booking may be
+                     lost, on either booking page. See book.html for the measurement
+                     behind it (11 October 2026: the charge settled at 21:15:06, the
+                     webhook saved it at 21:15:07, and the browser's four seconds of
+                     retries were all spent before Paystack would answer). -->
+                <div id="lpb-payment-pending" style="display:none;margin-top:24px;padding:20px 22px;border:1px solid var(--border-color);border-radius:14px;background:var(--highlight-bg);text-align:left;">
+                    <div style="font-size:14px;font-weight:600;margin-bottom:8px;">Your payment went through</div>
+                    <p style="font-size:12.5px;color:var(--text-secondary);line-height:1.9;margin-bottom:8px;">We are confirming your booking with Paystack now. You do not need to pay again — the pay buttons here are switched off so a second payment cannot be made. Nothing is lost.</p>
+                    <p style="font-size:12.5px;color:var(--text-secondary);line-height:1.9;margin-bottom:14px;">Your receipt is emailed as soon as your booking is confirmed. If it has not arrived in a few minutes, message us with the reference below and we will check it with you by hand.</p>
+                    <p style="font-size:11px;color:var(--text-secondary);margin-bottom:16px;">Reference: <span id="lpb-pending-reference"></span></p>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+                        <button type="button" id="lpb-retry-confirm" class="cta-btn-alt">Check again</button>
+                        <a href="#" id="lpb-pending-whatsapp" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;padding:12px 22px;background:#25D366;color:#fff;text-decoration:none;font-size:12px;font-weight:600;letter-spacing:0.4px;border-radius:30px;">Message Us on WhatsApp</a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -909,24 +928,92 @@
                 alert('The secure payment window could not open. Nothing has been charged — please refresh the page.');
             }
         }
+        /* THE WINDOW, AND WHY IT IS 30 SECONDS RATHER THAN FOUR (book.html carries
+           the measurement in full): a bank transfer's charge settles AFTER the
+           popup hands the client back, so the browser's first attempts can all be
+           answered "not successful yet" while Paystack's own webhook saves the
+           booking a second later. The two booking pages keep the same window and
+           the same words, so neither can drift from the other. */
+        var CONFIRM_DELAYS = [0, 2000, 3000, 5000, 6000, 7000, 7000];
+
+        function lpShowPayStatus(text) {
+            var el = document.getElementById('lpb-pay-status');
+            if (!el) return;
+            el.textContent = text;
+            el.style.display = 'block';
+        }
+
+        /* WHAT A CLIENT IS TOLD WHEN THE CONFIRMATION DOES NOT ANSWER — the same
+           panel, word for word, as the session page. The page knows the money
+           moved and that it could not get the studio's confirmation back; it does
+           NOT know the booking was lost, and the charge is recorded from
+           Paystack's notification (or by hand from the reconciliation screen)
+           either way. The pay buttons go off with their handlers removed: the old
+           failure re-armed a button labelled "Retry Confirming Booking" whose
+           click still ran payWithPaystack, which is a second charge offered to
+           somebody who has just paid. */
+        function lpShowPendingConfirmation(reference, reason) {
+            if (reason) console.warn('Booking confirmation did not answer:', reason);
+            var payBtn = document.getElementById('pay-btn');
+            var cardBtn = document.getElementById('pay-card-btn');
+            if (payBtn) { payBtn.removeAttribute('onclick'); payBtn.style.display = 'none'; }
+            if (cardBtn) { cardBtn.removeAttribute('onclick'); cardBtn.style.display = 'none'; }
+            var note = document.getElementById('payment-secure-note');
+            if (note) note.style.display = 'none';
+            var status = document.getElementById('lpb-pay-status');
+            if (status) status.style.display = 'none';
+            document.getElementById('lpb-pending-reference').textContent = reference;
+            var msg = "Hi Libertypictures! I've paid the retainer for my " + cart.baseName + " wedding package (Reference: " + reference + ") and the page could not confirm it just now \u2014 could you check it for me?";
+            document.getElementById('lpb-pending-whatsapp').href = 'https://wa.me/2349075170240?text=' + encodeURIComponent(msg);
+            document.getElementById('lpb-payment-pending').style.display = 'block';
+            var again = document.getElementById('lpb-retry-confirm');
+            again.onclick = function () {
+                again.disabled = true;
+                again.textContent = 'Checking\u2026';
+                handlePaymentSuccess({ reference: reference }).then(function () {
+                    again.disabled = false;
+                    again.textContent = 'Check again';
+                });
+            };
+        }
+
         async function handlePaymentSuccess(response) {
             var payBtn = document.getElementById('pay-btn'); payBtn.disabled = true; payBtn.textContent = 'Confirming your booking\u2026';
+            lpShowPayStatus('Your payment has gone through \u2014 we are confirming your booking now. This can take a moment, so please keep this page open.');
             try {
                 var result = null;
-                for (var attempt = 0; attempt < 3; attempt++) {
-                    if (attempt > 0) await new Promise(function (r) { setTimeout(r, 1500 * attempt); });
+                var lastError = null;
+                for (var attempt = 0; attempt < CONFIRM_DELAYS.length; attempt++) {
+                    if (attempt > 0) {
+                        await new Promise(function (r) { setTimeout(r, CONFIRM_DELAYS[attempt]); });
+                        payBtn.textContent = 'Confirming your booking\u2026 (still trying)';
+                    }
                     try {
                         var res = await fetch(API_BASE + '/confirm-payment', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookingId: window.lpbBookingData.id, reference: response.reference, packageName: cart.baseName, packagePrice: cart.basePrice, addons: cart.addons, totalAmount: cart.subtotal, retainerAmount: cart.retainer }) });
                         result = await res.json();
                         if (res.ok && result.success) break;
-                    } catch (e) { /* transient — try again */ }
+                        lastError = (result && result.error) || ('the worker answered ' + res.status);
+                    } catch (e) { lastError = (e && e.message) || 'the request did not complete'; }
                 }
-                if (!result || !result.success) throw new Error('Save failed');
+                if (!result || !result.success) {
+                    /* Not an alarm and not an exception: the money is in, and what
+                       happens next is the studio's job rather than the client's. */
+                    lpShowPendingConfirmation(response.reference, lastError);
+                    return;
+                }
                 updateStep(3);
                 document.getElementById('client-email').style.display = 'none';
                 document.getElementById('policy-ack').closest('label').style.display = 'none';
                 payBtn.style.display = 'none';
                 document.getElementById('payment-secure-note').style.display = 'none';
+                /* A confirmation that arrives late — a client who pressed "Check
+                   again", or a retry that finally caught up with the webhook —
+                   must not leave the "we are confirming" line and the pending panel
+                   standing under the "You're booked." screen. */
+                var statusEl = document.getElementById('lpb-pay-status');
+                if (statusEl) statusEl.style.display = 'none';
+                var pendingEl = document.getElementById('lpb-payment-pending');
+                if (pendingEl) pendingEl.style.display = 'none';
                 document.getElementById('lpb-payment-reference').textContent = response.reference;
                 if (typeof weddingSummaryMeta === 'function') weddingSummaryMeta();
                 document.getElementById('lpb-payment-success').style.display = 'block';
@@ -934,7 +1021,11 @@
                 var waLink = 'https://wa.me/2349075170240?text=' + encodeURIComponent(msg);
                 document.getElementById('lpb-whatsapp-link').href = waLink;
                 window.open(waLink, '_blank');
-            } catch (e) { payBtn.disabled = false; payBtn.textContent = 'Retry Confirming Booking'; alert('Your payment went through (Ref: ' + response.reference + '), but we hit an issue saving your booking. Please save this reference and reach out on WhatsApp.'); }
+            } catch (e) {
+                /* The confirmation call itself threw — most often the connection
+                   dropping while the client was on Paystack's page. */
+                lpShowPendingConfirmation(response.reference, (e && e.message) || e);
+            }
         }
 
         /* ── Receipt JPEG ── */

@@ -186,10 +186,18 @@
         /* THE LAMPS ARE NOT LIT ON PAPER. This was `#b0803a` — an amber lamp on
            white paper, which is a window nobody has ever seen from a street in
            daylight. On a light surface a window seen from outside is a dark
-           OPENING, so on paper it is the same ink family as the rest of this pen
-           at 42%. The amber lamp still exists, further down, where a lit window
-           belongs: on a dark surface. */
-        --dn-lit: rgba(41,37,30,.42);
+           OPENING, so on paper it is the same ink family as the rest of this pen.
+
+           AND IT IS AT 55% RATHER THAN AT 42%, which is the owner's correction
+           after looking at it: the pen is 28%, so an opening at 42% was a window
+           nobody could see — on paper the night city was the day city with nine
+           marks a hair darker in it, and the note that came back was that they
+           could not tell whether the two skylines were any different. Down here
+           this is the WHOLE of the difference, because the hour changes nothing
+           else in the city: an opening has to be darker than the linework that
+           outlines it, or it is not an opening. The amber lamp still exists,
+           further down, where a lit window belongs: on a dark surface. */
+        --dn-lit: rgba(41,37,30,.55);
     }
     /* The same light after dark: cooler, and no deeper. Selected off the document
        element, which the head script stamps before any of this is parsed — so
@@ -213,9 +221,11 @@
         html[data-abj="night"] {
             --dn-haze: rgba(126,140,182,.12);  --dn-haze-0: rgba(126,140,182,0);
         }
-        /* The deep field, and the streak, belong to this block and no other: a
-           light-mode visitor at midnight gets the quiet night, a dark-mode
-           visitor at midnight gets all of it.
+        /* The DEEP FIELD belongs to this block and no other, and it is now the
+           only thing that does: the streak used to be in here with it, which is
+           why a phone in light mode after dark had no shooting star in it at
+           all. A dark-mode visitor at midnight gets the same quiet night every
+           surface gets, with a field of dust standing in it.
 
            SELECTED ON `html` RATHER THAN ON THE CLASS ALONE, which is not
            decoration. This block is written above the mural's own rules, and a
@@ -306,7 +316,7 @@
        is still in. Written on a wrapper and not on `.dn-rays` itself, because
        that element is already turning under an animation, and an animation
        outranks a transition — a rule written there would never once run. */
-    .dn-rays-wrap { transition: transform .9s ease, opacity .8s ease; transform-box: view-box; transform-origin: 523px 105px; }
+    .dn-rays-wrap { transition: transform .9s ease, opacity .8s ease; transform-box: view-box; transform-origin: 523px 85px; }
     html[data-abj="night"] .dn-rays-wrap { opacity: 0; transform: rotate(72deg) scale(.55); }
     /* THE MARKS THAT ARE FILLED rather than drawn — the six stars, and the windows
        a building keeps lit after dark. Given by class and not by attribute,
@@ -317,11 +327,16 @@
        visitor's scheme is allowed to change more than the ink.
 
        The hour still decides WHETHER it is night — the sun and the moon are
-       Abuja's and nobody else's — but the mode decides HOW MUCH NIGHT THERE IS.
-       On paper the after-dark sky is the reference sheet's quiet one: a handful
-       of stars in ink. On a dark surface it opens up into a deep field with a
-       shooting star through it, which is the version of the drawing a visitor
-       holding a phone in bed is actually looking at.
+       Abuja's and nobody else's — and it decides WHAT THE NIGHT IS: the
+       crescent, a handful of stars, and the one mark up here that says the word
+       out loud, the shooting star. Every surface gets that night, because the
+       HOUR is what a shooting star belongs to.
+
+       AND THE SURFACE DECIDES HOW MUCH MORE OF IT THERE IS, where "more" is the
+       whole of what it may do: it adds. On paper the after-dark sky is the
+       reference sheet's quiet one, in ink. A dark surface opens a deep field
+       under it — fourteen specks of dust, half of them twinkling — which is the
+       version of this drawing a visitor holding a phone in bed is looking at.
 
        IT IS ONE GROUP OF EXTRA MARKS, not a second sky. Written as the opacity
        of a parent rather than as a rule on each star, because a child's own
@@ -407,7 +422,7 @@
         .dn-tw:nth-of-type(3n+1) { animation-delay: -1.6s; }
         .dn-tw:nth-of-type(3n+2) { animation-delay: -3.4s; }
         .dn-tw:nth-of-type(3n)   { animation-delay: -5.1s; }
-        .dn-rays { animation: dn-turn 240s linear infinite; transform-box: view-box; transform-origin: 523px 105px; }
+        .dn-rays { animation: dn-turn 240s linear infinite; transform-box: view-box; transform-origin: 523px 85px; }
         .dn-clouds { animation: dn-drift 110s ease-in-out infinite alternate; }
         /* THE ONE MOVEMENT THAT IS NOT A DRIFT. The streak crosses the sky in
            under two seconds and then is gone for sixteen, which is why its
@@ -437,10 +452,10 @@
        note for whoever moves it: the translate is written as its two components
        because a length in an SVG transform is a length in USER UNITS, not in
        pixels of the page — and the route it takes is the one band of this sky
-       that is empty at every window size, from the lower left up past       the plant's own side of the page, clear of the stamp, the greeting and the
-       light — and it starts on y=134 rather than on the 150 the rest of the
-       drawing would have allowed, because anything lower puts the tail's tip
-       behind the top card at 320px for the half-second it is fading in. */
+       that is empty at every window size: up from the lower left, past the
+       plant's own side of the page, clear of the stamp, the greeting and the
+       light. It starts on y=134 rather than lower, because anything lower puts
+       the tail's tip behind the top card for the half-second it is fading in. */
     @keyframes dn-shoot { 0% { opacity: 0; transform: translate(0, 0); } 0.8% { opacity: .9; } 6.4% { opacity: .8; } 8.5% { opacity: 0; transform: translate(144px, -132px); } 100% { opacity: 0; transform: translate(144px, -132px); } }
 
     /* ==== Link cards — one uniform style, no colored "primary" ====
@@ -845,7 +860,8 @@
 
      WHAT IS DRAWN, AND WHY IT IS THIS LITTLE. Three pieces, each on an edge: the
      sky across the top (the sun or the crescent over Aso Rock's side of the
-     window, six stars after dark, one slow cloud), the city low along the foot
+     window, eight stars and a shooting star after dark, one slow cloud drifting
+     across the light), the city low along the foot
      (eight buildings, the mosque's dome between its two minarets, the rock and
      its mast, two trees, a horizon and two field lines below it), and the plant
      climbing the left edge (one stem, seven leaves, two fallen). The reference
@@ -905,17 +921,34 @@
              the foot of the disc, which is what lets the one cloud cross the sun
              and the crescent alike.
 
-             IT WAS LIFTED AS ONE NUMBER. The disc, the crescent's outer arc, the
-             ray fan and BOTH of the turning points moved 17 units together,
-             which is why the morph below still holds and why nothing else in
-             this sky had to be touched. At rest the disc's lowest ink clears the
+             IT HAS BEEN LIFTED TWICE, EACH TIME AS ONE NUMBER, and the
+             arithmetic is the same both times: the disc, the crescent's outer
+             arc, the ray fan and BOTH of the turning points move together, which
+             is why the morph below still holds and why nothing else in this sky
+             has to be touched. Seventeen units the first time, so that the light
+             clears a cloud rather than sitting in it.
+
+             TWENTY MORE WHEN THE OWNER SAID THE CLOUD WAS "SLIGHTLY BLOCKED ON
+             SOME DEVICES AND GOOD ON OTHERS", which is a WIDTH rather than a
+             device. This sky is scaled by the window's width and the first card
+             is not: the bank's foot stood at 79px on a 320px window and at 189px
+             on a 768px one, and 768 is a width where the card begins at 184 — so
+             the cloud sat on the card's top corner on a tablet and on half a
+             desktop, and nowhere else. The bank's lowest ink is now at 127.8
+             units, which is 179px at 840px, the width the cloud and the column
+             stop overlapping at. That is the one width the flat "above y=150"
+             rule this replaced never looked at.
+
+             At rest the disc's lowest ink clears the
              bank's highest crest under it by 4.2 units, and by 1.1 units at the
              far end of the seven-unit drift — above the cloud at both ends of
              the travel, and only just above it at one of them. Those two are read
              off the flattened curves rather than off the path's own points,
              which is the second thing this pass fixed: the old check read the
              control points, and the control points flattered it. And no cloud's
-             ink comes within three pixels of the first card on a 320px window.
+             ink comes near the first card at ANY width, which is what the lift
+             above bought: the footing is read at 840px, the widest window where
+             the cloud and the column still overlap at all.
              Those numbers are the guard's, not this comment's.
 
              THE LIGHT DOES NOT MOVE, AND THAT IS WHAT MAKES IT A MORPH. Both
@@ -924,8 +957,8 @@
              shifts: at dusk the same disc loses its right edge where the cloud
              has been hiding it all day. -->
         <g class="dn-day">
-            <circle cx="523" cy="105" r="13.5" stroke-width="1.25"/>
-            <path d="M518 110C521 107 524 104 527 102M519 113C522 110 525 107 528 105" stroke-width=".7" opacity=".5"/>
+            <circle cx="523" cy="85" r="13.5" stroke-width="1.25"/>
+            <path d="M518 90C521 87 524 84 527 82M519 93C522 90 525 87 528 85" stroke-width=".7" opacity=".5"/>
             <!-- TEN RAYS OF UNEVEN LENGTH, and the unevenness is the point. They
                  were a symmetric eight-ray crown, which is a sun that could have
                  been set rather than drawn — every ray the same distance out,
@@ -971,7 +1004,7 @@
                  by eighteen units. -->
             <g class="dn-rays-wrap">
                 <g class="dn-rays" stroke-width="1.1">
-                    <path d="M504.15 111.68L493.78 115.35M505.59 93.26L498.13 88.22M511.3 90.03L500.84 76.63M515.48 84.33L512.4 75.87M522.3 85.01L521.67 67.02M527.6 86.56L530.26 75.89M533.5 86.81L540.5 74.69M537.39 91.11L541.7 86.94M539.78 96.08L543.31 94.2M541.85 111.68L552.22 115.35"/>
+                    <path d="M504.15 91.68L493.78 95.35M505.59 73.26L498.13 68.22M511.3 70.03L500.84 56.63M515.48 64.33L512.4 55.87M522.3 65.01L521.67 47.02M527.6 66.56L530.26 55.89M533.5 66.81L540.5 54.69M537.39 71.11L541.7 66.94M539.78 76.08L543.31 74.2M541.85 91.68L552.22 95.35"/>
                 </g>
             </g>
         </g>
@@ -991,15 +1024,24 @@
 
              THE STARS COME IN TWO DEPTHS. Eight of them are the night at any
              hour on any surface, spread wide and off-centre so that not one
-             lands in the stamp, in the greeting or in the light. The rest sit in
-             the `.dn-deep` group below with the shooting star, and that group is
-             written off in the styles until the visitor is on a dark surface —
-             so what a light-mode visitor sees after dark is the quiet sky, and
-             what a dark-mode visitor sees is the same sky with fourteen more
-             marks in it and something going across. -->
+             lands in the stamp, in the greeting or in the light, and the streak
+             stands here with them. The rest sit in the `.dn-deep` group below,
+             which is written off in the styles until the visitor is on a dark
+             surface — so what a light-mode visitor sees after dark is the quiet
+             sky, and what a dark-mode visitor sees is that same sky with
+             fourteen more marks in it.
+
+             THE STREAK USED TO BE ONE OF THOSE MARKS, and the owner's note is
+             why it is not: "there's no shooting star for night time" was a phone
+             in light mode after dark, being handed a crescent and eight stars
+             and nothing going across, because the streak had been put behind the
+             surface's own opacity instead of the hour's. A shooting star is the
+             HOUR's — it is the one mark up here that says "night" out loud — so
+             it stands in this group, beside the deep field rather than inside
+             it, and every surface gets one. -->
         <g class="dn-night">
-            <path d="M530.5 93.78A13.5 13.5 0 1 0 530.5 116.22A11.5 11.5 0 1 1 530.5 93.78Z" stroke-width="1.25"/>
-            <path d="M514.6 99.8C512.6 102 512.4 104.4 512.6 106.6" stroke-width=".7" opacity=".5"/>
+            <path d="M530.5 73.78A13.5 13.5 0 1 0 530.5 96.22A11.5 11.5 0 1 1 530.5 73.78Z" stroke-width="1.25"/>
+            <path d="M514.6 79.8C512.6 82 512.4 84.4 512.6 86.6" stroke-width=".7" opacity=".5"/>
             <use class="dn-star dn-tw" href="#dn-spark" transform="translate(108,32) scale(.55)" opacity=".85"/>
             <use class="dn-star dn-tw" href="#dn-spark" transform="translate(46,96) scale(.45)" opacity=".7"/>
             <use class="dn-star dn-tw" href="#dn-spark" transform="translate(172,142) scale(.5)" opacity=".75"/>
@@ -1008,15 +1050,26 @@
             <use class="dn-star dn-tw" href="#dn-spark" transform="translate(26,166) scale(.4)" opacity=".65"/>
             <use class="dn-star dn-tw" href="#dn-spark" transform="translate(556,44) scale(.45)" opacity=".7"/>
             <use class="dn-star dn-tw" href="#dn-spark" transform="translate(585,96) scale(.45)" opacity=".65"/>
-            <!-- THE DEEP FIELD, AND THE STREAK. Fourteen more marks, thin and
-                 small — dust rather than stars — half of them twinkling and half
-                 steady, so the sky has weather in it rather than a pulse. Then
-                 the streak: a bowed trail with a shorter one under it and the
-                 sparkle def from this sky's own head at the leading end, drawn
-                 at the middle of its flight once and moved by CSS. It sits in a
-                 wrapper with the static transform, so the animation's translate
-                 is a journey FROM here rather than a replacement for here — the
-                 two are different properties and only one of them can win. -->
+            <!-- THE STREAK, WHICH IS THE HOUR'S AND NOT THE SURFACE'S. A bowed
+                 trail with a shorter one under it and the sparkle def from this
+                 sky's own head at the leading end, drawn at the middle of its
+                 flight once and moved by CSS. It sits in a wrapper with the
+                 static transform, so the animation's translate is a journey FROM
+                 here rather than a replacement for here — the two are different
+                 properties and only one of them can win. It stands HERE, in the
+                 night group, rather than inside the deep field below it: see the
+                 note above the stars for the note it answers. -->
+                            <g transform="translate(26,134)">
+                    <g class="dn-shoot">
+                        <path d="M0 0C-7.7 5.4 -14.9 11.2 -21.7 17.6" stroke-width="1.2" opacity=".85"/>
+                        <path d="M1.1 1.3C-5.1 6.1 -10.3 10.6 -14.6 14" stroke-width=".6" opacity=".45"/>
+                        <use class="dn-star" href="#dn-spark" transform="scale(.72)" opacity=".9"/>
+                    </g>
+                </g>
+            <!-- AND THE DUST. Fourteen more marks, thin and small — dust rather
+                 than stars — half of them twinkling and half steady, so a dark
+                 sky has weather in it rather than a pulse. This is the group the
+                 SURFACE opens, and the only thing it opens. -->
             <g class="dn-deep">
                 <use class="dn-star dn-tw" href="#dn-spark" transform="translate(36,168) scale(.3)" opacity=".55"/>
                 <use class="dn-star" href="#dn-spark" transform="translate(62,56) scale(.34)" opacity=".5"/>
@@ -1032,13 +1085,6 @@
                 <use class="dn-star" href="#dn-spark" transform="translate(444,150) scale(.3)" opacity=".45"/>
                 <use class="dn-star dn-tw" href="#dn-spark" transform="translate(566,40) scale(.3)" opacity=".5"/>
                 <use class="dn-star" href="#dn-spark" transform="translate(590,96) scale(.28)" opacity=".45"/>
-                <g transform="translate(26,134)">
-                    <g class="dn-shoot">
-                        <path d="M0 0C-7.7 5.4 -14.9 11.2 -21.7 17.6" stroke-width="1.2" opacity=".85"/>
-                        <path d="M1.1 1.3C-5.1 6.1 -10.3 10.6 -14.6 14" stroke-width=".6" opacity=".45"/>
-                        <use class="dn-star" href="#dn-spark" transform="scale(.72)" opacity=".9"/>
-                    </g>
-                </g>
             </g>
         </g>
 
@@ -1068,9 +1114,9 @@
              ruin. The two small clouds are outside this group and stand still. -->
         <g class="dn-fore">
             <g class="dn-clouds" stroke-width="1.15" opacity=".8">
-                <path d="M450 138C449.5 134.73 452.83 130 455 127C457.17 124 460.33 120.83 463 120C465.67 119.17 468.67 121.17 471 122C473.33 122.83 474.5 125.67 477 125C479.5 124.33 482.83 119.83 486 118C489.17 116.17 492.67 114.33 496 114C499.33 113.67 503.17 115 506 116C508.83 117 511 118.83 513 120C515 121.17 516.17 121.92 518 123C519.83 124.08 522 126.5 524 126.5C526 126.5 528 124.25 530 123C532 121.75 533.33 120.33 536 119C538.67 117.67 542.67 116 546 115C549.33 114 552.67 112.67 556 113C559.33 113.33 563.33 115.83 566 117C568.67 118.17 569.67 120 572 120C574.33 120 577.33 117.67 580 117C582.67 116.33 585.33 115.67 588 116C590.67 116.33 593.33 118 596 119C598.67 120 601.67 120.17 604 122C606.33 123.83 608.67 127.5 610 130C611.33 132.5 613.67 134.67 612 137C610.33 139.33 605 142.47 600 144C595 145.53 588.33 146.23 582 146.2C575.67 146.17 569 143.73 562 143.8C555 143.87 547.33 146.5 540 146.6C532.67 146.7 525.33 144.37 518 144.4C510.67 144.43 503.33 146.7 496 146.8C488.67 146.9 480.33 145.03 474 145C467.67 144.97 462 147.77 458 146.6C454 145.43 450.5 141.27 450 138Z"/>
-                <path d="M462 132C464.67 131.33 472.67 128.43 478 128C483.33 127.57 489.33 128.57 494 129.4C498.67 130.23 504 132.4 506 133" stroke-width=".75" opacity=".5"/>
-                <path d="M540 131C542.67 130.27 550.67 127 556 126.6C561.33 126.2 567 127.7 572 128.6C577 129.5 583.67 131.43 586 132" stroke-width=".75" opacity=".5"/>
+                <path d="M450 118C449.5 114.73 452.83 110 455 107C457.17 104 460.33 100.83 463 100C465.67 99.17 468.67 101.17 471 102C473.33 102.83 474.5 105.67 477 105C479.5 104.33 482.83 99.83 486 98C489.17 96.17 492.67 94.33 496 94C499.33 93.67 503.17 95 506 96C508.83 97 511 98.83 513 100C515 101.17 516.17 101.92 518 103C519.83 104.08 522 106.5 524 106.5C526 106.5 528 104.25 530 103C532 101.75 533.33 100.33 536 99C538.67 97.67 542.67 96 546 95C549.33 94 552.67 92.67 556 93C559.33 93.33 563.33 95.83 566 97C568.67 98.17 569.67 100 572 100C574.33 100 577.33 97.67 580 97C582.67 96.33 585.33 95.67 588 96C590.67 96.33 593.33 98 596 99C598.67 100 601.67 100.17 604 102C606.33 103.83 608.67 107.5 610 110C611.33 112.5 613.67 114.67 612 117C610.33 119.33 605 122.47 600 124C595 125.53 588.33 126.23 582 126.2C575.67 126.17 569 123.73 562 123.8C555 123.87 547.33 126.5 540 126.6C532.67 126.7 525.33 124.37 518 124.4C510.67 124.43 503.33 126.7 496 126.8C488.67 126.9 480.33 125.03 474 125C467.67 124.97 462 127.77 458 126.6C454 125.43 450.5 121.27 450 118Z"/>
+                <path d="M462 112C464.67 111.33 472.67 108.43 478 108C483.33 107.57 489.33 108.57 494 109.4C498.67 110.23 504 112.4 506 113" stroke-width=".75" opacity=".5"/>
+                <path d="M540 111C542.67 110.27 550.67 107 556 106.6C561.33 106.2 567 107.7 572 108.6C577 109.5 583.67 111.43 586 112" stroke-width=".75" opacity=".5"/>
             </g>
         </g>
     </svg>
@@ -1364,14 +1410,18 @@
                  line wandering either side of the first is two lines, and this
                  drawing has one.
 
-                 IT IS NOT FADED, and that is the difference between this and the
-                 sheet: the ink simply stops at the foot of the page, the way the
-                 city stops at the left and right of it. Half strength, because a
-                 reflection is not a second city. And the NINE LAMPS ARE NOT IN
+                 AND IT STANDS AT A THIRD RATHER THAN AT A HALF, which is the
+                 studio's correction after looking at it: half of the row's
+                 strength was still the loudest thing in the foot of the page and
+                 read as a second city under the first. At .34 it is water under
+                 a city. The ink still does not FADE as it goes down, and that is
+                 the difference between this and the sheet: it simply stops at
+                 the foot of the page, the way the city stops at the left and
+                 right of it. And the NINE LAMPS ARE NOT IN
                  IT: the mirror is taken of the row and not of the night, so what
                  is reflected is the city rather than what is switched on inside
                  it, which is also exactly what the ground path is left out for. -->
-            <use class="dn-mirror" href="#dn-city-plan" transform="translate(0,136) scale(1,-1)" opacity=".5"/>
+            <use class="dn-mirror" href="#dn-city-plan" transform="translate(0,136) scale(1,-1)" opacity=".34"/>
 
             <!-- ONE GROUND, AND IT IS THE ONLY LINE IN THIS DRAWING THAT RUNS THE
                  WIDTH OF THE PAGE. There were four once: a horizon, a row of

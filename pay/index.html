@@ -362,6 +362,10 @@
                  paying by transfer is shown the account number instead of a card
                  form (docs/decisions/0080). -->
             <button type="button" class="pay-alt" id="pay-card-btn" hidden>Or pay by card instead</button>
+            <!-- Shown from the moment Paystack's callback fires until the payment is
+                 recorded, so a client is not left watching a button that only says
+                 "Confirming…" while a transfer settles. -->
+            <p id="lpb-pay-status" role="status" aria-live="polite" style="display:none; font-size:12.5px; color:var(--ink-soft); margin-top:16px; line-height:1.8;"></p>
             <!-- WHAT A TRANSFER COSTS, said where the client pays (ADR-0080). The
                  checkout opens on bank transfer, and that channel adds its fee to
                  what the SENDER sends — so the figure waiting at checkout is named
@@ -370,6 +374,34 @@
                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2"></rect><path d="M8 11V7a4 4 0 0 1 8 0v4"></path></svg>
                 Paystack takes the payment and adds its fee on top of what you send — about 1.5%, capped at ₦2,000 — so the checkout asks for a little more than the amount above. A transfer and a card cost the same.
             </p>
+
+            <!-- WHAT A CLIENT IS TOLD WHEN THE BROWSER'S CONFIRMATION DOES NOT
+                 ANSWER (ADR-0085, ADR-0086).
+
+                 This page asks the worker to record a charge Paystack has already
+                 taken, and its own question can fail while the charge itself is
+                 fine. Measured on 11 October 2026 (Laura, booking 64): the charge
+                 settled at 21:15:06, Paystack's webhook — the second entrance that
+                 files a charge no browser confirmed (ADR-0072) — recorded the
+                 booking at 21:15:07 and the receipt went at 21:15:08, and the
+                 browser's retries had all been spent BEFORE that, every one of them
+                 answered "not marked successful yet".
+
+                 So the page no longer answers that with a sentence about its own
+                 trouble. It says the two things it actually knows — the money
+                 arrived, and the studio is told about every charge — and it says
+                 what happens next, instead of handing a paying client a figure to
+                 quote and a job to do. -->
+            <div id="lpb-payment-pending" style="display:none; margin-top:22px; padding:20px 22px; border:1px solid var(--border); border-radius:var(--radius); background:var(--gold-soft); text-align:left;">
+                <div style="font-size:14px; font-weight:600; margin-bottom:8px;">Your payment went through</div>
+                <p style="font-size:12.5px; color:var(--ink-soft); line-height:1.9; margin-bottom:8px;">We are confirming your payment with Paystack now. You do not need to pay again — the pay buttons here are switched off so a second payment cannot be made. Nothing is lost.</p>
+                <p style="font-size:12.5px; color:var(--ink-soft); line-height:1.9; margin-bottom:14px;">Your receipt is emailed as soon as your payment is recorded. If it has not arrived in a few minutes, message us with the reference below and we will check it with you by hand.</p>
+                <p style="font-size:11px; color:var(--ink-soft); margin-bottom:16px;">Reference: <span id="lpb-pending-reference"></span></p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                    <button type="button" id="lpb-retry-confirm" class="link-alt-btn" style="width:auto; margin-top:0; padding:12px 22px;">Check again</button>
+                    <a href="#" id="lpb-pending-whatsapp" target="_blank" rel="noopener" class="wa-btn" style="margin-top:0;">Message Us on WhatsApp</a>
+                </div>
+            </div>
 
             <!-- TELLING THE STUDIO ABOUT A TRANSFER, as one quiet line UNDER the
                  pay button rather than a box beside it (docs/decisions/0080). The
@@ -449,6 +481,38 @@
            out while the client was told there was nothing to do. */
         linkRetainer: false
     };
+
+    /* THE WINDOW THIS PAGE GIVES A CHARGE TO BE RECORDED, and the one fact about
+       a payment that is still waiting for an answer.
+
+       Why 30 seconds and seven attempts, in full, in ADR-0085 — in one line: on
+       11 October 2026 a bank transfer settled at 21:15:06, Paystack's webhook
+       recorded the booking a second later and the receipt went a second after
+       that, while three attempts inside 4.5 seconds were already spent, every one
+       of them answered "not marked successful yet". The server is idempotent per
+       reference, so a retry can never double-record a payment; the point is that
+       the studio's own notification can no longer lose a race with this page. */
+    var CONFIRM_DELAYS = [0, 2000, 3000, 5000, 6000, 7000, 7000];
+
+    /* IS A CHARGE WAITING FOR AN ANSWER?
+
+       Once this is true the pay controls are gone and they do not come back: a
+       client who has paid is not the person to repair a bookkeeping gap, and the
+       one thing this page must never offer them is another checkout (ADR-0086).
+       It is set before anything else in lpShowPendingConfirmation, and every route
+       that could hand a live pay button back — updatePayButton, the button's own
+       click handler, the amount field, the package select, the balance lookup —
+       reads it. */
+    var paymentPending = false;
+
+    /* WHAT THIS CHARGE WAS, kept from the click that started it.
+
+       "Check again" arrives with nothing but the reference, and the payload that
+       records a payment needs the amount, the name and the email. They are
+       remembered here rather than asked for again: the client typed them once, and
+       a retry that made them retype anything would be asking them to describe the
+       payment the page is already trying to find. */
+    var pendingDetails = null;
 
     // The booking currently picked for payment from the lookup result.
     function selectedLookupBooking() {
@@ -1029,6 +1093,17 @@
     }
 
     function updatePayButton() {
+        /* NOT WHILE A CHARGE IS WAITING FOR AN ANSWER. This runs from the amount
+           field, the package select, the balance lookup and the link's own
+           "pay this session instead" — any of which would otherwise hand a
+           client who has already paid a live pay button again, which is the
+           second charge this page must never offer (ADR-0086). */
+        if (paymentPending) {
+            payBtn.disabled = true;
+            payBtn.style.display = 'none';
+            if (payCardBtn) { payCardBtn.disabled = true; payCardBtn.hidden = true; }
+            return;
+        }
         var amount = getCurrentAmount();
         /* Both buttons take money, so the same fact switches both, and the card
            route appears only when there is a charge to make (docs/decisions/0080). */
@@ -1060,6 +1135,12 @@
     }
 
     payBtn.addEventListener('click', function () {
+        /* ONCE A PAYMENT IS WAITING FOR AN ANSWER, THIS BUTTON CANNOT TAKE
+           ANOTHER ONE. The guard sits before everything else because a click is
+           the only thing in this page that can reach PaystackPop.setup — a
+           hidden button, an old reference or the card button pressing this one
+           all end here (ADR-0086). */
+        if (paymentPending) return;
         choosePayChannel('bank_transfer');
         formError.textContent = '';
 
@@ -1159,10 +1240,70 @@
         }
     });
 
+    function lpShowPayStatus(text) {
+        var el = document.getElementById('lpb-pay-status');
+        if (!el) return;
+        el.textContent = text;
+        el.style.display = 'block';
+    }
+
+    /* A PAYMENT THE PAGE COULD NOT GET AN ANSWER ABOUT, SAID HONESTLY (ADR-0086).
+
+       What the page knows at this moment is exactly two things: Paystack's
+       callback fired with a successful charge, and this page could not get the
+       studio's own confirmation back. It does NOT know the payment was lost — a
+       charge this page could not confirm is recorded from Paystack's notification
+       instead, and anything that arrives no other way is filed by the studio from
+       the reconciliation screen (ADR-0072). "Nothing is lost" here is not
+       reassurance; it is the design.
+
+       AND THE PAY CONTROLS GO OFF. This failure used to hand the button back
+       under the label "Retry Confirming Payment", on a button whose click opens
+       the checkout — beside a card button whose click presses that same button —
+       so a client who had already paid was offered TWO ways to pay a second
+       time. Both are hidden with `disabled` set, and `paymentPending` is
+       raised before anything else here, because the click handler and
+       updatePayButton are the doors a live pay button could come back through.
+       The one control that can bring the payment forward is Check again, which
+       re-asks the same question about the same reference and cannot charge
+       anybody. */
+    function lpShowPendingConfirmation(reference, reason) {
+        if (reason) console.warn('Payment confirmation did not answer:', reason);
+        paymentPending = true;
+        payBtn.disabled = true;
+        payBtn.classList.remove('is-loading');
+        payBtn.style.display = 'none';
+        if (payCardBtn) { payCardBtn.disabled = true; payCardBtn.hidden = true; }
+        var note = document.querySelector('.secure-note');
+        if (note) note.style.display = 'none';
+        var status = document.getElementById('lpb-pay-status');
+        if (status) status.style.display = 'none';
+        document.getElementById('lpb-pending-reference').textContent = reference;
+        var waMessage = "Hi Libertypictures! I've just paid (Reference: " + reference +
+            ") and the page could not confirm it just now \u2014 could you check it for me?";
+        document.getElementById('lpb-pending-whatsapp').href = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(waMessage);
+        document.getElementById('lpb-payment-pending').style.display = 'block';
+        var again = document.getElementById('lpb-retry-confirm');
+        again.onclick = function () {
+            again.disabled = true;
+            again.textContent = 'Checking\u2026';
+            handlePaymentSuccess({ reference: reference }).then(function () {
+                again.disabled = false;
+                again.textContent = 'Check again';
+            });
+        };
+    }
+
     async function handlePaymentSuccess(response, details) {
+        /* Check again — and the retry after it — arrives with nothing but the
+           reference: the charge was described by the click that opened it, and
+           that description is the one this page already holds. */
+        if (details) pendingDetails = details;
+        details = details || pendingDetails || {};
         payBtn.disabled = true;
         payBtn.classList.add('is-loading');
         payBtnText.textContent = 'Confirming…';
+        lpShowPayStatus('Your payment has gone through \u2014 we are confirming it now. This can take a moment, so please keep this page open.');
 
         var payload = {
             type: state.type,
@@ -1217,8 +1358,12 @@
             // Retry transient failures — the server is idempotent per
             // reference, so a retry can never double-record a payment.
             var result = null;
-            for (var attempt = 0; attempt < 3; attempt++) {
-                if (attempt > 0) await new Promise(function (r) { setTimeout(r, 1500 * attempt); });
+            var lastError = null;
+            for (var attempt = 0; attempt < CONFIRM_DELAYS.length; attempt++) {
+                if (attempt > 0) {
+                    await new Promise(function (r) { setTimeout(r, CONFIRM_DELAYS[attempt]); });
+                    payBtnText.textContent = 'Confirming\u2026 (still trying)';
+                }
                 try {
                     var res = await fetch(endpoint, {
                         method: 'POST',
@@ -1227,22 +1372,30 @@
                     });
                     result = await res.json();
                     if (res.ok && result.success) break;
-                } catch (err2) { /* transient — try again */ }
+                    lastError = (result && result.error) || ('the worker answered ' + res.status);
+                } catch (err2) { lastError = (err2 && err2.message) || 'the request did not complete'; }
             }
             if (!result || !result.success) throw new Error('Save failed');
             showSuccess(response.reference, details);
         } catch (err) {
-            // Payment genuinely succeeded on Paystack's side even if this
-            // save failed — never claim otherwise. Give a real way to
-            // resolve it instead of losing a real payment silently.
-            payBtn.disabled = false;
-            payBtn.classList.remove('is-loading');
-            payBtnText.textContent = 'Retry Confirming Payment';
-            formError.textContent = 'Your payment went through (Reference: ' + response.reference + '), but we hit an issue saving it. Please save this reference and message us on WhatsApp so we can confirm it manually — nothing has been lost.';
+            /* Whatever threw here is the PAGE's failure, not the payment's:
+               Paystack says the money moved, and this branch may never claim
+               otherwise — the page cannot know it, and on 11 October 2026 the
+               claim it used to make here was not true. */
+            /* The worker's own answer is the more useful thing to log: 'Save failed'
+               is this page's shorthand for its question, not for the payment. */
+            lpShowPendingConfirmation(response.reference, lastError || (err && err.message) || 'the page could not finish confirming');
         }
     }
 
     function showSuccess(reference, details) {
+        /* A Check again that finally got its answer must not leave the "we are
+           confirming" line and the pending panel standing under a screen that
+           already says the payment is recorded. */
+        var statusEl = document.getElementById('lpb-pay-status');
+        if (statusEl) statusEl.style.display = 'none';
+        var pendingEl = document.getElementById('lpb-payment-pending');
+        if (pendingEl) pendingEl.style.display = 'none';
         document.getElementById('form-view').style.display = 'none';
         document.getElementById('success-view').classList.add('is-visible');
         document.getElementById('success-reference').textContent = reference;
@@ -1305,6 +1458,19 @@
         document.getElementById('customer-email').value = '';
         document.getElementById('customer-phone').value = '';
         formError.textContent = '';
+        /* A DELIBERATE fresh start, and the one place a pay button is allowed
+           back: the previous payment was recorded before this control could be
+           pressed, and the client has now asked to make another one. The state
+           that kept the controls off goes with the rest of the old state. */
+        paymentPending = false;
+        pendingDetails = null;
+        payBtn.style.display = '';
+        var secureNote = document.querySelector('.secure-note');
+        if (secureNote) secureNote.style.display = '';
+        var wasPending = document.getElementById('lpb-payment-pending');
+        if (wasPending) wasPending.style.display = 'none';
+        var wasStatus = document.getElementById('lpb-pay-status');
+        if (wasStatus) wasStatus.style.display = 'none';
         payBtn.disabled = true;
         payBtn.classList.remove('is-loading');
         payBtnText.textContent = 'Select an amount to pay';

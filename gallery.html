@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="/vendor/fonts.css?v=2ca4e079b3">
 <script src="/vendor/jszip-3.10.1.min.js?v=acc7e41455"></script>
 <style>
-:root{--bg:#0f0c09;--surface:#1a1714;--surface2:#232019;--cream:#f6f1e7;--cream-soft:rgba(246,241,231,0.7);--cream-faint:rgba(246,241,231,0.4);--accent:#c4a67e;--accent-deep:#a3835c;--border:rgba(246,241,231,0.12);--gold-glow:rgba(196,166,126,0.25);--strip-surface:#38322b}
+:root{--bg:#0f0c09;--surface:#1a1714;--surface2:#232019;--cream:#f6f1e7;--cream-soft:rgba(246,241,231,0.7);--cream-faint:rgba(246,241,231,0.4);--accent:#c4a67e;--accent-deep:#a3835c;--border:rgba(246,241,231,0.12);--gold-glow:rgba(196,166,126,0.25);--strip-surface:#38322b;--cover-photo:none}
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--cream);-webkit-font-smoothing:antialiased;-webkit-overflow-scrolling:touch}
 img{display:block;max-width:100%}
@@ -135,6 +135,23 @@ a{color:inherit}
 .cover-meta{display:block;font-size:12px;letter-spacing:4px;margin-bottom:48px}
 .cover-scroll-hint span{height:64px}
 .cover-expiry{position:static;margin-top:28px;font-size:12px;letter-spacing:3px}
+/* ── THE COVER PHOTOGRAPH ON A DESKTOP ──
+   The studio's own covers are all vertical. Measured across the nine in the photo
+   mirror on 11 Oct 2026: 720x1080, 2160x2879, 2216x2954, 2160x2880, 2250x3000,
+   2268x4032, and three more at 720x1080. Drawn full-bleed into a 1600x900 window,
+   `background-size:cover` fills the WIDTH, so a 0.75 cover draws 2133px tall and
+   the window keeps the middle 900px of it — 42% of the photograph. The 0.5625 one
+   keeps 32%. A phone keeps all of it, which is why nobody has ever had a word
+   against the phone and why this is a desktop fault, not a photograph fault.
+
+   So on a desktop the photograph is drawn WHOLE, at its full height and centred,
+   and a blurred, darkened copy of the same file fills the window behind it: the
+   magazine cover this page is supposed to be, with nothing of the picture hidden.
+   Both rules are scoped to `.loaded` / `.has-photo`, so a gallery with no cover
+   photograph keeps the gradient it has always had — and they sit inside this
+   1024px block, so UNDER IT NOTHING CHANGES and a phone is still a phone. */
+.cover-bg.loaded{background-size:contain;background-repeat:no-repeat;background-position:center}
+.cover.has-photo::before{content:'';position:absolute;inset:-6%;background-image:var(--cover-photo);background-size:cover;background-position:center;background-repeat:no-repeat;filter:blur(30px) brightness(.45) saturate(1.02);pointer-events:none}
 }
 @keyframes coverIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 /* The cover mark fades in from the SAME 16px below, but it is also centred with a
@@ -386,8 +403,19 @@ body.has-selection #page-wrap{padding-bottom:calc(84px + env(safe-area-inset-bot
 .dl-close{margin-top:8px;font-size:11.5px;color:var(--cream-faint);background:none;border:none;text-decoration:underline}
 
 /* ── GUIDE OVERLAY ── */
-.welcome-sheet{position:fixed;inset:0;background:rgba(6,5,4,0.92);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px}
-.welcome-content{max-width:340px;width:100%;text-align:center;padding:44px 30px}
+/* The first-visit sheet is the one screen a client has to get out of before they
+   can look at anything, and on a small phone it did not fit: measured on the
+   served page at 320x568 on 11 Oct 2026, the four-step sheet was 688px tall in a
+   520px box, its first step above the top edge and its "Got it" button 16px below
+   the fold — with no way to scroll. The five steps below it (open, move, pick,
+   review, the window) are 757px, so the same fault was 69px worse.
+   `overflow-y:auto` on the overlay plus `margin:auto` on the card is the fix, and
+   it is invisible where the sheet already fitted: a scroll container that is not
+   overflowing draws no bar and lays out identically. `margin:auto` is what keeps
+   the top reachable — with `align-items:center` alone, a child taller than its
+   flex container overflows BOTH ends and the first step cannot be scrolled to. */
+.welcome-sheet{position:fixed;inset:0;background:rgba(6,5,4,0.92);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.welcome-content{max-width:340px;width:100%;text-align:center;padding:44px 30px;margin:auto}
 .welcome-content h2{font-family:'Fraunces',serif;font-weight:400;font-style:italic;font-size:22px;margin-bottom:28px;color:var(--cream)}
 .intro-step{display:flex;align-items:flex-start;gap:14px;text-align:left;margin-bottom:22px}
 .intro-step-icon{width:36px;height:36px;border-radius:50%;background:rgba(196,166,126,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -435,6 +463,18 @@ html.lp-demo .gallery-header{top:44px}
 .mo-cta{display:block;width:100%;padding:14px;border:none;border-radius:10px;background:var(--accent);color:#0f0c09;font-family:'Outfit',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:1.6px;text-transform:uppercase;cursor:pointer;margin-top:6px}
 @media (hover: hover) { .mo-cta:hover{background:var(--accent-deep)} }
 .mo-ghost{display:block;width:100%;padding:12px;border:1px solid rgba(246,241,231,0.18);border-radius:10px;background:transparent;color:var(--cream-soft);font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;margin-top:8px}
+/* ── THE CHECK ON A ONE-WAY ACTION ──
+   Finalising a proof selection cannot be undone: the list is sent to Liberty and
+   locked, and the API has no route that takes it back. Until 11 Oct 2026 the
+   confirm was a single gold button, which is a rubber stamp — a thumb on the way
+   past sent the list. The gold button now carries the count and starts DISABLED,
+   and the tick above it is the only thing that can enable it. Declared here, after
+   .mo-cta, so it wins over the hover tint on a button that cannot be pressed. */
+.mo-cta[disabled]{opacity:0.45;cursor:not-allowed;background:rgba(196,166,126,0.55)}
+.mo-check{display:flex;gap:10px;align-items:flex-start;text-align:left;margin:0 0 14px;padding:11px 12px;border:1px solid rgba(246,241,231,0.14);border-radius:10px;background:rgba(246,241,231,0.04);cursor:pointer}
+.mo-check input{flex-shrink:0;width:18px;height:18px;margin-top:1px;accent-color:var(--accent);cursor:pointer}
+.mo-check span{font-size:11.5px;line-height:1.5;color:var(--cream-soft);letter-spacing:0.2px}
+.mo-check input:checked + span{color:var(--cream)}
 .mo-note{font-size:10.5px;color:var(--cream-faint);letter-spacing:0.3px}
 .pay-fields{margin:14px 0 6px;text-align:left}
 .pay-field{background:rgba(246,241,231,0.05);border:1px solid rgba(246,241,231,0.14);border-radius:9px;padding:11px 12px;font-size:12.5px;color:var(--cream);margin-bottom:8px;font-family:'Share Tech Mono',monospace;letter-spacing:0.5px;display:flex;justify-content:space-between}
@@ -588,15 +628,19 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
         <h2 style="font-family:'Outfit',sans-serif;font-weight:600;font-size:16px;letter-spacing:3px;text-transform:uppercase;margin-bottom:28px;color:var(--cream);">Quick Guide</h2>
         <div class="intro-step">
             <div class="intro-step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
-            <p><strong>Scroll to browse</strong> your photos. Tap any photo to open the <strong>film viewer</strong> — swipe left or right, or tap a frame on the film strip to jump around.</p>
+            <p id="guide-open-text"><strong>Click or tap any photo</strong> in the grid to open the viewer.</p>
+        </div>
+        <div class="intro-step">
+            <div class="intro-step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 5 3 12 9 19"/><polyline points="15 5 21 12 15 19"/></svg></div>
+            <p id="guide-move-text"><strong>Swipe left or right</strong> on the main photo — or <strong>click a frame</strong> on the film strip — to move through the shoot.</p>
         </div>
         <div class="intro-step">
             <div class="intro-step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
-            <p><strong>Tap the ★ star</strong> on any photo you love. A "My Favourites" button appears at the top so you can review just your picks.</p>
+            <p id="guide-pick-text"><strong>Click the main photo</strong> to add it to your picks, click it again to remove it — or use the <strong>★ star button</strong>.</p>
         </div>
         <div class="intro-step">
-            <div class="intro-step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg></div>
-            <p><strong>Save all your starred photos at once</strong> using the bar that appears at the bottom. No need to download one by one.</p>
+            <div class="intro-step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></div>
+            <p id="guide-review-text"><strong>View selection</strong> shows only your picks; <strong>Show all</strong> brings every photo back. Then <strong>Finalise my selection</strong>.</p>
         </div>
         <div class="intro-step">
             <div class="intro-step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
@@ -1034,10 +1078,24 @@ function renderOpenGallery() {
     }
     paintCoverCount();
     var bg = $('cover-bg');
+    var coverEl = $('cover');
     bg.classList.remove('loaded');
+    if (coverEl) { coverEl.classList.remove('has-photo'); coverEl.style.removeProperty('--cover-photo'); }
     if (gallery.coverUrl) {
         var img = new Image();
-        img.onload = function () { bg.style.backgroundImage = 'url(' + API + gallery.coverUrl + ')'; bg.classList.add('loaded'); };
+        img.onload = function () {
+            bg.style.backgroundImage = 'url(' + API + gallery.coverUrl + ')';
+            bg.classList.add('loaded');
+            /* The cover photograph is the one picture on this page drawn at the
+               size of the window, and on a desktop it is drawn whole over a blurred
+               copy of itself (see the desktop block in the stylesheet). The blurred
+               layer has to be handed the same URL, and it is the file that has just
+               loaded — this adds no request of its own. */
+            if (coverEl) {
+                coverEl.style.setProperty('--cover-photo', 'url(' + API + gallery.coverUrl + ')');
+                coverEl.classList.add('has-photo');
+            }
+        };
         img.src = API + gallery.coverUrl;
     } else { bg.classList.add('no-photo'); }
     if (G.logoUrl) { var lg = $('cover-logo'); lg.src = API + G.logoUrl; lg.style.display = 'block'; }
@@ -1049,20 +1107,26 @@ function renderOpenGallery() {
     // first-open per-mode guide copy (welcome sheet) — proof: how to pick,
     // delivery and share: how to download
     var guide = $('welcome-sheet');
-    var steps = guide.querySelectorAll('.intro-step');
-    if (steps.length) {
+    /* Each step is written by its own id rather than by its position: the sheet
+       carries five steps and the reader is told one action per line, so adding or
+       reordering one is now this list and the markup, never an index. */
+    var setGuideStep = function (id, html) { var el = $(id); if (el) el.innerHTML = html; };
+    if (guide) {
         if (isShare()) {
-            steps[0].querySelector('p').innerHTML = '<strong>These are your photos</strong> \u2014 ready to look at and download. Tap any photo for the film viewer, or download straight from the grid.';
-            steps[1].querySelector('p').innerHTML = '<strong>Tap the \u2605 star to keep</strong> a photo for downloading later \u2014 your keeps fill the bottom bar.';
-            steps[2].querySelector('p').innerHTML = '<strong>Download your kept photos at once</strong> \u2014 share them to your Photos or save as a zip.';
+            setGuideStep('guide-open-text', '<strong>These are your photos</strong> \u2014 ready to look at and download. Click or tap any photo for the film viewer, or download straight from the grid.');
+            setGuideStep('guide-move-text', '<strong>Swipe left or right</strong> on the main photo \u2014 or <strong>click a frame</strong> on the film strip.');
+            setGuideStep('guide-pick-text', '<strong>Click the \u2605 star</strong> to keep a photo for downloading later \u2014 your keeps fill the bottom bar.');
+            setGuideStep('guide-review-text', '<strong>View selection</strong> shows only the photos you kept; <strong>Show all</strong> brings every photo back. Then download them at once.');
         } else if (isDeliv) {
-            steps[0].querySelector('p').innerHTML = '<strong>These are your edited finals</strong> \u2014 every photo you picked, delivered. Tap any photo for the film viewer, or download straight from the grid.';
-            steps[1].querySelector('p').innerHTML = '<strong>Tap the \u2605 star to keep</strong> a photo for downloading later \u2014 your keeps fill the bottom bar.';
-            steps[2].querySelector('p').innerHTML = '<strong>Download your kept finals at once</strong> \u2014 share them to your Photos or save as a zip.';
+            setGuideStep('guide-open-text', '<strong>These are your edited finals</strong> \u2014 every photo you picked, delivered. Click or tap any photo for the film viewer, or download straight from the grid.');
+            setGuideStep('guide-move-text', '<strong>Swipe left or right</strong> on the main photo \u2014 or <strong>click a frame</strong> on the film strip.');
+            setGuideStep('guide-pick-text', '<strong>Click the \u2605 star</strong> to keep a final for downloading later \u2014 your keeps fill the bottom bar.');
+            setGuideStep('guide-review-text', '<strong>View selection</strong> shows only the finals you kept; <strong>Show all</strong> brings every photo back. Then download them at once.');
         } else {
-            steps[0].querySelector('p').innerHTML = '<strong>Scroll to browse</strong> your proofs. Tap any photo to open the <strong>film viewer</strong> \u2014 swipe, or tap a frame on the film strip.';
-            steps[1].querySelector('p').innerHTML = '<strong>Tap the \u2605 star to pick</strong> the photos you want Liberty to edit. A \u201cMy Picks\u201d button appears at the top to review them.';
-            steps[2].querySelector('p').innerHTML = '<strong>When you\u2019re happy, finalise your selection</strong> \u2014 it locks your pick list and sends it to Liberty. Your edited finals arrive in a separate delivery link.';
+            setGuideStep('guide-open-text', '<strong>Click or tap any photo</strong> in the grid to open the viewer.');
+            setGuideStep('guide-move-text', '<strong>Swipe left or right</strong> on the main photo \u2014 or <strong>click a frame</strong> on the film strip \u2014 to move through the shoot.');
+            setGuideStep('guide-pick-text', '<strong>Click the main photo</strong> to add it to your picks, click it again to remove it \u2014 or use the <strong>\u2605 star button</strong>.');
+            setGuideStep('guide-review-text', '<strong>View selection</strong> shows only your picks; <strong>Show all</strong> brings every photo back. Then <strong>Finalise my selection</strong> \u2014 you\u2019ll be asked to confirm first.');
         }
         var gi = guide.querySelector('#guide-expiry-text');
         var left = daysUntil(gallery.expiresAt);
@@ -1531,7 +1595,7 @@ function updateLbPicks() {
     var n1 = lbNoun();
     var hint = $('lb-picks-hint');
     if (lbPicksOnly) {
-        txt.textContent = '\u2605 ' + c + ' \u00b7 ' + lbOnlyNoun() + ' only \u2715';
+        txt.textContent = '\u2605 ' + c + ' ' + lbOnlyNoun() + ' \u00b7 Show all \u2715';
         if (hint) hint.textContent = '';
     } else {
         txt.textContent = 'You\u2019ve ' + n1 + ' ' + c + ' photo' + (c === 1 ? '' : 's');
@@ -1660,6 +1724,7 @@ function prewarmLb() {
 function lbGuideIcons() {
     return {
         browse: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>',
+        move:   '<svg viewBox="0 0 24 24"><polyline points="9 5 3 12 9 19"/><polyline points="15 5 21 12 15 19"/></svg>',
         star:   '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
         chip:   '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3" fill="currentColor" stroke="none"/></svg>',
         deliver:'<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>',
@@ -1669,40 +1734,62 @@ function lbGuideIcons() {
 
 function lbGuideContent() {
     var d = canKeep();
+    /* Read ONCE, here, before any of the copy below is built. `note` used to consult
+       `share` while `var share = isShare()` was still sitting further down the
+       function, so hoisting left it undefined and a SHARE gallery was handed the
+       DELIVERY note ("finals are never deleted") — while its own heading, computed
+       after the declaration, correctly said "photos". Measured in a share gallery
+       in a browser on 11 Oct 2026: heading "Your photos", note "finals". The word
+       only ever came out right on the branch that read it first. */
+    var share = isShare();
     var pickedNoun = d ? 'kept' : 'picked';
     var picksLabel = d ? 'keeps' : 'picks';
     var steps = [
         {
             ico: 'browse',
-            title: 'Browse & move around',
-            body: 'Scroll the grid, tap a photo to open. <b>Swipe</b> the photo \u2014 or tap a frame on the <b>film strip</b> \u2014 to move through the shoot.'
+            title: 'Open a photo',
+            body: 'Click or tap <b>any photo in the grid</b> to open this viewer.'
+        },
+        {
+            ico: 'move',
+            title: 'Move through the shoot',
+            body: '<b>Swipe left or right</b> on the main photo \u2014 or <b>click a frame</b> on the film strip \u2014 to go through every photo.'
         },
         {
             ico: 'star',
             title: d ? 'Keep what you want' : 'Pick what you love',
-            body: d
-                ? 'Tap the photo or the <b>\u2605</b> to keep it. A gold star lands on its film frame.'
-                : 'Tap the photo or the <b>\u2605</b> to pick it. A gold star lands on its film frame.'
+            body: 'Click or tap <b>the main photo</b> to add it to your ' + picksLabel + ', and click it again to remove it \u2014 or use the <b>\u2605 star button</b>. A gold star lands on its film frame.'
         },
         {
             ico: 'chip',
             title: 'See only your ' + picksLabel,
-            body: 'The counter at the lower-left shows what you\u2019ve ' + pickedNoun + '. Tap it to filter the film to those photos \u2014 tap again for the full roll.'
+            body: '<b>View selection</b> shows only the photos you have ' + pickedNoun + '; <b>Show all</b> brings every photo back. On the grid, <b>\u2605 My Favourites</b> does the same.'
         },
         {
             ico: d ? 'download' : 'deliver',
             title: d ? 'Download' : 'Finalise',
             body: d
-                ? 'Tap <b>Download my picks</b> to save all your keeps at once, or <b>Save Photo</b> for the one you\u2019re viewing.'
-                : 'When you\u2019re done, tap <b>Finalise my selection</b>. Liberty gets your list and starts editing. You can change picks anytime until then.'
+                ? 'Click <b>Download my picks</b> to save all your ' + picksLabel + ' at once, or <b>Save photo</b> for the one you\u2019re viewing.'
+                : 'Click <b>Finalise my selection</b> when you\u2019re done \u2014 you\u2019ll be asked to confirm first, then Liberty gets your list and starts editing.'
         }
     ];
+    /* And the same division here: a share gallery's note said "finals are never
+       deleted" about a one-off set of photographs. */
     var note = d
-        ? '<b>Limited time.</b> Download before the window ends \u2014 you can reopen it later with one small payment, and finals are never deleted.'
+        ? (share
+            ? '<b>Limited time.</b> Download before the window ends \u2014 you can reopen it with one small payment, and your photos are never deleted.'
+            : '<b>Limited time.</b> Download before the window ends \u2014 you can reopen it later with one small payment, and finals are never deleted.')
         : '<b>Time-limited.</b> If the window ends before you finalise, your current picks lock in automatically. Extend with a small fee if you need more time.';
+    /* A SHARE gallery is not a delivery and is never told it has finals — the guard
+       has said so since 28 Sep 2026 (modeProblems: "a share gallery borrows the
+       delivery guide, so the client is told about finals"), but it compared the two
+       storage keys and nothing else, so this guide's own heading was calling a
+       one-off set's photographs "finals" the whole time. Measured in a share
+       gallery on 11 Oct 2026: kicker "Your finals", title "How to download your
+       finals". The phase now decides both words. */
     return {
-        kicker: d ? 'Your finals' : 'Your gallery',
-        title: d ? 'How to download your finals' : 'How this gallery works',
+        kicker: share ? 'Your photos' : (d ? 'Your finals' : 'Your gallery'),
+        title: share ? 'How to download your photos' : (d ? 'How to download your finals' : 'How this gallery works'),
         steps: steps,
         note: note,
         cta: d ? 'Start browsing' : 'Start picking'
@@ -1950,30 +2037,62 @@ $('dl-close-btn').addEventListener('click', function () { $('dl-overlay').classL
 
 /* ===================== FINALISE (proof) ===================== */
 var moCb = null;
+/* ── THE CONFIRM ON A ONE-WAY ACTION ──
+   Finalising is the only thing on this page that cannot be taken back: the list
+   goes to Liberty and is locked, and the API has no route that reopens it. Until
+   11 Oct 2026 the confirm was one gold button, which is a rubber stamp — a thumb
+   on the way past sent seven photographs. Three things change here:
+
+     * the button says what it does, with the number on it ("Lock in 7 photos");
+     * it starts DISABLED, and the tick above it is the only thing that enables it;
+     * the dialog is a dialog: it names itself, takes focus, closes on Escape, and
+       is opened by openMo() so the counter part is written in one place.
+
+   The tick is never remembered — no cookie, no storage — so every visit starts
+   unticked and the check is a decision each time, not a setting. */
 function ensureMo() {
     var m = $('mo');
     if (m) return m;
     m = document.createElement('div');
     m.className = 'mo'; m.id = 'mo';
+    m.setAttribute('role', 'dialog');
+    m.setAttribute('aria-modal', 'true');
+    m.setAttribute('aria-labelledby', 'mo-title');
     m.innerHTML = '<div class="mo-card"><h3 id="mo-title"></h3><div id="mo-body"></div>' +
-        '<button class="mo-cta" id="mo-ok">Continue</button>' +
+        '<label class="mo-check" id="mo-check-wrap"><input type="checkbox" id="mo-check"><span>' +
+        'I understand my list is locked once I send it</span></label>' +
+        '<button class="mo-cta" id="mo-ok" disabled>Continue</button>' +
         '<button class="mo-ghost" id="mo-cancel">Cancel</button></div>';
     document.body.appendChild(m);
     $('mo-cancel').addEventListener('click', hideMo);
     $('mo').addEventListener('click', function (e) { if (e.target === $('mo')) hideMo(); });
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && m.classList.contains('show')) hideMo();
+    });
     return m;
 }
-function openMo(kind, title, bodyHtml, onOk) {
+/* `okLabel` is the button's own words, so the action carries its consequence:
+   "Lock in 7 photos" is not a sentence anyone presses by accident. */
+function openMo(kind, title, bodyHtml, onOk, okLabel) {
     var m = ensureMo();
     moCb = onOk;
     $('mo-title').textContent = title;
     $('mo-body').innerHTML = bodyHtml;
     var ok = $('mo-ok');
+    var box = $('mo-check');
+    var wrap = $('mo-check-wrap');
+    var needsCheck = (kind === 'finalise');
+    if (wrap) wrap.style.display = needsCheck ? '' : 'none';
+    if (box) {
+        box.checked = false;
+        box.onchange = function () { ok.disabled = !box.checked; };
+    }
     ok.style.display = 'block';
-    ok.innerHTML = (kind === 'finalise') ? 'Yes, lock in my selection' : 'Continue';
-    ok.disabled = false;
+    ok.innerHTML = okLabel || (needsCheck ? 'Yes, lock in my selection' : 'Continue');
+    ok.disabled = needsCheck;
     ok.onclick = function () { if (moCb) moCb(ok); };
     m.classList.add('show');
+    if (needsCheck && box) box.focus();
 }
 function hideMo() { var m = $('mo'); if (m) m.classList.remove('show'); }
 
@@ -1985,9 +2104,10 @@ function startFinalise() {
         return '<img src="' + pThumb(p) + '" alt="">';
     }).join('');
     openMo('finalise', 'Lock in your selection?',
-        '<p>You\u2019re sending <strong>' + n + ' photo' + (n === 1 ? '' : 's') + '</strong> to Liberty for editing. You won\u2019t be able to change the list after this.</p>' +
+        '<p>You\u2019re sending <strong>' + n + ' photo' + (n === 1 ? '' : 's') + '</strong> to Liberty for editing. You won\u2019t be able to change the list after this. Your photos stay in your gallery until the window ends.</p>' +
         (thumbs ? '<div class="conf-thumbs">' + thumbs + '</div>' : ''),
-        function (btn) { doFinalise(btn); });
+        function (btn) { doFinalise(btn); },
+        'Lock in ' + n + ' photo' + (n === 1 ? '' : 's'));
 }
 function doFinalise(btn) {
     btn.disabled = true;
