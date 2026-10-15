@@ -198,6 +198,12 @@
         @media (hover: hover) { .lpb-time-btn:hover { border-color:var(--lpb-accent); background:var(--lpb-accent-soft); color:var(--lpb-accent); } }
         .lpb-time-btn.lpb-time-selected { background:var(--lpb-accent); border-color:var(--lpb-accent); color:var(--lpb-accent-text); box-shadow:0 4px 14px rgba(138,115,85,.30); }
         .lpb-times-placeholder { font-size:13.5px; color:var(--lpb-muted); font-style:italic; text-align:center; padding:14px 0; }
+        /* THE WAY TO A PERSON FROM AN EMPTY DATE — a real tap target, not a phrase in
+           italics: the page's own WhatsApp control (green, as on the payment panels),
+           13px of padding top and bottom so it measures about 44px on a phone. Hidden
+           here, shown by the page only when there is nothing to pick. See the block in
+           the script that decides when. */
+        .lpb-times-contact { display:none; width:max-content; max-width:100%; margin:2px auto 0; padding:13px 16px; background:#25D366; color:#fff; border-radius:30px; text-decoration:none; font-size:12px; font-weight:600; letter-spacing:0.2px; text-align:center; }
         .lpb-fields { display:flex; flex-direction:column; gap:18px; }
         .lpb-field { display:flex; flex-direction:column; gap:8px; }
         .lpb-field label { font-size:11px; text-transform:uppercase; letter-spacing:1px; font-weight:600; color:var(--lpb-muted); }
@@ -359,6 +365,11 @@
                     <span class="lpb-step-label">Available Times</span>
                     <p class="lpb-times-placeholder" id="lpb-times-placeholder">Select a date to see available times</p>
                     <div class="lpb-times" id="lpb-times-grid" style="display:none;" role="group" aria-label="Available time slots"></div>
+                    <!-- THE DOOR FROM AN EMPTY DATE. Hidden by the class; the page shows it
+                         only when a date has nothing to pick or the times could not be
+                         loaded, and it fills in the day the client asked about. The same
+                         door, and the same message, as book.html. -->
+                    <a class="lpb-times-contact" id="lpb-times-contact" href="https://wa.me/2349075170240" target="_blank" rel="noopener">Message the studio on WhatsApp</a>
                     <div class="lpb-divider"></div>
                     <span class="lpb-step-label">Your Details</span>
                     <div class="lpb-fields">
@@ -421,6 +432,15 @@
                      (docs/decisions/0080). -->
                 <button type="button" class="cta-btn-alt" id="pay-card-btn" onclick="payWithPaystack('card')" disabled="" hidden="">Or pay by card instead</button>
                 <p style="font-size:11.5px;margin-top:18px;color:var(--text-secondary);" id="payment-secure-note">Paystack takes the payment and adds its fee on top of what you send — about 1.5%, capped at ₦2,000 — so the checkout asks for a little more than the amount above. A transfer and a card cost the same.</p>
+                <!-- THE WAY TO A PERSON, FROM THE RETAINER STEP ITSELF. The same
+                     door, the same single sentence, as book.html — and for the same
+                     reason ADR-0089 records: the footer's WhatsApp and email row is
+                     about 5,000px of scrolling from the step where a couple is
+                     actually stuck. Read book.html for the whole argument; the only
+                     difference here is the prefill, which says which booking page
+                     they are on so the studio does not have to ask. -->
+                <p id="retainer-help" style="font-size:11.5px;margin-top:20px;color:var(--text-secondary);line-height:1.9;">Stuck on this step? A date that will not hold, a transfer your bank refuses, a question about the retainer — none of that has to be worked out alone.</p>
+                <a class="cta-btn-alt" id="retainer-help-link" href="https://wa.me/2349075170240?text=Hi%20Libertypictures!%20I%27m%20stuck%20at%20the%20retainer%20step%20on%20the%20wedding%20booking%20page%2C%20could%20you%20help%20me%3F" target="_blank" rel="noopener">Message the studio on WhatsApp</a>
                 <!-- Shown from Paystack's callback until the booking is confirmed, so a
                      client is not left watching a button that only says "Confirming…". -->
                 <p id="lpb-pay-status" role="status" aria-live="polite" style="display:none;font-size:12.5px;color:var(--text-secondary);margin-top:18px;line-height:1.8;"></p>
@@ -1094,15 +1114,42 @@
             if (!response.ok || !result.success) throw new Error((result && result.error) || 'Booking failed \u2014 please try again.');
             return result.booking;
         }
+        /* THE WHOLE ANSWER, NOT ONLY THE TIMES. GET /availability answers with a `state`
+           beside its slots \u2014 open, full, closed, blocked or past \u2014 and this used to
+           return `slots` alone, so a Sunday, a date the studio took off, a booked-out
+           Saturday and a day that has gone by all arrived as the same empty array and
+           were all answered with the same sentence. See NO_TIMES_REASON below. */
         async function loadAvailableTimes(dateObj) {
             var dateParam = dateObj.getFullYear() + '-' + String(dateObj.getMonth()+1).padStart(2,'0') + '-' + String(dateObj.getDate()).padStart(2,'0');
             var url = LPB_WORKER_URL + '/availability?date=' + encodeURIComponent(dateParam) + '&timeZone=' + encodeURIComponent(LPB_TIMEZONE);
             var response = await fetch(url); var result = {}; try { result = await response.json(); } catch (e) {}
             if (!response.ok || !result.success) throw new Error((result && result.error) || 'Failed to load availability.');
-            return (result.slots || []).map(function (slot) {
-                var label; try { label = new Intl.DateTimeFormat('en-US', { hour:'numeric', minute:'2-digit', hour12:true, timeZone:LPB_TIMEZONE }).format(new Date(slot.start)); } catch (e) { label = slot.start; }
-                return { iso: slot.start, label: label };
-            });
+            return {
+                state: result.state,
+                slots: (result.slots || []).map(function (slot) {
+                    var label; try { label = new Intl.DateTimeFormat('en-US', { hour:'numeric', minute:'2-digit', hour12:true, timeZone:LPB_TIMEZONE }).format(new Date(slot.start)); } catch (e) { label = slot.start; }
+                    return { iso: slot.start, label: label };
+                })
+            };
+        }
+
+        /* WHY A DATE HAS NOTHING ON IT, in the worker's own vocabulary. The words are the
+           worker's states and nothing more: `blocked` says the studio has taken the date
+           off and never why \u2014 the reason on that row is the studio's own business, and
+           GET /availability deliberately does not send it. Only `full` may be described
+           as fully booked. An answer this page does not recognise falls back to the old
+           sentence rather than to a guess, and the lookup is a hasOwnProperty test so a
+           state-shaped string that is not a state cannot print a function's own source. */
+        var NO_TIMES_REASON = {
+            closed:  'The studio does not shoot on this day of the week \u2014 please choose another date or contact the studio to book.',
+            blocked: 'The studio has taken this date off \u2014 please choose another date.',
+            full:    'This date is fully booked \u2014 please choose another date.',
+            past:    'That date has already gone by \u2014 please choose another date.'
+        };
+        var NO_TIMES_UNKNOWN = 'No available times for this date \u2014 please choose another day.';
+        function noTimesWords(state) {
+            var key = String(state == null ? '' : state).toLowerCase();
+            return Object.prototype.hasOwnProperty.call(NO_TIMES_REASON, key) ? NO_TIMES_REASON[key] : NO_TIMES_UNKNOWN;
         }
 
         var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -1114,6 +1161,28 @@
         var calGrid = $('lpb-cal-grid'), monthLabel = $('lpb-cal-month-label');
         var prevBtn = $('lpb-prev-month'), nextBtn = $('lpb-next-month');
         var timesGrid = $('lpb-times-grid'), timesPlaceholder = $('lpb-times-placeholder');
+        var timesContact = $('lpb-times-contact');
+
+        /* THE WAY TO A PERSON, FROM AN EMPTY DATE — the same door, the same sentence, as
+           book.html, and for the same half of ADR-0089 that record left on the table: this
+           panel's own words send a client to the studio ("or contact the studio to book")
+           with nothing to press, and the other ways to reach the studio are the footer and
+           the payment panels, which appear only after an attempt.
+
+           Hidden in the markup and shown by renderTimes only when a date has nothing on it
+           (or the times could not be loaded), never for a day that has gone by \u2014 a
+           message cannot bring back a date that is over. It is the page's own green WhatsApp
+           control, finger-sized, and it carries the day the client asked about so the studio
+           is not asked "which date?" before it can answer. Read book.html for the whole
+           argument; the only difference here is the page it is on. */
+        var STUDIO_WHATSAPP_URL = 'https://wa.me/2349075170240';
+        function timesContactFor(state) { return String(state == null ? '' : state).toLowerCase() !== 'past'; }
+        function timesContactHref(dateObj) {
+            var day; try { day = new Intl.DateTimeFormat('en-GB', { weekday:'short', day:'numeric', month:'short', timeZone:LPB_TIMEZONE }).format(dateObj); } catch (e) { day = dateObj.getFullYear() + '-' + String(dateObj.getMonth()+1).padStart(2,'0') + '-' + String(dateObj.getDate()).padStart(2,'0'); }
+            return STUDIO_WHATSAPP_URL + '?text=' + encodeURIComponent('Hi Libertypictures! The calendar has nothing open on ' + day + ' \u2014 is there any way you could help me with that date?');
+        }
+        function showTimesContact(dateObj) { if (!timesContact || !dateObj) return; timesContact.href = timesContactHref(dateObj); timesContact.style.display = 'block'; }
+        function hideTimesContact() { if (timesContact) timesContact.style.display = 'none'; }
         var nameInput = $('lpb-name'), emailInput = $('lpb-email');
         var submitBtn = $('lpb-submit-btn'), submitHint = $('lpb-submit-hint');
         var successCard = $('lpb-success-card');
@@ -1146,21 +1215,23 @@
             selTime = null; selStartISO = null;
             timesGrid.style.display = 'none'; timesGrid.innerHTML = '';
             timesPlaceholder.style.display = 'block'; timesPlaceholder.textContent = 'Loading available times\u2026';
+            hideTimesContact();
             updateSubmit();
             var requestedDate = selDate;
-            loadAvailableTimes(requestedDate).then(function (slots) {
+            loadAvailableTimes(requestedDate).then(function (day) {
                 if (selDate !== requestedDate) return;
-                if (!slots.length) { timesPlaceholder.textContent = 'No available times for this date \u2014 please choose another day.'; timesGrid.style.display = 'none'; return; }
+                if (!day.slots.length) { timesPlaceholder.textContent = noTimesWords(day.state); timesGrid.style.display = 'none'; if (timesContactFor(day.state)) showTimesContact(requestedDate); else hideTimesContact(); return; }
+                hideTimesContact();
                 timesPlaceholder.style.display = 'none'; timesGrid.style.display = 'grid';
                 timesGrid.innerHTML = '';
-                slots.forEach(function (slot) {
+                day.slots.forEach(function (slot) {
                     var b = document.createElement('button'); b.type = 'button'; b.className = 'lpb-time-btn'; b.textContent = slot.label;
                     if (selStartISO === slot.iso) b.classList.add('lpb-time-selected');
                     b.addEventListener('click', function () { selTime = slot.label; selStartISO = slot.iso; timesGrid.querySelectorAll('.lpb-time-btn').forEach(function (x) { x.classList.remove('lpb-time-selected'); }); b.classList.add('lpb-time-selected'); updateSubmit(); });
                     timesGrid.appendChild(b);
                 });
                 timesGrid.classList.add('lpb-animate-in');
-            }).catch(function () { if (selDate !== requestedDate) return; timesPlaceholder.textContent = 'Could not load available times \u2014 please try again.'; timesGrid.style.display = 'none'; });
+            }).catch(function () { if (selDate !== requestedDate) return; timesPlaceholder.textContent = 'Could not load available times \u2014 please try again.'; timesGrid.style.display = 'none'; showTimesContact(requestedDate); });
         }
         function updateSubmit() {
             var ok = !!selDate && !!selTime && nameInput.value.trim().length > 1 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim());
@@ -1244,8 +1315,12 @@
     })();
     </script>
 
-<!-- The studio assistant. It answers from the studio's live data and hands
-     anything it cannot answer to Liberty. If it is not switched on it removes
-     itself, so this page renders exactly as it did before it existed. -->
-<script src="assistant.js?v=4e7684c564" defer></script>
+<!-- NO ASSISTANT ON THIS PAGE, ON PURPOSE (docs/decisions/0089) — the same
+     decision as its sister page, taken for the same reason. This page IS the
+     wedding booking: choose the package, pick the date, pay the retainer. The
+     assistant never takes a booking, and on a booking page it drops its booking
+     half, so here it can do least; its dock sat over the packages, the extras,
+     the summary and the retainer — the panels that decide what a client pays.
+     The way to a person is the footer's WhatsApp and email row, and the
+     "Message Us on WhatsApp" buttons on the panels that report a problem. -->
 </body></html>

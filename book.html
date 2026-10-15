@@ -527,6 +527,20 @@
             font-size: 13.5px; color: var(--lpb-muted); font-style: italic;
             text-align: center; padding: 14px 0; margin: 0;
         }
+        /* THE WAY TO A PERSON FROM AN EMPTY DATE — a real tap target, not a phrase
+           in italics. It is the page's own WhatsApp control (green, the same one
+           the payment panels use), 13px of padding top and bottom so it measures
+           about 44px on a phone, and it is HIDDEN HERE and shown by the page only
+           when there is nothing to pick — see the block in the script that keeps
+           that rule in one place. */
+        .lpb-times-contact {
+            display: none; width: max-content; max-width: 100%;
+            margin: 2px auto 0; padding: 13px 16px;
+            background: #25D366; color: #fff;
+            border-radius: 30px; text-decoration: none;
+            font-size: 12px; font-weight: 600; letter-spacing: 0.2px;
+            text-align: center;
+        }
         .lpb-fields { display: flex; flex-direction: column; gap: 18px; }
         .lpb-field { display: flex; flex-direction: column; gap: 8px; }
         .lpb-field label {
@@ -800,6 +814,12 @@
                     <span class="lpb-step-label">Available Times</span>
                     <p class="lpb-times-placeholder" id="lpb-times-placeholder">Select a date to see available times</p>
                     <div class="lpb-times" id="lpb-times-grid" style="display:none;" role="group" aria-label="Available time slots"></div>
+                    <!-- THE DOOR FROM AN EMPTY DATE. Hidden by the class, shown by the
+                         page only when a date has nothing to pick or the times could
+                         not be loaded, and it fills in the day the client asked about
+                         so the studio does not have to ask which one. See the block in
+                         the script that decides when it appears. -->
+                    <a class="lpb-times-contact" id="lpb-times-contact" href="https://wa.me/2349075170240" target="_blank" rel="noopener">Message the studio on WhatsApp</a>
 
                     <div class="lpb-divider"></div>
 
@@ -945,6 +965,26 @@
                     Or pay by card instead
                 </button>
                 <p style="font-size: 11.5px; margin-top: 18px; color: var(--text-secondary);" id="payment-secure-note">Paystack takes the payment and adds its fee on top of what you send — about 1.5%, capped at ₦2,000 — so the checkout asks for a little more than the amount above. A transfer and a card cost the same.</p>
+                <!-- THE WAY TO A PERSON, FROM THE RETAINER STEP ITSELF.
+
+                     ADR-0089 took the assistant off this page because it never
+                     takes a booking, and its dock floated over the extras panel,
+                     the summary and the policy box. What that left behind was an
+                     absence with a caveat: this page's two doors to the studio —
+                     WhatsApp and email — are in the FOOTER, which on a phone is
+                     about 5,000px of scrolling from the step where a client is
+                     actually stuck: the transfer their bank refused, a date that
+                     will not hold, a question about the retainer itself.
+
+                     So the door is HERE, in flow, inside the step, and it is the
+                     page's own quiet second control — the same one the card door
+                     uses (docs/decisions/0080). Not a third register: it has to be
+                     findable by a client who cannot complete, and it has to leave
+                     a client who can on the pay button. Nothing fixed and nothing
+                     floating over the money, and no script behind it — the link
+                     works before any of this page's JavaScript has run. -->
+                <p id="retainer-help" style="font-size: 11.5px; margin-top: 20px; color: var(--text-secondary); line-height: 1.9;">Stuck on this step? A date that will not hold, a transfer your bank refuses, a question about the retainer — none of that has to be worked out alone.</p>
+                <a class="cta-btn-alt" id="retainer-help-link" href="https://wa.me/2349075170240?text=Hi%20Libertypictures!%20I%27m%20stuck%20at%20the%20retainer%20step%20on%20the%20booking%20page%2C%20could%20you%20help%20me%3F" target="_blank" rel="noopener">Message the studio on WhatsApp</a>
                 <!-- Shown from the moment Paystack's callback fires until the booking is
                      confirmed, so the client is not left watching a button that only
                      says "Confirming…" while a transfer settles. -->
@@ -2068,6 +2108,15 @@
            converts each real slot into a { label, iso } pair: `label`
            is what the client sees ("10:00 AM"), `iso` is the exact UTC
            start time that gets sent back on submit.
+
+           IT HANDS BACK THE WHOLE ANSWER, NOT ONLY THE TIMES. The worker's
+           reply carries a `state` beside its slots — open, full, closed,
+           blocked or past — and this function used to return `slots` alone,
+           so the page threw away the one thing that says WHY a date has
+           nothing on it. A Sunday, a date the studio took off, a Saturday
+           that is fully booked and a day that has gone by all arrived here
+           as the same empty array, and all four were answered with one
+           sentence: "no available times, please choose another day".
         ------------------------------------------------------------------ */
         async function loadAvailableTimes(dateObj) {
             var dateParam = formatDateParam(dateObj);
@@ -2082,9 +2131,44 @@
                 throw new Error((result && result.error) || 'Failed to load availability.');
             }
 
-            return (result.slots || []).map(function (slot) {
-                return { iso: slot.start, label: formatSlotLabel(slot.start) };
-            });
+            return {
+                state: result.state,
+                slots: (result.slots || []).map(function (slot) {
+                    return { iso: slot.start, label: formatSlotLabel(slot.start) };
+                })
+            };
+        }
+
+        /* WHY A DATE HAS NOTHING ON IT, in the worker's own vocabulary.
+
+           The words are the worker's states and nothing more. `blocked` says the
+           studio has taken the date off and NEVER why: the reason on that row is
+           the studio's own business — a birthday, a meeting, a trip — and
+           GET /availability deliberately does not send it. Only `full` may be
+           described as fully booked: a closed, blocked or past day is not a
+           full one, and telling a client a booked-out Saturday is the same
+           thing as a Sunday is how somebody stops trusting the calendar.
+
+           AN ANSWER THIS PAGE DOES NOT RECOGNISE FALLS BACK TO THE OLD
+           SENTENCE rather than to a guess: a worker that predates the `state`
+           field, or a reply from something that is not the worker at all,
+           leaves the client reading exactly what they read before this existed.
+           The lookup is a hasOwnProperty test, so a state-shaped string that is
+           not a state (`constructor`, `toString`) can never print a function's
+           own source into the page. */
+        var NO_TIMES_REASON = {
+            closed:  'The studio does not shoot on this day of the week — please choose another date or contact the studio to book.',
+            blocked: 'The studio has taken this date off — please choose another date.',
+            full:    'This date is fully booked — please choose another date.',
+            past:    'That date has already gone by — please choose another date.'
+        };
+        var NO_TIMES_UNKNOWN = 'No available times for this date — please choose another day.';
+
+        function noTimesWords(state) {
+            var key = String(state == null ? '' : state).toLowerCase();
+            return Object.prototype.hasOwnProperty.call(NO_TIMES_REASON, key)
+                ? NO_TIMES_REASON[key]
+                : NO_TIMES_UNKNOWN;
         }
 
         function formatDateParam(dateObj) {
@@ -2112,6 +2196,77 @@
         var DOWS   = ['Mo','Tu','We','Th','Fr','Sa','Su'];
 
         /* ------------------------------------------------------------------
+           THE WAY TO A PERSON, FROM AN EMPTY DATE
+
+           WHY THIS IS HERE. The panel above answers a date with nothing on it in
+           the worker's own words, and one of those answers sends the client to the
+           studio: a day the studio does not shoot on already says "or contact the
+           studio to book" — as WORDS, in a paragraph, with nothing to press. A
+           client reading that on a phone has been told to do something this page
+           does not let them do, which is the half of ADR-0089 that was left on the
+           table: the ways to reach the studio were the footer, five thousand pixels
+           down, and the payment panels, which only appear after an attempt.
+
+           SO           SO THE DOOR IS THE PAGE'S OWN WHATSAPP CONTROL — the green pill the
+           payment panels use, finger-sized rather than a phrase — and it is hidden
+           in the markup and shown only when there is nothing to press. A date with
+           times on it never offers it, the client who has only opened the calendar
+           never sees it, and a date that has gone by never does: a message cannot
+           bring back a day that is over, and that sentence already says so.
+
+           ITS SIZE IS MEASURED, NOT GUESSED. Driven at 390×844 the label wanted
+           235px of line inside a card that gives it 268, so at 12.5px with 22px of
+           side padding it wrapped onto two lines and the pill came out 67px tall
+           — a wrapped pill under a one-line sentence reads as a mistake. At 12px
+           with 16px of padding it is one line and 44px of height, which is the tap
+           target this exists to be; max-width still lets a narrower phone wrap it
+           rather than overflow the card.
+
+           THE MESSAGE NAMES THE DATE. The client's own tap opens WhatsApp with the
+           day they were looking at already written, so the studio is not asked
+           "which date?" before it can answer. The day is written in the timezone
+           the slot labels use, with the page's own date format behind it, so the
+           link can never carry an empty day.
+
+           THE NUMBER IS THE STUDIO'S, in the one form this site writes it — the same
+           number as the footer, the payment panels, and the structured data the page
+           declares to a phone dialler, which is what tools/test-whatsapp-links.js
+           holds every link on the site to. */
+        var STUDIO_WHATSAPP_URL = 'https://wa.me/2349075170240';
+
+        /** Which empty dates offer the door: every one except a date that has gone
+            by, where the only true thing left to say is to choose another. An answer
+            this page does not recognise offers it too — a client looking at an empty
+            date with no explanation is exactly who needs to ask somebody. */
+        function timesContactFor(state) {
+            return String(state == null ? '' : state).toLowerCase() !== 'past';
+        }
+
+        function timesContactHref(dateObj) {
+            var day = '';
+            try {
+                day = new Intl.DateTimeFormat('en-GB', {
+                    weekday: 'short', day: 'numeric', month: 'short', timeZone: LPB_TIMEZONE
+                }).format(dateObj);
+            } catch (e) {
+                day = formatDateParam(dateObj);
+            }
+            return STUDIO_WHATSAPP_URL + '?text=' + encodeURIComponent(
+                'Hi Libertypictures! The calendar has nothing open on ' + day +
+                ' — is there any way you could help me with that date?');
+        }
+
+        function showTimesContact(dateObj) {
+            if (!timesContact || !dateObj) return;
+            timesContact.href = timesContactHref(dateObj);
+            timesContact.style.display = 'block';
+        }
+
+        function hideTimesContact() {
+            if (timesContact) timesContact.style.display = 'none';
+        }
+
+        /* ------------------------------------------------------------------
            STATE
         ------------------------------------------------------------------ */
         var today     = new Date();
@@ -2131,6 +2286,7 @@
         var nextBtn          = $('lpb-next-month');
         var timesGrid        = $('lpb-times-grid');
         var timesPlaceholder = $('lpb-times-placeholder');
+        var timesContact     = $('lpb-times-contact');
         var nameInput        = $('lpb-name');
         var emailInput       = $('lpb-email');
         var submitBtn        = $('lpb-submit-btn');
@@ -2216,31 +2372,47 @@
             timesGrid.innerHTML = '';
             timesPlaceholder.style.display = 'block';
             timesPlaceholder.textContent = 'Loading available times…';
+            // A client who is waiting is not a client who is stuck: the door belongs
+            // to the moment the answer comes back with nothing to press.
+            hideTimesContact();
             updateSubmit();
 
             var requestedDate = selDate;
 
-            loadAvailableTimes(requestedDate).then(function (slots) {
+            loadAvailableTimes(requestedDate).then(function (day) {
                 // Ignore a stale response if the visitor already picked a
                 // different date while this request was in flight.
                 if (selDate !== requestedDate) return;
 
-                if (!slots.length) {
-                    timesPlaceholder.textContent = 'No available times for this date — please choose another day.';
+                if (!day.slots.length) {
+                    // The worker's own word for why, not ours.
+                    timesPlaceholder.textContent = noTimesWords(day.state);
                     timesPlaceholder.style.display = 'block';
                     timesGrid.style.display = 'none';
+                    /* The reason decides the door as well as the sentence, and both
+                       come from the same field: a day that has gone by is the one
+                       empty date a message cannot change. */
+                    if (timesContactFor(day.state)) showTimesContact(requestedDate);
+                    else hideTimesContact();
                     return;
                 }
 
+                // Times to choose: nothing to ask about, so nothing offered.
+                hideTimesContact();
                 timesPlaceholder.style.display = 'none';
                 timesGrid.style.display = 'grid';
-                renderSlots(slots);
+                renderSlots(day.slots);
             }).catch(function (err) {
                 if (selDate !== requestedDate) return;
                 console.error('[LibertyPictures Booking] failed to load availability:', err);
                 timesPlaceholder.textContent = 'Could not load available times — please try again.';
                 timesPlaceholder.style.display = 'block';
                 timesGrid.style.display = 'none';
+                /* A request that did not come back is the worst empty panel of all:
+                   the client cannot tell whether the day is full or the page broke.
+                   The door claims nothing about which one it was — it just puts the
+                   date in front of somebody who can answer. */
+                showTimesContact(requestedDate);
             });
         }
 
@@ -2439,8 +2611,20 @@
          END LP BOOKING COMPONENT JAVASCRIPT
          ================================================================ -->
 
-<!-- The studio assistant. It answers from the studio's live data and hands
-     anything it cannot answer to Liberty. If it is not switched on it removes
-     itself, so this page renders exactly as it did before it existed. -->
-<script src="assistant.js?v=4e7684c564" defer></script>
+<!-- NO ASSISTANT ON THIS PAGE, ON PURPOSE (docs/decisions/0089).
+
+     This page IS the booking: its three steps are choose the session, pick the
+     date and pay the retainer, and the assistant's own first rule is that it
+     never takes a booking — on this page it withdraws its booking half for
+     exactly that reason, so it is at its least capable standing where the
+     visitor is completing the one thing the page is for. Its dock also floated
+     over the packages, the extras panel, the summary and the policy box, which
+     are the four things that decide what the client pays; ADR-0080 refused one
+     floating control over those same panels, and a chat sheet over them is the
+     same hazard with more of the screen.
+
+     The way to a person is unchanged and is the one this page already had: the
+     WhatsApp and email row in the footer below, plus the "Message Us on
+     WhatsApp" buttons on the panels that tell a client something has gone
+     wrong. A page answers what a page can answer; anything else is a message. -->
 </body></html>
