@@ -264,6 +264,14 @@ a{color:inherit}
 .g-chip-extra{top:5px;left:5px;font-size:7px;padding:3px 6px;letter-spacing:1.4px}
 }
 
+/* ── STUDIO PREVIEW — the studio's rehearsal of this page (ADR 0095). It sits
+   above the cover and says in words what it is, because a preview that can be
+   mistaken for a delivery is worse than no preview: the studio would believe the
+   gallery had gone out. */
+.preview-bar{position:sticky;top:0;z-index:70;display:flex;align-items:center;justify-content:center;gap:9px;padding:9px 16px;background:#1b150c;border-bottom:1px solid rgba(196,166,126,0.35);color:var(--accent);font-size:11.5px;letter-spacing:.3px;line-height:1.5;text-align:center}
+.preview-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);flex:none;box-shadow:0 0 0 3px rgba(196,166,126,0.18)}
+.preview-bar #preview-bar-text{max-width:980px}
+
 /* ── CINEMATIC VIEWER — the Featured Work film presentation fused
    onto the gallery: a fullscreen film stage with a perforated
    film-strip rail of every photo, numbered frames, negative-film
@@ -653,6 +661,13 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
 <!-- PAGE: COVER + GALLERY as one continuous scroll -->
 <div id="page-wrap" style="display:none;">
 
+    <!-- STUDIO PREVIEW (ADR 0095) — drawn only when the studio's dashboard hands
+         this page a rehearsal in the URL fragment. A client never sees it. -->
+    <div class="preview-bar" id="preview-bar" style="display:none" role="status">
+        <span class="preview-dot"></span>
+        <span id="preview-bar-text"></span>
+    </div>
+
     <!-- COVER -->
     <section class="cover" id="cover">
         <img src="" alt="Libertypictures" class="cover-logo" id="cover-logo" style="display:none;">
@@ -835,6 +850,14 @@ var API = 'https://api.libertymusa.com';
 var params = new URLSearchParams(window.location.search);
 var token = params.get('t');
 
+/* THE STUDIO'S REHEARSAL OF THIS PAGE (ADR 0095). The dashboard fetches the
+   payload from an admin-only route and opens this page with it in the URL
+   fragment (`#preview=<json>`), which no server ever receives — so the finals of
+   a gallery that has not been published get no address of their own, and there is
+   no second token to leak or expire. Everything below that would write is off
+   while PREVIEW is set; the page itself draws exactly what a client would see. */
+var PREVIEW = null;
+
 var gallery = null;      // server row (phase, status, expiresAt, photos…)
 var photos = [];         // photos shown on the grid / in the viewer
 var extras = [];         // delivery-only: bonus photos the studio added beyond the client's picks
@@ -947,10 +970,58 @@ function daysUntil(ts) {
 })();
 
 /* ===================== LOAD ===================== */
-if (!token) {
-    showState('Invalid Link', 'This gallery link is missing information. Please check the link your photographer sent you.');
-} else {
-    loadGallery();
+(function () {
+    var rehearsal = previewFromHash();
+    if (rehearsal) { startPreview(rehearsal); return; }
+    if (!token) {
+        showState('Invalid Link', 'This gallery link is missing information. Please check the link your photographer sent you.');
+    } else {
+        loadGallery();
+    }
+})();
+
+/* ---------- the rehearsal (ADR 0095) ---------- */
+function previewFromHash() {
+    var h = String(window.location.hash || '');
+    if (h.indexOf('#preview=') !== 0) return null;
+    try {
+        var data = JSON.parse(decodeURIComponent(h.slice('#preview='.length)));
+        return (data && data.preview) ? data : null;
+    } catch (e) {
+        return null;
+    }
+}
+/* One guard, called by every control that would write to the gallery. The studio
+   is looking at a rehearsal, so the honest answer is a sentence, not a failed
+   request against a link this page does not have. */
+function blockInPreview() {
+    if (!PREVIEW) return false;
+    toast('Preview \u2014 this is what the client sees. Nothing is saved here.');
+    return true;
+}
+function startPreview(data) {
+    PREVIEW = data;
+    gallery = data;
+    view = 'delivery';
+    photos = data.photos || [];
+    extras = data.extraPhotos || [];
+    starred = {};
+    photos.concat(extras).forEach(function (p) { starred[p.id] = !!p.isStarred; });
+    hideLoader();
+    renderNow();
+    paintPreviewBar();
+    fetchSettings();
+}
+function paintPreviewBar() {
+    var bar = $('preview-bar');
+    if (!bar) return;
+    var n = photos.length, x = extras.length;
+    $('preview-bar-text').textContent =
+        'Studio preview \u00b7 exactly what ' + (gallery.clientName || 'your client') + ' will receive: ' +
+        n + ' final' + (n === 1 ? '' : 's') +
+        (x ? ' and ' + x + ' extra' + (x === 1 ? '' : 's') : '') +
+        '. Nothing has been published, and nothing here can be changed.';
+    bar.style.display = 'flex';
 }
 
 function loadGallery() {
@@ -1036,6 +1107,7 @@ function renderNow() {
     state.classList.remove('lock-mode');
 
     if (gate === 'lock') { renderLockWall(lockedInfo); return; }
+    if (PREVIEW) { gate = 'open'; renderOpenGallery(); return; }
     if (canKeep()) {
         /* Extras count as photos here: a delivery whose shots all arrived as
            extras is a gallery the client can look at, not one still being
@@ -1300,6 +1372,7 @@ function updateBarAndPrompt() {
     document.body.classList.toggle('has-selection', count > 0);
 }
 function clearSelection() {
+    if (blockInPreview()) return;
     var ids = Object.keys(starred).filter(function (k) { return starred[k]; });
     if (!ids.length) return;
     if (!confirm('Clear your ' + ids.length + ' ' + verb() + ' photo' + (ids.length === 1 ? '' : 's') + '? You can star them again anytime.')) return;
@@ -1333,6 +1406,7 @@ function refreshTile(photoId) {
     updateLbUi();
 }
 function toggleStar(photoId) {
+    if (blockInPreview()) return;
     var on = !starred[photoId];
     starred[photoId] = on;
     // optimistically update the UI, then tell the server; revert on failure
@@ -1961,6 +2035,7 @@ function dlBlob(blob, name) {
     setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
 }
 async function downloadSingle(p) {
+    if (blockInPreview()) return;
     try {
         var res = await fetch(pUrl(p));
         var blob = await res.blob();
@@ -1973,6 +2048,7 @@ async function downloadSingle(p) {
     } catch (e) { console.error('Save failed:', e); toast('Could not download that photo'); }
 }
 var saveSelectedClick = async function () {
+    if (blockInPreview()) return;
     var sel = photos.concat(extras).filter(function (p) { return starred[p.id]; });
     if (!sel.length) return;
     var btn = $('save-selected-btn'); btn.disabled = true; var orig = btn.textContent;
@@ -2026,6 +2102,7 @@ $('dl-close-btn').addEventListener('click', function () { $('dl-overlay').classL
     var dlAll = $('dl-all-btn');
     if (!dlAll) return;
     dlAll.addEventListener('click', async function () {
+        if (blockInPreview()) return;
         if (!photos.length) return;
         var b = this; b.disabled = true;
         b.textContent = 'Preparing...';
@@ -2256,6 +2333,9 @@ function renderLockWall(info) {
 /* ===================== EXPIRY TEXT + SOFT BANNER ===================== */
 function paintExpiry() {
     if (!gallery || !$('page-wrap') || $('page-wrap').style.display !== 'block') return;
+    /* A rehearsal has no window: the gallery is not published, so a countdown
+       here would be a date for a delivery that has not been made. */
+    if (PREVIEW) { $('cover-expiry').textContent = ''; $('header-expiry').textContent = 'Preview \u00b7 not published'; return; }
     var left = daysUntil(gallery.expiresAt);
     var ce = $('cover-expiry'), he = $('header-expiry');
     if (left === null) { ce.textContent = ''; he.textContent = ''; return; }
@@ -2298,6 +2378,7 @@ setInterval(function () {
         });
     });
     $('review-submit-btn').addEventListener('click', async function () {
+        if (blockInPreview()) return;
         var quote = $('review-quote').value.trim();
         if (!quote) { alert('Please write your review.'); return; }
         if (!reviewRating) { alert('Please select a star rating.'); return; }
