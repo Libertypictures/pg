@@ -421,16 +421,39 @@ body.has-selection #page-wrap{padding-bottom:calc(84px + env(safe-area-inset-bot
    it is invisible where the sheet already fitted: a scroll container that is not
    overflowing draws no bar and lays out identically. `margin:auto` is what keeps
    the top reachable — with `align-items:center` alone, a child taller than its
-   flex container overflows BOTH ends and the first step cannot be scrolled to. */
-.welcome-sheet{position:fixed;inset:0;background:rgba(6,5,4,0.92);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
-.welcome-content{max-width:340px;width:100%;text-align:center;padding:44px 30px;margin:auto}
-.welcome-content h2{font-family:'Fraunces',serif;font-weight:400;font-style:italic;font-size:22px;margin-bottom:28px;color:var(--cream)}
-.intro-step{display:flex;align-items:flex-start;gap:14px;text-align:left;margin-bottom:22px}
-.intro-step-icon{width:36px;height:36px;border-radius:50%;background:rgba(196,166,126,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.intro-step-icon svg{width:16px;height:16px;stroke:var(--accent)}
-.intro-step p{font-size:13px;color:var(--cream-soft);line-height:1.6}
+   flex container overflows BOTH ends and the first step cannot be scrolled to.
+
+   The scroll was a safety net, not the answer. Liberty, 18 Oct 2026, looking at
+   the rehearsal: *"lets eliminate every need for a scroll, some of the lines over
+   explain and are too long"*. So the copy is now one short action per step and the
+   rhythm is tighter (18px side padding on the overlay, 28px of card padding where
+   there were 44, a 12px gap between steps where there was 22). Measured on the
+   served sheet on 18 Oct 2026: 377px of card at 1440x900, 396px at 320x568, both
+   inside the smallest window the gallery is looked at in — no bar, nothing below
+   the fold. The short-window rule below is for the landscape phone and the half-
+   height laptop window, where the same sheet has 400px or less to live in. */
+.welcome-sheet{position:fixed;inset:0;background:rgba(6,5,4,0.92);z-index:200;display:flex;align-items:center;justify-content:center;padding:18px;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.welcome-content{max-width:380px;width:100%;text-align:center;padding:28px 26px 22px;margin:auto}
+.welcome-title{font-family:'Outfit',sans-serif;font-weight:600;font-size:13px;letter-spacing:2.4px;text-transform:uppercase;margin:0 0 16px;color:var(--cream)}
+.intro-step{display:flex;align-items:flex-start;gap:12px;text-align:left;margin-bottom:12px}
+.intro-step:last-of-type{margin-bottom:0}
+.intro-step-icon{width:30px;height:30px;border-radius:50%;background:rgba(196,166,126,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.intro-step-icon svg{width:14px;height:14px;stroke:var(--accent)}
+.intro-step p{font-size:12.5px;color:var(--cream-soft);line-height:1.5}
 .intro-step strong{color:var(--cream);font-weight:500}
-.welcome-dismiss{margin-top:10px;padding:14px 36px;font-size:10.5px;letter-spacing:2px;text-transform:uppercase;font-weight:600;color:#0f0c09;background:var(--accent);border:none;border-radius:30px;transition:background-color .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease, opacity .25s ease, transform .25s ease, filter .25s ease}
+.welcome-dismiss{margin-top:18px;padding:12px 32px;font-size:10px;letter-spacing:2px;text-transform:uppercase;font-weight:600;color:#0f0c09;background:var(--accent);border:none;border-radius:30px;transition:background-color .25s ease, color .25s ease, border-color .25s ease, box-shadow .25s ease, opacity .25s ease, transform .25s ease, filter .25s ease}
+@media (max-height:640px){
+  /* Scoped under the sheet on purpose: the base rhythm above stays the one rule of
+     each name, so a reader (and the suite) can ask what a step's gap IS without
+     finding a media query that only answers below 640px. */
+  .welcome-sheet .welcome-content{padding:20px 22px 18px}
+  .welcome-sheet .welcome-title{font-size:12px;letter-spacing:2.2px;margin-bottom:12px}
+  .welcome-sheet .intro-step{gap:10px;margin-bottom:9px}
+  .welcome-sheet .intro-step-icon{width:26px;height:26px}
+  .welcome-sheet .intro-step-icon svg{width:12px;height:12px}
+  .welcome-sheet .intro-step p{font-size:12px;line-height:1.42}
+  .welcome-sheet .welcome-dismiss{margin-top:14px;padding:10px 28px}
+}
 @media (hover: hover) { .welcome-dismiss:hover{background:var(--accent-deep)} }
 
 /* ── REVIEW SECTION ── */
@@ -633,26 +656,26 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
 <!-- GUIDE OVERLAY — first visit only -->
 <div class="welcome-sheet" id="welcome-sheet" style="display:none;">
     <div class="welcome-content">
-        <h2 style="font-family:'Outfit',sans-serif;font-weight:600;font-size:16px;letter-spacing:3px;text-transform:uppercase;margin-bottom:28px;color:var(--cream);">Quick Guide</h2>
+        <h2 class="welcome-title">Quick Guide</h2>
         <div class="intro-step">
             <div class="intro-step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
-            <p id="guide-open-text"><strong>Click or tap any photo</strong> in the grid to open the viewer.</p>
+            <p id="guide-open-text"><strong>Tap any photo</strong> to open the viewer.</p>
         </div>
         <div class="intro-step">
             <div class="intro-step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 5 3 12 9 19"/><polyline points="15 5 21 12 15 19"/></svg></div>
-            <p id="guide-move-text"><strong>Swipe left or right</strong> on the main photo — or <strong>click a frame</strong> on the film strip — to move through the shoot.</p>
+            <p id="guide-move-text"><strong>Swipe</strong> or tap the film strip to move through the shoot.</p>
         </div>
         <div class="intro-step">
             <div class="intro-step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg></div>
-            <p id="guide-pick-text"><strong>Click the main photo</strong> to add it to your picks, click it again to remove it — or use the <strong>★ star button</strong>.</p>
+            <p id="guide-pick-text"><strong>Tap a photo</strong> to pick it, again to remove — or use the <strong>★ star</strong>.</p>
         </div>
         <div class="intro-step">
             <div class="intro-step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg></div>
-            <p id="guide-review-text"><strong>View selection</strong> shows only your picks; <strong>Show all</strong> brings every photo back. Then <strong>Finalise my selection</strong>.</p>
+            <p id="guide-review-text"><strong>View selection</strong> shows your picks; <strong>Show all</strong> brings them back.</p>
         </div>
         <div class="intro-step">
             <div class="intro-step-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-            <p id="guide-expiry-text"><strong>This gallery is available for a limited time.</strong> Make sure to save your favourites before the window ends.</p>
+            <p id="guide-expiry-text"><strong>Limited time only.</strong> Pick before the window ends.</p>
         </div>
         <button class="welcome-dismiss" id="welcome-dismiss-btn">Got it</button>
     </div>
@@ -1181,34 +1204,38 @@ function renderOpenGallery() {
     var guide = $('welcome-sheet');
     /* Each step is written by its own id rather than by its position: the sheet
        carries five steps and the reader is told one action per line, so adding or
-       reordering one is now this list and the markup, never an index. */
+       reordering one is now this list and the markup, never an index.
+
+       The line is SHORT on purpose — the sheet must fit without scrolling, and a
+       step that needs three lines to say "tap a photo" is the reason it did not.
+       The delivery wording is the one that was on screen on 18 Oct 2026: it ran to
+       "every photo you picked, delivered. Click or tap any photo for the film
+       viewer, or download straight from the grid" for a step a client reads once. */
     var setGuideStep = function (id, html) { var el = $(id); if (el) el.innerHTML = html; };
     if (guide) {
         if (isShare()) {
-            setGuideStep('guide-open-text', '<strong>These are your photos</strong> \u2014 ready to look at and download. Click or tap any photo for the film viewer, or download straight from the grid.');
-            setGuideStep('guide-move-text', '<strong>Swipe left or right</strong> on the main photo \u2014 or <strong>click a frame</strong> on the film strip.');
-            setGuideStep('guide-pick-text', '<strong>Click the \u2605 star</strong> to keep a photo for downloading later \u2014 your keeps fill the bottom bar.');
-            setGuideStep('guide-review-text', '<strong>View selection</strong> shows only the photos you kept; <strong>Show all</strong> brings every photo back. Then download them at once.');
+            setGuideStep('guide-open-text', '<strong>Your photos</strong> \u2014 tap one to view or download.');
+            setGuideStep('guide-move-text', '<strong>Swipe</strong> or tap the film strip to move through the shoot.');
+            setGuideStep('guide-pick-text', '<strong>Tap the \u2605 star</strong> to keep a photo for later.');
+            setGuideStep('guide-review-text', '<strong>View selection</strong> shows your keeps; <strong>Show all</strong> brings them back.');
         } else if (isDeliv) {
-            setGuideStep('guide-open-text', '<strong>These are your edited finals</strong> \u2014 every photo you picked, delivered. Click or tap any photo for the film viewer, or download straight from the grid.');
-            setGuideStep('guide-move-text', '<strong>Swipe left or right</strong> on the main photo \u2014 or <strong>click a frame</strong> on the film strip.');
-            setGuideStep('guide-pick-text', '<strong>Click the \u2605 star</strong> to keep a final for downloading later \u2014 your keeps fill the bottom bar.');
-            setGuideStep('guide-review-text', '<strong>View selection</strong> shows only the finals you kept; <strong>Show all</strong> brings every photo back. Then download them at once.');
+            setGuideStep('guide-open-text', '<strong>Your edited finals</strong> \u2014 tap one to view or download.');
+            setGuideStep('guide-move-text', '<strong>Swipe</strong> or tap the film strip to move through the shoot.');
+            setGuideStep('guide-pick-text', '<strong>Tap the \u2605 star</strong> to keep a final for later.');
+            setGuideStep('guide-review-text', '<strong>View selection</strong> shows your keeps; <strong>Show all</strong> brings them back.');
         } else {
-            setGuideStep('guide-open-text', '<strong>Click or tap any photo</strong> in the grid to open the viewer.');
-            setGuideStep('guide-move-text', '<strong>Swipe left or right</strong> on the main photo \u2014 or <strong>click a frame</strong> on the film strip \u2014 to move through the shoot.');
-            setGuideStep('guide-pick-text', '<strong>Click the main photo</strong> to add it to your picks, click it again to remove it \u2014 or use the <strong>\u2605 star button</strong>.');
-            setGuideStep('guide-review-text', '<strong>View selection</strong> shows only your picks; <strong>Show all</strong> brings every photo back. Then <strong>Finalise my selection</strong> \u2014 you\u2019ll be asked to confirm first.');
+            setGuideStep('guide-open-text', '<strong>Tap any photo</strong> to open the viewer.');
+            setGuideStep('guide-move-text', '<strong>Swipe</strong> or tap the film strip to move through the shoot.');
+            setGuideStep('guide-pick-text', '<strong>Tap a photo</strong> to pick it, again to remove \u2014 or use the <strong>\u2605 star</strong>.');
+            setGuideStep('guide-review-text', '<strong>View selection</strong> shows your picks; <strong>Show all</strong> brings them back. Then <strong>Finalise</strong>.');
         }
         var gi = guide.querySelector('#guide-expiry-text');
         var left = daysUntil(gallery.expiresAt);
-        if (gi) gi.innerHTML = isShare()
-            ? '<strong>Your photos stay available for a limited time.</strong> Download what you want before the window ends \u2014 you can always reopen it with one small payment.'
-            : isDeliv
-            ? '<strong>Your finals stay available for a limited time.</strong> Download before the window ends \u2014 you can always reopen it with one small payment.'
+        if (gi) gi.innerHTML = (isShare() || isDeliv)
+            ? '<strong>Limited time only.</strong> Download before it closes \u2014 reopening takes one small payment.'
             : (left === null
-                ? '<strong>Your gallery is available for a limited time.</strong> Make your picks before the window ends.'
-                : '<strong>You have ' + left + ' day' + (left === 1 ? '' : 's') + ' to pick.</strong> If time runs out, your current stars are locked in automatically.');
+                ? '<strong>Limited time only.</strong> Pick before the window ends.'
+                : '<strong>' + left + ' day' + (left === 1 ? '' : 's') + ' to pick.</strong> Stars lock in when time runs out.');
     }
     var firstKey = W.guideKey;
     var isFirst = false;
@@ -1822,38 +1849,38 @@ function lbGuideContent() {
         {
             ico: 'browse',
             title: 'Open a photo',
-            body: 'Click or tap <b>any photo in the grid</b> to open this viewer.'
+            body: 'Tap <b>any photo in the grid</b> to open the viewer.'
         },
         {
             ico: 'move',
             title: 'Move through the shoot',
-            body: '<b>Swipe left or right</b> on the main photo \u2014 or <b>click a frame</b> on the film strip \u2014 to go through every photo.'
+            body: '<b>Swipe</b> on the main photo \u2014 or <b>tap a frame</b> on the film strip.'
         },
         {
             ico: 'star',
             title: d ? 'Keep what you want' : 'Pick what you love',
-            body: 'Click or tap <b>the main photo</b> to add it to your ' + picksLabel + ', and click it again to remove it \u2014 or use the <b>\u2605 star button</b>. A gold star lands on its film frame.'
+            body: 'Tap <b>the main photo</b> to add or remove it, or use the <b>\u2605 star</b>.'
         },
         {
             ico: 'chip',
             title: 'See only your ' + picksLabel,
-            body: '<b>View selection</b> shows only the photos you have ' + pickedNoun + '; <b>Show all</b> brings every photo back. On the grid, <b>\u2605 My Favourites</b> does the same.'
+            body: '<b>View selection</b> shows only the photos you have ' + pickedNoun + '; <b>Show all</b> brings every photo back.'
         },
         {
             ico: d ? 'download' : 'deliver',
             title: d ? 'Download' : 'Finalise',
             body: d
-                ? 'Click <b>Download my picks</b> to save all your ' + picksLabel + ' at once, or <b>Save photo</b> for the one you\u2019re viewing.'
-                : 'Click <b>Finalise my selection</b> when you\u2019re done \u2014 you\u2019ll be asked to confirm first, then Liberty gets your list and starts editing.'
+                ? '<b>Download my picks</b> saves all your ' + picksLabel + ' at once, or <b>Save photo</b> for the one you\u2019re viewing.'
+                : '<b>Finalise my selection</b> when you\u2019re done \u2014 you\u2019ll be asked to confirm first, then Liberty starts editing.'
         }
     ];
     /* And the same division here: a share gallery's note said "finals are never
        deleted" about a one-off set of photographs. */
     var note = d
         ? (share
-            ? '<b>Limited time.</b> Download before the window ends \u2014 you can reopen it with one small payment, and your photos are never deleted.'
-            : '<b>Limited time.</b> Download before the window ends \u2014 you can reopen it later with one small payment, and finals are never deleted.')
-        : '<b>Time-limited.</b> If the window ends before you finalise, your current picks lock in automatically. Extend with a small fee if you need more time.';
+            ? '<b>Limited time.</b> Download before the window ends \u2014 photos are never deleted, and reopening takes one small payment.'
+            : '<b>Limited time.</b> Download before the window ends \u2014 finals are never deleted, and reopening takes one small payment.')
+        : '<b>Time-limited.</b> Your picks lock in when the window ends \u2014 extend with a small fee for more time.';
     /* A SHARE gallery is not a delivery and is never told it has finals — the guard
        has said so since 28 Sep 2026 (modeProblems: "a share gallery borrows the
        delivery guide, so the client is told about finals"), but it compared the two
