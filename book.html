@@ -3324,4 +3324,94 @@
      WhatsApp and email row in the footer below, plus the "Message Us on
      WhatsApp" buttons on the panels that tell a client something has gone
      wrong. A page answers what a page can answer; anything else is a message. -->
+
+    <!-- ============================================================
+         THE SCROLL INSTRUMENT — only when the page is opened with ?perf=1
+
+         Emulation on a Mac cannot answer "does this stutter on my phone":
+         Chromium resized to a phone is still Chromium on a Mac's GPU,
+         Playwright's WebKit refuses to install on macOS 13, and the only
+         exact environment is the phone itself. So the page measures itself,
+         on the device, and prints what it saw.
+
+         Nothing here runs unless the query says perf=1. No layout, no
+         listeners, no frames are touched on a normal visit.
+         ============================================================ -->
+    <script>
+    (function () {
+        if (!/(?:^|[?&])perf=1(?:&|$)/.test(location.search)) return;
+
+        var frames = [], last = 0, scrollingUntil = 0, running = true;
+        var worst = 0, stutters = 0, jank = 0, total = 0;
+        var barToggles = 0;
+        var wrap = document.getElementById('sticky-progress-wrap');
+        if (wrap) {
+            new MutationObserver(function () { barToggles++; })
+                .observe(wrap, { attributes: true, attributeFilter: ['class'] });
+        }
+
+        var box = document.createElement('div');
+        box.setAttribute('role', 'status');
+        box.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:99999;max-width:calc(100vw - 16px);' +
+            'background:rgba(12,11,10,.94);color:#f6f1e7;font:11px/1.5 ui-monospace,Menlo,monospace;' +
+            'padding:8px 10px;border:1px solid rgba(246,241,231,.25);letter-spacing:0;';
+        box.innerHTML = '<div data-live>scroll to measure&hellip;</div>' +
+            '<div data-report style="margin-top:4px;color:#c9bca6"></div>' +
+            '<button data-copy style="margin-top:6px;font:inherit;background:none;border:1px solid rgba(246,241,231,.35);' +
+            'color:inherit;padding:2px 8px;cursor:pointer">copy report</button>';
+        document.body.appendChild(box);
+        var liveEl = box.querySelector('[data-live]');
+        var reportEl = box.querySelector('[data-report]');
+
+        function device() {
+            return 'dpr ' + (window.devicePixelRatio || 1) + ' · ' + window.innerWidth + 'x' + window.innerHeight +
+                ' · ' + (navigator.vendor || '') + ' ' + (navigator.userAgent.match(/(iPhone|iPad|Android)[^;)]*/) || ['unknown device'])[0];
+        }
+
+        function summary() {
+            if (!frames.length) return null;
+            var f = frames.slice().sort(function (a, b) { return a - b; });
+            function at(q) { return Math.round(f[Math.min(f.length - 1, Math.floor(f.length * q))]); }
+            return {
+                frames: f.length, p50: at(0.5), p90: at(0.9), p95: at(0.95),
+                worst: Math.round(f[f.length - 1]), stutters: f.filter(function (x) { return x > 32; }).length,
+                jank: f.filter(function (x) { return x > 100; }).length
+            };
+        }
+
+        function paint() {
+            var m = summary();
+            if (!m) return;
+            liveEl.textContent = m.frames + ' frames · p50 ' + m.p50 + 'ms · p95 ' + m.p95 + 'ms · worst ' + m.worst + 'ms';
+            reportEl.textContent = 'slow >32ms: ' + m.stutters + ' · >100ms: ' + m.jank + ' · counter toggles: ' + barToggles;
+        }
+
+        function tick(now) {
+            if (last) {
+                var d = now - last;
+                if (d > 250) d = 250;
+                frames.push(d);
+                if (frames.length > 4000) frames.shift();
+                if (now < scrollingUntil) paint();
+            }
+            last = now;
+            if (running) requestAnimationFrame(tick);
+        }
+
+        window.addEventListener('scroll', function () { scrollingUntil = performance.now() + 700; }, { passive: true });
+
+        box.querySelector('[data-copy]').addEventListener('click', function () {
+            var m = summary() || {};
+            var text = 'book page scroll · ' + device() + '\n' +
+                'frames ' + m.frames + ' · p50 ' + m.p50 + 'ms · p90 ' + m.p90 + 'ms · p95 ' + m.p95 + 'ms · worst ' + m.worst + 'ms\n' +
+                'slow frames >32ms: ' + m.stutters + ' · >100ms: ' + m.jank + ' · counter toggles: ' + barToggles + '\n' +
+                'url ' + location.href;
+            if (navigator.clipboard) navigator.clipboard.writeText(text);
+            reportEl.textContent = 'copied to the clipboard';
+            box.querySelector('[data-copy]').textContent = 'copied';
+        });
+
+        requestAnimationFrame(tick);
+    })();
+    </script>
 </body></html>
