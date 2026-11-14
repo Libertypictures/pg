@@ -197,6 +197,13 @@
             opacity: 1; transform: none;
         }
         .tier-scrim h3 { font-family: 'Fraunces', serif; font-weight: 500; font-size: 20px; letter-spacing: 0; text-transform: none; margin-bottom: 14px; color: #f6f1e7; }
+        /* The owner's own label for a package ("Most booked", "Premium"). Drawn
+           from the dashboard's badge field, so the mark and the card can never
+           disagree; a package with no badge draws nothing at all. */
+        /* The chip carries its own dark ground: the scrim is still
+           transparent where it sits, so gold on a bare photo disappeared
+           over a bright frame. Cream on smoked glass reads on any picture. */
+        .tier-badge { display: inline-block; font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #ecd7b6; background: rgba(15,12,9,0.66); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 4px 10px; margin-bottom: 10px; }
 
         .tier-details { list-style: none; font-size: 13px; color: #d9cdb8; margin-bottom: 22px; line-height: 1.8; }
         .tier-details li { margin-bottom: 6px; position: relative; padding-left: 16px; }
@@ -709,6 +716,175 @@
             .lpb-times { grid-template-columns: repeat(3, 1fr); gap: 8px; }
             .lpb-time-btn { padding: 12px 6px; font-size: 12px; }
         }
+        /* ============================================================
+           THE PRICE GUIDE — a catalogue, not a shop window
+
+           The same language as the wedding guide: hairline rules, roman
+           numerals, serif figures, nothing that floats or glows. Each
+           session keeps its own photograph, because on this page the work
+           is the argument for the price.
+           ============================================================ */
+        /* The section opens on its description, in the same face, size and
+           measure the live page uses under a section title: Poppins 14px,
+           440px wide, secondary ink. The serif is left to the two headings
+           below it, which is how the rest of the site is set. */
+        .pg-head { text-align: center; max-width: 440px; margin: 0 auto 38px; }
+        .pg-standfirst { font-family: 'Poppins', sans-serif; font-weight: 400; font-size: 14px; line-height: 1.7; letter-spacing: 0; margin: 0; color: var(--text-secondary); }
+        .pg-item { padding: 30px 0 26px; border-bottom: 1px solid var(--border-color); }
+        .pg-item:first-child { border-top: 1px solid var(--border-color); }
+        .pg-session { display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 26px; align-items: start; }
+        .pg-session.no-photo { grid-template-columns: minmax(0, 1fr); }
+        .pg-plate { width: 92px; aspect-ratio: 3 / 4; overflow: hidden; background: var(--bg-booking); }
+        .pg-plate img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .pg-session-body { min-width: 0; }
+        .pg-row { display: flex; align-items: baseline; gap: 14px; }
+        .pg-numeral { font-family: 'Fraunces', serif; font-size: 11px; letter-spacing: 0.12em; color: var(--accent); min-width: 18px; }
+        .pg-name { font-family: 'Fraunces', serif; font-weight: 500; font-size: 20px; min-width: 0; line-height: 1.25; letter-spacing: -0.2px; color: var(--text-primary); }
+        .pg-mark { font-family: 'Fraunces', serif; font-style: italic; font-size: 11.5px; color: var(--accent); white-space: nowrap; }
+        .pg-cost { margin-left: auto; font-family: 'Fraunces', serif; font-size: 19px; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--text-primary); }
+        .pg-inc { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 1px 32px; margin: 16px 0 0 32px; font-size: 12.5px; line-height: 1.8; color: var(--text-secondary); }
+        .pg-inc li { position: relative; padding-left: 14px; }
+        .pg-inc li::before { content: "\2014"; position: absolute; left: 0; color: var(--accent); opacity: 0.7; }
+        .pg-foot { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 20px 0 0 32px; }
+        .pg-note { font-size: 10.5px; color: var(--text-secondary); }
+        .pg-choose { background: none; border: 0; border-bottom: 1px solid var(--accent); padding: 0 0 5px; font: inherit; font-size: 9.5px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-primary); cursor: pointer; transition: color 0.25s ease; }
+        @media (hover: hover) { .pg-choose:hover { color: var(--accent); } }
+        .pg-choose:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+        .pg-item.is-chosen .pg-name, .pg-item.is-chosen .pg-numeral { color: var(--accent); }
+        .pg-item.is-chosen .pg-choose { color: var(--accent); border-bottom-color: transparent; }
+        .pg-group-label { display: block; padding: 0 0 4px; margin-top: 40px; font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-secondary); }
+        .pg-group-label:first-child { margin-top: 0; }
+        .pg-line.is-empty { display: block; font-size: 12.5px; font-style: italic; color: var(--text-secondary); line-height: 1.75; }
+        .addon-note { display: block; font-style: normal; font-size: 11.5px; line-height: 1.6; color: var(--text-secondary); margin-top: 2px; }
+        @media (max-width: 600px) {
+            .pg-standfirst { font-size: 13.5px; line-height: 1.7; }
+            .pg-session { grid-template-columns: 68px minmax(0, 1fr); gap: 16px; }
+            .pg-plate { width: 68px; }
+            .pg-row { gap: 4px 10px; }
+            .pg-name { font-size: 17.5px; flex: 1 1 auto; min-width: 0; }
+            .pg-cost { font-size: 17px; }
+            .pg-inc { grid-template-columns: 1fr; margin-left: 0; font-size: 12px; }
+            .pg-foot { flex-direction: column; align-items: flex-start; gap: 12px; margin-left: 0; }
+        }
+
+        /* ============================================================
+           COMPOSE YOUR OWN — the studio bill, line by line
+
+           The client buys quantities, not bundles: hours of her time, the
+           images themselves, retouching at the depth they want, and creative
+           direction if they want it thought through. Each line is a row in
+           the dashboard, so no rate on this page is written in code.
+           ============================================================ */
+        /* Two ways to buy, side by side and impossible to miss: a tab row
+           let half the clients walk straight past the builder. */
+        /* The switch, set the way the live page sets a section: a Fraunces
+           heading over a Poppins line of description. Those two headings are
+           the only large serif type in this band, so the eye goes to them
+           without a box being drawn around them.
+
+           The price line belongs to the option you have not opened, so the
+           chosen one hides it while keeping its space. Both columns sit on the
+           hairline the page is already built from, with a second hairline under
+           the live one. */
+        .pg-switch { display: flex; align-items: flex-end; justify-content: center; gap: 34px; margin: 0 0 34px; border-bottom: 1px solid var(--border-color); }
+        .pg-switch-btn { position: relative; appearance: none; background: none; border: 0; display: flex; flex-direction: column; align-items: center; gap: 5px; margin-bottom: -1px; padding: 0 0 14px; font: inherit; color: inherit; cursor: pointer; }
+        .pg-switch-label { font-family: 'Fraunces', serif; font-weight: 500; font-size: 21px; line-height: 1.2; letter-spacing: -0.2px; color: var(--text-secondary); }
+        .pg-switch-note { font-size: 11px; line-height: 1.4; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+        .pg-switch-btn::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px; background: var(--accent); opacity: 0; }
+        @media (hover: hover) { .pg-switch-btn:hover .pg-switch-label { color: var(--text-primary); } }
+        .pg-switch-btn[aria-pressed="true"] .pg-switch-label { color: var(--text-primary); }
+        /* Each option always carries a line, so neither column is left hollow.
+           The chosen one loses only the price — what is left under it is what
+           the thing is ("5 sessions", "By the hour"), not what it costs. */
+        .pg-switch-note { min-height: 15px; }
+        .pg-switch-btn[aria-pressed="true"]::after { opacity: 1; }
+        .pg-switch-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+        .pg-switch-sep { width: 1px; height: 34px; margin-bottom: 14px; background: var(--border-color); }
+        /* One gap under the rule in both states, so switching does not change
+           how far the first line of the panel sits from the switch. */
+        #pg-compose .pg-atelier { padding-top: 0; }
+
+        .pg-panel[hidden] { display: none; }
+
+        .pg-atelier { display: grid; grid-template-columns: 1.5fr 0.9fr; gap: 52px; padding-top: 36px; align-items: start; }
+        .pg-step { display: block; font-size: 9px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--accent); margin-bottom: 9px; }
+        /* The composer's headings are set the way the switch is: Fraunces at
+           21px with a Poppins line of explanation under it. Same pairing, so
+           the whole band reads as one voice. */
+        .pg-legend { margin: 0 0 5px; font-family: 'Fraunces', serif; font-weight: 500; font-size: 21px; line-height: 1.2; letter-spacing: -0.2px; color: var(--text-primary); }
+        .pg-legend-note { margin: 0 0 16px; font-size: 11px; line-height: 1.5; color: var(--text-secondary); }
+        .pg-note { font-size: 12.5px; line-height: 1.8; color: var(--text-secondary); margin: 0 0 22px; max-width: 46ch; }
+
+        .st-line { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 18px; padding: 18px 0; border-bottom: 1px solid var(--border-color); }
+        .st-line:first-child { border-top: 1px solid var(--border-color); }
+        .st-line:last-child { border-bottom: 0; }
+        .st-line-main { min-width: 0; }
+        .st-line-name { display: block; font-size: 13.5px; color: var(--text-primary); }
+        .st-line-note { display: block; font-size: 11.5px; line-height: 1.6; color: var(--text-secondary); margin-top: 3px; }
+        /* What the line actually buys, under it. The rows are priced by unit and
+           two of the units are easy to confuse — images are delivered, not
+           retouched — so each row says which it is before the stepper. */
+        .st-line-desc { display: block; margin-top: 7px; max-width: 44ch; font-size: 11px; line-height: 1.6; color: var(--text-secondary); }
+        .st-qty { display: flex; align-items: center; border: 1px solid var(--border-color); }
+        .st-step { appearance: none; background: none; border: 0; width: 32px; height: 32px; font: inherit; font-size: 15px; line-height: 1; color: var(--text-secondary); cursor: pointer; transition: color 0.2s ease, background-color 0.2s ease; }
+        @media (hover: hover) { .st-step:hover:not(:disabled) { color: var(--accent); background: var(--highlight-bg); } }
+        .st-step:disabled { opacity: 0.3; cursor: not-allowed; }
+        .st-step:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+        .st-qty-val { min-width: 30px; text-align: center; font-family: 'Fraunces', serif; font-size: 14px; font-variant-numeric: tabular-nums; color: var(--text-primary); }
+        .st-line-total { min-width: 96px; text-align: right; font-family: 'Fraunces', serif; font-size: 14px; font-variant-numeric: tabular-nums; color: var(--text-primary); }
+
+        .pg-slip { position: sticky; top: 120px; }
+        .pg-slip.till { background: transparent; }
+        .pg-slip .till-paper { max-width: none; }
+        .pg-slip .pg-slip-cta { margin-top: 18px; background: var(--till-ink); color: var(--till-paper); }
+        @media (hover: hover) { .pg-slip .pg-slip-cta:hover:not(:disabled) { background: #3a3129; } }
+        .pg-slip-cta-note { text-align: center; font-size: 9.5px; letter-spacing: 0.1em; color: var(--till-mute); margin-top: 12px; }
+        .pg-slip-eyebrow { font-size: 9px; letter-spacing: 0.26em; text-transform: uppercase; color: var(--accent); }
+        .pg-slip-title { font-family: 'Fraunces', serif; font-weight: 500; font-size: 20px; margin: 10px 0 18px; color: var(--text-primary); }
+        .pg-line { display: flex; justify-content: space-between; gap: 14px; font-size: 12.5px; line-height: 1.6; padding: 7px 0; color: var(--text-secondary); }
+        .pg-line span:last-child { font-variant-numeric: tabular-nums; color: var(--text-primary); white-space: nowrap; }
+        .pg-line.is-empty { display: block; font-size: 12.5px; font-style: italic; line-height: 1.75; padding: 4px 0 2px; }
+        .pg-slip-total { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; border-top: 1px solid var(--text-primary); margin-top: 16px; padding-top: 14px; }
+        .pg-slip-total span:first-child { font-size: 9px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-secondary); }
+        .pg-slip-total span:last-child { font-family: 'Fraunces', serif; font-size: 26px; font-variant-numeric: tabular-nums; color: var(--text-primary); }
+        .pg-slip-retainer { display: flex; justify-content: space-between; gap: 12px; font-size: 11.5px; color: var(--accent); margin-top: 9px; }
+        .pg-slip-cta { width: 100%; margin-top: 24px; padding: 17px 16px; background: var(--text-primary); color: var(--bg-container); border: 0; font-family: inherit; font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: background-color 0.3s ease, opacity 0.3s ease; }
+        @media (hover: hover) { .pg-slip-cta:hover:not(:disabled) { background: var(--accent); } }
+        .pg-slip-cta:disabled { opacity: 0.4; cursor: not-allowed; }
+        .pg-slip-note { font-size: 10.5px; line-height: 1.7; color: var(--text-secondary); margin-top: 14px; }
+        .st-slip-empty { color: var(--till-mute); font-size: 11px; padding: 4px 0; }
+
+        @media (max-width: 768px) {
+            .pg-switch { gap: 22px; margin-bottom: 26px; }
+            .pg-switch-btn { padding-bottom: 12px; }
+            .pg-switch-label { font-size: 18px; }
+            .pg-legend { font-size: 18px; }
+            .pg-switch-note { font-size: 10px; }
+            .pg-switch-sep { height: 28px; margin-bottom: 12px; }
+            .pg-atelier { grid-template-columns: 1fr; gap: 32px; padding-top: 30px; }
+            .pg-slip { position: static; }
+            .st-line { grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "main qty" "total qty"; gap: 6px 14px; padding: 16px 0; align-items: start; }
+            .st-line-main { grid-area: main; }
+            .st-qty { grid-area: qty; }
+            .st-line-total { grid-area: total; text-align: left; min-width: 0; align-self: end; }
+        }
+
+        /* The owner's own label for a session ("Most booked", "Premium"). */
+        .tier-badge { display: inline-block; font-size: 9px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: #ecd7b6; background: rgba(15,12,9,0.66); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); padding: 4px 10px; margin-bottom: 10px; }
+
+        /* The fixed-fee block inside the composer: work sold once, not by the
+           number, so it is a tick and a divider rather than a stepper. */
+        .st-divider { height: 1px; background: var(--border-color); margin: 38px 0 26px; }
+        .st-fixed-row { display: flex; align-items: flex-start; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--border-color); cursor: pointer; }
+        .st-fixed-row:first-child { border-top: 1px solid var(--border-color); }
+        .st-fixed-row input { appearance: none; -webkit-appearance: none; flex-shrink: 0; width: 15px; height: 15px; margin: 3px 0 0; border: 1px solid var(--border-dashed); background: transparent; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease; }
+        .st-fixed-row input:checked { background-color: var(--accent); border-color: var(--accent); box-shadow: inset 0 0 0 2.5px var(--bg-container); }
+        .st-fixed-row input:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+        .st-fixed-body { min-width: 0; }
+        .st-fixed-name { display: block; font-size: 13.5px; color: var(--text-primary); transition: color 0.2s ease; }
+        .st-fixed-row.is-on .st-fixed-name { color: var(--accent); }
+        .st-fixed-note { display: block; font-size: 11.5px; line-height: 1.65; color: var(--text-secondary); margin-top: 3px; }
+        .st-fixed-price { margin-left: auto; font-family: 'Fraunces', serif; font-size: 14px; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--text-primary); padding-left: 12px; }
     </style>
     <link rel="canonical" href="https://libertymusa.com/book">
     <meta property="og:site_name" content="Libertypictures">
@@ -759,19 +935,64 @@
             </div>
         </div>
 
-        <!-- PACKAGES SECTION -->
+        <!-- PACKAGES SECTION — THE SESSION GUIDE -->
         <section class="section-block" id="packages">
-            <h2 class="section-title serif">Our Sessions</h2>
-            <p class="section-meta">Perfect for portraits, pre-birthdays, maternity, corporate headshots, duo, and family sessions.</p>
-            <div class="tier-stack" id="packages-grid">
-                <!-- Skeleton cards match the real cards' exact dimensions
-                     (same class), so nothing below shifts when the live
-                     packages swap in. -->
-                <div class="tier-card is-skeleton" aria-hidden="true"></div>
-                <div class="tier-card is-skeleton" aria-hidden="true"></div>
-                <div class="tier-card is-skeleton" aria-hidden="true"></div>
-                <div class="tier-card is-skeleton" aria-hidden="true"></div>
-                <div class="tier-card is-skeleton" aria-hidden="true"></div>
+            <header class="pg-head">
+                <p class="pg-standfirst" data-copy="intro">Perfect for portraits, pre‑birthdays, maternity, corporate headshots, duo, and family sessions.</p>
+            </header>
+            <div class="pg-switch" role="group" aria-label="How would you like to choose?">
+                <button type="button" class="pg-switch-btn" id="pg-tab-sessions" aria-pressed="true" aria-controls="pg-collections" data-mode="sessions">
+                    <span class="pg-switch-label" data-copy="sessions tab">Our sessions</span>
+                    <span class="pg-switch-note" id="pg-switch-sessions-note" data-short="5 sessions" data-full="5 sessions, from &#8358;150,000">5 sessions, from &#8358;150,000</span>
+                </button>
+                <span class="pg-switch-sep" aria-hidden="true"></span>
+                <button type="button" class="pg-switch-btn" id="pg-tab-compose" aria-pressed="false" aria-controls="pg-compose" data-mode="compose">
+                    <span class="pg-switch-label" data-copy="build tab">Build your own</span>
+                    <span class="pg-switch-note" id="pg-switch-build-note" data-short="By the hour" data-full="From &#8358;80,000 per hour">From &#8358;80,000 per hour</span>
+                </button>
+            </div>
+
+            <div class="pg-panel" id="pg-collections">
+                <p class="pg-note" data-copy="sessions intro">Every session includes your studio time, your edited images and a private online gallery.</p>
+                <div id="packages-grid" class="tier-stack">
+                    <p class="pg-line is-empty" style="text-align:center; padding:32px 0;">Loading the sessions&hellip;</p>
+                </div>
+            </div>
+
+            <div class="pg-panel" id="pg-compose" hidden>
+                <div class="pg-atelier">
+                    <div>
+                        <h3 class="pg-legend" data-copy="build heading">What you need</h3>
+                        <p class="pg-legend-note">Priced as you set it, line by line.</p>
+                        <div id="st-lines">
+                            <p class="pg-line is-empty">Loading the rates&hellip;</p>
+                        </div>
+                        <div id="st-fixed-wrap" hidden>
+                            <div class="st-divider"></div>
+                            <h3 class="pg-legend" data-copy="direction heading">Art direction</h3>
+                            <p class="pg-legend-note">Charged once, not by the hour.</p>
+                            <div id="st-fixed"></div>
+                        </div>
+                    </div>
+                    <aside class="pg-slip till" aria-live="polite">
+                        <div class="till-paper">
+                            <div class="till-shop">YOUR PACKAGE</div>
+                            <div class="till-sub" id="st-slip-name">Nothing chosen yet</div>
+                            <div class="till-perf"></div>
+                            <table class="till-table">
+                                <thead><tr><th class="till-qty">QTY</th><th>DESC</th><th class="till-amt">AMT</th></tr></thead>
+                                <tbody id="st-slip-lines">
+                                    <tr><td colspan="3" class="st-slip-empty">Set your hours first.</td></tr>
+                                </tbody>
+                            </table>
+                            <div class="till-perf"></div>
+                            <div class="till-total"><span>SUBTOTAL</span><span id="st-slip-total">&mdash;</span></div>
+                            <div class="till-grand"><span>RETAINER TODAY (70%)</span><span id="st-slip-retainer">&mdash;</span></div>
+                            <button type="button" class="pg-slip-cta" id="st-slip-cta" disabled>Continue with this package</button>
+                            <div class="pg-slip-cta-note">Balance settled on delivery</div>
+                        </div>
+                    </aside>
+                </div>
             </div>
         </section>
 
@@ -1224,66 +1445,514 @@
                 .catch(function (err) { console.error('Could not load logo from Settings:', err); });
         })();
 
-        // PACKAGES — loaded from the real backend, matching the same
-        // pattern used throughout Libertypictures: whatever's in the
-        // dashboard is exactly what shoppers see, no GitHub-hosted
-        // files involved.
+        // THE PRICE GUIDE — sessions and extras read from the dashboard. Sessions
+        // print as cards on purpose: this page is a studio shopfront, and the
+        // photograph is most of what the client is buying. Section wording comes
+        // from rows in "Studio Guide" (name = slot, description = the text).
+        //
+        // The category decides where a row lands, exactly as on the wedding page:
+        //   Studio            the five sessions
+        //   Studio <Group>    a group of extras, titled <Group>
+        // Only categories beginning "Studio" are read, so a wedding row can never
+        // appear here. The copies below are the fallback for an API that cannot be
+        // reached, so the page never renders empty.
         (function () {
             var API_BASE = 'https://api.libertymusa.com';
             var grid = document.getElementById('packages-grid');
+
+            var DEFAULT_SESSIONS = [
+                { name: 'Individual', price: 150000, badge: 'Most booked', description: '1 Outfit/concept\n5 retouched photographs' },
+                { name: 'Individual Two Looks', price: 200000, badge: '', description: '2 distinct outfits/concept\n9 edited photographs' },
+                { name: 'Individual Three Looks', price: 300000, badge: 'Premium', description: '3 distinct outfits/concepts\n15 retouched photographs' },
+                { name: 'Duo', price: 150000, badge: '', description: 'For pre-weddings, couple portraits, mommy & me, twin portraits\n1 distinct concept\n10 retouched photographs' },
+                { name: 'Family', price: 280000, badge: '', description: 'Maximum of two outfits\n18 retouched photographs\n1 photo album' }
+            ];
+            var DEFAULT_ADDONS = [
+                { name: 'On location, no backdrop', price: 50000 },
+                { name: 'On location, with backdrop', price: 70000 },
+                { name: 'Express delivery, 24 hours', price: 30000 }
+            ];
+            var NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
 
             function escapeHtmlLocal(str) {
                 var div = document.createElement('div');
                 div.textContent = String(str == null ? '' : str);
                 return div.innerHTML;
             }
-
-            function cardHtml(p, isFirst) {
-                // The first card is the page's LCP candidate once the
-                // section scrolls into view — load it eagerly with high
-                // priority instead of lazy (a several-hundred-KB photo
-                // that only starts downloading when scrolled to).
-                var loadingAttr = isFirst ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"';
-                var photoHtml = p.imageUrl
-                    ? '<img src="' + API_BASE + p.imageUrl + '" alt="' + escapeHtmlLocal(p.name) + '" ' + loadingAttr + ' decoding="async">'
-                    : '';
-                var bullets = (p.description || '').split('\n').filter(function (line) { return line.trim(); });
-                var bulletsHtml = bullets.length
-                    ? '<ul class="tier-details">' + bullets.map(function (b) { return '<li>' + escapeHtmlLocal(b) + '</li>'; }).join('') + '</ul>'
-                    : '';
-                var priceLabel = '\u20a6' + Math.round(p.price / 1000) + 'k';
-
-                return '<div class="tier-card' + (photoHtml ? '' : ' no-photo') + '" data-price="' + p.price + '" data-name="' + escapeHtmlLocal(p.name) + '">' +
-                    '<div class="tier-photo-full">' + photoHtml + '</div>' +
-                    '<div class="tier-scrim">' +
-                        '<h3>' + escapeHtmlLocal(p.name) + '</h3>' +
-                        bulletsHtml +
-                        '<div class="tier-price-box">' +
-                            '<span class="tier-price">' + priceLabel + '</span>' +
-                            '<button class="select-btn" onclick="selectPackage(this)">Select Session</button>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>';
+            function money(amount) {
+                return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(amount);
+            }
+            /* The dashboard still holds rows that begin "Off-Studio", wording
+               from before this page changed. A client reads where the shoot
+               happens; rename the rows in the dashboard and this stops
+               applying to them. */
+            function addonLabel(name) {
+                var text = String(name == null ? '' : name).trim();
+                var m = text.match(/^off[-\s]?studio\s*(?:shoot)?\s*[\u2014\u2013-]?\s*(.+)$/i);
+                if (!m) return text;
+                return 'On location, ' + m[1].toLowerCase();
+            }
+            function oneLine(text) {
+                return String(text == null ? '' : text).replace(/\s*\n+\s*/g, ' \u00b7 ').trim();
             }
 
-            fetch(API_BASE + '/api/packages?activeOnly=true&category=Studio')
-                .then(function (res) { return res.json(); })
-                .then(function (data) {
-                    var packages = (data.packages || []).slice().sort(function (a, b) { return a.displayOrder - b.displayOrder; });
-                    if (!packages.length) {
-                        grid.innerHTML = '<p style="text-align:center; color:var(--text-secondary); font-size:13px;">Sessions are being updated \u2014 check back shortly.</p>';
-                        return;
+            /* The sessions stay cards: this page is a studio shopfront, and the
+               photograph is most of what the client is buying. One card per
+               session, the owner's own badge, her inclusions, the full figure. */
+            function renderSessions(sessions) {
+                if (!sessions.length) {
+                    /* Nothing on sale is a real state, not a failure: every
+                       Studio package is switched off or the list is empty, so
+                       the page says so and the count stops advertising a
+                       number that is not there. */
+                    grid.innerHTML = '<p class="pg-line is-empty" style="text-align:center; padding:32px 0;">Sessions are being updated \u2014 check back shortly.</p>';
+                    var emptyHint = document.getElementById('pg-switch-sessions-note');
+                    if (emptyHint) {
+                        emptyHint.setAttribute('data-short', 'Being updated');
+                        emptyHint.setAttribute('data-full', 'Being updated shortly');
+                        switchNoteText(emptyHint);
                     }
-                    grid.innerHTML = packages.map(function (p, i) { return cardHtml(p, i === 0); }).join('');
-                    if (typeof window.lpInitScrollReveal === 'function') {
-                        window.lpInitScrollReveal(grid.querySelectorAll('.tier-card'), 100);
+                    return;
+                }
+                grid.innerHTML = sessions.map(function (p, i) {
+                    // The first photograph is the page's LCP candidate once the
+                    // section is reached, so it is the one loaded eagerly.
+                    var photo = p.imageUrl
+                        ? '<img src="' + API_BASE + p.imageUrl + '" alt="' + escapeHtmlLocal(p.name) + '" ' +
+                            (i === 0 ? 'loading="eager" fetchpriority="high"' : 'loading="lazy"') + ' decoding="async">'
+                        : '';
+                    var bullets = (p.description || '').split('\n').filter(function (line) { return line.trim(); });
+                    var bulletsHtml = bullets.length
+                        ? '<ul class="tier-details">' + bullets.map(function (b) { return '<li>' + escapeHtmlLocal(b) + '</li>'; }).join('') + '</ul>'
+                        : '';
+                    var badgeHtml = p.badge ? '<span class="tier-badge">' + escapeHtmlLocal(p.badge) + '</span>' : '';
+                    return '<div class="tier-card' + (photo ? '' : ' no-photo') + '" data-price="' + p.price + '" data-name="' + escapeHtmlLocal(p.name) + '">' +
+                        '<div class="tier-photo-full">' + photo + '</div>' +
+                        '<div class="tier-scrim">' + badgeHtml +
+                            '<h3>' + escapeHtmlLocal(p.name) + '</h3>' + bulletsHtml +
+                            '<div class="tier-price-box">' +
+                                '<span class="tier-price">' + studioMoney(p.price) + '</span>' +
+                                '<button class="select-btn" onclick="chooseSession(this)">Select Session</button>' +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                }).join('');
+
+                var cheapest = sessions.reduce(function (min, p) { return Math.min(min, p.price); }, Infinity);
+                var hint = document.getElementById('pg-switch-sessions-note');
+                if (hint && isFinite(cheapest)) {
+                    var countText = sessions.length + (sessions.length === 1 ? ' session' : ' sessions');
+                    hint.setAttribute('data-short', countText);
+                    hint.setAttribute('data-full', countText + ', from ' + money(cheapest));
+                    switchNoteText(hint);
+                }
+            }
+
+            /* Extras: the studio's add-ons first (they are the real ones, and they
+               need no setup), then any Studio <Group> rows the owner has written,
+               each under its own label. A category of her own is therefore a new
+               shelf of extras, with prices and one-line descriptions. */
+            function renderExtras(groups) {
+                var box = document.getElementById('addons-box');
+                if (!box) return;
+                var html = '';
+                var showTitles = groups.length > 1;
+                groups.forEach(function (group) {
+                    if (showTitles && group.title) {
+                        html += '<span class="pg-group-label">' + escapeHtmlLocal(group.title) + '</span>';
                     }
-                })
-                .catch(function (err) {
-                    grid.innerHTML = '<p style="text-align:center; color:var(--text-secondary); font-size:13px;">Couldn\'t load sessions right now \u2014 please refresh.</p>';
-                    console.error('Packages load failed:', err);
+                    group.items.forEach(function (a) {
+                        html += '<label class="addon-row"><div class="addon-label">' +
+                            '<input type="checkbox" class="addon-checkbox" value="' + a.price + '" data-name="' + escapeHtmlLocal(a.name) + '">' +
+                            '<span>' + escapeHtmlLocal(a.name) +
+                            (a.note ? '<em class="addon-note">' + escapeHtmlLocal(a.note) + '</em>' : '') +
+                            '</span></div>' +
+                            '<span class="addon-price">+' + money(a.price) + '</span></label>';
+                    });
                 });
+                box.innerHTML = html;
+                setAddonsEnabled(!!cart.baseName);
+            }
+
+            function readJson(url) {
+                return fetch(url).then(function (res) {
+                    if (!res.ok) throw new Error(url);
+                    return res.json();
+                });
+            }
+
+            Promise.all([
+                readJson(API_BASE + '/api/packages?activeOnly=true').catch(function () { return null; }),
+                readJson(API_BASE + '/api/addons?activeOnly=true&category=Studio').catch(function () { return null; })
+            ]).then(function (parts) {
+                var rows = (parts[0] && parts[0].packages) || [];
+                var sessions = [];
+                var groups = [];
+                var guideRows = [];
+                var byTitle = {};
+                rows.forEach(function (p) {
+                    var category = String(p.category || '').trim();
+                    var lower = category.toLowerCase();
+                    if (lower === 'studio') { sessions.push(p); return; }
+                    if (lower === 'studio guide') { guideRows.push(p); return; }
+                    /* Rate rows and fees are priced by the composer; offering
+                       them again as tick-box extras would charge them twice. */
+                    if (lower === 'studio coverage' || lower === 'studio direction') return;
+                    if (lower.indexOf('studio ') !== 0) return;
+                    var title = category.slice('Studio '.length).trim();
+                    if (!title) return;
+                    if (!byTitle[title]) { byTitle[title] = { title: title, items: [] }; groups.push(byTitle[title]); }
+                    byTitle[title].items.push({ name: p.name, note: oneLine(p.description), price: p.price });
+                });
+                var addonRows = (parts[1] && parts[1].addons) || [];
+                var allGroups = [];
+                if (addonRows.length) {
+                    allGroups.push({ title: '', items: addonRows.map(function (a) {
+                        return { name: addonLabel(a.name), note: '', price: a.price };
+                    }) });
+                }
+                allGroups = allGroups.concat(groups);
+                /* The built-in five are an offline fallback, not a substitute
+                   for an empty shelf: if the API answered and has nothing
+                   active, the page shows that instead of inventing stock. */
+                var packagesAnswered = parts[0] !== null;
+                renderSessions(packagesAnswered ? sessions : DEFAULT_SESSIONS);
+                renderExtras(allGroups.length ? allGroups : [{ title: '', items: DEFAULT_ADDONS }]);
+                if (typeof applyGuideCopy === 'function') applyGuideCopy(guideRows);
+                if (typeof lpSetStudioCoverage === 'function') lpSetStudioCoverage(rows);
+            });
         })();
+
+        // COMPOSE YOUR OWN — the studio bill, line by line.
+        //
+        // Every row in the dashboard category "Studio Coverage" is one priced
+        // unit: her time by the hour, the images by the image, retouching by the
+        // image at whatever depth she sells, creative direction by the concept.
+        // The description she writes is the unit line under the name, so
+        // "per hour · on set or in the studio" prints beside her own price. The
+        // client sets every quantity; nothing is bundled and nothing assumed.
+        //
+        // The lists below are the fallback for an API that cannot be reached.
+        var STUDIO_LINE_FALLBACK = [
+            { name: 'Studio time', note: 'per hour', price: 80000 },
+            { name: 'Images', note: 'per image', price: 10000 },
+            { name: 'Retouching', note: 'per image', price: 20000 }
+        ];
+        /* Work sold once rather than by the number: it sits beside the bill,
+           not inside it as a quantity. */
+        var STUDIO_FIXED_FALLBACK = [
+            { name: 'Creative direction', note: 'Concept, moodboard, styling notes and the plan for the day, including who to book for hair, makeup and tailoring.', price: 60000 },
+            { name: 'Location scouting', note: 'Two or three locations visited and shortlisted, with timing and permits checked.', price: 40000 },
+            { name: 'Selection and print planning', note: 'Choosing your final images with you, and the sizes for your walls or album.', price: 30000 }
+        ];
+        var studioLines = STUDIO_LINE_FALLBACK.slice();
+        var studioFixedLines = STUDIO_FIXED_FALLBACK.slice();
+        var studioQty = {};
+        var studioFixed = {};
+        var STUDIO_MAX_QTY = 24;
+        function studioMoney(amount) {
+            return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(amount);
+        }
+        /* The page's own words, editable from the dashboard.
+           Rows in the category "Studio Guide" carry them: the name is the slot,
+           the description is the text. Clear a description and that line
+           disappears; delete the row and the built-in wording comes back. */
+        var GUIDE_COPY = {};
+        var GUIDE_SLOTS = {};
+
+        function guideSlotKey(name) {
+            return String(name == null ? '' : name).toLowerCase().replace(/[^a-z ]/g, '').replace(/\s+/g, ' ').trim();
+        }
+
+        function applyGuideCopy(rows) {
+            GUIDE_COPY = {};
+            (rows || []).forEach(function (row) {
+                var key = guideSlotKey(row.name);
+                if (!key) return;
+                GUIDE_COPY[key] = String(row.description == null ? '' : row.description);
+            });
+            document.querySelectorAll('[data-copy]').forEach(function (el) {
+                if (!el.hasAttribute('data-default')) el.setAttribute('data-default', el.innerHTML);
+                var key = guideSlotKey(el.getAttribute('data-copy'));
+                var value = GUIDE_COPY[key];
+                var text = (value === undefined) ? el.getAttribute('data-default') : String(value).trim();
+                if (text) {
+                    el.innerHTML = studioEsc(text).replace(/&lt;br\s*\/?&gt;/gi, '<br>');
+                    el.hidden = false;
+                } else {
+                    el.innerHTML = '';
+                    el.hidden = true;
+                }
+            });
+        }
+
+        function studioEsc(str) {
+            var d = document.createElement('div');
+            d.textContent = String(str == null ? '' : str);
+            return d.innerHTML;
+        }
+
+        /* Her rows, if the dashboard has any. Quantity lines come from "Studio
+           Coverage"; fixed fees from "Studio Direction". */
+        function lpSetStudioCoverage(rows) {
+            var all = (rows || []).map(function (p) {
+                return {
+                    category: String(p.category || '').trim().toLowerCase(),
+                    name: p.name,
+                    note: String(p.description || '').replace(/\s*\n+\s*/g, ' \u00b7 ').trim(),
+                    price: p.price
+                };
+            });
+            var list = all.filter(function (row) { return row.category === 'studio coverage'; });
+            var fixed = all.filter(function (row) { return row.category === 'studio direction'; });
+
+            if (list.length) {
+                studioLines = list;
+                var next = {};
+                Object.keys(studioQty).forEach(function (key) {
+                    if (studioLines[parseInt(key, 10)]) next[key] = studioQty[key];
+                });
+                studioQty = next;
+            }
+            if (fixed.length) studioFixedLines = fixed;
+            renderStudioComposer();
+        }
+
+        /* The small print under a rate line. It answers the question the unit
+           itself cannot: an "image" is a file that is already edited for colour,
+           not a retouched one, and retouching is the line that follows. Written
+           by unit rather than by position, so reordering the rows in the
+           dashboard cannot put the wrong sentence under the wrong price.
+
+           Each can be replaced from the dashboard: a "Studio Guide" row named
+           "studio time note", "images note" or "retouching note" carries the
+           wording in its description, and an empty description removes it. */
+        var STUDIO_NOTE_SLOTS = { time: 'studio time note', images: 'images note', retouch: 'retouching note' };
+        var STUDIO_NOTE_DEFAULT = {
+            time: 'The hours we shoot. Setup, styling changes and the odd break all happen inside them.',
+            images: 'Every frame we keep, colour-corrected and delivered to your gallery. Retouching is the line below.',
+            retouch: 'Skin, hair and detail work, done by hand on the images you choose, at print quality.'
+        };
+
+        function studioLineKind(line) {
+            var name = String(line && line.name || '').toLowerCase();
+            if (/retouch/.test(name)) return 'retouch';
+            if (/image|photo|frame|file/.test(name)) return 'images';
+            if (/time|hour/.test(name)) return 'time';
+            return '';
+        }
+
+        function studioLineNote(line) {
+            var kind = studioLineKind(line);
+            if (!kind) return '';
+            var slot = STUDIO_NOTE_SLOTS[kind];
+            if (Object.prototype.hasOwnProperty.call(GUIDE_COPY, slot)) return String(GUIDE_COPY[slot] || '');
+            return STUDIO_NOTE_DEFAULT[kind];
+        }
+
+        function studioLineTotal(i) {
+            var line = studioLines[i];
+            var q = studioQty[i] || 0;
+            return line ? line.price * q : 0;
+        }
+        function studioComposerTotal() {
+            return studioLines.reduce(function (sum, line, i) { return sum + studioLineTotal(i); }, 0);
+        }
+
+        function renderStudioComposer() {
+            var box = document.getElementById('st-lines');
+            if (!box) return;
+            box.innerHTML = studioLines.map(function (line, i) {
+                var q = studioQty[i] || 0;
+                return '<div class="st-line">' +
+                    '<div class="st-line-main">' +
+                        '<span class="st-line-name">' + studioEsc(line.name) + '</span>' +
+                        '<span class="st-line-note">' + studioMoney(line.price) +
+                            (line.note ? ' ' + studioEsc(line.note) : '') + '</span>' +
+                        (studioLineNote(line) ? '<span class="st-line-desc">' + studioEsc(studioLineNote(line)) + '</span>' : '') +
+                    '</div>' +
+                    '<div class="st-qty" role="group" aria-label="' + studioEsc(line.name) + ' quantity">' +
+                        '<button type="button" class="st-step" data-key="' + i + '" data-delta="-1" aria-label="One fewer ' + studioEsc(line.name) + '"' + (q <= 0 ? ' disabled' : '') + '>\u2212</button>' +
+                        '<span class="st-qty-val" id="st-qty-' + i + '">' + q + '</span>' +
+                        '<button type="button" class="st-step" data-key="' + i + '" data-delta="1" aria-label="One more ' + studioEsc(line.name) + '"' + (q >= STUDIO_MAX_QTY ? ' disabled' : '') + '>+</button>' +
+                    '</div>' +
+                    '<span class="st-line-total" id="st-total-' + i + '">' + (q ? studioMoney(studioLineTotal(i)) : '') + '</span>' +
+                '</div>';
+            }).join('');
+
+            var wrap = document.getElementById('st-fixed-wrap');
+            var fixedBox = document.getElementById('st-fixed');
+            if (wrap && fixedBox) {
+                wrap.hidden = !studioFixedLines.length;
+                fixedBox.innerHTML = studioFixedLines.map(function (line, i) {
+                    var on = !!studioFixed[line.name];
+                    var id = 'st-fixed-' + i;
+                    return '<label class="st-fixed-row' + (on ? ' is-on' : '') + '" for="' + id + '">' +
+                        '<input type="checkbox" id="' + id + '" data-fixed="' + studioEsc(line.name) + '"' + (on ? ' checked' : '') + '>' +
+                        '<span class="st-fixed-body">' +
+                            '<span class="st-fixed-name">' + studioEsc(line.name) + '</span>' +
+                            (line.note ? '<span class="st-fixed-note">' + studioEsc(line.note) + '</span>' : '') +
+                        '</span>' +
+                        '<span class="st-fixed-price">' + studioMoney(line.price) + '</span></label>';
+                }).join('');
+                fixedBox.querySelectorAll('input[data-fixed]').forEach(function (cb) {
+                    cb.addEventListener('change', function () {
+                        studioFixed[cb.getAttribute('data-fixed')] = cb.checked;
+                        var row = cb.closest('.st-fixed-row');
+                        if (row) row.classList.toggle('is-on', cb.checked);
+                        studioSlip();
+                    });
+                });
+            }
+
+            var firstLine = studioLines[0];
+            var buildHint = document.getElementById('pg-switch-build-note');
+            if (buildHint && firstLine) {
+                buildHint.setAttribute('data-full', 'From ' + studioMoney(firstLine.price) + (firstLine.note ? ' ' + firstLine.note : ''));
+                switchNoteText(buildHint);
+            }
+            studioSlip();
+        }
+
+        /* Two ways of choosing, one of them on screen at a time. The switch is
+           only a label with a rule under it, so it needs nothing else to work. */
+        function switchNoteText(note) {
+            if (!note) return;
+            var button = note.closest('.pg-switch-btn');
+            var active = button && button.getAttribute('aria-pressed') === 'true';
+            var full = note.getAttribute('data-full') || '';
+            var short = note.getAttribute('data-short') || full;
+            note.textContent = active ? short : full;
+        }
+
+        (function () {
+            var buttons = document.querySelectorAll('.pg-switch-btn');
+            var collectionsPanel = document.getElementById('pg-collections');
+            var composePanel = document.getElementById('pg-compose');
+            function setMode(mode) {
+                buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-mode') === mode)); });
+                if (collectionsPanel) collectionsPanel.hidden = (mode !== 'sessions');
+                if (composePanel) composePanel.hidden = (mode !== 'compose');
+                document.querySelectorAll('.pg-switch-note').forEach(switchNoteText);
+                if (mode === 'compose') renderStudioComposer();
+            }
+            buttons.forEach(function (b) {
+                b.addEventListener('click', function () { setMode(b.getAttribute('data-mode')); });
+            });
+            var open = document.querySelector('.pg-switch-btn[aria-pressed="true"]');
+            setMode(open ? open.getAttribute('data-mode') : 'sessions');
+        })();
+
+        /* The running slip. It reads the composer's own state rather than the
+           cart, so a half-built commission is never mistaken for a chosen one. */
+        function studioSlip() {
+            var nameEl = document.getElementById('st-slip-name');
+            var linesEl = document.getElementById('st-slip-lines');
+            var totalEl = document.getElementById('st-slip-total');
+            var retEl = document.getElementById('st-slip-retainer');
+            var ctaEl = document.getElementById('st-slip-cta');
+            if (!nameEl || !linesEl || !totalEl || !retEl || !ctaEl) return;
+
+            var chosen = studioLines.map(function (line, i) {
+                return { line: line, qty: studioQty[i] || 0, total: studioLineTotal(i) };
+            }).filter(function (row) { return row.qty > 0; });
+            var fixedChosen = studioFixedLines.filter(function (line) { return studioFixed[line.name]; });
+
+            var total = chosen.reduce(function (sum, row) { return sum + row.total; }, 0) +
+                fixedChosen.reduce(function (sum, line) { return sum + line.price; }, 0);
+            var hours = studioQty[0] || 0;
+
+            nameEl.innerText = hours
+                ? hours + (hours === 1 ? ' hour' : ' hours')
+                : 'Nothing chosen yet';
+
+            if (chosen.length || fixedChosen.length) {
+                linesEl.innerHTML = chosen.map(function (row) {
+                    return '<tr><td class="till-qty">' + row.qty + '</td><td>' + studioEsc(row.line.name) +
+                        '</td><td class="till-amt">' + studioMoney(row.total) + '</td></tr>';
+                }).join('') + fixedChosen.map(function (line) {
+                    return '<tr><td class="till-qty">1</td><td>' + studioEsc(line.name) +
+                        '</td><td class="till-amt">' + studioMoney(line.price) + '</td></tr>';
+                }).join('');
+            } else {
+                linesEl.innerHTML = '<tr><td colspan="3" class="st-slip-empty">Set your hours first.</td></tr>';
+            }
+
+            totalEl.innerText = (chosen.length || fixedChosen.length) ? studioMoney(total) : '\u2014';
+            retEl.innerText = (chosen.length || fixedChosen.length) ? studioMoney(total * 0.7) : '\u2014';
+            /* Her time is the thing being booked: a package of images with no
+               hours behind them is not a shoot. */
+            ctaEl.disabled = !(hours > 0);
+            ctaEl.innerText = 'Continue with this package';
+        }
+
+        function lpResetComposer() {
+            studioQty = {};
+            studioFixed = {};
+            renderStudioComposer();
+        }
+
+        function commitStudioCommission() {
+            if (!(studioQty[0] > 0)) return;
+            var hours = studioQty[0];
+            var timeLine = studioLines[0];
+            var addons = [];
+            studioLines.forEach(function (line, i) {
+                if (i === 0) return;
+                var q = studioQty[i] || 0;
+                if (!q) return;
+                addons.push({ name: q + ' \u00d7 ' + line.name, price: line.price * q });
+            });
+            studioFixedLines.forEach(function (line) {
+                if (studioFixed[line.name]) addons.push({ name: line.name, price: line.price });
+            });
+
+            /* One answer at a time: a built package clears any chosen session. */
+            document.querySelectorAll('.tier-card').forEach(function (el) { el.classList.remove('selected'); });
+            document.querySelectorAll('.select-btn').forEach(function (b) { b.innerText = 'Select Session'; });
+            document.querySelectorAll('.pg-item').forEach(function (el) { el.classList.remove('is-chosen'); });
+            document.querySelectorAll('.pg-choose').forEach(function (b) { b.innerText = 'Choose this session'; });
+
+            /* Extras already ticked in Custom Additions travel with the package
+               rather than being silently dropped from the total. */
+            document.querySelectorAll('#addons-box .addon-checkbox:checked').forEach(function (cb) {
+                addons.push({ name: cb.getAttribute('data-name'), price: parseFloat(cb.value) });
+            });
+
+            cart.baseName = 'Studio package, ' + hours + (hours === 1 ? ' hour' : ' hours');
+            cart.basePrice = timeLine.price * hours;
+            cart.addons = addons;
+            document.getElementById('addons-box').classList.add('active');
+            setAddonsEnabled(true);
+            document.getElementById('invoice-ui').classList.add('active');
+            updateStep(2);
+            calculateTotals();
+            lpSmoothScrollTo(document.getElementById('lp-booking'), {
+                duration: 750,
+                offset: -(lpStickyBarHeight() + 20)
+            });
+        }
+
+        (function () {
+            var box = document.getElementById('st-lines');
+            if (!box) return;
+            box.addEventListener('click', function (e) {
+                var btn = e.target && e.target.closest ? e.target.closest('.st-step') : null;
+                if (!btn) return;
+                var i = parseInt(btn.getAttribute('data-key'), 10);
+                var delta = parseInt(btn.getAttribute('data-delta'), 10);
+                var next = (studioQty[i] || 0) + delta;
+                if (next < 0) next = 0;
+                if (next > STUDIO_MAX_QTY) next = STUDIO_MAX_QTY;
+                studioQty[i] = next;
+                renderStudioComposer();
+            });
+            var cta = document.getElementById('st-slip-cta');
+            if (cta) cta.addEventListener('click', commitStudioCommission);
+            renderStudioComposer();
+        })();
+
+
 
         // PROMO POPUP — opens only on click, closes on the × / overlay / Escape
         (function () {
@@ -1442,30 +2111,36 @@
         }
         setAddonsEnabled(false);
 
-        // Package Selection
-        function selectPackage(btn) {
-            // Remove selection from all cards
-            document.querySelectorAll('.tier-card').forEach(card => card.classList.remove('selected'));
-            document.querySelectorAll('.select-btn').forEach(b => b.innerText = "Select Session");
+        function chooseSession(btn) {
+            var item = btn.closest('.tier-card') || btn.closest('.pg-item');
+            if (!item) return;
 
-            // Add selection to clicked card
-            const card = btn.closest('.tier-card');
-            card.classList.add('selected');
-            btn.innerText = "Selected";
+            document.querySelectorAll('.tier-card').forEach(function (el) { el.classList.remove('selected'); });
+            document.querySelectorAll('.select-btn').forEach(function (b) { b.innerText = 'Select Session'; });
+            document.querySelectorAll('.pg-item').forEach(function (el) { el.classList.remove('is-chosen'); });
+            document.querySelectorAll('.pg-choose').forEach(function (b) { b.innerText = 'Choose this session'; });
 
-            // Update Cart State
-            cart.basePrice = parseFloat(card.getAttribute('data-price'));
-            cart.baseName = card.getAttribute('data-name');
+            item.classList.add(item.classList.contains('tier-card') ? 'selected' : 'is-chosen');
+            btn.innerText = 'Chosen';
 
-            // Enable Addons & update UI
+            cart.basePrice = parseFloat(item.getAttribute('data-price'));
+            cart.baseName = item.getAttribute('data-name');
+
+            /* A built package leaves its lines in the cart; choosing a session
+               replaces that whole answer, so the lines go with it. Anything
+               ticked in Custom Additions is re-collected afterwards, so a
+               checkbox can never sit ticked without its price in the total. */
+            cart.addons = [];
+            document.querySelectorAll('#addons-box .addon-checkbox:checked').forEach(function (cb) {
+                cart.addons.push({ name: cb.getAttribute('data-name'), price: parseFloat(cb.value) });
+            });
+            if (typeof lpResetComposer === 'function') lpResetComposer();
+
             document.getElementById('addons-box').classList.add('active');
             setAddonsEnabled(true);
             document.getElementById('invoice-ui').classList.add('active');
             updateStep(2);
 
-            // Seamless scroll to the date picker: choosing a session is step 1,
-            // and the next thing the client needs is a date. Custom Additions
-            // and the Booking Summary now sit below the calendar.
             lpSmoothScrollTo(document.getElementById('lp-booking'), {
                 duration: 750,
                 offset: -(lpStickyBarHeight() + 20)
@@ -1474,27 +2149,29 @@
             calculateTotals();
         }
 
-        // Add-on Checkbox Listeners
-        document.querySelectorAll('.addon-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                /* Belt and braces: the inputs are disabled until a session is
-                   chosen, but a change event that arrives anyway must not be
-                   able to put add-ons into a cart with no session behind them. */
-                if (!cart.baseName) {
-                    checkbox.checked = false;
-                    cart.addons = [];
-                    calculateTotals();
-                    return;
-                }
+        // Add-on Checkbox Listeners — delegated, because the rows are rendered
+        // from the dashboard after this script runs.
+        document.getElementById('addons-box').addEventListener('change', function (e) {
+            var checkbox = e.target && e.target.closest ? e.target.closest('.addon-checkbox') : null;
+            if (!checkbox) return;
+
+            /* Belt and braces: the inputs are disabled until a session is
+               chosen, but a change event that arrives anyway must not be able
+               to put add-ons into a cart with no session behind them. */
+            if (!cart.baseName) {
+                checkbox.checked = false;
                 cart.addons = [];
-                document.querySelectorAll('.addon-checkbox:checked').forEach(checkedBox => {
-                    cart.addons.push({
-                        name: checkedBox.getAttribute('data-name'),
-                        price: parseFloat(checkedBox.value)
-                    });
-                });
                 calculateTotals();
+                return;
+            }
+            cart.addons = [];
+            document.querySelectorAll('#addons-box .addon-checkbox:checked').forEach(function (checkedBox) {
+                cart.addons.push({
+                    name: checkedBox.getAttribute('data-name'),
+                    price: parseFloat(checkedBox.value)
+                });
             });
+            calculateTotals();
         });
 
         // Calculate and Update UI
