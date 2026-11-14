@@ -74,6 +74,12 @@
         background-repeat: no-repeat;
         background-size: 100% 100%;
     }
+    /* PLAIN DARK. The wash above is light falling on paper, and on a dark surface
+       it read as an orange glow behind the top of the page. A dark page is now
+       flat: the same --bg, no image layer at all. The light belongs to paper. */
+    @media (prefers-color-scheme: dark) {
+        body { background-image: none; }
+    }
     @keyframes fade-in { to { opacity: 1; } }
 
     /* THE COLUMN EVERYTHING A VISITOR CAME FOR STANDS IN — and NOT the mural's
@@ -100,13 +106,25 @@
         .brand-welcome { animation: none; opacity: 1; transform: none; }
     }
 
-    /* ==== Day / Night — the studio's own corner of Abuja, as a mural ==========
+    /* ==== Day / Night — the studio's weather, and a ground for the day =======
 
-       The page had a greeting and nothing of the studio's own place in it. This
-       is that place: a sketched Abuja — Aso Rock and its mast behind the city,
-       the mosque's dome between two minarets, a branch of leaves climbing the
-       left edge — drawn ONCE and lit TWICE, the way the reference sheet puts one
-       drawing under a sun and under a crescent moon.
+       THE SKY IS THE RESTING STATE. A visitor arriving on an ordinary day gets
+       the weather and nothing else: the sun or the crescent, the stars, the
+       shooting star and the one cloud, spread across the top and sides of the
+       page, with the middle left empty for the one thing they came for. The
+       owner's note on the old version was that the page felt cluttered, and the
+       city along the foot — nineteen buildings — was the densest thing in it.
+       The city is not deleted: it is a theme of its own now (see the head
+       script), and the branch of leaves that climbed the left edge was the one
+       mark belonging to neither city nor weather, so it is gone.
+
+       THE YEAR DRESSES THE GROUND, NOT THE WEATHER. Sixteen observances — the
+       fixed national days, Easter and Good Friday, both Eids, Ramadan, Christmas
+       and Boxing Day, and the days the studio marks — each add one low drawing
+       at the foot, from a mimosa sprig to a row of lanterns to a fir. The sun,
+       the moon, the stars, the streak and the cloud are drawn in every one of
+       them; only the ground changes. The date is read from Abuja's own clock in the head, before
+       the page paints, and `links.html?theme=...` can name one by hand.
 
        IT IS A MURAL, NOT A PANEL. The first version of this stood in the identity
        header and read as a picture above a links page: two designs in one column.
@@ -116,21 +134,20 @@
        asked for, and the page read as a page with a drawing added to it. So it is
        neither. The drawing is spread across the WHOLE page and nearly all of it
        is at the page's EDGES — the weather across the top and to the right, the
-       city along the foot, the plant up the left — with the middle of the page
-       left empty for the one thing a visitor came for. Corners and edges are
-       where a mural lives, and it is the reason this one reads as the page's own
-       ground rather than as something laid over it.
+       ground along the foot — with the middle of the page left empty for the one
+       thing a visitor came for. Corners and edges are where a mural lives, and it
+       is the reason this one reads as the page's own ground rather than as
+       something laid over it.
 
-       A THIRD OF THE MARKS, OVER FOUR TIMES THE DISTANCE. The band carried
-       nineteen buildings, nine leaves, twenty-one stars and twenty-two lit
-       windows inside a 420-unit strip, which is a drawing dense enough to be the
-       SUBJECT of the page. The mural carries a third of that spread from the top
-       of the window to the bottom of the page. Cutting the count is only half of
-       it: a mark is quiet because it is far from the next mark, so the same
-       drawing stretched over four times the area is a different object rather
-       than a smaller version of the same one. That is what tools/test-links-day-
-       night.js now counts — the marks and the distance between them — because
-       "minimal" is the one property here that a later edit can quietly undo.
+       A THIRD OF THE MARKS, OVER FOUR TIMES THE DISTANCE — and the default was
+       cut again when the city became a theme. The band version carried nineteen
+       buildings, nine leaves, twenty-one stars and twenty-two lit windows inside
+       a 420-unit strip, which is a drawing dense enough to be the SUBJECT of the
+       page. An ordinary day now carries the sky's nine quiet marks (and seventeen
+       more held for a dark surface), and a holiday carries one small ground
+       beneath them. That is what tools/test-links-day-night.js counts — the marks
+       and the distance between them — because "minimal" is the one property here
+       that a later edit can quietly undo.
 
        WHICH OF THE TWO LIGHTS A VISITOR SEES IS NOT A PREFERENCE, IT IS THE HOUR.
        The reference shows both sides so the two can be judged together; on a page
@@ -141,9 +158,8 @@
        split is the point rather than a compromise: a phone in light mode cannot
        have its background turned to charcoal because it is late in Lagos, or the
        cards, the assistant's sheet and the greeting would all be light ink on a
-       light surface. Two systems, two questions — "what hour is it where the
-       studio is" and "what surface is this visitor reading" — and the page holds
-       up in all four of the states they can be in together.
+       light surface. The scheme also decides whether the wash exists at all: it
+       is a light on paper, so it is drawn on paper and switched off in dark mode.
 
        THE INK IS FAINT ON PURPOSE, AND IT IS ONE COLOUR. Every mark on the page
        is `currentColor` from a single token, so the mural is drawn with one pen
@@ -161,20 +177,20 @@
        IT COSTS THE PAGE NO HEIGHT, TAKES NO TAP, AND HAS NO OUTER EDGE. It is
        absolute and it spans the whole page, so it cannot push a door down at any
        width; it refuses pointer events, so a drawing that lies over a door cannot
-       swallow the tap that door was for; and because the city stands ON the
+       swallow the tap that door was for; and because the ground stands ON the
        page's own bottom edge and runs off both sides, there is no edge of the
        drawing anywhere for the eye to find. That last one is why the mask this
        used to carry is gone: a mask was dissolving a bottom edge that no longer
        exists, and a rule that is doing nothing is a rule that will be believed.
 
        THE PICTURE IS INLINE SVG, so it is one request fewer than an image file
-       and cannot 404 in a cache. It is in THREE PIECES rather than one because
-       the three do not share a scale: the city is as wide as the window and
-       scales with its width, the sky is one wide field above it, and the plant is
-       sized against the page's HEIGHT because up is the direction it grows in. A
-       single box holding all three could only be right at one window size — it
-       would either letterbox the plant or stretch the city — so each is its own
-       inline drawing at its own scale, each hung on the edge it belongs to. */
+       and cannot 404 in a cache. It is in THREE BOXES rather than one because
+       they do not share a scale: the city is as wide as the window and scales
+       with its width, the sky is one wide field above it, and the seasonal ground
+       is a wide, low band at the foot, its four drawings all in one box so they
+       cannot be at four different sizes. A single box holding all three could
+       only be right at one window size, so each is its own inline drawing at its
+       own scale, hung on the edge it belongs to. */
     /* THE TOKENS LIVE ON THE ROOT, not on the mural, because TWO surfaces read
        them: the body (the light the mural is drawn in) and the mural (its pen).
        The wash is named twice — its colour, and that same colour at zero alpha —
@@ -213,13 +229,11 @@
        scheme because it is ink ON that scheme's paper. */
     @media (prefers-color-scheme: dark) {
         :root {
-            --dn-haze: rgba(226,186,118,.11);  --dn-haze-0: rgba(226,186,118,0);
             --dn-ink: rgba(240,234,221,.30);
             --dn-star: rgba(240,234,221,.52);
-            --dn-lit: #e8b96b;
-        }
-        html[data-abj="night"] {
-            --dn-haze: rgba(126,140,182,.12);  --dn-haze-0: rgba(126,140,182,0);
+            /* A window seen from a dark street is a warm one, not an amber lamp:
+               #e8b96b was orange enough to read as a glow on a plain-dark page. */
+            --dn-lit: #e6dcc8;
         }
         /* The DEEP FIELD belongs to this block and no other, and it is now the
            only thing that does: the streak used to be in here with it, which is
@@ -252,44 +266,112 @@
     /* AND EVERYTHING A VISITOR CAME FOR STANDS ABOVE THE MURAL. The layer is one
        z step behind the three things that were already on this page. */
     .page > .brand, .page > .link-list, .page > .links-footer { position: relative; z-index: 1; }
-    /* THE THREE PIECES, EACH HUNG ON THE EDGE IT BELONGS TO.
+    /* THE THREE BOXES, EACH HUNG ON THE EDGE IT BELONGS TO.
 
        THE SKY is as wide as the window and as tall as it is wide: one band of
-       weather across the top of the page holding the sun or the crescent, six
+       weather across the top of the page holding the sun or the crescent, its
        stars and the one cloud, with no horizon in it anywhere — that is the
-       whole difference between weather and a picture.
+       whole difference between weather and a picture. It is the only box shown
+       on an ordinary day.
 
-       THE CITY runs the full width along the FOOT of the page, off both of its
-       edges, so there is no end of the city to find and no bottom edge to the
-       drawing either. It is the widest thing here and the lowest, which is what
-       keeps it out of the way of the words that stand over it.
+       THE CITY and THE GROUND both run the full width along the FOOT of the page,
+       so there is no end to find and no bottom edge to the drawing either. The
+       city keeps the 580px floor described below, because a skyline that shrinks
+       with a phone is a skyline in a letterbox; the seasonal grounds scale with
+       the window instead, because their flowers and firs stand in the CORNERS —
+       a floor would push those corners off a narrow screen. Only one is shown.
 
-       AND IT HAS A FLOOR, WHICH IS THE ONE NUMBER IN THIS THAT IS A JUDGEMENT.
-       Below about 580px the box stops shrinking with the window: a phone whose
-       city scaled all the way down with it would carry a 12px skyline in a
-       letterbox, which is not a small mural — it is a mural that has failed. So
-       the box keeps a 580px floor, hangs off both edges instead, and the drawing
-       simply arrives at a size you can read. It is one number rather than a
-       breakpoint on purpose: a floor is continuous and a breakpoint jumps, and a
-       skyline that pops 40% taller when a window crosses 700px is a skyline
-       attached to the window rather than to the page.
+       AND THAT FLOOR IS THE ONE NUMBER IN THIS THAT IS A JUDGEMENT. Below about
+       580px the box stops shrinking with the window: a phone whose drawing
+       scaled all the way down with it would carry a 12px skyline in a letterbox,
+       which is not a small mural — it is a mural that has failed. So the box
+       keeps a 580px floor, hangs off both edges instead, and the drawing simply
+       arrives at a size you can read. It is one number rather than a breakpoint
+       on purpose: a floor is continuous and a breakpoint jumps, and a skyline
+       that pops 40% taller when a window crosses 700px is a skyline attached to
+       the window rather than to the page. */
+    .dn-sky { position: absolute; top: 0; left: 0; right: 0; width: 100%; height: auto; display: block; }
+    .dn-city { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: max(100%, 580px); height: auto; display: none; }
+    .dn-ground { position: absolute; bottom: 8px; left: 0; width: 100%; height: auto; display: none; }
+    /* THE CITY IS A THEME NOW, NOT THE DEFAULT. The owner's note was that the page
+       felt cluttered, and the city was the densest thing on it. The sky was the
+       part that worked in every light and at every hour, so the sky is what a
+       visitor gets; the skyline is still here, whole, and shows itself only when
+       the page says so (data-theme="skyline"). Its left-hand branch of leaves was
+       the one mark that was neither city nor sky, and it is gone rather than
+       hidden — see the figure. */
 
-       THE PLANT is tied to the page's HEIGHT and grows out of the same ground the
-       city stands on, because up is the direction a plant grows in — sizing it by
-       width, as the other two are, would give a 2560px window a shrub and a phone
-       a sapling, and both would be wrong in different directions. */
-    .dn-sky, .dn-city, .dn-branch { display: block; }
-    .dn-sky { position: absolute; top: 0; left: 0; right: 0; width: 100%; height: auto; }
-    .dn-city { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: max(100%, 580px); height: auto; }
-    .dn-branch { position: absolute; bottom: 0; left: 0; height: 36%; aspect-ratio: 88 / 300; }
-    /* ON A SHORT WINDOW THERE IS NO COLUMN OF EMPTY PAPER LEFT FOR A PLANT, and
-       one tall enough to be a plant would climb straight through the words: an
-       844px page gives it 540px of nothing to stand in, and a 568px page gives it
-       none at all. So on a short window it is cut back to a sprig standing on the
-       city's own ground — small, low, and out of the way of the footer — rather
-       than a full branch with its leaves through the contact row. Measured on the
-       VIEWPORT's height, because that is the thing that has run out. */
-    @media (max-height: 700px) { .dn-branch { height: 20%; } }
+    /* THE SEASONAL GROUND. One wide drawing at the foot, with a group for every
+       day the page dresses for. ONLY THE CHOSEN GROUP IS DRAWN, and every group
+       is low — nothing hangs from the top of the page any more, Ramadan's
+       lanterns included: they stand on the same floor as the flowers, the
+       crosses and the firs. The sky stays weather and nothing else. */
+    html[data-theme="new-year"] .dn-ground,
+    html[data-theme="valentines"] .dn-ground,
+    html[data-theme="womens-day"] .dn-ground,
+    html[data-theme="good-friday"] .dn-ground,
+    html[data-theme="easter"] .dn-ground,
+    html[data-theme="workers-day"] .dn-ground,
+    html[data-theme="childrens-day"] .dn-ground,
+    html[data-theme="democracy-day"] .dn-ground,
+    html[data-theme="eid-fitr"] .dn-ground,
+    html[data-theme="eid-adha"] .dn-ground,
+    html[data-theme="independence-day"] .dn-ground,
+    html[data-theme="mens-day"] .dn-ground,
+    html[data-theme="christmas"] .dn-ground,
+    html[data-theme="boxing-day"] .dn-ground,
+    html[data-theme="ramadan"] .dn-ground,
+    html[data-theme="new-years-eve"] .dn-ground { display: block; }
+    html[data-theme="skyline"] .dn-city { display: block; }
+    .dn-ground .dn-motif { display: none; }
+    html[data-theme="new-year"] .dn-ground [data-motif="new-year"],
+    html[data-theme="valentines"] .dn-ground [data-motif="valentines"],
+    html[data-theme="womens-day"] .dn-ground [data-motif="womens-day"],
+    html[data-theme="good-friday"] .dn-ground [data-motif="good-friday"],
+    html[data-theme="easter"] .dn-ground [data-motif="easter"],
+    html[data-theme="workers-day"] .dn-ground [data-motif="workers-day"],
+    html[data-theme="childrens-day"] .dn-ground [data-motif="childrens-day"],
+    html[data-theme="democracy-day"] .dn-ground [data-motif="democracy-day"],
+    html[data-theme="eid-fitr"] .dn-ground [data-motif="eid-fitr"],
+    html[data-theme="eid-adha"] .dn-ground [data-motif="eid-adha"],
+    html[data-theme="independence-day"] .dn-ground [data-motif="independence-day"],
+    html[data-theme="mens-day"] .dn-ground [data-motif="mens-day"],
+    html[data-theme="christmas"] .dn-ground [data-motif="christmas"],
+    html[data-theme="boxing-day"] .dn-ground [data-motif="boxing-day"],
+    html[data-theme="ramadan"] .dn-ground [data-motif="ramadan"],
+    html[data-theme="new-years-eve"] .dn-ground [data-motif="new-years-eve"] { display: block; }
+
+    /* THE ONE WARM LINE. Small, italic, centred, and standing just above the
+       ground drawing — never over a card. It is the only writing in this layer
+       that is not the page's own, and it is one line because a greeting that
+       needs a paragraph is a section. The twelve-vw figure is the ground's own
+       height (600 by 72 units drawn at the window's width), so the line rises
+       with the drawing on a wide window and stays close to it on a phone. The
+       extra 8px is the lift the ground itself now has — the line keeps its
+       distance from the drawing rather than drifting down into the gap. */
+    .dn-wish {
+        position: absolute; left: 0; right: 0; bottom: calc(12vw + 28px);
+        z-index: 1; text-align: center; pointer-events: none;
+        font-family: var(--serif); font-style: italic; font-size: 11.5px;
+        letter-spacing: 0.02em; color: var(--text-soft); opacity: 0.85;
+    }
+    .dn-wish span { display: none; }
+    html[data-theme="new-year"] .dn-wish [data-wish="new-year"],
+    html[data-theme="valentines"] .dn-wish [data-wish="valentines"],
+    html[data-theme="womens-day"] .dn-wish [data-wish="womens-day"],
+    html[data-theme="good-friday"] .dn-wish [data-wish="good-friday"],
+    html[data-theme="easter"] .dn-wish [data-wish="easter"],
+    html[data-theme="workers-day"] .dn-wish [data-wish="workers-day"],
+    html[data-theme="childrens-day"] .dn-wish [data-wish="childrens-day"],
+    html[data-theme="democracy-day"] .dn-wish [data-wish="democracy-day"],
+    html[data-theme="eid-fitr"] .dn-wish [data-wish="eid-fitr"],
+    html[data-theme="eid-adha"] .dn-wish [data-wish="eid-adha"],
+    html[data-theme="independence-day"] .dn-wish [data-wish="independence-day"],
+    html[data-theme="mens-day"] .dn-wish [data-wish="mens-day"],
+    html[data-theme="christmas"] .dn-wish [data-wish="christmas"],
+    html[data-theme="boxing-day"] .dn-wish [data-wish="boxing-day"],
+    html[data-theme="ramadan"] .dn-wish [data-wish="ramadan"],
+    html[data-theme="new-years-eve"] .dn-wish [data-wish="new-years-eve"] { display: inline; }
     .dn-base, .dn-fore, .dn-day, .dn-night { fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; }
     /* ONE PLACE AT TWO HOURS, AND THE CHANGE IS DRAWN RATHER THAN SWAPPED.
 
@@ -453,7 +535,7 @@
        because a length in an SVG transform is a length in USER UNITS, not in
        pixels of the page — and the route it takes is the one band of this sky
        that is empty at every window size: up from the lower left, past the
-       plant's own side of the page, clear of the stamp, the greeting and the
+       left side of the page, clear of the stamp, the greeting and the
        light. It starts on y=134 rather than lower, because anything lower puts
        the tail's tip behind the top card for the half-second it is fading in. */
     @keyframes dn-shoot { 0% { opacity: 0; transform: translate(0, 0); } 0.8% { opacity: .9; } 6.4% { opacity: .8; } 8.5% { opacity: 0; transform: translate(144px, -132px); } 100% { opacity: 0; transform: translate(144px, -132px); } }
@@ -628,38 +710,248 @@
     (function () {
         var SUN_UP = 6, SUN_DOWN = 18;   /* the hours the sun is up where the studio is */
 
+        /* THE SEASONS, AND A PAGE THAT KNOWS WHICH ONE IT IS IN.
+
+           The sky is constant — the sun or the moon, the stars, the streak and
+           the one cloud are drawn on every day of the year. What changes is the
+           GROUND under it, and the choice is made from ABUJA'S OWN DATE, in this
+           script, before the page paints: a theme that arrived later would show
+           a visitor the wrong day for a moment, the same reason the hour is
+           stamped here. `quiet` is the default and draws no ground at all.
+
+           THE WINDOWS ARE DELIBERATELY PLAIN NUMBERS rather than a calendar
+           library. Easter moves, so it is worked out from the year below; the
+           lunar feasts move about eleven days earlier each year and cannot be
+           worked out from a month and a day, so the Ramadan and Eid windows are
+           the published Nigerian dates for 2026–2030, each two days wide where
+           the moon sighting can put the feast either side of the calendar. After
+           the last checked date they do not stop: the page estimates them with
+           the tabular Islamic calendar below, which puts the first day of
+           Ramadan on the same date as all five published openings. A checked window is always
+           read first, so the estimate can never overrule it; an estimate may be
+           a day out, which is exactly why it only starts after the last checked
+           date. A page that keeps dressing for the feast is better than one
+           that forgets it.
+           Christmas runs 1–25 December so the page is dressed for the season
+           rather than for one morning; Boxing Day has 26 to itself.
+
+           A DAY OUTRANKS A MONTH. Ramadan 2026 contains 8 March, and Women's Day
+           is the more specific observance, so it wins that one day. The Eids are
+           checked FIRST, so a moveable feast is not hidden by a fixed observance
+           that lands on it — Eid al-Adha and Children's Day share 27 May 2026.
+           The Christmas season is the same rule in reverse: it dresses 1–24
+           December, so it does not swallow a Ramadan that opens in December,
+           while Christmas Day, Boxing Day and New Year's Eve keep their dates
+           inside it. */
+        var THEMES = ['quiet', 'skyline', 'new-year', 'valentines', 'womens-day', 'good-friday', 'easter', 'workers-day', 'childrens-day', 'democracy-day', 'eid-fitr', 'eid-adha', 'independence-day', 'mens-day', 'christmas', 'boxing-day', 'ramadan', 'new-years-eve'];
+
+        /* THE STUDIO'S OWN CHOICE, read from /api/links at the foot of this page.
+           It sits between a link's ?theme= and the day's own theme: a link is a
+           preview for one visit, this is the page's standing look, and automatic
+           is what remains when neither names anything. The dashboard's picker
+           writes the same name into the studio's records. */
+        var chosen = '';
+        var RAMADAN = [
+            ['2026-02-18', '2026-03-19'],
+            ['2027-02-08', '2027-03-09'],
+            ['2028-01-28', '2028-02-25'],
+            ['2029-01-16', '2029-02-13'],
+            ['2030-01-06', '2030-02-04']
+        ];
+        var EID_FITR = [
+            ['2026-03-20', '2026-03-21'],
+            ['2027-03-10', '2027-03-11'],
+            ['2028-02-26', '2028-02-27'],
+            ['2029-02-14', '2029-02-15'],
+            ['2030-02-04', '2030-02-05']
+        ];
+        var EID_ADHA = [
+            ['2026-05-27', '2026-05-28'],
+            ['2027-05-16', '2027-05-17'],
+            ['2028-05-05', '2028-05-06'],
+            ['2029-04-24', '2029-04-25'],
+            ['2030-04-13', '2030-04-14']
+        ];
+
+        /* THE CALENDAR THAT KEEPS GOING. The tables above are the checked dates
+           and end in 2030; after the last of them the lunar feasts are worked
+           out with the tabular Islamic calendar — the arithmetic form of the
+           same 354/355-day year, with its leap days fixed to a 30-year cycle.
+           It agrees with the published start of Ramadan in every checked year,
+           which is the reason it is trusted for the years nobody has published
+           yet. `HIJRI_EPOCH` is 1 Muharram 1 AH as a Julian day number, and the
+           formula counts whole days from there, so no `Date` is built and the
+           visitor's timezone never enters it. */
+        var HIJRI_EPOCH = 1948440;
+
+        function gregorianToJdn(year, month, day) {
+            var a = Math.floor((14 - month) / 12),
+                y = year + 4800 - a,
+                m = month + 12 * a - 3;
+            return day + Math.floor((153 * m + 2) / 5) + 365 * y +
+                Math.floor(y / 4) - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+        }
+        function hijriToJdn(year, month, day) {
+            return day + Math.floor((59 * (month - 1) + 1) / 2) +
+                (year - 1) * 354 + Math.floor((3 + 11 * year) / 30) + HIJRI_EPOCH - 1;
+        }
+
+        /* FEBRUARY IS NOT ALWAYS 28 DAYS. The Julian day numbers above already
+           count 29 February exactly once — that is the point of counting days
+           rather than adding up months — so an estimate either side of a leap
+           day cannot gain or lose one. The check here is the other half: a date
+           that cannot exist (29 February 2100, say) is refused rather than
+           quietly read as 1 March and dressed for a feast that is not on. */
+        function isLeapYear(year) {
+            return (year % 4 === 0 && year % 100 !== 0) || year % 400 === 0;
+        }
+        function daysInMonth(year, month) {
+            var lengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            return (month === 2 && isLeapYear(year)) ? 29 : lengths[month - 1];
+        }
+        function estimatedTheme(t) {
+            if (t.month < 1 || t.month > 12 || t.day < 1 || t.day > daysInMonth(t.year, t.month)) return '';
+            var jdn = gregorianToJdn(t.year, t.month, t.day),
+                year = Math.floor((jdn - HIJRI_EPOCH) / 354.367) + 1,
+                i, start;
+            /* A lunar year is shorter than a solar one, so the civil year can
+               hold two Ramadans; the neighbouring Hijri years are enough to
+               catch either without searching. */
+            for (i = year - 1; i <= year + 1; i++) {
+                start = hijriToJdn(i, 9, 1);
+                if (jdn >= start && jdn < hijriToJdn(i, 10, 1)) return 'ramadan';
+                start = hijriToJdn(i, 10, 1);
+                if (jdn >= start && jdn <= start + 1) return 'eid-fitr';
+                start = hijriToJdn(i, 12, 10);
+                if (jdn >= start && jdn <= start + 1) return 'eid-adha';
+            }
+            return '';
+        }
+
+        function isoDate(t) {
+            return t.year + '-' + (t.month < 10 ? '0' : '') + t.month + '-' + (t.day < 10 ? '0' : '') + t.day;
+        }
+
+        /* Easter by the Gregorian computus, returned as a month and a day so the
+           comparison never has to build a Date in a timezone the visitor chose. */
+        function easterMonthDay(year) {
+            var a = year % 19, b = Math.floor(year / 100), c = year % 100,
+                d = Math.floor(b / 4), e = b % 4, f = Math.floor((b + 8) / 25),
+                g = Math.floor((b - f + 1) / 3), h = (19 * a + b - d - g + 15) % 30,
+                i = Math.floor(c / 4), k = c % 4,
+                l = (32 + 2 * e + 2 * i - h - k) % 7,
+                m = Math.floor((a + 11 * h + 22 * l) / 451),
+                month = Math.floor((h + l - 7 * m + 114) / 31),
+                day = ((h + l - 7 * m + 114) % 31) + 1;
+            return { month: month, day: day };
+        }
+        function dayShift(md, n, year) {
+            var month = md.month, day = md.day + n;
+            while (day < 1) { month -= 1; if (month < 1) month = 12; day += daysInMonth(year, month); }
+            while (day > daysInMonth(year, month)) { day -= daysInMonth(year, month); month += 1; if (month > 12) month = 1; }
+            return { month: month, day: day };
+        }
+
+        function themeFor(t) {
+            var key = isoDate(t), i, easter, friday, monday, estimate = '';
+            for (i = 0; i < EID_FITR.length; i++) {
+                if (key >= EID_FITR[i][0] && key <= EID_FITR[i][1]) return 'eid-fitr';
+            }
+            for (i = 0; i < EID_ADHA.length; i++) {
+                if (key >= EID_ADHA[i][0] && key <= EID_ADHA[i][1]) return 'eid-adha';
+            }
+            if (key > EID_ADHA[EID_ADHA.length - 1][1]) estimate = estimatedTheme(t);
+            if (estimate === 'eid-fitr' || estimate === 'eid-adha') return estimate;
+            if (t.month === 1 && t.day === 1) return 'new-year';
+            if (t.month === 2 && t.day === 14) return 'valentines';
+            if (t.month === 3 && t.day === 8) return 'womens-day';
+            if (t.month === 5 && t.day === 1) return 'workers-day';
+            if (t.month === 5 && t.day === 27) return 'childrens-day';
+            if (t.month === 6 && t.day === 12) return 'democracy-day';
+            if (t.month === 10 && t.day === 1) return 'independence-day';
+            if (t.month === 11 && t.day === 19) return 'mens-day';
+            easter = easterMonthDay(t.year);
+            friday = dayShift(easter, -2, t.year);
+            monday = dayShift(easter, 1, t.year);
+            if (t.month === friday.month && t.day === friday.day) return 'good-friday';
+            if (t.month === monday.month && t.day === monday.day) return 'easter';
+            if (t.month === 12 && t.day === 25) return 'christmas';
+            if (t.month === 12 && t.day === 26) return 'boxing-day';
+            if (t.month === 12 && t.day === 31) return 'new-years-eve';
+            for (i = 0; i < RAMADAN.length; i++) {
+                if (key >= RAMADAN[i][0] && key <= RAMADAN[i][1]) return 'ramadan';
+            }
+            if (estimate === 'ramadan') return 'ramadan';
+            if (t.month === 12 && t.day < 25) return 'christmas';
+            return 'quiet';
+        }
+
+        /* CHOOSING ONE BY HAND, WITHOUT PUTTING A PICKER ON THE PAGE. A link can
+           name a theme — links.html?theme=skyline, or ?theme=christmas — and the
+           name is checked against the list above, so nothing in a query string
+           can become an attribute the stylesheet has never heard of. Automatic
+           is the default because a visitor should not have to dress the page.
+           The studio can make a standing choice from the dashboard, and that is
+           read below with the cards. */
+        function asked() {
+            try {
+                var m = /[?&]theme=([a-z-]+)/.exec(window.location.search);
+                if (m && THEMES.indexOf(m[1]) !== -1) return m[1];
+            } catch (e) {}
+            return '';
+        }
+
         function abuja() {
             /* The browser's own knowledge of the zone where it has it, so the
                number and the name of the zone cannot disagree. */
             try {
                 var parts = new Intl.DateTimeFormat('en-GB', {
-                    timeZone: 'Africa/Lagos', hour: 'numeric', minute: '2-digit', hour12: true
-                }).formatToParts(new Date()), h = 12, m = '00', pm = false, i, p;
+                    timeZone: 'Africa/Lagos', year: 'numeric', month: '2-digit', day: '2-digit',
+                    hour: 'numeric', minute: '2-digit', hour12: true
+                }).formatToParts(new Date()), h = 12, m = '00', pm = false, y = 0, mo = 1, day = 1, i, p;
                 for (i = 0; i < parts.length; i++) {
                     p = parts[i];
                     if (p.type === 'hour') h = parseInt(p.value, 10);
                     else if (p.type === 'minute') m = p.value;
                     else if (p.type === 'dayPeriod') pm = /^p/i.test(p.value);
+                    else if (p.type === 'year') y = parseInt(p.value, 10);
+                    else if (p.type === 'month') mo = parseInt(p.value, 10);
+                    else if (p.type === 'day') day = parseInt(p.value, 10);
                 }
                 return {
                     hour: (h % 12) + (pm ? 12 : 0),
-                    label: (h % 12 === 0 ? 12 : h % 12) + ':' + m + ' ' + (pm ? 'PM' : 'AM')
+                    label: (h % 12 === 0 ? 12 : h % 12) + ':' + m + ' ' + (pm ? 'PM' : 'AM'),
+                    year: y, month: mo, day: day
                 };
             } catch (e) {
                 var d = new Date(Date.now() + 3600000), hh = d.getUTCHours(), mm = d.getUTCMinutes();
                 return {
                     hour: hh,
-                    label: (hh % 12 === 0 ? 12 : hh % 12) + ':' + (mm < 10 ? '0' + mm : mm) + ' ' + (hh < 12 ? 'AM' : 'PM')
+                    label: (hh % 12 === 0 ? 12 : hh % 12) + ':' + (mm < 10 ? '0' + mm : mm) + ' ' + (hh < 12 ? 'AM' : 'PM'),
+                    year: d.getUTCFullYear(), month: d.getUTCMonth() + 1, day: d.getUTCDate()
                 };
             }
         }
 
         function paint() {
-            var t = abuja();
+            var t = abuja(), wanted = asked();
             document.documentElement.setAttribute('data-abj', (t.hour >= SUN_UP && t.hour < SUN_DOWN) ? 'day' : 'night');
+            document.documentElement.setAttribute('data-theme', wanted || chosen || themeFor(t));
             var el = document.querySelector('[data-dn-clock]');
             if (el) el.textContent = t.label;
         }
+
+        /* The look saved in the dashboard arrives with the cards — see the
+           request at the foot of this page. A name this script does not know is
+           ignored rather than written into the attribute, and `auto` hands the
+           page back to the day. The minute's repaint reads `chosen` too, so a
+           saved theme cannot be replaced by the clock at the next minute. */
+        try {
+            window.lpThemeChoice = function (name) {
+                if (name === 'auto') { chosen = ''; paint(); return; }
+                if (THEMES.indexOf(name) !== -1) { chosen = name; paint(); }
+            };
+        } catch (e) {}
 
         paint();
         if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', paint);
@@ -836,6 +1128,31 @@
 
 </main>
 
+<!-- THE ONE WARM LINE, just above the ground drawing.
+
+     One line per possible day, and CSS shows the one that matches
+     `data-theme`; the script never writes a greeting, so nothing can be one
+     theme out of step with its own picture. The page keeps a line short enough
+     to read at a glance — a greeting that needs a paragraph is a section. -->
+<p class="dn-wish">
+    <span data-wish="new-year">Happy New Year</span>
+    <span data-wish="valentines">Happy Valentine’s Day</span>
+    <span data-wish="womens-day">Happy Women’s Day</span>
+    <span data-wish="good-friday">Peace on Good Friday</span>
+    <span data-wish="easter">Happy Easter</span>
+    <span data-wish="workers-day">Happy Workers’ Day</span>
+    <span data-wish="childrens-day">Happy Children’s Day</span>
+    <span data-wish="democracy-day">Happy Democracy Day</span>
+    <span data-wish="eid-fitr">Eid Mubarak</span>
+    <span data-wish="eid-adha">Eid Mubarak</span>
+    <span data-wish="independence-day">Happy Independence Day</span>
+    <span data-wish="mens-day">Happy Men’s Day</span>
+    <span data-wish="christmas">Merry Christmas</span>
+    <span data-wish="boxing-day">Happy Boxing Day</span>
+    <span data-wish="ramadan">Ramadan Kareem</span>
+    <span data-wish="new-years-eve">See you next year</span>
+</p>
+
 <!-- THE PLACE THE GREETING IS FROM — as a mural across the page rather than as a
      section of it.
 
@@ -860,19 +1177,18 @@
 
      WHAT IS DRAWN, AND WHY IT IS THIS LITTLE. Three pieces, each on an edge: the
      sky across the top (the sun or the crescent over Aso Rock's side of the
-     window, eight stars and a shooting star after dark, one slow cloud drifting
-     across the light), the city low along the foot
-     (eight buildings, the mosque's dome between its two minarets, the rock and
-     its mast, two trees, a horizon and two field lines below it), and the plant
-     climbing the left edge (one stem, seven leaves, two fallen). The reference
-     sheet is dense and this is not, on purpose: the sheet is a drawing, and on
-     this page the drawing is the AIR the words stand in.
+     window, its stars and a shooting star after dark, one slow cloud drifting
+     across the light), the city low along the foot, on its theme's days
+     (the obelisk, church, gate, mosque, arcades, pavilions, office, tower, rock
+     and two trees) — and, on the days that have one, a seasonal ground instead. The reference sheet is
+     dense and this is not, on purpose: the sheet is a drawing, and on this page
+     the drawing is the AIR the words stand in.
 
      The illustration is INLINE SVG, so it is one request fewer than an image file
      and cannot 404 in a cache. Each piece is marked aria-hidden because the
      picture is not the information: the information — the hour in Abuja — is the
      stamp in the header, in real text, where a visitor reaches it first. -->
-<figure class="dn" aria-label="Abuja, in daylight and after dark">
+<figure class="dn" aria-label="Abuja, in daylight and after dark, with the day's own ground">
 
     <!-- THE WEATHER, across the top of the page and off both sides. Nothing in
          here is anchored to the ground: it is what is over the page rather than
@@ -1115,8 +1431,6 @@
         <g class="dn-fore">
             <g class="dn-clouds" stroke-width="1.15" opacity=".8">
                 <path d="M450 118C449.5 114.73 452.83 110 455 107C457.17 104 460.33 100.83 463 100C465.67 99.17 468.67 101.17 471 102C473.33 102.83 474.5 105.67 477 105C479.5 104.33 482.83 99.83 486 98C489.17 96.17 492.67 94.33 496 94C499.33 93.67 503.17 95 506 96C508.83 97 511 98.83 513 100C515 101.17 516.17 101.92 518 103C519.83 104.08 522 106.5 524 106.5C526 106.5 528 104.25 530 103C532 101.75 533.33 100.33 536 99C538.67 97.67 542.67 96 546 95C549.33 94 552.67 92.67 556 93C559.33 93.33 563.33 95.83 566 97C568.67 98.17 569.67 100 572 100C574.33 100 577.33 97.67 580 97C582.67 96.33 585.33 95.67 588 96C590.67 96.33 593.33 98 596 99C598.67 100 601.67 100.17 604 102C606.33 103.83 608.67 107.5 610 110C611.33 112.5 613.67 114.67 612 117C610.33 119.33 605 122.47 600 124C595 125.53 588.33 126.23 582 126.2C575.67 126.17 569 123.73 562 123.8C555 123.87 547.33 126.5 540 126.6C532.67 126.7 525.33 124.37 518 124.4C510.67 124.43 503.33 126.7 496 126.8C488.67 126.9 480.33 125.03 474 125C467.67 124.97 462 127.77 458 126.6C454 125.43 450.5 121.27 450 118Z"/>
-                <path d="M462 112C464.67 111.33 472.67 108.43 478 108C483.33 107.57 489.33 108.57 494 109.4C498.67 110.23 504 112.4 506 113" stroke-width=".75" opacity=".5"/>
-                <path d="M540 111C542.67 110.27 550.67 107 556 106.6C561.33 106.2 567 107.7 572 108.6C577 109.5 583.67 111.43 586 112" stroke-width=".75" opacity=".5"/>
             </g>
         </g>
     </svg>
@@ -1490,35 +1804,320 @@
         </g>
     </svg>
 
-    <!-- THE PLANT, up the left edge, out of the same ground the city stands on.
-         One stem, seven leaves placed from ONE leaf drawing, and two that have
-         fallen — which is the reference sheet's own gesture, cut back to a
-         branch rather than a thicket. -->
-    <svg class="dn-branch" viewBox="0 0 88 300" aria-hidden="true" focusable="false">
+    <!-- THE SEASONAL GROUND, low along the foot of the page.
+
+         THE PAGE HAS ONE SKY AND SEVERAL GROUNDS. The sun, the crescent, the
+         stars, the shooting star and the one drifting cloud are the constant:
+         they are the weather, and the weather is the same on every day this page
+         has a theme for. What changes is what the studio's place is doing at the
+         foot of the page — and it is ALWAYS at the foot. Ramadan's lanterns used
+         to hang from the top edge; they stand on this floor now with everything
+         else, because a page with one decoration in the sky and fifteen on the
+         ground has two systems, not one. Every group is drawn in the same one
+         pen as the rest of the mural: currentColor, no fill, no second style.
+
+         THE DEFAULT IS NOTHING AT ALL. A quiet day is the sky and the studio's
+         own words; this drawing is the exception, not the frame. The ground is
+         hidden until a theme names it rather than shown empty.
+
+         ONE BOX, ONE GROUND AT A TIME, at the same width as the city:
+         600 by 72 units, standing a little above the page's own bottom edge,
+         running past both sides so no ground has an end for the eye to find. The middle of
+         the box is kept low and open: that is where the page's own words stand
+         above it. -->
+    <svg class="dn-ground" viewBox="0 0 600 72" aria-hidden="true" focusable="false">
         <defs>
-            <g id="dn-leaf">
-                <path d="M0 0C8-7 20-8 30-1C20 6 8 6 0 0Z" stroke-width="1.15"/>
-                <path d="M2 0C11-.5 21-1.2 28-1.4" stroke-width=".75" opacity=".7"/>
+            <!-- ONE DAISY, placed along the Women's Day hill. Five open petals
+                 around a centre and a short stem, so the smallest mark on the
+                 hill still reads as a flower rather than as a dot. -->
+            <g id="dn-daisy">
+                <circle cx="0" cy="-2.6" r="2.1" stroke-width=".8"/>
+                <circle cx="2.5" cy="-0.8" r="2.1" stroke-width=".8"/>
+                <circle cx="1.55" cy="2.2" r="2.1" stroke-width=".8"/>
+                <circle cx="-1.55" cy="2.2" r="2.1" stroke-width=".8"/>
+                <circle cx="-2.5" cy="-0.8" r="2.1" stroke-width=".8"/>
+                <circle cx="0" cy="0" r="1.2" stroke-width=".8"/>
+                <path d="M0 0V11" stroke-width=".7"/>
+            </g>
+            <!-- ONE FIR, placed six times through December. A zigzag outline
+                 with a short trunk, which is a tree rather than a triangle. -->
+            <g id="dn-fir">
+                <path d="M0 -40L-8 -28H-4L-12 -18H-7L-16 -8H-4L-7 0H7L4 -8H16L7 -18H12L4 -28H8Z" stroke-width="1.05"/>
+                <path d="M0 0V4" stroke-width="1.1"/>
+            </g>
+            <!-- ONE BURST, placed twice on New Year's Day: a centre, eight rays
+                 and four falling trails, so it reads as a firework rather than
+                 as a star or a snowflake. -->
+            <g id="dn-burst">
+                <circle r="2"/>
+                <path d="M0-5V-20M0 5V15M-5 0H-20M5 0H15M-3.5-3.5L-13-13M3.5 3.5L13 13M3.5-3.5L13-13M-3.5 3.5L-13 13"/>
+                <path d="M-13-13q-7-6-10-14M13-13q7-6 10-14M-13 13q-7 6-10 14M13 13q7 6 10 14" stroke-width=".8" opacity=".65"/>
+                <circle cx="-21" cy="-24" r="1.2"/><circle cx="21" cy="-24" r="1.2"/><circle cx="-21" cy="22" r="1.2"/><circle cx="21" cy="22" r="1.2"/>
+            </g>
+            <!-- ONE STANDING FANOUS, placed three times in Ramadan. It stands on
+                 its own base rather than hanging: cap, tapered body, foot. -->
+            <g id="dn-fanous">
+                <path d="M-8 0H8M-6 0V-3H6V0" stroke-width="1"/>
+                <path d="M-7-3C-13-9-13-22-6-28H6C13-22 13-9 7-3Z" stroke-width="1.05"/>
+                <path d="M-7-28H7M-5-32H5M0-32V-35" stroke-width=".9"/>
+                <circle cx="0" cy="-16" r="1.6" stroke-width=".9"/>
+            </g>
+            <!-- ONE GIFT, placed three times on Boxing Day. A box, a ribbon and
+                 a two-loop bow, drawn open like everything else. -->
+            <g id="dn-gift">
+                <path d="M-21 0V-26H21V0Z" stroke-width="1.05"/>
+                <path d="M0-26V0M-21-26H21" stroke-width=".9"/>
+                <path d="M0-26C-13-26-16-37-7-37C-1-37 0-31 0-26C0-31 1-37 7-37C16-37 13-26 0-26Z" stroke-width="1"/>
+            </g>
+            <!-- ONE RAM, placed twice on Eid al-Adha. The curled horns are the
+                 whole mark; a sheep drawn any smaller is a cloud with legs. -->
+            <g id="dn-ram">
+                <path d="M-9-41C-4-45 4-45 9-41L10-25C10-17 6-11 0-7C-6-11-10-17-10-25Z" stroke-width="1.1"/>
+                <path d="M-10-41C-24-47-34-37-30-25C-27-15-17-14-14-22C-12-28-17-32-21-28" stroke-width="1.1"/>
+                <path d="M10-41C24-47 34-37 30-25C27-15 17-14 14-22C12-28 17-32 21-28" stroke-width="1.1"/>
+                <path d="M-22-35C-27-33-29-29-28-25M22-35C27-33 29-29 28-25" stroke-width=".8" opacity=".6"/>
+                <path d="M-10-39c-5-2-9 0-10 4M10-39c5-2 9 0 10 4" stroke-width=".9"/>
+                <circle cx="-4" cy="-29" r="1.1"/><circle cx="4" cy="-29" r="1.1"/>
+                <circle cx="-2" cy="-18" r=".8"/><circle cx="2" cy="-18" r=".8"/>
+                <path d="M-3-13c2 2 4 2 6 0" stroke-width=".9"/>
+                <path d="M0-7v7M-5 0H5" stroke-width=".9"/>
             </g>
         </defs>
         <g class="dn-base">
-            <!-- ONE STEM, and every leaf sit ON it rather than near it — placed
-                 from a single leaf drawing, alternating sides, shrinking as they
-                 climb the way the reference sheet's plant does. -->
-            <path d="M44 300C36 258 33 214 38 170C42 130 52 92 66 58C70 49 75 41 80 34" stroke-width="1.35"/>
-            <g opacity=".85">
-                <use href="#dn-leaf" transform="translate(40,272) rotate(-146)"/>
-                <use href="#dn-leaf" transform="translate(36,240) rotate(-30)"/>
-                <use href="#dn-leaf" transform="translate(36,208) rotate(-148) scale(.98)"/>
-                <use href="#dn-leaf" transform="translate(38,176) rotate(-28) scale(.95)"/>
-                <use href="#dn-leaf" transform="translate(41,146) rotate(-150) scale(.9)"/>
-                <use href="#dn-leaf" transform="translate(45,118) rotate(-30) scale(.85)"/>
-                <use href="#dn-leaf" transform="translate(51,92) rotate(-150) scale(.8)"/>
-                <use href="#dn-leaf" transform="translate(59,68) rotate(-32) scale(.72)"/>
-                <use href="#dn-leaf" transform="translate(68,46) rotate(-150) scale(.62)"/>
+            <!-- 1 JANUARY — New Year's Day. Two fireworks low in the frame, one
+                 at each side, with the middle left empty for the page's words. -->
+            <g class="dn-motif" data-motif="new-year">
+                <use href="#dn-burst" transform="translate(78,40)"/>
+                <use href="#dn-burst" transform="translate(526,30) scale(.72)"/>
+                <circle cx="168" cy="24" r="1.2" opacity=".6"/><circle cx="438" cy="18" r="1" opacity=".6"/>
+                <circle cx="182" cy="42" r=".9" opacity=".45"/><circle cx="424" cy="38" r="1.1" opacity=".45"/>
             </g>
-            <use href="#dn-leaf" transform="translate(20,290) rotate(26) scale(.5)"/>
-            <use href="#dn-leaf" transform="translate(54,288) rotate(-154) scale(.44)"/>
+
+            <!-- 14 FEBRUARY — Valentine's Day. A heart with the arrow through
+                 it, and a smaller one across the page, so the mark fills both
+                 corners without turning into a pattern. -->
+            <g class="dn-motif" data-motif="valentines">
+                <g transform="translate(84,66)">
+                    <path d="M0 4C-3 0-14-6-14-14C-14-22-4-24 0-16C4-24 14-22 14-14C14-6 3 0 0 4Z" stroke-width="1.1"/>
+                    <path d="M-27-12L20 2M20 2l-7 1M20 2l-1-7" stroke-width="1"/>
+                </g>
+                <g transform="translate(508,68)">
+                    <path d="M0 3C-2 0-9-4-9-9C-9-14-3-15 0-10C3-15 9-14 9-9C9-4 2 0 0 3Z" stroke-width="1"/>
+                </g>
+                <circle cx="552" cy="52" r="1.2"/><circle cx="568" cy="60" r="1"/>
+            </g>
+
+            <!-- 8 MARCH — International Women's Day. ONE flower hill, low and
+                 centred, with the Venus mark standing at its crest. The mark is
+                 the day's whole name, so it is the middle of the drawing and
+                 the only large thing in it; the daisies are the softer note
+                 around its feet, not a second subject at the corners.
+
+                 AND THE MARK STANDS CLEAR OF THE HILL rather than growing out
+                 of it: its stem ends eight units above the crest, so the
+                 hill's line passes UNDER the symbol instead of through it. -->
+            <g class="dn-motif" data-motif="womens-day">
+                <path d="M96 72C150 71 196 66 232 62C258 59 278 57 300 57C322 57 342 59 368 62C404 66 450 71 504 72" stroke-width="1.1"/>
+                <path d="M150 72C188 69 230 65 264 62C284 60 316 60 336 62C370 65 412 69 450 72" stroke-width=".75" opacity=".45"/>
+                <use href="#dn-daisy" transform="translate(166,58) scale(1.25)"/>
+                <use href="#dn-daisy" transform="translate(204,56) scale(1.4)"/>
+                <use href="#dn-daisy" transform="translate(244,57) scale(1.25)"/>
+                <use href="#dn-daisy" transform="translate(356,57) scale(1.25)"/>
+                <use href="#dn-daisy" transform="translate(396,56) scale(1.4)"/>
+                <use href="#dn-daisy" transform="translate(434,58) scale(1.25)"/>
+                <g transform="translate(300,49)">
+                    <circle cx="0" cy="-30" r="13" stroke-width="1.15"/>
+                    <path d="M0-17V0M-10-8H10" stroke-width="1.15"/>
+                </g>
+            </g>
+
+            <!-- GOOD FRIDAY — three crosses on the low hill, the centre one
+                 taller. The day is quiet, so the drawing is too: no rays, no
+                 ribbons, nothing to decorate a grave. -->
+            <g class="dn-motif" data-motif="good-friday">
+                <path d="M-6 72C60 64 120 64 180 68C240 72 300 62 360 62C420 62 480 66 540 64C566 63 588 66 606 72" stroke-width="1.05"/>
+                <g transform="translate(112,72)"><path d="M0 0V-32M-11-23H11" stroke-width="1.1"/></g>
+                <g transform="translate(300,72)"><path d="M0 0V-46M-14-33H14" stroke-width="1.1"/></g>
+                <g transform="translate(488,72)"><path d="M0 0V-32M-11-23H11" stroke-width="1.1"/></g>
+            </g>
+
+            <!-- EASTER — two eggs, one at each side, patterned so they are eggs
+                 rather than stones. The spring sprigs are the mimosa's, because
+                 one plant is enough for the whole page. -->
+            <g class="dn-motif" data-motif="easter">
+                <g transform="translate(80,70)">
+                    <path d="M0-34C9-34 15-22 15-13C15-4 8 1 0 1C-8 1-15-4-15-13C-15-22-9-34 0-34Z" stroke-width="1.1"/>
+                    <path d="M-13-16l5 4 5-4 5 4 5-4 5 4" stroke-width=".9"/>
+                    <circle cx="-5" cy="-25" r="1.1"/><circle cx="5" cy="-21" r="1.1"/><circle cx="0" cy="-8" r="1.1"/>
+                </g>
+                <g transform="translate(520,70)">
+                    <path d="M0-34C9-34 15-22 15-13C15-4 8 1 0 1C-8 1-15-4-15-13C-15-22-9-34 0-34Z" stroke-width="1.1"/>
+                    <path d="M-11-21l4 4 4-4 4 4 4-4M-11-9l4 4 4-4 4 4 4-4" stroke-width=".8"/>
+                    <circle cx="-6" cy="-27" r="1"/><circle cx="4" cy="-27" r="1"/>
+                </g>
+            </g>
+
+            <!-- 1 MAY — Workers' Day. A scaffold and a stack of beams on the
+                 left, one tower crane on the right, all open to the page the way
+                 the arcades are. The crane is what makes the day legible without
+                 a hard hat or a gear wheel. -->
+            <g class="dn-motif" data-motif="workers-day">
+                <path d="M40 72V40H110V72M40 56H110M56 72V40M74 72V40M92 72V40" stroke-width="1.05"/>
+                <path d="M124 72V50H194V72M124 62H194M139 72V50M157 72V50M175 72V50" stroke-width="1.05"/>
+                <path d="M238 72V64H308V72M238 64H308M248 64V72M268 64V72M288 64V72M252 58V52H298V58M252 52H298" stroke-width="1.05"/>
+                <path d="M500 72V22M514 72V22M500 60L514 52M500 48L514 40M500 36L514 28M496 72H518" stroke-width="1.05"/>
+                <path d="M470 18H585M500 18H470M506 18V10M506 10L470 18M506 10L585 18" stroke-width="1.05"/>
+                <path d="M470 18V27H480V18M552 18V40M548 40H556M552 40V46M549 46H555M549 49C546 49 545 51 545 52H559C559 51 558 49 555 49" stroke-width=".95"/>
+            </g>
+
+            <!-- 27 MAY — Children's Day. A kite with its tail on the left, three
+                 balloons on the right; the strings run to the floor so they
+                 belong to the ground rather than to the sky. -->
+            <g class="dn-motif" data-motif="childrens-day">
+                <g transform="translate(78,36)">
+                    <path d="M0-24L16 0 0 22-16 0Z" stroke-width="1.1"/>
+                    <path d="M0-24V22M-16 0H16" stroke-width=".9"/>
+                    <path d="M0 22C9 28-6 34 3 40C11 45-2 51 4 58C8 63 2 68 2 72" stroke-width=".9"/>
+                    <path d="M4 33l-6 2 5 5M0 46l6 2-5 5" stroke-width=".8"/>
+                </g>
+                <g transform="translate(510,72)">
+                    <circle cx="-18" cy="-46" r="8"/>
+                    <path d="M-18-38c0 12-4 18-2 36" stroke-width=".8"/>
+                    <circle cx="2" cy="-58" r="8"/>
+                    <path d="M2-50c0 14 3 24 1 48" stroke-width=".8"/>
+                    <circle cx="22" cy="-42" r="8"/>
+                    <path d="M22-34c0 10-3 18-1 32" stroke-width=".8"/>
+                </g>
+            </g>
+
+            <!-- 12 JUNE — Democracy Day. A ballot box with the paper going in and
+                 a tick already on it, and the tick repeated in a ring across the
+                 page. No flag here: the flag has its own day in October. -->
+            <g class="dn-motif" data-motif="democracy-day">
+                <g transform="translate(80,72)">
+                    <path d="M-26 0V-30H26V0Z" stroke-width="1.1"/>
+                    <path d="M-26-30H26" stroke-width="1.1"/>
+                    <path d="M-11-30V-44H11V-30" stroke-width="1"/>
+                    <path d="M-9-30H9" stroke-width="1.4"/>
+                    <path d="M-5-37l3 4 6-8" stroke-width=".9"/>
+                </g>
+                <g transform="translate(516,46)">
+                    <circle r="13"/>
+                    <path d="M-6 0l4 5 9-11" stroke-width="1.2"/>
+                </g>
+            </g>
+
+            <!-- EID AL-FITR — a mosque at the left and three standing lanterns at
+                 the right. The dome-and-minaret silhouette is the mark; the
+                 lanterns are set on the ground now, not hung in the sky. -->
+            <g class="dn-motif" data-motif="eid-fitr">
+                <g transform="translate(84,72)">
+                    <path d="M-40 0V-24H40V0" stroke-width="1.05"/>
+                    <path d="M-27-24C-27-39 27-39 27-24" stroke-width="1.1"/>
+                    <path d="M0-39v-7M-4-43a4 4 0 0 1 8 0" stroke-width=".9"/>
+                    <path d="M-40-24v-16M-40-40h7M-33-40v16" stroke-width=".9"/>
+                    <path d="M40-24v-16M40-40h-7M33-40v16" stroke-width=".9"/>
+                    <path d="M-13 0v-10a13 13 0 0 1 26 0V0" stroke-width=".9"/>
+                </g>
+                <use href="#dn-fanous" transform="translate(478,72) scale(.9)"/>
+                <use href="#dn-fanous" transform="translate(524,72)"/>
+                <use href="#dn-fanous" transform="translate(566,72) scale(.75)"/>
+            </g>
+
+            <!-- EID AL-ADHA — the ram, twice: a large one at the left and a
+                 smaller one facing it across the page. The festival of the
+                 sacrifice is legible without a knife or a scene. -->
+            <g class="dn-motif" data-motif="eid-adha">
+                <use href="#dn-ram" transform="translate(96,72)"/>
+                <use href="#dn-ram" transform="translate(520,72) scale(.58)"/>
+            </g>
+
+            <!-- 1 OCTOBER — Independence Day. The flag on its pole at the left,
+                 green-white-green read as two inner lines, and a string of
+                 bunting across the right. -->
+            <g class="dn-motif" data-motif="independence-day">
+                <g transform="translate(84,72)">
+                    <path d="M0 0V-58" stroke-width="1.1"/>
+                    <path d="M0-58H56V-34H0Z" stroke-width="1.1"/>
+                    <path d="M19-58V-34M37-58V-34" stroke-width=".9"/>
+                </g>
+                <path d="M410-42C450-36 500-36 548-42" stroke-width="1.1"/>
+                <path d="M422-41l3 10 6-11M448-39l3 10 6-11M474-38l3 10 6-11M500-38l3 10 6-11M526-40l3 10 6-11" stroke-width="1"/>
+            </g>
+
+            <!-- 19 NOVEMBER — International Men's Day. ONE mountain at the
+                 centre, drawn as Everest reads in profile: a steep left face,
+                 a sharp summit, and the summit ridge dropping to a lower South
+                 Summit before the long fall to the right. Birds in the air
+                 either side; the Mars mark stands ABOVE the summit, the way the
+                 Venus mark stands above March's hill. No tree, no tie, no
+                 ribbon — the mountain and the mark are the whole of it.
+
+                 NOTHING HERE IS A SINGLE SWEEPING LINE. The old drawing was a
+                 shallow arc that ran away to the right and read as a tail, with
+                 a snowline floating across it; the ridge is now broken into
+                 faces and a subsidiary summit, so every line belongs to a
+                 slope that ends where the next one begins.
+
+                 THE PEAK'S LINE RUNS UNDER THE MARK, not through it: the circle
+                 stops eight units short of the apex, so the mountain never cuts
+                 the symbol the way the old ridge used to. -->
+            <g class="dn-motif" data-motif="mens-day">
+                <path d="M244 72L252 65L262 58L272 51L284 45L293 41L300 38L306 42L313 46L320 50L330 56L342 63L354 70L358 72" stroke-width="1.1"/>
+                <path d="M277 48.6L283 45.8L289 46.6L295 43.6L300 44.6L305 43.6L311 46L316 47.8" stroke-width=".75" opacity=".55"/>
+                <path d="M188 31q4-4 8 0q4-4 8 0M222 20q3.5-3.5 7 0q3.5-3.5 7 0M250 33q3-3 6 0q3-3 6 0M352 23q3.5-3.5 7 0q3.5-3.5 7 0M386 32q3-3 6 0q3-3 6 0" stroke-width=".9" opacity=".8"/>
+                <g transform="translate(300,21)">
+                    <circle r="11" stroke-width="1.15"/>
+                    <path d="M7.8-7.8L20-20M20-20h-8.4M20-20v8.4" stroke-width="1.15"/>
+                </g>
+            </g>
+
+            <!-- DECEMBER — Christmas. A treeline, not a scene: six firs at the
+                 edges, a star above the tallest, and nothing in the middle where
+                 the page's own words stand. -->
+            <g class="dn-motif" data-motif="christmas">
+                <use href="#dn-fir" transform="translate(48,72)"/>
+                <use href="#dn-fir" transform="translate(96,72) scale(.66)"/>
+                <use href="#dn-fir" transform="translate(138,72) scale(.46)"/>
+                <use href="#dn-fir" transform="translate(470,72) scale(.8)"/>
+                <use href="#dn-fir" transform="translate(520,72) scale(.58)"/>
+                <use href="#dn-fir" transform="translate(562,72) scale(.72)"/>
+                <use class="dn-star" href="#dn-spark" transform="translate(48,26) scale(.7)" opacity=".85"/>
+            </g>
+
+            <!-- 26 DECEMBER — Boxing Day. Three gifts at the sides, the ribbons
+                 and bows doing the work, with the middle left open. -->
+            <g class="dn-motif" data-motif="boxing-day">
+                <use href="#dn-gift" transform="translate(76,72)"/>
+                <use href="#dn-gift" transform="translate(518,72) scale(.8)"/>
+                <use href="#dn-gift" transform="translate(562,72) scale(.55)"/>
+                <path d="M118 72c0-6 2-10 6-12" stroke-width=".7" opacity=".4"/>
+            </g>
+
+            <!-- RAMADAN — three fanous standing on the floor, not hanging from
+                 the sky. Two on the left and one on the right, at three heights,
+                 so they read as a street of lamps rather than a pattern. -->
+            <g class="dn-motif" data-motif="ramadan">
+                <use href="#dn-fanous" transform="translate(76,72)"/>
+                <use href="#dn-fanous" transform="translate(122,72) scale(.78)"/>
+                <use href="#dn-fanous" transform="translate(524,72) scale(.9)"/>
+            </g>
+
+            <!-- 31 DECEMBER — New Year's Eve. A clock almost at twelve, and two
+                 streamers falling from the right. The hands are the hour; the
+                 streamers are the only confetti on the page, and they stay low. -->
+            <g class="dn-motif" data-motif="new-years-eve">
+                <g transform="translate(84,72)">
+                    <circle cx="0" cy="-30" r="18" stroke-width="1.1"/>
+                    <path d="M0-30l-5-10M0-30V-46" stroke-width="1.2"/>
+                    <path d="M0-45V-48M0-12V-15M-15-30H-12M12-30H15" stroke-width=".9"/>
+                    <path d="M-6 0H6M0-12V0" stroke-width="1"/>
+                </g>
+                <path d="M500 72C500 52 512 46 512 32C512 20 504 14 506 2" stroke-width=".9"/>
+                <path d="M536 72C536 58 526 52 528 40C530 28 540 24 538 10" stroke-width=".9"/>
+                <circle cx="560" cy="26" r="1.2"/><circle cx="548" cy="14" r="1"/>
+                <circle cx="572" cy="44" r="1"/><circle cx="516" cy="6" r=".9"/>
+            </g>
         </g>
     </svg>
 </figure>
@@ -1544,7 +2143,10 @@
 
      IT IS THE LAST THING ON THE PAGE AND IT BLOCKS NOTHING. The markup above is
      parsed and painted before this runs, and the list is replaced only once an
-     answer has arrived, so the first paint does not wait on the API.
+     answer has arrived, so the first paint does not wait on the API. The same
+     answer now carries the look the studio chose in the dashboard, so switching
+     the theme there is one edit and no file — and a failed read leaves both the
+     cards and the automatic theme exactly as they were.
 
      AND A CARD IS CHECKED AGAIN HERE BEFORE IT IS DRAWN. The server validates
      every card it stores, and this repeats the two parts of that which matter to
@@ -1648,7 +2250,12 @@
         fetch(API + '/api/links', { headers: { Accept: 'application/json' } })
             .then(function (res) { return res.ok ? res.json() : null; })
             .then(function (data) {
-                if (!data || !Array.isArray(data.items)) return;
+                if (!data) return;
+                /* The look the studio picked in the dashboard, if there is one.
+                   Checked again inside lpThemeChoice, so this is a name and not
+                   an attribute. */
+                if (data.theme && window.lpThemeChoice) window.lpThemeChoice(data.theme);
+                if (!Array.isArray(data.items)) return;
                 redraw(data.items);
             })
             .catch(function () { /* the two cards above are the answer */ });

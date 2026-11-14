@@ -23,7 +23,7 @@
             --red: #a8453a; --red-soft: rgba(180,80,70,0.11);
             --border-color: #e8e3d9; --border-dashed: #d8d1c2;
             --shadow-card: 0 2px 6px rgba(26,24,21,0.04), 0 24px 56px rgba(26,24,21,0.07);
-            --radius-lg: 20px; --radius-md: 12px; --radius-sm: 8px; --logo-filter: invert(0);
+            --radius-lg: 20px; --radius-md: 12px; --radius-sm: 8px;
         }
         @media (prefers-color-scheme: dark) {
             :root {
@@ -34,22 +34,28 @@
                 --red: #d47a6e; --red-soft: rgba(200,110,100,0.14);
                 --border-color: #35332d; --border-dashed: #423f37;
                 --shadow-card: 0 2px 6px rgba(0,0,0,0.2), 0 24px 56px rgba(0,0,0,0.28);
-                --logo-filter: invert(1);
             }
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
         body {
             font-family: 'Poppins', sans-serif; background: var(--bg-body); color: var(--text-primary);
-            line-height: 1.6; -webkit-font-smoothing: antialiased; padding: 64px 20px 48px;
+            line-height: 1.6; -webkit-font-smoothing: antialiased; padding: 28px 16px 40px;
             opacity: 0; animation: lp-page-in 0.6s ease 0.05s forwards;
         }
         @keyframes lp-page-in { to { opacity: 1; } }
         .serif { font-family: 'Fraunces', serif; }
 
-        .site-header { display: flex; align-items: center; justify-content: center; padding: 0 0 30px; }
-        .site-logo-link { display: block; }
-        .site-logo { height: 34px; width: auto; filter: var(--logo-filter, none); }
+        /* NO FLOATING MARK. The script logo used to sit on the page background
+           above the card, with padding of its own, so the invoice opened with a
+           small logo, a gap, and then a card repeating the studio's name — the
+           owner's "too lavish and too apart from the invoice" (22 Oct 2026).
+           The studio's identity on this page is its name in the document's own
+           type, which is what a letterhead is. The uploaded logo is 750x600
+           with the ink occupying 394x166 of it, so at any height that fits a
+           masthead the script drew 7px tall — a smudge beside the name, not a
+           mark. The site's other pages keep it: there, it is a page mark. */
+        .doc-identity { display: flex; align-items: center; min-height: 22px; }
 
         .container { max-width: 660px; margin: 0 auto; }
 
@@ -61,52 +67,75 @@
         }
         .invoice-card.is-visible { display: block; }
 
-        /* Hairline top band — Apple-style quiet separation */
-        .invoice-top { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding-bottom: 20px; margin-bottom: 30px; border-bottom: 1px solid var(--border-color); flex-wrap: wrap; }
-        .invoice-brand { font-size: 18px; font-weight: 500; letter-spacing: 0.2px; }
-        .status-pill { display: inline-flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.1px; padding: 6px 14px; border-radius: 30px; border: 1px solid transparent; }
+        /* MASTHEAD — the document says what it is: brand, its own letterhead,
+           then the word INVOICE beside the number and the two dates. The
+           number and the dates used to be a grey mono footnote under the
+           amount, which is the one place an invoice's identity should never
+           be. */
+        .doc-head { padding-bottom: 12px; border-bottom: 1px solid var(--border-color); margin-bottom: 16px; }
+        .doc-head-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .doc-brand { font-size: 18px; font-weight: 500; letter-spacing: 0.2px; }
+        .doc-letterhead { margin-top: 5px; font-size: 12px; color: var(--text-secondary); line-height: 1.65; overflow-wrap: break-word; }
+        .doc-letterhead a { color: var(--text-secondary); text-decoration: none; }
+        @media (hover: hover) { .doc-letterhead a:hover { color: var(--accent); } }
+        /* A detail and its leading separator travel together, so a narrow screen
+           starts a line with "· WhatsApp" instead of ending one with a dot. */
+        .doc-chunk { white-space: nowrap; }
+        .doc-sep { margin: 0 6px; opacity: 0.55; }
+        .doc-ident { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border-dashed); }
+        .doc-wordmark { font-size: 10px; font-weight: 600; letter-spacing: 2.4px; text-transform: uppercase; color: var(--text-faint); }
+        .doc-number { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 12.5px; letter-spacing: 0.4px; }
+        .doc-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; margin-top: 10px; }
+        .doc-meta dt { font-size: 9.5px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-faint); margin-bottom: 3px; }
+        .doc-meta dd { font-size: 12.5px; color: var(--text-primary); }
+
+        .status-pill { display: inline-flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.1px; padding: 6px 14px; border-radius: 30px; border: 1px solid transparent; white-space: nowrap; flex-shrink: 0; }
         .status-pill::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
         .status-pill.is-paid { background: var(--green-soft); color: var(--green); }
         .status-pill.is-unpaid { background: var(--accent-soft); color: var(--accent-deep); }
         .status-pill.is-overdue { background: var(--red-soft); color: var(--red); }
 
-        /* Hero — the single most important thing on the page */
-        .invoice-hero { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 30px; flex-wrap: wrap; }
-        .hero-label { font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.6px; color: var(--text-faint); font-weight: 600; margin-bottom: 6px; }
-        .hero-amount { font-family: 'Fraunces', serif; font-weight: 600; font-size: 44px; letter-spacing: -0.5px; line-height: 1.1; font-variant-numeric: tabular-nums; }
-        .hero-due { font-size: 12.5px; color: var(--text-secondary); margin-top: 8px; }
-        .hero-due strong { color: var(--text-primary); font-weight: 600; }
-        .hero-number { text-align: right; font-size: 11px; color: var(--text-faint); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; letter-spacing: 0.5px; text-transform: uppercase; }
-        .hero-number span { display: block; margin-top: 6px; color: var(--text-faint); font-family: 'Poppins', sans-serif; letter-spacing: 0; text-transform: none; }
+        /* Bill to, then the amount — the two facts a client comes for, in
+           the order a document reads rather than as a headline */
+        .party-label { font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-faint); font-weight: 600; margin-bottom: 7px; }
+        .party-name { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+        .party-line { font-size: 12.5px; color: var(--text-secondary); line-height: 1.65; word-break: break-word; }
+        .doc-amount { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; margin: 14px 0 18px; padding: 13px 16px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); }
+        .hero-label { font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.6px; color: var(--text-faint); font-weight: 600; white-space: nowrap; }
+        .hero-amount { font-family: 'Fraunces', serif; font-weight: 600; font-size: 30px; letter-spacing: -0.4px; line-height: 1.05; font-variant-numeric: tabular-nums; text-align: right; }
 
-        /* From / Bill to — FreshBooks document blocks */
-        .invoice-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 30px; margin-bottom: 30px; }
-        .party-block { min-width: 0; }
-        .party-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.6px; color: var(--text-faint); font-weight: 600; margin-bottom: 10px; }
-        .party-name { font-size: 14.5px; font-weight: 600; margin-bottom: 3px; }
-        .party-line { font-size: 12.5px; color: var(--text-secondary); line-height: 1.7; word-break: break-word; }
-        .party-line a { color: var(--text-secondary); text-decoration: none; }
-        @media (hover: hover) { .party-line a:hover { color: var(--accent); } }
-
-        .invoice-items { width: 100%; border-collapse: collapse; margin-bottom: 26px; }
-        .invoice-items th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px; color: var(--text-faint); padding-bottom: 10px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
-        .invoice-items td { padding: 14px 0; border-bottom: 1px solid var(--border-dashed); font-size: 13.5px; vertical-align: top; }
-        .invoice-items td:last-child, .invoice-items th:last-child { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        /* The itemised table — a quantity column, so the rows read as an
+           invoice's rows and not as a list of sentences with prices */
+        .invoice-items { width: 100%; border-collapse: collapse; margin-bottom: 12px; }
+        .invoice-items th { text-align: left; font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.4px; color: var(--text-faint); padding-bottom: 8px; border-bottom: 1px solid var(--border-color); font-weight: 600; }
+        .invoice-items td { padding: 11px 0; border-bottom: 1px solid var(--border-dashed); font-size: 13px; vertical-align: top; }
+        .invoice-items .c-qty { text-align: right; width: 32px; padding-left: 10px; white-space: nowrap; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+        .invoice-items .c-amt { text-align: right; padding-left: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
         .invoice-items tr:last-child td { border-bottom: none; }
         .item-name { font-weight: 500; }
-        .item-qty { color: var(--text-faint); font-size: 12px; margin-left: 6px; font-variant-numeric: tabular-nums; }
-        .item-details { margin-top: 4px; font-size: 12px; color: var(--text-secondary); line-height: 1.65; }
+        .item-details { margin-top: 4px; font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
 
-        .invoice-totals { max-width: 300px; margin-left: auto; margin-bottom: 6px; }
-        .invoice-totals .total-row { display: flex; justify-content: space-between; gap: 18px; font-size: 13px; padding: 7px 0; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+        .invoice-totals { max-width: 280px; margin: 2px 0 0 auto; border-top: 1px solid var(--border-color); padding-top: 8px; }
+        .invoice-totals .total-row { display: flex; justify-content: space-between; gap: 18px; font-size: 12.5px; padding: 5px 0; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
         .invoice-totals .total-row.is-paid-so-far { color: var(--green); font-weight: 500; }
-        .invoice-totals .total-row.grand { border-top: 1px solid var(--border-color); margin-top: 8px; padding-top: 14px; font-weight: 600; font-size: 17px; color: var(--text-primary); }
-        .invoice-totals .total-row.grand span:last-child { font-family: 'Fraunces', serif; font-weight: 600; }
+        .invoice-totals .total-row.grand { border-top: 1px solid var(--border-color); margin-top: 6px; padding-top: 10px; font-weight: 600; font-size: 14px; color: var(--text-primary); }
+        .invoice-totals .total-row.grand .amt { font-family: 'Fraunces', serif; font-weight: 600; font-size: 17px; }
 
-        .invoice-notes { margin-top: 24px; padding: 14px 18px; background: var(--bg-booking); border-radius: var(--radius-sm); font-size: 12.5px; color: var(--text-secondary); line-height: 1.7; }
+        /* Notes keep their own lines — the stored text is written as lines and
+           HTML collapses them into one paragraph (docs/decisions/0060). */
+        /* TERMS AT THE FOOT. They used to sit between the ledger and the pay
+           buttons, so the last thing before "Pay in full" was a wall of small
+           print — and the owner's second look at the page on 22 October 2026
+           was "a client might not bother to scroll to the end". The button that
+           pays now follows the total it pays. */
+        .doc-notes { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--border-color); }
+        .doc-section-title { font-size: 9.5px; text-transform: uppercase; letter-spacing: 1.6px; color: var(--text-faint); font-weight: 600; margin-bottom: 8px; }
+        .doc-notes-body { font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; white-space: pre-line; }
 
-        /* Payment block */
-        .invoice-actions { margin-top: 30px; border-top: 1px solid var(--border-color); padding-top: 26px; display: flex; flex-direction: column; gap: 10px; }
+        /* HOW TO PAY — a panel of its own, below the document it pays */
+        .doc-pay { margin-top: 16px; padding: 15px 14px 14px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); }
+        .doc-pay .doc-section-title { margin-bottom: 12px; }
+        .invoice-actions { display: flex; flex-direction: column; gap: 10px; }
         .btn-pay {
             display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%;
             background-color: rgba(26,24,21,0.92); color: #fff; padding: 16px 24px; font-size: 12.5px;
@@ -133,11 +162,11 @@
         @media (hover: hover) { .btn-secondary:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-deep); } }
         @media (prefers-color-scheme: dark) { .btn-secondary { background: rgba(255,255,255,0.04); } }
 
-        .pay-trust { display: flex; align-items: center; justify-content: center; gap: 7px; margin-top: 14px; font-size: 11px; color: var(--text-faint); }
-        .pay-trust svg { opacity: 0.7; }
+        .pay-trust { display: flex; align-items: flex-start; gap: 7px; margin-top: 12px; font-size: 11px; line-height: 1.55; color: var(--text-faint); }
+        .pay-trust svg { opacity: 0.7; margin-top: 2px; flex-shrink: 0; }
 
-        .doc-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
-        .doc-actions button { flex: 1; min-width: 140px; background: transparent; border: none; color: var(--text-secondary); font-size: 11px; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 6px 8px; border-radius: 8px; transition: color 0.15s ease, background 0.15s ease; }
+        .doc-actions { display: flex; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border-color); flex-wrap: wrap; }
+        .doc-actions button { flex: 1; min-width: 120px; background: transparent; border: none; color: var(--text-secondary); font-size: 11px; font-weight: 500; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 6px 8px; border-radius: 8px; transition: color 0.15s ease, background 0.15s ease; }
         @media (hover: hover) { .doc-actions button:hover { color: var(--accent); background: var(--accent-soft); } }
 
         /* Paid state */
@@ -149,7 +178,7 @@
         .partial-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--accent-soft); border: 1px solid rgba(138,115,85,0.25); border-radius: 12px; padding: 14px 18px; font-size: 12.5px; color: var(--text-secondary); line-height: 1.6; flex-wrap: wrap; }
         .partial-banner strong { color: var(--text-primary); font-variant-numeric: tabular-nums; }
 
-        .brand-footer { max-width: 660px; margin: 44px auto 0; padding-top: 24px; border-top: 1px solid var(--border-color); text-align: center; }
+        .brand-footer { max-width: 660px; margin: 26px auto 0; padding-top: 18px; border-top: 1px solid var(--border-color); text-align: center; }
         .footer-contact { margin-top: 10px; font-size: 12px; color: var(--text-secondary); }
         .footer-contact a { color: var(--text-secondary); text-decoration: none; }
         @media (hover: hover) { .footer-contact a:hover { color: var(--accent); } }
@@ -166,43 +195,65 @@
             background: #ffffff; color: #1a1815; padding: 48px 40px; font-family: 'Poppins', sans-serif;
             min-height: 100vh; width: 100%;
         }
-        .invoice-capture .cap-header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 2px solid #1a1815; padding-bottom: 18px; margin-bottom: 28px; }
-        .invoice-capture .cap-brand { font-size: 20px; font-weight: 500; }
-        .invoice-capture .cap-number { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; color: #6b6459; }
-        .invoice-capture .cap-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 24px; margin-bottom: 28px; }
-        .invoice-capture .cap-meta span { display: block; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: #6b6459; margin-bottom: 4px; }
-        .invoice-capture .cap-meta strong { font-size: 13.5px; font-weight: 500; word-break: break-word; }
-        .invoice-capture table { width: 100%; border-collapse: collapse; margin-bottom: 24px; }
-        .invoice-capture th { text-align: left; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: #6b6459; padding-bottom: 10px; border-bottom: 1px solid #e8e3d9; }
-        .invoice-capture td { padding: 12px 0; border-bottom: 1px dashed #e8e3d9; font-size: 13.5px; }
-        .invoice-capture td:last-child, .invoice-capture th:last-child { text-align: right; }
-        .invoice-capture .cap-item-details { margin-top: 6px; font-size: 11.5px; color: #6b6459; line-height: 1.7; }
-        .invoice-capture .cap-totals { max-width: 320px; margin-left: auto; }
-        .invoice-capture .cap-totals > div { display: flex; justify-content: space-between; font-size: 13px; padding: 7px 0; color: #6b6459; }
-        .invoice-capture .cap-totals .grand { border-top: 1px solid #1a1815; margin-top: 6px; padding-top: 12px !important; font-weight: 600; color: #1a1815 !important; font-size: 14.5px !important; }
-        .invoice-capture .cap-footer { margin-top: 40px; text-align: center; font-size: 12px; color: #6b6459; font-style: italic; }
+        .invoice-capture .cap-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; border-bottom: 2px solid #1a1815; padding-bottom: 16px; margin-bottom: 22px; }
+        .invoice-capture .cap-wordmark { font-size: 10px; font-weight: 600; letter-spacing: 2.4px; text-transform: uppercase; color: #6b6459; }
+        .invoice-capture .cap-brand { font-size: 20px; font-weight: 500; margin-top: 2px; }
+        .invoice-capture .cap-head-right { text-align: right; }
+        .invoice-capture .cap-number { font-size: 12px; letter-spacing: 1px; color: #1a1815; font-family: ui-monospace, Menlo, monospace; }
+        .invoice-capture .cap-status { margin-top: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: 1.4px; color: #6b6459; }
+        .invoice-capture .cap-parties { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 24px; margin-bottom: 18px; }
+        .invoice-capture .cap-parties span, .invoice-capture .cap-meta span { display: block; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #6b6459; margin-bottom: 4px; }
+        .invoice-capture .cap-parties strong, .invoice-capture .cap-meta strong { font-size: 13px; font-weight: 500; word-break: break-word; }
+        .invoice-capture .cap-parties em { display: block; font-style: normal; font-size: 11.5px; color: #6b6459; line-height: 1.6; margin-top: 2px; }
+        .invoice-capture .cap-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 24px; margin-bottom: 24px; padding-top: 16px; border-top: 1px solid #e8e3d9; }
+        .invoice-capture table { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+        .invoice-capture th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: #6b6459; padding-bottom: 9px; border-bottom: 1px solid #1a1815; }
+        .invoice-capture td { padding: 12px 0; border-bottom: 1px dashed #e8e3d9; font-size: 13px; vertical-align: top; }
+        .invoice-capture .cap-qty { text-align: right; width: 32px; padding-left: 10px; white-space: nowrap; color: #6b6459; }
+        .invoice-capture .cap-amt { text-align: right; padding-left: 14px; white-space: nowrap; }
+        .invoice-capture .cap-item-details { margin-top: 4px; font-size: 11.5px; color: #6b6459; line-height: 1.6; }
+        .invoice-capture .cap-totals { max-width: 300px; margin-left: auto; border-top: 1px solid #e8e3d9; padding-top: 8px; }
+        .invoice-capture .cap-totals > div { display: flex; justify-content: space-between; font-size: 12.5px; padding: 5px 0; color: #6b6459; }
+        .invoice-capture .cap-totals .grand { border-top: 1px solid #1a1815; margin-top: 6px; padding-top: 10px !important; font-weight: 600; color: #1a1815 !important; font-size: 14px !important; }
+        .invoice-capture .cap-notes { margin-top: 22px; padding-top: 14px; border-top: 1px solid #e8e3d9; white-space: pre-line; font-size: 11.5px; color: #6b6459; line-height: 1.7; }
+        .invoice-capture .cap-footer { margin-top: 32px; text-align: center; font-size: 12px; color: #6b6459; font-style: italic; }
 
         /* Print: a clean document PDF via the browser's save dialog */
         @media print {
             body { padding: 0; background: #fff; opacity: 1; animation: none; }
-            .site-header, .brand-footer, .state-message, .invoice-actions { display: none !important; }
+            .brand-footer, .state-message, .doc-pay, .doc-actions { display: none !important; }
             .container { max-width: 100%; }
             .invoice-card { border: none; box-shadow: none; border-radius: 0; padding: 0; }
-            .invoice-hero { margin-bottom: 24px; }
-            .invoice-parties { margin-bottom: 24px; }
+            .doc-amount { margin-bottom: 18px; }
         }
 
         @media (max-width: 600px) {
-            body { padding: 40px 14px 40px; }
-            .site-header { padding-bottom: 22px; }
-            .invoice-card { padding: 26px 20px 24px; border-radius: 16px; }
-            .invoice-hero { align-items: flex-start; flex-direction: column; gap: 14px; }
-            .hero-amount { font-size: 38px; }
-            .hero-number { text-align: left; }
-            .invoice-parties { grid-template-columns: 1fr; gap: 20px; }
-            .invoice-items th:nth-child(2), .invoice-items td:nth-child(2) { text-align: right; }
+            body { padding: 20px 12px 28px; }
+            .invoice-card { padding: 20px 16px 18px; border-radius: 16px; }
+            .doc-brand { font-size: 17px; }
+            .hero-amount { font-size: 28px; }
+            .doc-meta { gap: 10px 18px; }
             .invoice-totals { max-width: 100%; }
             .btn-pay { padding: 15px 18px; }
+        }
+
+        /* Small phones: the brand and the pill share one tight row, and the
+           amount gives way rather than the label wrapping mid-phrase. */
+        @media (max-width: 380px) {
+            .doc-brand { font-size: 16px; }
+            .status-pill { font-size: 9.5px; letter-spacing: 0.9px; padding: 5px 10px; }
+            .doc-amount { padding: 14px 14px; }
+            .hero-amount { font-size: 24px; }
+            .invoice-card { padding: 18px 14px 16px; }
+            /* Too narrow to sit an email and a phone on one line: one per line,
+               with no separator left stranded in front of the second. */
+            .party-line .doc-chunk { display: block; }
+            .party-line .doc-sep { display: none; }
+            /* The pill row, the retainer button and the two document actions
+               each have less room than they were drawn for. */
+            .pay-way { padding: 6px 12px; font-size: 11px; }
+            .btn-secondary { font-size: 10px; letter-spacing: 1px; padding: 12px 12px; }
+            .doc-actions button { min-width: 0; }
         }
     </style>
     <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=31eb723a6e">
@@ -210,52 +261,61 @@
 </head>
 <body>
 
-    <header class="site-header" id="site-header">
-        <a href="./" class="site-logo-link"><img src="" alt="Libertypictures" class="site-logo" id="site-logo-img" style="display:none;"></a>
-    </header>
-
     <div class="container">
         <div class="state-message" id="state-message">Loading your invoice&hellip;</div>
 
         <div class="invoice-card" id="invoice-card">
-            <div class="invoice-top">
-                <div class="invoice-brand serif">Libertypictures</div>
-                <span class="status-pill" id="inv-status-pill"></span>
-            </div>
+            <header class="doc-head">
+                <div class="doc-head-top">
+                    <div class="doc-identity">
+                        <div class="doc-brand serif" id="doc-brand">Libertypictures</div>
+                    </div>
+                    <span class="status-pill" id="inv-status-pill"></span>
+                </div>
+                <div class="doc-letterhead" id="inv-from-line"></div>
+                <div class="doc-ident">
+                    <span class="doc-wordmark">Invoice</span>
+                    <span class="doc-number" id="inv-number"></span>
+                </div>
+                <dl class="doc-meta">
+                    <div><dt>Issued</dt><dd id="inv-issued"></dd></div>
+                    <div><dt>Due</dt><dd id="inv-due"></dd></div>
+                </dl>
+            </header>
 
-            <div class="invoice-hero">
-                <div>
-                    <div class="hero-label" id="hero-label">Amount due</div>
-                    <div class="hero-amount" id="inv-amount"></div>
-                    <div class="hero-due" id="inv-due"></div>
-                </div>
-                <div class="hero-number" id="inv-number"></div>
-            </div>
+            <section class="party-block">
+                <div class="party-label">Bill to</div>
+                <div class="party-name" id="inv-client-name"></div>
+                <div class="party-line" id="inv-client-line"></div>
+            </section>
 
-            <div class="invoice-parties">
-                <div class="party-block">
-                    <div class="party-label">From</div>
-                    <div class="party-name" id="inv-from-name">Libertypictures</div>
-                    <div class="party-line" id="inv-from-line"></div>
-                </div>
-                <div class="party-block">
-                    <div class="party-label">Bill to</div>
-                    <div class="party-name" id="inv-client-name"></div>
-                    <div class="party-line" id="inv-client-line"></div>
-                </div>
+            <div class="doc-amount">
+                <div class="hero-label" id="hero-label">Amount due</div>
+                <div class="hero-amount" id="inv-amount"></div>
             </div>
 
             <table class="invoice-items">
-                <thead><tr><th>Description</th><th>Amount</th></tr></thead>
+                <thead><tr><th>Description</th><th class="c-qty">Qty</th><th class="c-amt">Amount</th></tr></thead>
                 <tbody id="inv-items-body"></tbody>
             </table>
 
             <div class="invoice-totals" id="inv-totals"></div>
 
-            <div class="invoice-notes" id="inv-notes" style="display:none;"></div>
+            <section class="doc-pay">
+                <h2 class="doc-section-title" id="pay-title">How to pay</h2>
+                <div id="invoice-actions">
+                    <!-- populated by renderPaymentActions() based on status -->
+                </div>
+            </section>
 
-            <div class="invoice-actions" id="invoice-actions">
-                <!-- populated by renderPaymentActions() based on status -->
+            <section class="doc-notes" id="inv-notes" hidden>
+                <h2 class="doc-section-title">Terms &amp; notes</h2>
+                <div class="doc-notes-body" id="inv-notes-body"></div>
+            </section>
+
+            <div class="doc-actions">
+                <button type="button" id="download-pdf-btn">Download PDF</button>
+                <button type="button" id="save-invoice-btn">Save as image</button>
             </div>
         </div>
     </div>
@@ -273,20 +333,29 @@
          html2canvas needs it, exactly like the Book page receipt. -->
     <div class="invoice-capture" id="invoice-capture">
         <div class="cap-header">
-            <div class="cap-brand serif">Libertypictures</div>
-            <div class="cap-number" id="cap-number"></div>
+            <div>
+                <div class="cap-wordmark">Invoice</div>
+                <div class="cap-brand serif">Libertypictures</div>
+            </div>
+            <div class="cap-head-right">
+                <div class="cap-number" id="cap-number"></div>
+                <div class="cap-status" id="cap-status"></div>
+            </div>
+        </div>
+        <div class="cap-parties">
+            <div><span>Billed to</span><strong id="cap-client-name"></strong><em id="cap-client-email"></em></div>
+            <div><span>From</span><strong>Libertypictures</strong><em id="cap-from-line"></em></div>
         </div>
         <div class="cap-meta">
-            <div><span>Billed To</span><strong id="cap-client-name"></strong></div>
-            <div><span>Email</span><strong id="cap-client-email"></strong></div>
             <div><span>Issued</span><strong id="cap-issued-date"></strong></div>
             <div><span>Due</span><strong id="cap-due-date"></strong></div>
         </div>
         <table>
-            <thead><tr><th>Description</th><th>Amount</th></tr></thead>
+            <thead><tr><th>Description</th><th class="cap-qty">Qty</th><th class="cap-amt">Amount</th></tr></thead>
             <tbody id="cap-items-body"></tbody>
         </table>
         <div class="cap-totals" id="cap-totals"></div>
+        <div class="cap-notes" id="cap-notes" hidden></div>
         <div class="cap-footer">Libertypictures &mdash; thank you for your business.</div>
     </div>
 
@@ -303,6 +372,17 @@
         return div.innerHTML;
     }
     function formatNaira(n) { return '\u20a6' + Math.round(n || 0).toLocaleString(); }
+
+    /* Details joined by a middot, each with its separator inside the same
+       unbreakable piece — so a 320px screen wraps between facts and never
+       leaves a dot hanging at the end of a line. */
+    function withSeparators(parts) {
+        return parts.map(function (part, i) {
+            return i === 0
+                ? '<span class="doc-chunk">' + part + '</span>'
+                : '<span class="doc-chunk"><span class="doc-sep">\u00b7</span>' + part + '</span>';
+        }).join('');
+    }
 
     /* The studio's number is stored in Settings exactly as it was last typed, and
        wa.me only opens a chat for an INTERNATIONAL number — so a link built from
@@ -339,17 +419,29 @@
             .then(function (data) {
                 var s = data.settings || {};
                 studioInfo = s;
-                if (s.logo_url) {
-                    var logo = document.getElementById('site-logo-img');
-                    logo.src = API_BASE + s.logo_url;
-                    logo.style.display = 'block';
-                }
+                /* No logo image is loaded here on purpose — see the note above
+                   `.doc-identity`: the mark is a page mark, and on this page the
+                   studio's name in type is the letterhead. */
+                /* The studio's own line under the wordmark — a letterhead, so
+                   it sits on one line with separators rather than as four
+                   stacked words that read like stray text. */
                 var fromLine = [];
-                if (s.studio_address) fromLine.push(escapeHtml(s.studio_address));
+                var fromPlain = [];
+                if (s.studio_address) {
+                    fromLine.push(escapeHtml(s.studio_address));
+                    fromPlain.push(s.studio_address);
+                }
                 var wa = waLink(s.whatsapp_number);
-                if (wa) fromLine.push('<a href="' + wa + '" target="_blank" rel="noopener">WhatsApp</a>');
-                if (s.instagram_handle) fromLine.push('<a href="https://instagram.com/' + encodeURIComponent(String(s.instagram_handle).replace(/^@/, '')) + '" target="_blank" rel="noopener">' + escapeHtml(s.instagram_handle) + '</a>');
-                if (fromLine.length) document.getElementById('inv-from-line').innerHTML = fromLine.join('<br>');
+                if (wa) {
+                    fromLine.push('<a href="' + wa + '" target="_blank" rel="noopener">WhatsApp</a>');
+                    fromPlain.push('WhatsApp');
+                }
+                if (s.instagram_handle) {
+                    fromLine.push('<a href="https://instagram.com/' + encodeURIComponent(String(s.instagram_handle).replace(/^@/, '')) + '" target="_blank" rel="noopener">' + escapeHtml(s.instagram_handle) + '</a>');
+                    fromPlain.push(String(s.instagram_handle));
+                }
+                if (fromLine.length) document.getElementById('inv-from-line').innerHTML = withSeparators(fromLine);
+                document.getElementById('cap-from-line').textContent = fromPlain.join(' \u00b7 ');
             })
             .catch(function () {});
     })();
@@ -379,7 +471,13 @@
     }
 
     function renderInvoice(inv) {
-        document.getElementById('inv-number').innerHTML = escapeHtml(inv.invoiceNumber) + '<span>Issued ' + formatDate(inv.createdAt) + '</span>';
+        /* The document's identity, in the masthead: the number beside the word
+           INVOICE, and the two dates under it. */
+        document.getElementById('inv-number').textContent = inv.invoiceNumber || '';
+        document.getElementById('inv-issued').textContent = formatDate(inv.createdAt);
+        document.getElementById('inv-due').textContent = inv.status === 'paid'
+            ? (inv.dueDate ? formatDate(inv.dueDate) : 'Settled')
+            : (inv.dueDate ? formatDate(inv.dueDate) : 'On receipt');
         applyStatusPill(inv.status);
 
         /* One rule for the number on the page and the number charged: whole
@@ -387,36 +485,44 @@
         var remaining = LPMoney.wholeNaira(inv.balanceRemaining != null ? inv.balanceRemaining : Math.max(0, (inv.totalAmount || 0) - (inv.amountPaid || 0)));
         document.getElementById('hero-label').textContent = invoiceMoneyWords(inv.status).hero;
         document.getElementById('inv-amount').textContent = formatNaira(inv.status === 'paid' ? inv.totalAmount : (inv.status === 'partial' ? remaining : inv.totalAmount));
-        document.getElementById('inv-due').innerHTML = inv.status === 'paid'
-            ? (inv.paidAt ? 'Received ' + formatDate(inv.paidAt) : 'Received in full')
-            : (inv.dueDate ? 'Due <strong>' + formatDate(inv.dueDate) + '</strong>' : 'Due <strong>on receipt</strong>');
 
         document.getElementById('inv-client-name').textContent = inv.clientName || '—';
         var clientLine = [];
         if (inv.clientEmail) clientLine.push(escapeHtml(inv.clientEmail));
         if (inv.clientPhone) clientLine.push(escapeHtml(inv.clientPhone));
-        document.getElementById('inv-client-line').textContent = clientLine.join(' \u00b7 ');
+        document.getElementById('inv-client-line').innerHTML = withSeparators(clientLine);
 
+        /* Each row says how many and at what price, so the table reads as an
+           itemised invoice rather than a description with a figure beside it. */
         var rows = inv.lineItems.map(function (item) {
-            var qtyText = item.quantity > 1 ? ' <span class="item-qty">&times; ' + item.quantity + '</span>' : '';
+            var qty = item.quantity > 0 ? item.quantity : 1;
             var detailsHtml = item.details ? '<div class="item-details">' + escapeHtml(item.details).replace(/\n/g, '<br>') + '</div>' : '';
-            return '<tr><td><span class="item-name">' + escapeHtml(item.description) + '</span>' + qtyText + detailsHtml + '</td><td>' + formatNaira(item.unitPrice * item.quantity) + '</td></tr>';
+            var unitHtml = qty > 1 ? '<div class="item-details">' + formatNaira(item.unitPrice) + ' each</div>' : '';
+            return '<tr>' +
+                '<td><span class="item-name">' + escapeHtml(item.description) + '</span>' + detailsHtml + unitHtml + '</td>' +
+                '<td class="c-qty">' + qty + '</td>' +
+                '<td class="c-amt">' + formatNaira(item.unitPrice * item.quantity) + '</td>' +
+            '</tr>';
         }).join('');
         document.getElementById('inv-items-body').innerHTML = rows;
 
         var totalsHtml = '<div class="total-row"><span>Subtotal</span><span>' + formatNaira(inv.subtotal) + '</span></div>';
-        if (inv.discountAmount) totalsHtml += '<div class="total-row"><span>Discount</span><span>-' + formatNaira(inv.discountAmount) + '</span></div>';
+        if (inv.discountAmount) totalsHtml += '<div class="total-row"><span>Discount</span><span>-\u2009' + formatNaira(inv.discountAmount) + '</span></div>';
         if (inv.status === 'partial') {
             totalsHtml += '<div class="total-row is-paid-so-far"><span>Paid so far</span><span>' + formatNaira(inv.amountPaid) + '</span></div>';
-            totalsHtml += '<div class="total-row grand"><span>Balance due</span><span>' + formatNaira(remaining) + '</span></div>';
+            totalsHtml += '<div class="total-row grand"><span>Balance due</span><span class="amt">' + formatNaira(remaining) + '</span></div>';
         } else {
-            totalsHtml += '<div class="total-row grand"><span>' + (inv.status === 'paid' ? 'Total paid' : 'Total due') + '</span><span>' + formatNaira(inv.totalAmount) + '</span></div>';
+            totalsHtml += '<div class="total-row grand"><span>' + (inv.status === 'paid' ? 'Total paid' : 'Total due') + '</span><span class="amt">' + formatNaira(inv.totalAmount) + '</span></div>';
         }
         document.getElementById('inv-totals').innerHTML = totalsHtml;
 
+        /* The stored note is written as lines; the sheet draws them as lines. */
+        var notesSection = document.getElementById('inv-notes');
         if (inv.notes) {
-            document.getElementById('inv-notes').textContent = inv.notes;
-            document.getElementById('inv-notes').style.display = 'block';
+            document.getElementById('inv-notes-body').textContent = inv.notes;
+            notesSection.hidden = false;
+        } else {
+            notesSection.hidden = true;
         }
 
         renderPaymentActions(inv);
@@ -432,6 +538,7 @@
     function renderPaymentActions(inv) {
         var actionsEl = document.getElementById('invoice-actions');
         var html = '';
+        document.getElementById('pay-title').textContent = inv.status === 'paid' ? 'Payment' : 'How to pay';
         var remaining = inv.balanceRemaining != null ? inv.balanceRemaining : Math.max(0, (inv.totalAmount || 0) - (inv.amountPaid || 0));
 
         /* ONE CHANNEL PER BUTTON, and the transfer it is on by default. A
@@ -469,10 +576,6 @@
             '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' +
             '<span>Paystack takes the payment and adds its fee on top of what you send — about 1.5%, capped at ₦2,000 — so the checkout asks for a little more than the amount above. A transfer and a card cost the same.</span></div>';
 
-        html += '<div class="doc-actions">' +
-            '<button type="button" id="download-pdf-btn">Download PDF</button>' +
-            '<button type="button" id="save-invoice-btn">Save as image</button>' +
-        '</div>';
         actionsEl.innerHTML = html;
 
         actionsEl.querySelectorAll('[data-pay-amount]').forEach(function (btn) {
@@ -486,9 +589,12 @@
                 wayButtons.forEach(function (other) { other.classList.toggle('is-on', other === btn); });
             });
         });
-        document.getElementById('save-invoice-btn').addEventListener('click', saveInvoiceAsJpeg);
-        document.getElementById('download-pdf-btn').addEventListener('click', function () { window.print(); });
     }
+
+    /* The document's own actions live in the card's foot, drawn once — not
+       rebuilt with the payment panel, so these listeners are bound once. */
+    document.getElementById('download-pdf-btn').addEventListener('click', function () { window.print(); });
+    document.getElementById('save-invoice-btn').addEventListener('click', saveInvoiceAsJpeg);
 
     function loadInvoice() {
         if (!token) {
@@ -638,28 +744,39 @@
             return;
         }
         var inv = currentInvoice;
+        var remaining = inv.balanceRemaining != null ? inv.balanceRemaining : Math.max(0, (inv.totalAmount || 0) - (inv.amountPaid || 0));
         document.getElementById('cap-number').textContent = inv.invoiceNumber;
+        document.getElementById('cap-status').textContent = invoiceMoneyWords(inv.status).pill;
         document.getElementById('cap-client-name').textContent = inv.clientName;
-        document.getElementById('cap-client-email').textContent = inv.clientEmail;
+        document.getElementById('cap-client-email').textContent = [inv.clientEmail, inv.clientPhone].filter(Boolean).join(' \u00b7 ');
         document.getElementById('cap-issued-date').textContent = formatDate(inv.createdAt);
-        document.getElementById('cap-due-date').textContent = inv.dueDate ? formatDate(inv.dueDate) : 'On receipt';
+        document.getElementById('cap-due-date').textContent = inv.status === 'paid'
+            ? (inv.dueDate ? formatDate(inv.dueDate) : 'Settled')
+            : (inv.dueDate ? formatDate(inv.dueDate) : 'On receipt');
 
         var rows = inv.lineItems.map(function (item) {
-            var qtyText = item.quantity > 1 ? ' \u00d7 ' + item.quantity : '';
+            var qty = item.quantity > 0 ? item.quantity : 1;
             var detailsHtml = item.details ? '<div class="cap-item-details">' + escapeHtml(item.details).replace(/\n/g, '<br>') + '</div>' : '';
-            return '<tr><td>' + escapeHtml(item.description) + qtyText + detailsHtml + '</td><td>' + formatNaira(item.unitPrice * item.quantity) + '</td></tr>';
+            var unitHtml = qty > 1 ? '<div class="cap-item-details">' + formatNaira(item.unitPrice) + ' each</div>' : '';
+            return '<tr><td>' + escapeHtml(item.description) + detailsHtml + unitHtml + '</td>' +
+                '<td class="cap-qty">' + qty + '</td>' +
+                '<td class="cap-amt">' + formatNaira(item.unitPrice * item.quantity) + '</td></tr>';
         }).join('');
         document.getElementById('cap-items-body').innerHTML = rows;
 
         var totalsHtml = '<div><span>Subtotal</span><span>' + formatNaira(inv.subtotal) + '</span></div>';
-        if (inv.discountAmount) totalsHtml += '<div><span>Discount</span><span>-' + formatNaira(inv.discountAmount) + '</span></div>';
+        if (inv.discountAmount) totalsHtml += '<div><span>Discount</span><span>-\u2009' + formatNaira(inv.discountAmount) + '</span></div>';
         if (inv.status === 'partial') {
-            totalsHtml += '<div><span>Paid So Far</span><span>' + formatNaira(inv.amountPaid) + '</span></div>';
-            totalsHtml += '<div class="grand"><span>Balance Remaining</span><span>' + formatNaira(inv.balanceRemaining) + '</span></div>';
+            totalsHtml += '<div><span>Paid so far</span><span>' + formatNaira(inv.amountPaid) + '</span></div>';
+            totalsHtml += '<div class="grand"><span>Balance due</span><span>' + formatNaira(remaining) + '</span></div>';
         } else {
-            totalsHtml += '<div class="grand"><span>Total ' + (inv.status === 'paid' ? 'Paid' : 'Due') + '</span><span>' + formatNaira(inv.totalAmount) + '</span></div>';
+            totalsHtml += '<div class="grand"><span>' + (inv.status === 'paid' ? 'Total paid' : 'Total due') + '</span><span>' + formatNaira(inv.totalAmount) + '</span></div>';
         }
         document.getElementById('cap-totals').innerHTML = totalsHtml;
+
+        var capNotes = document.getElementById('cap-notes');
+        capNotes.textContent = inv.notes || '';
+        capNotes.hidden = !inv.notes;
 
         var captureEl = document.getElementById('invoice-capture');
         captureEl.classList.add('is-active');

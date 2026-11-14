@@ -1478,7 +1478,7 @@ var lbSet = [];        // the set the viewer is showing — the finals grid, or 
 function lbNoun() { return words().verb; }
 function lbOnlyNoun() { return words().keeps; }
 function lbPickVerb() { return words().keepVerb; }
-function lbFilmNeg() { return canKeep(); }
+function lbFilmNeg() { return false; } // finals filmstrip shows normal photos, not negatives
 function lbGuideKey() { return words().viewerGuide; }
 function lbCur() { return lbOrder.length ? lbOrder[currentLbIdx].p : null; }
 function orderIndexById(id) {
