@@ -1538,6 +1538,16 @@
                     '</div>';
                 }).join('');
 
+                /* Each card becomes its own composited layer again. A card carries
+                   a blurred badge over a full-bleed photograph, so without this
+                   every card repaints on every scroll frame — which a phone feels
+                   as a stutter when the page is scrolled slowly. The cards used to
+                   be handed to this same reveal by the renderer that drew them;
+                   the ported one has to ask for it. */
+                if (typeof window.lpInitScrollReveal === 'function') {
+                    window.lpInitScrollReveal(grid.querySelectorAll('.tier-card'), 100);
+                }
+
                 var cheapest = sessions.reduce(function (min, p) { return Math.min(min, p.price); }, Infinity);
                 var hint = document.getElementById('pg-switch-sessions-note');
                 if (hint && isFinite(cheapest)) {
