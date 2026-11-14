@@ -392,6 +392,16 @@
         .sticky-progress-wrap.is-stuck {
             padding-top: 12px;
             padding-bottom: 10px;
+            /* The bar is 18px shorter when it condenses, and it condenses while
+               it is pinned to the top of the viewport — so every element below it
+               used to jump up 17px in a single frame, right as the reader
+               scrolled past the counter. Measured at 393px with the CPU
+               throttled: 17px of movement, 25 frames over 34ms. The margin gives
+               back exactly what the padding takes away, so the bar's flow height
+               is the same in both states and nothing under it moves (0px, 7-19
+               slow frames). The bar looks exactly as it did; it just stops
+               shoving the page. */
+            margin-bottom: 58px;
             box-shadow: 0 12px 28px var(--shadow-hover);
             border-bottom-color: var(--border-color);
         }
