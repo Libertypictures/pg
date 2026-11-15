@@ -70,11 +70,12 @@ a{color:inherit}
 .cover-bg.loaded{opacity:1}
 .cover-bg.no-photo{background:linear-gradient(160deg,#1a1714,#0f0c09);opacity:1}
 .cover-scrim{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,12,9,0.10) 0%,rgba(15,12,9,0.06) 34%,rgba(15,12,9,0.62) 74%,rgba(15,12,9,0.86) 100%)}
-/* The studio's mark sits 16px from the top of the cover — moved up from 28px on
-   26 Sep 2026 ("the logo should go higher a little bit"). The guard in
+/* The studio's mark sits 10px from the top of the cover — 28px on 26 Sep 2026,
+   16px later that day ("the logo should go higher a little bit"), and those 6px
+   more on 15 Nov 2026 ("for the logo it needs to sit higher"). The guard in
    tools/test-gallery-client-view.js pins this number; change it there in the same
    commit if it is asked for again. */
-.cover-logo{position:absolute;top:16px;left:50%;transform:translateX(-50%);z-index:3;height:34px;width:auto;filter:invert(1);opacity:0;animation:coverInX 1s ease .2s forwards}
+.cover-logo{position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:3;height:34px;width:auto;filter:invert(1);opacity:0;animation:coverInX 1s ease .2s forwards}
 /* The box cannot be wider than the phone it is on: `max-width:min(860px,100%)`,
    the same on the cover's own inline cap (which is the one that decides). A block
    pinned at a fixed px inside a 439px screen overhangs it, which is how the event
