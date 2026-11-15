@@ -177,6 +177,22 @@ a{color:inherit}
 .gallery-header-meta{font-size:10px;color:var(--cream-faint);letter-spacing:0.5px;margin-top:2px}
 
 /* ── GALLERY GRID — respects orientation, centered ── */
+/* ── SECTIONS — the parts a gallery is told in ──
+   A heading is a full-width row inside the photo grid, so it sits above its own
+   photos at every breakpoint and never takes part in the dense packing of the
+   tiles. The jump strip is a row of chips above the grid, and it exists only when
+   there is more than one part to jump between. */
+.g-section{grid-column:1/-1;justify-self:stretch;display:flex;align-items:baseline;gap:12px;padding:34px 0 10px;border-top:1px solid rgba(246,241,231,0.14);margin-top:8px}
+.g-section:first-child{padding-top:0;border-top:none;margin-top:0}
+.g-section-name{font-family:'Fraunces',Georgia,serif;font-weight:500;font-size:clamp(17px,4.4vw,24px);letter-spacing:0.2px;color:var(--cream);margin:0;line-height:1.25}
+.g-section-count{font-size:10px;letter-spacing:1.6px;text-transform:uppercase;color:var(--cream-faint);white-space:nowrap}
+.gallery-sections{max-width:1100px;margin:0 auto;padding:28px 16px 0;display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.gallery-sections::-webkit-scrollbar{display:none}
+.g-chip{display:inline-flex;align-items:center;gap:8px;padding:9px 14px;font-size:11px;letter-spacing:0.6px;text-transform:uppercase;font-weight:600;color:var(--cream);background:rgba(246,241,231,0.06);border:1px solid rgba(246,241,231,0.14);border-radius:0;white-space:nowrap;cursor:pointer;transition:background .2s ease,border-color .2s ease}
+@media (hover: hover) { .g-chip:hover{background:rgba(196,166,126,0.14);border-color:rgba(196,166,126,0.4)} }
+.g-chip-n{font-size:9.5px;letter-spacing:0.4px;color:var(--accent);font-weight:700}
+@media (min-width:1024px){.gallery-sections{max-width:min(1560px,100%);padding:32px 24px 0}}
+
 .gallery-grid{max-width:1100px;margin:0 auto;padding:32px 16px 40px;display:grid;grid-template-columns:repeat(6,1fr);gap:8px;grid-auto-flow:dense;justify-items:center}
 .g-tile{position:relative;overflow:hidden;background:var(--surface);cursor:pointer;width:100%}
 .g-tile.landscape{grid-column:span 6;aspect-ratio:3/2}
@@ -730,6 +746,10 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
         </div>
     </div>
 
+    <!-- The parts of the shoot, when the studio told it in parts — drawn only
+         when there is more than one to jump between (see renderSectionJump). -->
+    <div class="gallery-sections" id="gallery-sections" style="display:none"></div>
+
     <div class="gallery-grid" id="gallery-grid"></div>
 
     <!-- EXTRAS — bonus photos the studio added beyond the client's picks -->
@@ -886,6 +906,10 @@ var PREVIEW = null;
 var gallery = null;      // server row (phase, status, expiresAt, photos…)
 var photos = [];         // photos shown on the grid / in the viewer
 var extras = [];         // delivery-only: bonus photos the studio added beyond the client's picks
+/* The parts the studio told this shoot in ("Bride's morning", "Groom", …). Empty
+   for a gallery nobody has sectioned, which is most of them — the page has to
+   draw exactly as it always did when this is empty. */
+var sections = [];
 var view = 'proof';      // 'proof' | 'delivery' | 'share' — set from server phase
 
 /* ===================== WHAT IT CAN DO vs WHAT IT SAYS =====================
@@ -1061,6 +1085,12 @@ function loadGallery() {
             gallery = data;
             view = (data.phase === 'delivery') ? 'delivery' : (data.phase === 'share' ? 'share' : 'proof');
             photos = data.photos || [];
+            /* THE PARTS OF THE SHOOT, in the studio's order (see applySections).
+               Done here, once, before anything is drawn — the grid, the lightbox
+               and the film strip all walk `photos`, so the order has to be right
+               in the array rather than patched into one of them. */
+            sections = data.sections || [];
+            applySections();
             // Extras only exist where a checklist does — a delivery's business. A
             // share gallery's photos are its photos.
             extras = (view === 'delivery') ? (data.extraPhotos || []) : [];
@@ -1338,15 +1368,85 @@ function tileHtml(p, i, isExtra) {
         '<button class="g-tile-star" data-star-id="' + p.id + '" aria-label="Star">' + starSvg(!!starred[p.id]) + '</button>' +
     '</div>';
 }
+/* ===================== SECTIONS =====================
+   A section is a name and an order; a photograph belongs to one or to none. The
+   studio's order decides where a photo sits, and anything unfiled goes last under
+   "More photos" — nothing is ever hidden because it was not filed. */
+function applySections() {
+    if (!sections.length) return;
+    var rank = {};
+    sections.forEach(function (s, i) { rank[s.id] = i; });
+    var UNFILED = sections.length + 1000;
+    photos.sort(function (a, b) {
+        var ra = (a.sectionId && rank[a.sectionId] !== undefined) ? rank[a.sectionId] : UNFILED;
+        var rb = (b.sectionId && rank[b.sectionId] !== undefined) ? rank[b.sectionId] : UNFILED;
+        if (ra !== rb) return ra - rb;
+        return (a.displayOrder || 0) - (b.displayOrder || 0);
+    });
+}
+/* The heading a photo sits under: its section's name, or null when the gallery
+   has no sections at all. Unfiled photos in a sectioned gallery are named, so the
+   label is never blank. */
+function sectionTitleFor(p) {
+    if (!sections.length) return null;
+    for (var i = 0; i < sections.length; i++) {
+        if (sections[i].id === p.sectionId) return sections[i].name;
+    }
+    return 'More photos';
+}
+function sectionHeadingHtml(key, name, count) {
+    return '<div class="g-section" id="section-' + key + '">' +
+        '<h2 class="g-section-name">' + escHtml(name) + '</h2>' +
+        '<span class="g-section-count">' + count + (count === 1 ? ' photo' : ' photos') + '</span>' +
+    '</div>';
+}
+/* The jump strip, drawn only when there is more than one part to jump between —
+   with one section a row of one link is furniture, not navigation. */
+function renderSectionJump() {
+    var host = $('gallery-sections');
+    if (!host) return;
+    if (sections.length < 2 || !photos.length) { host.innerHTML = ''; host.style.display = 'none'; return; }
+    var counts = {}, total = 0;
+    photos.forEach(function (p) {
+        var key = p.sectionId || 'more';
+        counts[key] = (counts[key] || 0) + 1;
+        total++;
+    });
+    var chips = sections.filter(function (s) { return counts[s.id]; }).map(function (s) {
+        return '<button type="button" class="g-chip" data-jump="section-' + s.id + '">' + escHtml(s.name) +
+            '<span class="g-chip-n">' + counts[s.id] + '</span></button>';
+    });
+    if (counts.more) chips.push('<button type="button" class="g-chip" data-jump="section-more">More photos<span class="g-chip-n">' + counts.more + '</span></button>');
+    host.style.display = '';
+    host.innerHTML = chips.join('');
+}
 function renderGrid() {
     var grid = $('gallery-grid');
     setGridDensity();
+    renderSectionJump();
     if (!photos.length) {
         /* With extras present the gallery is not empty — the extras section
            below carries it, so no "no photos yet" line above it. */
         grid.innerHTML = extras.length ? '' : '<p style="grid-column:1/-1;text-align:center;color:var(--cream-faint);padding:60px 20px;font-size:13px;">No photos in this gallery yet.</p>';
-    } else {
+    } else if (!sections.length) {
         grid.innerHTML = photos.map(function (p, i) { return tileHtml(p, i, false); }).join('');
+    } else {
+        /* Grouped first, then drawn, so a heading always opens its own part. Every
+           tile keeps the index it has in `photos` — the lightbox and the film
+           strip are addressed by that index, and a heading must never shift it. */
+        var groups = [], current = null, grp = null, key;
+        for (var i = 0; i < photos.length; i++) {
+            key = photos[i].sectionId || 'more';
+            if (key !== current) {
+                grp = { key: key, name: sectionTitleFor(photos[i]), tiles: [] };
+                groups.push(grp);
+                current = key;
+            }
+            grp.tiles.push(tileHtml(photos[i], i, false));
+        }
+        grid.innerHTML = groups.map(function (g2) {
+            return sectionHeadingHtml(g2.key, g2.name, g2.tiles.length) + g2.tiles.join('');
+        }).join('');
     }
     renderExtras();
     updateBarAndPrompt();
@@ -1376,6 +1476,20 @@ function openFromTile(tile) {
             var tile = e.target.closest('.g-tile');
             if (tile) openFromTile(tile);
         });
+    });
+})();
+/* The jump strip: a chip names a part and takes you to its heading. Scrolled with
+   an offset so the heading does not land under the sticky gallery header. */
+(function () {
+    var host = $('gallery-sections');
+    if (!host) return;
+    host.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-jump]');
+        if (!btn) return;
+        var target = document.getElementById(btn.getAttribute('data-jump'));
+        if (!target) return;
+        var top = target.getBoundingClientRect().top + window.scrollY - 14;
+        window.scrollTo({ top: top < 0 ? 0 : top, behavior: 'smooth' });
     });
 })();
 function updateBarAndPrompt() {
