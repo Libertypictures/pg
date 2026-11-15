@@ -1302,23 +1302,23 @@
             <div class="protocol-grid">
                 <div class="protocol-item">
                     <h3>Retainer &amp; Settlement</h3>
-                    <p>A <span class="highlight-text">non-refundable retainer fee of 70%</span> is strictly required to lock down your specific date and hour. The remaining <span class="highlight-text">30% balance</span> must be settled completely on the immediate day of your session.</p>
+                    <p data-copy="retainer policy">A <span class="highlight-text">non-refundable retainer fee of 70%</span> is strictly required to lock down your specific date and hour. The remaining <span class="highlight-text">30% balance</span> must be settled completely on the immediate day of your session.</p>
                 </div>
                 <div class="protocol-item">
                     <h3>Punctuality &amp; Scheduling</h3>
-                    <p>To preserve our seamless calendar, sessions are time-bound: <span class="highlight-text">60 minutes</span> for 1-look and duo setups, <span class="highlight-text">75 minutes</span> for 2-look portfolios, and <span class="highlight-text">90 minutes</span> for 3-look and family configurations. Arrivals extending <span class="highlight-text">beyond 20 minutes late</span> automatically attract a fee of <span class="highlight-text">₦15,000</span>.</p>
+                    <p data-copy="punctuality policy">To preserve our seamless calendar, sessions are time-bound: <span class="highlight-text">60 minutes</span> for 1-look and duo setups, <span class="highlight-text">75 minutes</span> for 2-look portfolios, and <span class="highlight-text">90 minutes</span> for 3-look and family configurations. Arrivals extending <span class="highlight-text">beyond 20 minutes late</span> automatically attract a fee of <span class="highlight-text">₦15,000</span>.</p>
                 </div>
                 <div class="protocol-item">
                     <h3>Cancellation &amp; Rescheduling</h3>
-                    <p>Cancellations do not qualify for refunds. One time rescheduling is allowed free of charge if requested at least <span class="highlight-text">24-48 hours</span> before session. Retainers are valid for 12 months.</p>
+                    <p data-copy="cancellation policy">Cancellations do not qualify for refunds. One time rescheduling is allowed free of charge if requested at least <span class="highlight-text">24-48 hours</span> before session. Retainers are valid for 12 months.</p>
                 </div>
                 <div class="protocol-item">
                     <h3>Selection &amp; Turnaround</h3>
-                    <p>Clients select their final images from an unedited JPEG gallery hosted online. Final processed files are delivered within 2 to 4 working days via a secure online gallery <span class="highlight-text">valid for 1 month</span>. The original, unedited camera RAW files can be downloaded if requested and paid for.</p>
+                    <p data-copy="selection policy">Clients select their final images from an unedited JPEG gallery hosted online. Final processed files are delivered within 2 to 4 working days via a secure online gallery <span class="highlight-text">valid for 1 month</span>. The original, unedited camera RAW files can be downloaded if requested and paid for.</p>
                 </div>
                 <div class="protocol-item">
                     <h3>Image Rights &amp; Usage</h3>
-                    <p>Clients are granted a <span class="highlight-text">non-exclusive personal-use license</span> for sharing and printing. Libertypictures retains <span class="highlight-text">full ownership</span> of all images, and may share selected images for <span class="highlight-text">portfolio or promotional purposes</span>.</p>
+                    <p data-copy="rights policy">Clients are granted a <span class="highlight-text">non-exclusive personal-use license</span> for sharing and printing. Libertypictures retains <span class="highlight-text">full ownership</span> of all images, and may share selected images for <span class="highlight-text">portfolio or promotional purposes</span>.</p>
                 </div>
             </div>
         </section>
@@ -1695,15 +1695,32 @@
                 if (!el.hasAttribute('data-default')) el.setAttribute('data-default', el.innerHTML);
                 var key = guideSlotKey(el.getAttribute('data-copy'));
                 var value = GUIDE_COPY[key];
-                var text = (value === undefined) ? el.getAttribute('data-default') : String(value).trim();
+                if (value === undefined) {
+                    /* No row: the page's own markup goes back exactly as it was
+                       read — it may already carry <span class="highlight-text">,
+                       and running it through the formatter would escape it. */
+                    el.innerHTML = el.getAttribute('data-default');
+                    el.hidden = false;
+                    return;
+                }
+                var text = String(value).trim();
                 if (text) {
-                    el.innerHTML = studioEsc(text).replace(/&lt;br\s*\/?&gt;/gi, '<br>');
+                    el.innerHTML = formatCopy(text);
                     el.hidden = false;
                 } else {
                     el.innerHTML = '';
                     el.hidden = true;
                 }
             });
+        }
+
+        /* A line of copy may mark a phrase for the highlight it carries on the
+           page by wrapping it in double brackets: [[30% balance]]. The text is
+           escaped first, so a bracket can never smuggle markup in. */
+        function formatCopy(text) {
+            return studioEsc(text)
+                .replace(/&lt;br\s*\/?&gt;/gi, '<br>')
+                .replace(/\[\[([^\]]+)\]\]/g, '<span class="highlight-text">$1</span>');
         }
 
         function studioEsc(str) {

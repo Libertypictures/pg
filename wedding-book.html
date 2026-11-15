@@ -545,10 +545,10 @@
         <section class="section-block" id="terms-conditions" style="margin-top:100px;">
             <h2 class="section-title serif" data-wcopy="terms heading">Terms and Conditions</h2>
             <div class="protocol-grid">
-                <div class="protocol-item"><h3>Retainer &amp; Settlement</h3><p>A <span class="highlight-text">non-refundable retainer of 70%</span> is required to secure your wedding date. The remaining <span class="highlight-text">30% balance</span> is due on delivery of your final images and albums.</p></div>
-                <div class="protocol-item"><h3>After the Celebration</h3><p>Your photographer will provide a flash drive containing JPEGs for selection, based on your chosen package. By the end of the event or the following day, you'll receive <span class="highlight-text">preview images</span> for personal and social media use.</p></div>
-                <div class="protocol-item"><h3>Selection &amp; Turnaround</h3><p>Turnaround time is <span class="highlight-text">14&#8211;16 working days</span> after you've made your photo selections. This may vary based on additional deliverables or special requests.</p></div>
-                <div class="protocol-item"><h3>Image Rights &amp; Usage</h3><p>Libertypictures retains <span class="highlight-text">full ownership</span> of all images and may use selected images for <span class="highlight-text">portfolio or promotional purposes</span>.</p></div>
+                <div class="protocol-item"><h3>Retainer &amp; Settlement</h3><p data-wcopy="retainer terms">A <span class="highlight-text">non-refundable retainer of 70%</span> is required to secure your wedding date. The remaining <span class="highlight-text">30% balance</span> is due on delivery of your final images and albums.</p></div>
+                <div class="protocol-item"><h3>After the Celebration</h3><p data-wcopy="after the wedding">Your photographer will provide a flash drive containing JPEGs for selection, based on your chosen package. By the end of the event or the following day, you'll receive <span class="highlight-text">preview images</span> for personal and social media use.</p></div>
+                <div class="protocol-item"><h3>Selection &amp; Turnaround</h3><p data-wcopy="selection terms">Turnaround time is <span class="highlight-text">14&#8211;16 working days</span> after you've made your photo selections. This may vary based on additional deliverables or special requests.</p></div>
+                <div class="protocol-item"><h3>Image Rights &amp; Usage</h3><p data-wcopy="image rights">Libertypictures retains <span class="highlight-text">full ownership</span> of all images and may use selected images for <span class="highlight-text">portfolio or promotional purposes</span>.</p></div>
             </div>
         </section>
         <footer class="brand-footer">
@@ -739,7 +739,10 @@
                 var value = copy[wcopyKey(el.getAttribute('data-wcopy'))];
                 if (value === undefined) return;
                 var text = String(value).trim();
-                el.innerHTML = tillEsc(text).replace(/&lt;br\s*\/?&gt;/gi, '<br>');
+                /* [[double brackets]] mark a phrase for the page's highlight. */
+                el.innerHTML = tillEsc(text)
+                    .replace(/&lt;br\s*\/?&gt;/gi, '<br>')
+                    .replace(/\[\[([^\]]+)\]\]/g, '<span class="highlight-text">$1</span>');
                 el.hidden = !text;
             });
         }
