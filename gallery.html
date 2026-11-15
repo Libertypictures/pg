@@ -65,7 +65,13 @@ a{color:inherit}
 @media (hover: hover) { .expiry-banner-close:hover{background:rgba(246,241,231,0.16)} }
 
 /* ── COVER — continuous scroll, not a separate screen ── */
-.cover{position:relative;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;overflow:hidden}
+.cover{position:relative;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;overflow:hidden;background:var(--bg)}
+/* The photograph's half of the cover. It takes whatever height the plate leaves. */
+.cover-stage{position:relative;flex:1 1 auto;min-height:38vh;min-height:38dvh;overflow:hidden}
+/* The words' half. Solid ground, a hairline against the photograph, and every
+   line left-aligned to one edge — the composition is the alignment, not a
+   scrim, so nothing has to be dimmed to be readable. */
+.cover-plate{position:relative;z-index:2;flex:0 0 auto;display:flex;flex-direction:column;padding:22px 24px 26px;background:var(--bg);border-top:1px solid var(--border)}
 .cover-bg{position:absolute;inset:0;background:linear-gradient(160deg,#2a2419,#0f0c09);background-size:cover;background-position:center;opacity:1;transition:opacity .3s ease}
 .cover-bg.loaded{opacity:1}
 .cover-bg.no-photo{background:linear-gradient(160deg,#1a1714,#0f0c09);opacity:1}
@@ -87,8 +93,8 @@ a{color:inherit}
    500px in both places had never once bound. The cover of a gallery with no event
    title was therefore three lines of 10-11px type at the bottom of a 1600px
    screen. A measure has to be a width to be one. */
-.cover-content{position:relative;z-index:2;text-align:center;width:100%;padding:40px 24px 80px;max-width:min(860px,100%)}
-.cover-eyebrow{display:block;font-family:'Outfit',sans-serif;font-size:10px;letter-spacing:6px;text-transform:uppercase;color:rgba(255,255,255,0.5);font-weight:400;margin-bottom:20px;opacity:0;animation:coverIn 1s ease .4s forwards}
+.cover-content{position:relative;z-index:2;text-align:left;width:100%;padding:0;max-width:min(860px,100%)}
+.cover-eyebrow{display:block;font-family:'Outfit',sans-serif;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);font-weight:500;margin-bottom:12px;opacity:0;animation:coverIn 1s ease .4s forwards}
 /* white-space:nowrap removed on 20 Sep 2026. It meant a long event title could
    not wrap, so it drew off BOTH edges of the screen — measured on the served
    page at 439 CSS px: the title box ran from -6 to 446. A short title is
@@ -100,8 +106,8 @@ a{color:inherit}
    title is 22px instead of 28px; on a wide desktop it tops out at 34px instead
    of 48px. It stays the largest word on the cover — the eyebrow above it is 10px
    and the date below it is 11px — so the hierarchy is unchanged, only smaller. */
-.cover-name{font-family:'Cormorant Garamond','Fraunces',serif;font-weight:300;font-size:clamp(20px,5vw,34px);line-height:1.15;letter-spacing:3px;text-transform:none;margin-bottom:16px;color:rgba(255,255,255,0.95);opacity:0;animation:coverIn 1.1s ease .6s forwards}
-.cover-date{font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:300;color:rgba(255,255,255,0.35);margin-bottom:48px;opacity:0;animation:coverIn 1s ease .8s forwards}
+.cover-name{font-family:'Cormorant Garamond','Fraunces',serif;font-weight:300;font-size:clamp(24px,6.4vw,30px);line-height:1.06;letter-spacing:.01em;text-transform:none;margin-bottom:10px;color:var(--cream);opacity:0;animation:coverIn 1.1s ease .6s forwards}
+.cover-date{font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:300;color:var(--cream-soft);margin-bottom:0;opacity:0;animation:coverIn 1s ease .8s forwards}
 /* How many photographs are behind this cover. Written from the set's own count
    (see paintCoverCount) — a gallery whose cover says nothing at all is the thing
    this line is for, and the count is the one fact the page has before anyone
@@ -114,10 +120,10 @@ a{color:inherit}
    improvement to it. The date keeps its own 48px below on a phone for the same
    reason, and the desktop block below is where all of this is undone. */
 .cover-meta{display:none;font-family:'Outfit',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:300;color:rgba(255,255,255,0.45);margin-bottom:44px;opacity:0;animation:coverIn 1s ease .9s forwards}
-.cover-scroll-hint{display:inline-flex;flex-direction:column;align-items:center;gap:0;font-size:0;color:transparent;opacity:0;animation:coverIn 1s ease 1.2s forwards}
+.cover-scroll-hint{display:none;flex-direction:column;align-items:center;gap:0;font-size:0;color:transparent;opacity:0;animation:coverIn 1s ease 1.2s forwards}
 .cover-scroll-hint span{display:block;width:1px;height:36px;background:linear-gradient(to bottom,var(--cream-faint),transparent);animation:scrollPulse 2s ease infinite}
 @keyframes scrollPulse{0%,100%{opacity:0.3}50%{opacity:0.8}}
-.cover-expiry{position:absolute;bottom:20px;left:0;right:0;z-index:2;text-align:center;font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:400;color:var(--cream-faint);opacity:0;animation:coverIn .9s ease 1s forwards}
+.cover-expiry{position:static;z-index:2;margin-top:18px;padding-top:14px;border-top:1px solid var(--border);text-align:left;font-family:'Outfit',sans-serif;font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;color:var(--cream-soft);opacity:0;animation:coverIn .9s ease 1s forwards}
 
 /* ── THE COVER ON A DESKTOP ──
    Everything here is spacing and measure; the type sizes are the ones Liberty
@@ -128,13 +134,16 @@ a{color:inherit}
    centred in the window with the deadline as its own last line, and the count and
    the hint have room to breathe. */
 @media(min-width:1024px){
-.cover{justify-content:center;padding-top:64px}
-.cover-content{padding:0 40px 56px}
-.cover-eyebrow{font-size:11px;letter-spacing:9px;margin-bottom:24px}
-.cover-date{font-size:12px;letter-spacing:4px;margin-bottom:16px}
-.cover-meta{display:block;font-size:12px;letter-spacing:4px;margin-bottom:48px}
+.cover-name{font-size:clamp(32px,3.6vw,56px);letter-spacing:.005em}
+.cover{justify-content:flex-start;padding-top:56px}
+.cover-stage{min-height:0}
+.cover-plate{align-items:center;padding:34px 44px 38px}
+.cover-content{padding:0}
+.cover-eyebrow{font-size:11px;letter-spacing:.34em;margin-bottom:16px}
+.cover-date{font-size:12px;letter-spacing:.2em;margin-bottom:0}
+.cover-meta{display:block;font-size:11px;letter-spacing:.24em;margin-top:14px;margin-bottom:0;color:var(--cream-faint)}
 .cover-scroll-hint span{height:64px}
-.cover-expiry{position:static;margin-top:28px;font-size:12px;letter-spacing:3px}
+.cover-expiry{margin-top:22px;padding-top:16px;font-size:11px;letter-spacing:.22em;width:100%;max-width:min(860px,100%)}
 /* ── THE COVER PHOTOGRAPH ON A DESKTOP ──
    The studio's own covers are all vertical. Measured across the nine in the photo
    mirror on 11 Oct 2026: 720x1080, 2160x2879, 2216x2954, 2160x2880, 2250x3000,
@@ -151,7 +160,7 @@ a{color:inherit}
    photograph keeps the gradient it has always had — and they sit inside this
    1024px block, so UNDER IT NOTHING CHANGES and a phone is still a phone. */
 .cover-bg.loaded{background-size:contain;background-repeat:no-repeat;background-position:center}
-.cover.has-photo::before{content:'';position:absolute;inset:-6%;background-image:var(--cover-photo);background-size:cover;background-position:center;background-repeat:no-repeat;filter:blur(30px) brightness(.45) saturate(1.02);pointer-events:none}
+.cover.has-photo .cover-stage::before{content:'';position:absolute;inset:-6%;background-image:var(--cover-photo);background-size:cover;background-position:center;background-repeat:no-repeat;filter:blur(30px) brightness(.45) saturate(1.02);pointer-events:none}
 }
 @keyframes coverIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 /* The cover mark fades in from the SAME 16px below, but it is also centred with a
@@ -692,18 +701,26 @@ button.lock-cta{display:block;width:100%;border:none;cursor:pointer;font:inherit
     </div>
 
     <!-- COVER -->
+    <!-- The cover is a masthead: the photograph fills the top of the page and
+         every word sits on a plate beneath it. Nothing is printed over the
+         client's face, and the deadline belongs to the title instead of
+         floating at the bottom of the window. -->
     <section class="cover" id="cover">
-        <img src="" alt="Libertypictures" class="cover-logo" id="cover-logo" style="display:none;">
-        <div class="cover-bg" id="cover-bg"></div>
-        <div class="cover-scrim"></div>
-        <div class="cover-content" style="max-width:min(860px,100%);">
-            <div class="cover-eyebrow" id="cover-eyebrow">&nbsp;</div>
-            <h1 class="cover-name serif" id="cover-name">&nbsp;</h1>
-            <div class="cover-date" id="cover-date"></div>
-            <div class="cover-meta" id="cover-meta"></div>
-            <div class="cover-scroll-hint"><span></span></div>
+        <div class="cover-stage">
+            <img src="" alt="Libertypictures" class="cover-logo" id="cover-logo" style="display:none;">
+            <div class="cover-bg" id="cover-bg"></div>
+            <div class="cover-scrim"></div>
         </div>
-        <div class="cover-expiry" id="cover-expiry"></div>
+        <div class="cover-plate">
+            <div class="cover-content" style="max-width:min(860px,100%);">
+                <div class="cover-eyebrow" id="cover-eyebrow">&nbsp;</div>
+                <h1 class="cover-name serif" id="cover-name">&nbsp;</h1>
+                <div class="cover-date" id="cover-date"></div>
+                <div class="cover-meta" id="cover-meta"></div>
+                <div class="cover-scroll-hint"><span></span></div>
+            </div>
+            <div class="cover-expiry" id="cover-expiry"></div>
+        </div>
     </section>
 
     <!-- GALLERY -->
