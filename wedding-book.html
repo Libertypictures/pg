@@ -373,7 +373,7 @@
     </header>
     <div class="container">
         <header class="brand-header">
-            <p class="brand-intro">Thank you for your interest in our <span>wedding coverage</span>. Select your desired <span>package</span>, book your <span>date</span>, and secure your <span>retainer</span> below.</p>
+            <p class="brand-intro" data-wcopy="page intro">Thank you for your interest in our <span>wedding coverage</span>. Select your desired <span>package</span>, book your <span>date</span>, and secure your <span>retainer</span> below.</p>
         </header>
         <div class="stepper-sentinel" id="stepper-sentinel"></div>
         <div class="sticky-progress-wrap" id="sticky-progress-wrap">
@@ -387,8 +387,8 @@
         </div>
         <section class="section-block" id="packages">
             <header class="pg-head">
-                <h2 class="section-title serif">Wedding Packages</h2>
-                <p class="pg-standfirst">Every package is crafted to honour the beauty of your celebration. Choose what feels right for your day.</p>
+                <h2 class="section-title serif" data-wcopy="packages heading">Wedding Packages</h2>
+                <p class="pg-standfirst" data-wcopy="packages intro">Every package is crafted to honour the beauty of your celebration. Choose what feels right for your day.</p>
             </header>
             <div class="tier-stack" id="packages-grid">
                 <p style="text-align:center; color:var(--text-secondary); font-size:13px;">Loading packages&hellip;</p>
@@ -434,8 +434,8 @@
         </section>
         <section class="section-block" id="addons">
             <header class="pg-head">
-                <h2 class="section-title serif">Custom Additions</h2>
-                <p class="pg-standfirst">Entirely optional &#8212; enhance your wedding coverage with any of these.</p>
+                <h2 class="section-title serif" data-wcopy="additions heading">Custom Additions</h2>
+                <p class="pg-standfirst" data-wcopy="additions intro">Entirely optional &#8212; enhance your wedding coverage with any of these.</p>
             </header>
             <div class="addons-container" id="addons-box"></div>
             <!-- The booking summary is a till receipt, not a price list. -->
@@ -717,6 +717,41 @@
                 renderPackages(DEFAULT_PACKAGES);
                 renderAddons(DEFAULT_ADDONS);
             });
+        })();
+
+        /* ── The page's own words, editable from the dashboard ──
+           Rows in the category "Wedding Guide" carry them: the name is the
+           slot, the description is the text. A row that is cleared leaves that
+           line empty; delete the row and the wording built into this file
+           comes back. Nothing here is required for the page to work. */
+        function wcopyKey(name) {
+            return String(name == null ? '' : name).toLowerCase().replace(/[^a-z ]/g, '').replace(/\s+/g, ' ').trim();
+        }
+
+        function applyWeddingCopy(rows) {
+            var copy = {};
+            (rows || []).forEach(function (row) {
+                var key = wcopyKey(row.name);
+                if (key) copy[key] = String(row.description == null ? '' : row.description);
+            });
+            document.querySelectorAll('[data-wcopy]').forEach(function (el) {
+                if (!el.hasAttribute('data-default')) el.setAttribute('data-default', el.innerHTML);
+                var value = copy[wcopyKey(el.getAttribute('data-wcopy'))];
+                if (value === undefined) return;
+                var text = String(value).trim();
+                el.innerHTML = tillEsc(text).replace(/&lt;br\s*\/?&gt;/gi, '<br>');
+                el.hidden = !text;
+            });
+        }
+
+        (function () {
+            fetch(API_BASE + '/api/packages').then(function (r) { return r.json(); }).then(function (d) {
+                /* The endpoint answers { packages: [...] }, not a bare list. */
+                var rows = (d && d.packages) ? d.packages : [];
+                applyWeddingCopy(rows.filter(function (row) {
+                    return String(row.category == null ? '' : row.category).trim() === 'Wedding Guide';
+                }));
+            }).catch(function () { /* the file's own words stay */ });
         })();
 
         /* ── DOMContentLoaded: scrollspy + policy link only ── */
